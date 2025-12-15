@@ -4,7 +4,7 @@
     'category': 'Hidden/Tools',
     'description': "",
     'depends': ['base'],
-    'installable': True,
+    'installable': False,
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

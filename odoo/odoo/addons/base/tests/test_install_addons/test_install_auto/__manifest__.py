@@ -7,7 +7,7 @@
     'data': [
         'data/ir_cron.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': True,
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',
