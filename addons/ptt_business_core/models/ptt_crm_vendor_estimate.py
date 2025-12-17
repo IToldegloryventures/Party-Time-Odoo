@@ -49,5 +49,5 @@ class PttCrmVendorEstimate(models.Model):
         readonly=True,
     )
 
-    _order = "service_type, id"
+    _order = "id"
 
