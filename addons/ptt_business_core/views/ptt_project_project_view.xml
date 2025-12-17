@@ -80,13 +80,13 @@
                         <!-- Vendor Assignments -->
                         <group string="Vendor Assignments">
                             <field name="x_vendor_assignment_ids" nolabel="1">
-                                <tree>
+                                <list>
                                     <field name="service_type"/>
                                     <field name="vendor_id"/>
                                     <field name="actual_cost" widget="monetary" 
                                            options="{'currency_field': 'currency_id'}"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                                 <form>
                                     <sheet>
                                         <group>

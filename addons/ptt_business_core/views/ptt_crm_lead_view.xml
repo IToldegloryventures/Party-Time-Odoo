@@ -147,12 +147,12 @@
                     </group>
                     <group string="Vendor Cost Estimates">
                         <field name="x_vendor_estimate_ids" nolabel="1">
-                            <tree>
+                            <list>
                                 <field name="service_type"/>
                                 <field name="vendor_name"/>
                                 <field name="estimated_cost" widget="monetary" 
                                        options="{'currency_field': 'currency_id'}"/>
-                            </tree>
+                            </list>
                             <form>
                                 <sheet>
                                     <group>
