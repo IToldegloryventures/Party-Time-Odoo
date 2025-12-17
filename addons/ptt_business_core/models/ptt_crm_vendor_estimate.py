@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class PttCrmVendorEstimate(models.Model):
@@ -49,7 +49,5 @@ class PttCrmVendorEstimate(models.Model):
         readonly=True,
     )
 
-    @api.model
-    def _order_name(self):
-        return "service_type, id"
+    _order = "service_type, id"
 

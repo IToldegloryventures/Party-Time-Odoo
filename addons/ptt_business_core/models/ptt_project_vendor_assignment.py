@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class PttProjectVendorAssignment(models.Model):
@@ -54,7 +54,5 @@ class PttProjectVendorAssignment(models.Model):
     )
     notes = fields.Text(string="Notes")
 
-    @api.model
-    def _order_name(self):
-        return "service_type, id"
+    _order = "service_type, id"
 
