@@ -35,7 +35,7 @@
                     help="Create a project from this opportunity and copy all event data"/>
             </xpath>
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
-                <page string="Lead Intake">
+                <page name="lead_intake" string="Lead Intake">
                     <!-- Lead Contact Information - Using Standard Odoo Fields -->
                     <!-- Standard fields (user_id=Salesperson, contact_name, partner_name, phone, email_from) are on main form -->
                     <group string="PTT Additional Contact Information">
@@ -131,8 +131,8 @@
                 </page>
             </xpath>
             <!-- Create Event Pricing tab (after Lead Intake tab) -->
-            <xpath expr="//page[@string='Lead Intake']" position="after">
-                <page string="Event Pricing">
+            <xpath expr="//page[@name='lead_intake']" position="after">
+                <page name="event_pricing" string="Event Pricing">
                     <group string="Estimated Pricing">
                         <group>
                             <field name="x_estimated_client_total" widget="monetary" 
@@ -167,7 +167,7 @@
                 </page>
             </xpath>
             <!-- Create Tier 2 Service Details tab (after Event Pricing tab) -->
-            <xpath expr="//page[@string='Lead Intake']" position="after">
+            <xpath expr="//page[@name='event_pricing']" position="after">
                 <page string="Tier 2 Service Details">
                     <!-- DJ/MC Service Details (visible when x_service_dj = True) -->
                     <group string="DJ/MC Service Details" invisible="not x_service_dj">
