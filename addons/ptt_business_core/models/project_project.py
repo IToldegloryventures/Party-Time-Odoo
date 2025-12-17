@@ -12,15 +12,6 @@ class ProjectProject(models.Model):
         index=True,
     )
 
-    # Secondary salesperson for commission tracking
-    x_secondary_salesperson_id = fields.Many2one(
-        "res.users",
-        string="Secondary Salesperson",
-        help="Additional sales rep working on this project (for commission splitting).",
-        domain="[('share', '=', False)]",  # Only internal users (employees), not portal/public users
-        index=True,
-    )
-
     # === VENDOR ASSIGNMENTS (ACTUAL) ===
     x_vendor_assignment_ids = fields.One2many(
         "ptt.project.vendor.assignment",

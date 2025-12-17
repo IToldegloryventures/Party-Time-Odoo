@@ -496,7 +496,6 @@ class CrmLead(models.Model):
             "name": project_name,
             "partner_id": self.partner_id.id if self.partner_id else False,
             "user_id": self.user_id.id if self.user_id else False,
-            "x_secondary_salesperson_id": self.x_secondary_salesperson_id.id if self.x_secondary_salesperson_id else False,
             "x_crm_lead_id": self.id,
             "x_event_id": event_id,
             "x_event_type": self.x_event_type,
