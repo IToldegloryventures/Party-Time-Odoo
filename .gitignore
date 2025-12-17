@@ -58,3 +58,8 @@ wheels/
 *.bak
 *.cache
 
+# Documentation (setup guides, notes)
+docs/
+notes/
+*.md
+

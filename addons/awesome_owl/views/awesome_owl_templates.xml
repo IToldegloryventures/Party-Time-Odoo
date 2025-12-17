@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Page that hosts the Owl Playground -->
+    <template id="playground_page" name="Awesome Owl Playground">
+        <t t-call="web.layout">
+            <t t-set="page_title">Awesome Owl Playground</t>
+            <div class="container mt-4">
+                <h1 class="mb-3">Awesome Owl Playground</h1>
+                <!-- Owl will mount the Playground component here -->
+                <div id="awesome_owl_root"></div>
+            </div>
+        </t>
+    </template>
+</odoo>
