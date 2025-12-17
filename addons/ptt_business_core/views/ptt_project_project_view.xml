@@ -25,7 +25,6 @@
                     <group string="Sales Team (for Commission Tracking)">
                         <group>
                             <field name="user_id" readonly="1"/>
-                            <field name="x_secondary_salesperson_id" domain="[('share', '=', False)]" options="{'no_create': True, 'no_open': True}"/>
                         </group>
                     </group>
                     <!-- Event Schedule -->
