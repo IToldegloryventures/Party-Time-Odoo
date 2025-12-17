@@ -116,14 +116,14 @@ class CrmLead(models.Model):
         ],
         string="DJ Event Type",
     )
-    x_dj_guest_age_range = fields.Char(string="Guest Age Range")
+    x_dj_guest_age_range = fields.Char(string="DJ Guest Age Range")
     x_dj_guest_count = fields.Integer(string="DJ Expected Guest Count")
     x_dj_music_styles = fields.Text(string="Desired Music Styles")
     x_dj_family_friendly = fields.Boolean(string="Family-Friendly Event?")
-    x_dj_multi_part_event = fields.Boolean(string="Multi-Part Event? (e.g. Ceremony + Reception)")
+    x_dj_multi_part_event = fields.Boolean(string="DJ Multi-Part Event? (e.g. Ceremony + Reception)")
     x_dj_multi_location = fields.Boolean(string="Multi-Location Event?")
-    x_dj_split_time = fields.Boolean(string="Split Time?")
-    x_dj_split_equipment = fields.Boolean(string="Split Equipment?")
+    x_dj_split_time = fields.Boolean(string="DJ Split Time?")
+    x_dj_split_equipment = fields.Boolean(string="DJ Split Equipment?")
     x_dj_mc_needed = fields.Boolean(string="MC Needed? (vs. DJ as music-only)")
     x_dj_karaoke_desired = fields.Boolean(string="Karaoke Desired?")
     x_dj_karaoke_duration = fields.Char(string="Karaoke Duration (if yes)")
@@ -218,7 +218,7 @@ class CrmLead(models.Model):
 
     # === TIER 2: FACE PAINTERS/AIRBRUSH TATTOOS QUESTIONS (visible when service selected) ===
     x_facepaint_event_type = fields.Char(string="Type of Event (Face Paint)")
-    x_facepaint_guest_age_range = fields.Char(string="Guest Age Range")
+    x_facepaint_guest_age_range = fields.Char(string="Face Paint Guest Age Range")
     x_facepaint_total_attendees = fields.Integer(string="Total Expected Attendees")
     x_facepaint_location_type = fields.Selection(
         [
@@ -271,7 +271,7 @@ class CrmLead(models.Model):
         string="Print or Digital Delivery?",
     )
     x_photobooth_runtime_duration = fields.Char(string="Duration of Booth Runtime")
-    x_photobooth_custom_branding = fields.Boolean(string="Custom Branding or Overlay Graphics?")
+    x_photobooth_custom_branding = fields.Boolean(string="Photo Booth Custom Branding or Overlay Graphics?")
     x_photobooth_attendant_required = fields.Boolean(string="Will an Attendant Be Required?")
     x_photobooth_wifi_access = fields.Boolean(string="Wi-Fi Access (for Instant Sharing)?")
 
@@ -305,7 +305,7 @@ class CrmLead(models.Model):
         ],
         string="Indoor or Outdoor (Caricature)?",
     )
-    x_caricature_custom_branding = fields.Boolean(string="Custom Branding or Overlay Graphics?")
+    x_caricature_custom_branding = fields.Boolean(string="Caricature Custom Branding or Overlay Graphics?")
 
     # === TIER 2: CASINO-THEMED EVENTS QUESTIONS (visible when service selected) ===
     x_casino_event_type = fields.Char(string="Event Type (Casino)")
@@ -346,10 +346,10 @@ class CrmLead(models.Model):
         ],
         string="Indoor or Outdoor (Band)?",
     )
-    x_band_multi_part_event = fields.Boolean(string="Multi-Part Event? (e.g. Ceremony + Reception)")
+    x_band_multi_part_event = fields.Boolean(string="Band Multi-Part Event? (e.g. Ceremony + Reception)")
     x_band_multi_location = fields.Boolean(string="Multi Location Event?")
-    x_band_split_time = fields.Boolean(string="Split Time?")
-    x_band_split_equipment = fields.Boolean(string="Split Equipment?")
+    x_band_split_time = fields.Boolean(string="Band Split Time?")
+    x_band_split_equipment = fields.Boolean(string="Band Split Equipment?")
     x_band_sets_hours = fields.Char(string="How Many Sets or Hours Needed?")
     x_band_performance_area_size = fields.Char(string="Size of Performance Area")
     x_band_stage_required = fields.Boolean(string="Stage Required?")
