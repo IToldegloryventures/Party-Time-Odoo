@@ -395,15 +395,6 @@ class CrmLead(models.Model):
         string="CFO Preferred Contact Method",
     )
 
-    # Secondary salesperson for commission tracking
-    x_secondary_salesperson_id = fields.Many2one(
-        "res.users",
-        string="Secondary Salesperson",
-        help="Additional sales rep working on this opportunity (for commission splitting).",
-        domain="[('share', '=', False)]",  # Only internal users (employees), not portal/public users
-        index=True,
-    )
-
     # === EVENT PRICING (ESTIMATED) ===
     x_vendor_estimate_ids = fields.One2many(
         "ptt.crm.vendor.estimate",

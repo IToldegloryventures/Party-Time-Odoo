@@ -43,7 +43,6 @@
                             <field name="x_date_of_call"/>
                             <field name="x_lead_type"/>
                             <field name="x_preferred_contact_method"/>
-                            <field name="x_secondary_salesperson_id" domain="[('share', '=', False)]" options="{'no_create': True, 'no_open': True}"/>
                         </group>
                         <group string="2nd POC (Signing Authority)">
                             <field name="x_second_poc_name"/>
