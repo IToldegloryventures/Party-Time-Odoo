@@ -54,5 +54,5 @@ class PttProjectVendorAssignment(models.Model):
     )
     notes = fields.Text(string="Notes")
 
-    _order = "service_type, id"
+    _order = "id"
 
