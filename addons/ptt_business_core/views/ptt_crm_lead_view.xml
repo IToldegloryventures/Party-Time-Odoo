@@ -26,6 +26,7 @@
                     <group string="Event Overview">
                         <group>
                             <field name="x_event_type"/>
+                            <field name="x_event_specific_goal"/>
                             <field name="x_event_name"/>
                             <field name="x_event_date"/>
                             <field name="x_event_time"/>
@@ -34,6 +35,7 @@
                             <field name="x_estimated_guest_count"/>
                             <field name="x_total_hours"/>
                             <field name="x_event_location_type"/>
+                            <field name="x_venue_booked"/>
                             <field name="x_venue_name"/>
                         </group>
                     </group>
@@ -53,6 +55,35 @@
                             <field name="x_service_transportation"/>
                             <field name="x_service_rentals"/>
                             <field name="x_service_staffing"/>
+                        </group>
+                    </group>
+
+                    <!-- Tier 2: DJ/MC Service Details (visible when x_service_dj = True) -->
+                    <group string="Tier 2 - DJ/MC Service Details" invisible="not x_service_dj">
+                        <group>
+                            <field name="x_dj_event_type"/>
+                            <field name="x_dj_guest_age_range"/>
+                            <field name="x_dj_guest_count"/>
+                            <field name="x_dj_music_styles" widget="text"/>
+                            <field name="x_dj_family_friendly"/>
+                            <field name="x_dj_multi_part_event"/>
+                            <field name="x_dj_multi_location"/>
+                        </group>
+                        <group>
+                            <field name="x_dj_split_time"/>
+                            <field name="x_dj_split_equipment"/>
+                            <field name="x_dj_mc_needed"/>
+                            <field name="x_dj_venue_setup"/>
+                            <field name="x_dj_lighting_included"/>
+                            <field name="x_dj_mic_required"/>
+                        </group>
+                    </group>
+                    <group string="Tier 2 - DJ/MC Karaoke Details" invisible="not x_service_dj or not x_dj_karaoke_desired">
+                        <group>
+                            <field name="x_dj_karaoke_desired" invisible="1"/>
+                            <field name="x_dj_karaoke_duration"/>
+                            <field name="x_dj_karaoke_separate_system"/>
+                            <field name="x_dj_karaoke_song_list_options" widget="text"/>
                         </group>
                     </group>
 

@@ -80,10 +80,12 @@ class CrmLead(models.Model):
         string="Event Type",
     )
     x_event_name = fields.Char(string="Event Name (if known)")
+    x_event_specific_goal = fields.Char(string="Specific Goal")
     x_event_date = fields.Date(string="Event Date")
     x_event_time = fields.Char(string="Event Time")
     x_total_hours = fields.Float(string="Total Hours")
     x_estimated_guest_count = fields.Integer(string="Estimated Guest Count")
+    x_venue_booked = fields.Boolean(string="Event Venue (if booked)")
     x_venue_name = fields.Char(string="Venue")
     x_event_location_type = fields.Selection(
         [
@@ -97,6 +99,43 @@ class CrmLead(models.Model):
     # === TIER 2: SERVICES REQUESTED (CHECKBOXES) ===
     x_service_dj = fields.Boolean(string="DJ/MC Services")
     x_service_photovideo = fields.Boolean(string="Photo/Video")
+    
+    # === TIER 2: DJ/MC SERVICE QUESTIONS (visible when x_service_dj = True) ===
+    x_dj_event_type = fields.Selection(
+        [
+            ("wedding", "Wedding"),
+            ("corporate", "Corporate"),
+            ("birthday", "Birthday"),
+            ("anniversary", "Anniversary"),
+            ("graduation", "Graduation"),
+            ("holiday", "Holiday"),
+            ("other", "Other"),
+        ],
+        string="DJ Event Type",
+    )
+    x_dj_guest_age_range = fields.Char(string="Guest Age Range")
+    x_dj_guest_count = fields.Integer(string="DJ Expected Guest Count")
+    x_dj_music_styles = fields.Text(string="Desired Music Styles")
+    x_dj_family_friendly = fields.Boolean(string="Family-Friendly Event?")
+    x_dj_multi_part_event = fields.Boolean(string="Multi-Part Event? (e.g. Ceremony + Reception)")
+    x_dj_multi_location = fields.Boolean(string="Multi-Location Event?")
+    x_dj_split_time = fields.Boolean(string="Split Time?")
+    x_dj_split_equipment = fields.Boolean(string="Split Equipment?")
+    x_dj_mc_needed = fields.Boolean(string="MC Needed? (vs. DJ as music-only)")
+    x_dj_karaoke_desired = fields.Boolean(string="Karaoke Desired?")
+    x_dj_karaoke_duration = fields.Char(string="Karaoke Duration (if yes)")
+    x_dj_karaoke_separate_system = fields.Boolean(string="Karaoke Separate System?")
+    x_dj_karaoke_song_list_options = fields.Text(string="Karaoke Song List Options")
+    x_dj_lighting_included = fields.Boolean(string="Lighting Included or Needed?")
+    x_dj_mic_required = fields.Boolean(string="Microphone Required for Speakers/Toasts?")
+    x_dj_venue_setup = fields.Selection(
+        [
+            ("indoor", "Indoors"),
+            ("outdoor", "Outdoors"),
+            ("mixed", "Mixed"),
+        ],
+        string="DJ Venue Setup",
+    )
     x_service_live_entertainment = fields.Boolean(string="Live Entertainment")
     x_service_lighting = fields.Boolean(string="Lighting/AV")
     x_service_decor = fields.Boolean(string="Decor/Thematic Design")
