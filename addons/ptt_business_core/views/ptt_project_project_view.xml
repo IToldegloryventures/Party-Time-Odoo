@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="PTT Event Details">
+                <page name="ptt_event_details" string="PTT Event Details">
                     <!-- Event Overview -->
                     <group string="Event Overview">
                         <group>
@@ -53,8 +53,8 @@
                 </page>
             </xpath>
                 <!-- Create Vendor Assignment tab -->
-                <xpath expr="//page[@string='PTT Event Details']" position="after">
-                    <page string="Vendor Assignment">
+                <xpath expr="//page[@name='ptt_event_details']" position="after">
+                    <page name="vendor_assignment" string="Vendor Assignment">
                         <!-- Estimated Values from CRM (Reference) -->
                         <group string="Estimated Values (from CRM - Reference Only)" col="4">
                             <field name="x_estimated_client_total" widget="monetary" 
