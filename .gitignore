@@ -29,6 +29,8 @@ wheels/
 *.log
 *.pot
 *.csv
+# But allow security CSV files (required by Odoo)
+!**/security/*.csv
 *.po
 *.mo
 *.pot

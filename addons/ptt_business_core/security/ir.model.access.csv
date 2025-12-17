@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ptt_crm_vendor_estimate,ptt.crm.vendor.estimate,model_ptt_crm_vendor_estimate,base.group_user,1,1,1,1
+access_ptt_project_vendor_assignment,ptt.project.vendor.assignment,model_ptt_project_vendor_assignment,base.group_user,1,1,1,1
