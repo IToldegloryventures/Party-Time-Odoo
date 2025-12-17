@@ -54,7 +54,7 @@
             </xpath>
                 <!-- Create Vendor Assignment tab -->
                 <xpath expr="//page[@name='ptt_event_details']" position="after">
-                    <page string="Vendor Assignment">
+                    <page name="vendor_assignment" string="Vendor Assignment">
                         <!-- Estimated Values from CRM (Reference) -->
                         <group string="Estimated Values (from CRM - Reference Only)" col="4">
                             <field name="x_estimated_client_total" widget="monetary" 
