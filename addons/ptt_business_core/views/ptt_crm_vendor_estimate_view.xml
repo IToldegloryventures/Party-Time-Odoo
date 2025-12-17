@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_ptt_crm_vendor_estimate_tree" model="ir.ui.view">
-        <field name="name">ptt.crm.vendor.estimate.tree</field>
+    <record id="view_ptt_crm_vendor_estimate_list" model="ir.ui.view">
+        <field name="name">ptt.crm.vendor.estimate.list</field>
         <field name="model">ptt.crm.vendor.estimate</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="service_type"/>
                 <field name="vendor_name"/>
                 <field name="estimated_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-            </tree>
+            </list>
         </field>
     </record>
 
