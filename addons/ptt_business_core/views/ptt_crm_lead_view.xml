@@ -130,45 +130,9 @@
                     </group>
                 </page>
             </xpath>
-            <!-- Create Event Pricing tab (after Lead Intake tab) -->
+            <!-- Create Service Details tab (after Lead Intake tab) -->
             <xpath expr="//page[@name='lead_intake']" position="after">
-                <page name="event_pricing" string="Event Pricing">
-                    <group string="Estimated Pricing">
-                        <group>
-                            <field name="x_estimated_client_total" widget="monetary" 
-                                   options="{'currency_field': 'company_currency'}"/>
-                            <field name="x_estimated_total_vendor_costs" widget="monetary" 
-                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
-                            <field name="x_estimated_margin" widget="monetary" 
-                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
-                            <field name="x_estimated_margin_percent" widget="percentage" readonly="1"/>
-                        </group>
-                    </group>
-                    <group string="Vendor Cost Estimates">
-                        <field name="x_vendor_estimate_ids" nolabel="1">
-                            <list>
-                                <field name="service_type"/>
-                                <field name="vendor_name"/>
-                                <field name="estimated_cost" widget="monetary" 
-                                       options="{'currency_field': 'currency_id'}"/>
-                            </list>
-                            <form>
-                                <sheet>
-                                    <group>
-                                        <field name="service_type"/>
-                                        <field name="vendor_name"/>
-                                        <field name="estimated_cost" widget="monetary" 
-                                               options="{'currency_field': 'currency_id'}"/>
-                                    </group>
-                                </sheet>
-                            </form>
-                        </field>
-                    </group>
-                </page>
-            </xpath>
-            <!-- Create Tier 2 Service Details tab (after Event Pricing tab) -->
-            <xpath expr="//page[@name='event_pricing']" position="after">
-                <page string="Tier 2 Service Details">
+                <page name="service_details" string="Service Details">
                     <!-- DJ/MC Service Details (visible when x_service_dj = True) -->
                     <group string="DJ/MC Service Details" invisible="not x_service_dj">
                         <group>
@@ -316,6 +280,42 @@
                             <field name="x_coordination_vendor_count"/>
                             <field name="x_coordination_responsibilities" widget="text"/>
                         </group>
+                    </group>
+                </page>
+            </xpath>
+            <!-- Create Event Pricing tab (after Service Details tab) -->
+            <xpath expr="//page[@name='service_details']" position="after">
+                <page name="event_pricing" string="Event Pricing">
+                    <group string="Estimated Pricing">
+                        <group>
+                            <field name="x_estimated_client_total" widget="monetary" 
+                                   options="{'currency_field': 'company_currency'}"/>
+                            <field name="x_estimated_total_vendor_costs" widget="monetary" 
+                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
+                            <field name="x_estimated_margin" widget="monetary" 
+                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
+                            <field name="x_estimated_margin_percent" widget="percentage" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Vendor Cost Estimates">
+                        <field name="x_vendor_estimate_ids" nolabel="1">
+                            <list>
+                                <field name="service_type"/>
+                                <field name="vendor_name"/>
+                                <field name="estimated_cost" widget="monetary" 
+                                       options="{'currency_field': 'currency_id'}"/>
+                            </list>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="service_type"/>
+                                        <field name="vendor_name"/>
+                                        <field name="estimated_cost" widget="monetary" 
+                                               options="{'currency_field': 'currency_id'}"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
                     </group>
                 </page>
             </xpath>
