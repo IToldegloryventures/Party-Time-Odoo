@@ -18,6 +18,5 @@
     "installable": True,
     "application": False,
     "pre_init_hook": "pre_init_hook",
-    # "post_init_hook": "post_init_hook",  # TEMPORARILY DISABLED FOR DIAGNOSTICS
 }
 
