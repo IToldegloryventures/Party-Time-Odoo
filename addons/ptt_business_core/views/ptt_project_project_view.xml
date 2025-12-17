@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_form_ptt" model="ir.ui.view">
+        <field name="name">project.project.form.ptt</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="PTT Event Details">
+                    <!-- Event Overview -->
+                    <group string="Event Overview">
+                        <group>
+                            <field name="x_event_id"/>
+                            <field name="x_event_name"/>
+                            <field name="x_event_type"/>
+                            <field name="x_event_date"/>
+                        </group>
+                        <group>
+                            <field name="x_event_time"/>
+                            <field name="x_guest_count"/>
+                            <field name="x_venue_name"/>
+                        </group>
+                    </group>
+
+                    <!-- Event Schedule -->
+                    <group string="Event Schedule">
+                        <group>
+                            <field name="x_setup_start_time"/>
+                            <field name="x_event_start_time"/>
+                        </group>
+                        <group>
+                            <field name="x_event_end_time"/>
+                            <field name="x_total_hours"/>
+                            <field name="x_teardown_deadline"/>
+                        </group>
+                    </group>
+
+                    <!-- Event Details -->
+                    <group string="Event Details">
+                        <group>
+                            <field name="x_theme_dress_code"/>
+                            <field name="x_special_requirements_desc"/>
+                        </group>
+                        <group>
+                            <field name="x_inclement_weather_plan"/>
+                            <field name="x_parking_restrictions_desc"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
+

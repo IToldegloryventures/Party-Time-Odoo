@@ -1,0 +1,15 @@
+{
+    "name": "PTT Business Core",
+    "version": "19.0.1.0.0",
+    "summary": "Party Time Texas core customizations for Contacts, CRM and Projects.",
+    "category": "Hidden/Custom",
+    "depends": ["contacts", "crm", "project"],
+    "data": [
+        "views/ptt_res_partner_view.xml",
+        "views/ptt_crm_lead_view.xml",
+        "views/ptt_project_project_view.xml",
+    ],
+    "installable": True,
+    "application": False,
+}
+

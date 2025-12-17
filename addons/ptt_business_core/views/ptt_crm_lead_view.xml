@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_form_ptt" model="ir.ui.view">
+        <field name="name">crm.lead.form.ptt</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="PTT Event Intake">
+                    <!-- Lead Contact Information -->
+                    <group string="Lead Contact Information">
+                        <group>
+                            <field name="x_sales_rep_id"/>
+                            <field name="x_date_of_call"/>
+                            <field name="x_lead_type"/>
+                            <field name="x_preferred_contact_method"/>
+                        </group>
+                        <group>
+                            <field name="x_second_poc_name"/>
+                            <field name="x_second_poc_phone"/>
+                            <field name="x_second_poc_email"/>
+                        </group>
+                    </group>
+
+                    <!-- Event Overview -->
+                    <group string="Event Overview">
+                        <group>
+                            <field name="x_event_type"/>
+                            <field name="x_event_name"/>
+                            <field name="x_event_date"/>
+                            <field name="x_event_time"/>
+                        </group>
+                        <group>
+                            <field name="x_estimated_guest_count"/>
+                            <field name="x_total_hours"/>
+                            <field name="x_event_location_type"/>
+                            <field name="x_venue_name"/>
+                        </group>
+                    </group>
+
+                    <!-- Services Requested -->
+                    <group string="Services Requested">
+                        <group>
+                            <field name="x_service_dj"/>
+                            <field name="x_service_photovideo"/>
+                            <field name="x_service_live_entertainment"/>
+                            <field name="x_service_lighting"/>
+                            <field name="x_service_decor"/>
+                        </group>
+                        <group>
+                            <field name="x_service_venue_sourcing"/>
+                            <field name="x_service_catering"/>
+                            <field name="x_service_transportation"/>
+                            <field name="x_service_rentals"/>
+                            <field name="x_service_staffing"/>
+                        </group>
+                    </group>
+
+                    <!-- Budget & Financial -->
+                    <group string="Budget &amp; Financial Information">
+                        <group>
+                            <field name="x_budget_range"/>
+                            <field name="x_services_already_booked"/>
+                        </group>
+                        <group>
+                            <field name="x_cfo_name"/>
+                            <field name="x_cfo_phone"/>
+                            <field name="x_cfo_email"/>
+                            <field name="x_cfo_contact_method"/>
+                        </group>
+                    </group>
+
+                    <!-- Follow-up Information -->
+                    <group string="Follow-up Information">
+                        <group>
+                            <field name="x_followup_email_sent"/>
+                            <field name="x_proposal_sent"/>
+                            <field name="x_next_contact_date"/>
+                        </group>
+                        <group>
+                            <field name="x_additional_notes"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
