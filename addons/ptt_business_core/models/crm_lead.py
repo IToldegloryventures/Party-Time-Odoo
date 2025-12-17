@@ -5,11 +5,13 @@ class CrmLead(models.Model):
     _inherit = "crm.lead"
 
     # === TIER 1: LEAD CONTACT INFORMATION ===
-    x_sales_rep_id = fields.Many2one(
-        "res.users",
-        string="Sales Rep",
-        help="Sales representative handling this lead.",
-    )
+    # NOTE: user_id = Sales Rep (standard Odoo field - use that, not x_sales_rep_id)
+    # NOTE: contact_name = First/Last Name (standard Odoo field)
+    # NOTE: partner_name = Company Name (standard Odoo field)
+    # NOTE: phone = Phone Number (standard Odoo field)
+    # NOTE: email_from = Email Address (standard Odoo field)
+    # NOTE: description = Additional Notes (standard Odoo field - use that)
+    
     x_date_of_call = fields.Date(
         string="Date of Call",
         help="Date of the initial inquiry call.",
@@ -151,7 +153,7 @@ class CrmLead(models.Model):
     x_followup_email_sent = fields.Boolean(string="Follow-up Email Sent?")
     x_proposal_sent = fields.Boolean(string="Proposal Sent?")
     x_next_contact_date = fields.Date(string="Next Scheduled Contact Date")
-    x_additional_notes = fields.Text(string="Additional Notes")
+    # NOTE: Additional Notes uses standard 'description' field (Html field on Notes tab)
 
     # === BUDGET & FINANCIAL ===
     x_budget_range = fields.Char(string="Total Event Budget (range)")

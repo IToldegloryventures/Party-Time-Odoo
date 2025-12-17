@@ -7,15 +7,15 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="PTT Event Intake">
-                    <!-- Lead Contact Information -->
-                    <group string="Lead Contact Information">
+                    <!-- Lead Contact Information - Using Standard Odoo Fields -->
+                    <!-- Standard fields (user_id, contact_name, partner_name, phone, email_from) are on main form -->
+                    <group string="PTT Additional Contact Information">
                         <group>
-                            <field name="x_sales_rep_id"/>
                             <field name="x_date_of_call"/>
                             <field name="x_lead_type"/>
                             <field name="x_preferred_contact_method"/>
                         </group>
-                        <group>
+                        <group string="2nd POC (Signing Authority)">
                             <field name="x_second_poc_name"/>
                             <field name="x_second_poc_phone"/>
                             <field name="x_second_poc_email"/>
@@ -108,9 +108,7 @@
                             <field name="x_proposal_sent"/>
                             <field name="x_next_contact_date"/>
                         </group>
-                        <group>
-                            <field name="x_additional_notes"/>
-                        </group>
+                        <!-- NOTE: Additional Notes uses standard 'description' field on Notes tab -->
                     </group>
                 </page>
             </xpath>
