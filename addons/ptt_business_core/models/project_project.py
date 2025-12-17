@@ -9,6 +9,7 @@ class ProjectProject(models.Model):
         "crm.lead",
         string="Source Opportunity",
         help="The CRM opportunity this project was created from.",
+        index=True,
     )
 
     # Core event identity

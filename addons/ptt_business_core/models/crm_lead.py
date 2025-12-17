@@ -176,7 +176,18 @@ class CrmLead(models.Model):
         "project.project",
         string="Related Project",
         help="Project created from this opportunity.",
+        index=True,
     )
+    project_count = fields.Integer(
+        string="# Projects",
+        compute="_compute_project_count",
+        help="Counter for the project linked to this lead",
+    )
+
+    @api.depends("x_project_id")
+    def _compute_project_count(self):
+        for record in self:
+            record.project_count = 1 if record.x_project_id else 0
 
     def action_create_project_from_lead(self):
         """Create a project from this CRM Lead and copy all relevant fields."""
@@ -247,4 +258,9 @@ class CrmLead(models.Model):
             "view_mode": "form",
             "target": "current",
         }
+
+    def _merge_get_fields(self):
+        """Include x_project_id in merge dependencies."""
+        merge_fields = super()._merge_get_fields()
+        return merge_fields + ["x_project_id"]
 
