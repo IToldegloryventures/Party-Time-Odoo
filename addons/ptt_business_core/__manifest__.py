@@ -5,7 +5,7 @@
     "category": "Hidden/Custom",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["contacts", "crm", "project"],
+    "depends": ["contacts", "crm", "project", "sale_crm"],
     "data": [
         "security/ir.model.access.csv",
         "views/ptt_crm_vendor_estimate_view.xml",
