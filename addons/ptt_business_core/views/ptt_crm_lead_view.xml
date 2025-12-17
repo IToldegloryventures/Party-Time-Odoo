@@ -5,6 +5,23 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
+            <!-- Add button to create project in button box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_project" type="object"
+                    class="oe_stat_button" icon="fa-tasks"
+                    invisible="not x_project_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Project</span>
+                        <field name="x_project_id" class="o_stat_value" readonly="1"/>
+                    </div>
+                </button>
+            </xpath>
+            <!-- Add button to create project in header (when project doesn't exist yet) -->
+            <xpath expr="//header" position="inside">
+                <button name="action_create_project_from_lead" string="Create Project" type="object"
+                    class="btn-primary" invisible="x_project_id or type == 'lead'" 
+                    help="Create a project from this opportunity and copy all event data"/>
+            </xpath>
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="PTT Event Intake">
                     <!-- Lead Contact Information - Using Standard Odoo Fields -->

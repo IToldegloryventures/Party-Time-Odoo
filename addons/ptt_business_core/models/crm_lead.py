@@ -1,4 +1,5 @@
-from odoo import models, fields
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 
 class CrmLead(models.Model):
@@ -170,4 +171,80 @@ class CrmLead(models.Model):
         string="CFO Preferred Contact Method",
     )
 
+    # Link to related project (if created)
+    x_project_id = fields.Many2one(
+        "project.project",
+        string="Related Project",
+        help="Project created from this opportunity.",
+    )
+
+    def action_create_project_from_lead(self):
+        """Create a project from this CRM Lead and copy all relevant fields."""
+        self.ensure_one()
+        
+        if self.x_project_id:
+            raise UserError(_("A project has already been created from this opportunity."))
+        
+        # Generate Event ID (000001 format)
+        last_project = self.env["project.project"].search(
+            [("x_event_id", "!=", False)], order="x_event_id desc", limit=1
+        )
+        if last_project and last_project.x_event_id:
+            try:
+                next_id = int(last_project.x_event_id) + 1
+            except ValueError:
+                next_id = 1
+        else:
+            next_id = 1
+        event_id = f"{next_id:06d}"
+        
+        # Build project name: PartnerName-EventID
+        project_name = self.partner_name or self.contact_name or "Unknown"
+        project_name = f"{project_name}-{event_id}"
+        
+        # Map CRM Lead fields to Project fields
+        project_vals = {
+            "name": project_name,
+            "partner_id": self.partner_id.id if self.partner_id else False,
+            "user_id": self.user_id.id if self.user_id else False,
+            "x_crm_lead_id": self.id,
+            "x_event_id": event_id,
+            "x_event_type": self.x_event_type,
+            "x_event_name": self.x_event_name,
+            "x_event_date": self.x_event_date,
+            "x_event_time": self.x_event_time,
+            "x_guest_count": self.x_estimated_guest_count,
+            "x_venue_name": self.x_venue_name,
+            "x_total_hours": self.x_total_hours,
+            "date_start": self.x_event_date,  # Project start date
+        }
+        
+        # Create project
+        project = self.env["project.project"].create(project_vals)
+        
+        # Link project back to lead
+        self.write({"x_project_id": project.id})
+        
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Project Created"),
+            "res_model": "project.project",
+            "res_id": project.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def action_view_project(self):
+        """Open the related project."""
+        self.ensure_one()
+        if not self.x_project_id:
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Project"),
+            "res_model": "project.project",
+            "res_id": self.x_project_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 

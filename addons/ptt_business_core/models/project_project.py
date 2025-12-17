@@ -1,8 +1,15 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class ProjectProject(models.Model):
     _inherit = "project.project"
+
+    # Link back to source CRM Lead
+    x_crm_lead_id = fields.Many2one(
+        "crm.lead",
+        string="Source Opportunity",
+        help="The CRM opportunity this project was created from.",
+    )
 
     # Core event identity
     x_event_id = fields.Char(string="Event ID")
