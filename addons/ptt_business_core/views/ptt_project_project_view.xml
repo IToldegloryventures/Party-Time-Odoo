@@ -64,6 +64,7 @@
                                    options="{'currency_field': 'currency_id'}" readonly="1"/>
                             <field name="x_estimated_margin" widget="monetary" 
                                    options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_estimated_margin_percent" widget="percentage" readonly="1"/>
                         </group>
                         <!-- Actual Values -->
                         <group string="Actual Pricing">

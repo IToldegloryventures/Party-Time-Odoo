@@ -57,6 +57,13 @@ class ProjectProject(models.Model):
         readonly=True,
         help="Original estimated margin from CRM opportunity.",
     )
+    x_estimated_margin_percent = fields.Float(
+        string="Estimated Margin % (from CRM)",
+        related="x_crm_lead_id.x_estimated_margin_percent",
+        readonly=True,
+        digits=(16, 2),
+        help="Original estimated margin percentage from CRM opportunity.",
+    )
     # Actual values
     x_actual_client_total = fields.Monetary(
         string="Actual Client Total",
