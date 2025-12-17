@@ -12,6 +12,83 @@ class ProjectProject(models.Model):
         index=True,
     )
 
+    # Secondary salesperson for commission tracking
+    x_secondary_salesperson_id = fields.Many2one(
+        "res.users",
+        string="Secondary Salesperson",
+        help="Additional sales rep working on this project (for commission splitting).",
+        domain="[('share', '=', False)]",  # Only internal users (employees), not portal/public users
+        index=True,
+    )
+
+    # === VENDOR ASSIGNMENTS (ACTUAL) ===
+    x_vendor_assignment_ids = fields.One2many(
+        "ptt.project.vendor.assignment",
+        "project_id",
+        string="Vendor Assignments",
+        help="Actual vendor assignments and costs for this project.",
+    )
+    x_actual_total_vendor_costs = fields.Monetary(
+        string="Total Actual Vendor Costs",
+        compute="_compute_vendor_totals",
+        currency_field="currency_id",
+        store=True,
+        help="Sum of all actual vendor costs.",
+    )
+    # Estimated values from CRM (read-only for reference)
+    x_estimated_total_vendor_costs = fields.Monetary(
+        string="Estimated Vendor Costs (from CRM)",
+        related="x_crm_lead_id.x_estimated_total_vendor_costs",
+        currency_field="currency_id",
+        readonly=True,
+        help="Original estimated vendor costs from CRM opportunity.",
+    )
+    x_estimated_client_total = fields.Monetary(
+        string="Estimated Client Total (from CRM)",
+        related="x_crm_lead_id.x_estimated_client_total",
+        currency_field="currency_id",
+        readonly=True,
+        help="Original estimated client total from CRM opportunity.",
+    )
+    x_estimated_margin = fields.Monetary(
+        string="Estimated Margin (from CRM)",
+        related="x_crm_lead_id.x_estimated_margin",
+        currency_field="currency_id",
+        readonly=True,
+        help="Original estimated margin from CRM opportunity.",
+    )
+    # Actual values
+    x_actual_client_total = fields.Monetary(
+        string="Actual Client Total",
+        currency_field="currency_id",
+        help="Total amount client actually pays.",
+    )
+    x_actual_margin = fields.Monetary(
+        string="Actual Margin",
+        compute="_compute_vendor_totals",
+        currency_field="currency_id",
+        store=True,
+        help="Actual margin = Client Total - Vendor Costs.",
+    )
+    x_actual_margin_percent = fields.Float(
+        string="Actual Margin %",
+        compute="_compute_vendor_totals",
+        store=True,
+        help="Actual margin percentage.",
+    )
+
+    @api.depends("x_vendor_assignment_ids.actual_cost", "x_actual_client_total")
+    def _compute_vendor_totals(self):
+        """Compute actual vendor costs, margin, and margin percentage."""
+        for project in self:
+            total_vendor_costs = sum(project.x_vendor_assignment_ids.mapped("actual_cost"))
+            project.x_actual_total_vendor_costs = total_vendor_costs
+            project.x_actual_margin = project.x_actual_client_total - total_vendor_costs
+            if project.x_actual_client_total > 0:
+                project.x_actual_margin_percent = (project.x_actual_margin / project.x_actual_client_total) * 100
+            else:
+                project.x_actual_margin_percent = 0.0
+
     # Core event identity
     x_event_id = fields.Char(string="Event ID")
     x_event_type = fields.Selection(

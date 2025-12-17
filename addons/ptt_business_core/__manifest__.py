@@ -7,6 +7,9 @@
     "license": "LGPL-3",
     "depends": ["contacts", "crm", "project"],
     "data": [
+        "security/ir.model.access.csv",
+        "views/ptt_crm_vendor_estimate_view.xml",
+        "views/ptt_project_vendor_assignment_view.xml",
         "views/ptt_res_partner_view.xml",
         "views/ptt_crm_lead_view.xml",
         "views/ptt_project_project_view.xml",

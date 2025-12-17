@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ptt_project_vendor_assignment_tree" model="ir.ui.view">
+        <field name="name">ptt.project.vendor.assignment.tree</field>
+        <field name="model">ptt.project.vendor.assignment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="service_type"/>
+                <field name="vendor_id"/>
+                <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="notes"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ptt_project_vendor_assignment_form" model="ir.ui.view">
+        <field name="name">ptt.project.vendor.assignment.form</field>
+        <field name="model">ptt.project.vendor.assignment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="project_id" invisible="1"/>
+                        <field name="service_type"/>
+                        <field name="vendor_id"/>
+                        <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="notes" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
