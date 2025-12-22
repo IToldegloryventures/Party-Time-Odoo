@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<templates xml:space="preserve">
-    <!-- Owl template for the Playground counter component -->
-    <t t-name="awesome_owl.Playground" owl="1">
-        <p>Counter: <t t-esc="state.value"/></p>
-        <button class="btn btn-primary" t-on-click="increment">Increment</button>
-    </t>
-</templates>
