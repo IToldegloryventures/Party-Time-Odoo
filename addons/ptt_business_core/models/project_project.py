@@ -87,6 +87,16 @@ class ProjectProject(models.Model):
             else:
                 project.x_actual_margin_percent = 0.0
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to auto-create event tasks for event projects."""
+        projects = super().create(vals_list)
+        for project in projects:
+            # Only create tasks if this is an event project (has CRM lead)
+            if project.x_crm_lead_id:
+                project._create_event_tasks()
+        return projects
+
     # Core event identity
     x_event_id = fields.Char(string="Event ID")
     x_event_type = fields.Selection(
@@ -152,4 +162,68 @@ class ProjectProject(models.Model):
     x_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
     x_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
 
+    def _create_event_tasks(self):
+        """Auto-create event planning tasks and sub-tasks for event projects."""
+        self.ensure_one()
+        if not self.x_crm_lead_id:
+            return  # Only for event projects
+
+        # Get or create task stages (using task type/stage system)
+        # For now, we'll use the default project task stages or create if needed
+        # Stage: Follow Up
+        follow_up_stage = self._get_or_create_task_stage("Follow Up")
+        
+        # Create main task: "Confirm Booking with Client"
+        main_task = self.env["project.task"].create({
+            "name": "Confirm Booking with Client",
+            "project_id": self.id,
+            "stage_id": follow_up_stage.id,
+            "user_id": self.user_id.id if self.user_id else False,
+        })
+        
+        # Create sub-tasks
+        sub_tasks_data = [
+            "Verify Retainer has been paid. Verify remaining balance owed.",
+            "Send confirmation email stating contract signed + retainer received",
+            "Reiterate event date, venue, time, and agreed services",
+        ]
+        
+        for sub_task_name in sub_tasks_data:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": main_task.id,
+                "stage_id": follow_up_stage.id,
+                "user_id": self.user_id.id if self.user_id else False,
+            })
+
+    def _get_or_create_task_stage(self, stage_name):
+        """Get or create a task stage for the project."""
+        # Search for existing stage linked to this project
+        stage = self.env["project.task.type"].search([
+            ("name", "=", stage_name),
+            ("project_ids", "in", [self.id]),
+        ], limit=1)
+        
+        if not stage:
+            # Search for any stage with this name (might exist globally)
+            stage = self.env["project.task.type"].search([
+                ("name", "=", stage_name),
+            ], limit=1)
+            
+            if not stage:
+                # Create new stage if it doesn't exist
+                stage = self.env["project.task.type"].create({
+                    "name": stage_name,
+                    "project_ids": [(4, self.id)],
+                })
+            else:
+                # Link existing stage to this project
+                stage.write({"project_ids": [(4, self.id)]})
+        else:
+            # Ensure project is linked (in case it wasn't)
+            if self.id not in stage.project_ids.ids:
+                stage.write({"project_ids": [(4, self.id)]})
+        
+        return stage
 
