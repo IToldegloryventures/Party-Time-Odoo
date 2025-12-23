@@ -234,3 +234,32 @@ class ProjectProject(models.Model):
         
         return stage
 
+    def action_view_crm_lead(self):
+        """Open the source CRM opportunity."""
+        self.ensure_one()
+        if not self.x_crm_lead_id:
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Source Opportunity",
+            "res_model": "crm.lead",
+            "res_id": self.x_crm_lead_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def action_view_tasks(self):
+        """Open project tasks."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Project Tasks",
+            "res_model": "project.task",
+            "view_mode": "list,form,kanban",
+            "domain": [("project_id", "=", self.id)],
+            "context": {
+                "default_project_id": self.id,
+                "search_default_project_id": self.id,
+            },
+        }
+

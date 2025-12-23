@@ -27,6 +27,16 @@
                         <field name="x_project_id" class="o_stat_value" readonly="1"/>
                     </div>
                 </button>
+                <button name="action_view_project_tasks" type="object"
+                    class="oe_stat_button" icon="fa-check-square-o"
+                    invisible="not x_project_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Project Tasks</span>
+                        <span class="o_stat_value">
+                            <field name="x_project_task_count" widget="integer"/>
+                        </span>
+                    </div>
+                </button>
             </xpath>
             <!-- Add "Create Project" button in header (before Won button, after New Quotation) -->
             <xpath expr="//button[@name='action_set_won_rainbowman']" position="before">
