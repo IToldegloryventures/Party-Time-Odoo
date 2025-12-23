@@ -31,7 +31,7 @@
             <!-- Add "Create Project" button in header (before Won button, after New Quotation) -->
             <xpath expr="//button[@name='action_set_won_rainbowman']" position="before">
                 <button name="action_create_project_from_lead" string="Create Project" type="object"
-                    class="oe_highlight" invisible="x_project_id or type == 'lead'" 
+                    class="oe_highlight" invisible="x_project_id or type == 'lead' or (not stage_id or stage_id.name != 'Booked')" 
                     help="Create a project from this opportunity and copy all event data"/>
             </xpath>
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
