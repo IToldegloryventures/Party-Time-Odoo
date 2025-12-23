@@ -458,6 +458,17 @@ class CrmLead(models.Model):
         for record in self:
             record.project_count = 1 if record.x_project_id else 0
 
+    x_project_task_count = fields.Integer(
+        string="# Project Tasks",
+        compute="_compute_project_task_count",
+        help="Number of tasks in the related project",
+    )
+
+    @api.depends("x_project_id", "x_project_id.task_count")
+    def _compute_project_task_count(self):
+        for record in self:
+            record.x_project_task_count = record.x_project_id.task_count if record.x_project_id else 0
+
     def action_create_project_from_lead(self):
         """Create a project from this CRM Lead and copy all relevant fields."""
         self.ensure_one()
@@ -526,6 +537,23 @@ class CrmLead(models.Model):
             "res_id": self.x_project_id.id,
             "view_mode": "form",
             "target": "current",
+        }
+
+    def action_view_project_tasks(self):
+        """Open the project tasks."""
+        self.ensure_one()
+        if not self.x_project_id:
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Project Tasks"),
+            "res_model": "project.task",
+            "view_mode": "list,form,kanban",
+            "domain": [("project_id", "=", self.x_project_id.id)],
+            "context": {
+                "default_project_id": self.x_project_id.id,
+                "search_default_project_id": self.x_project_id.id,
+            },
         }
 
     # === INVOICE PAYMENT TRACKING ===

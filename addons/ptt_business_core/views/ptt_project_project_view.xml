@@ -5,6 +5,26 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
+            <!-- Add smart buttons for navigation -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_crm_lead" type="object"
+                    class="oe_stat_button" icon="fa-bullhorn"
+                    invisible="not x_crm_lead_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Source Opportunity</span>
+                        <field name="x_crm_lead_id" class="o_stat_value" readonly="1"/>
+                    </div>
+                </button>
+                <button name="action_view_tasks" type="object"
+                    class="oe_stat_button" icon="fa-tasks">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Tasks</span>
+                        <span class="o_stat_value">
+                            <field name="task_count" widget="integer"/>
+                        </span>
+                    </div>
+                </button>
+            </xpath>
             <xpath expr="//sheet/notebook" position="inside">
                 <page name="ptt_event_details" string="PTT Event Details">
                     <!-- Event Overview -->
