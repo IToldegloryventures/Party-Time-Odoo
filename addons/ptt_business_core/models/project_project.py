@@ -168,6 +168,13 @@ class ProjectProject(models.Model):
         if not self.x_crm_lead_id:
             return  # Only for event projects
 
+        # Get assigned users from CRM Lead's salesperson (Odoo 19 uses user_ids Many2many)
+        assigned_users = (
+            [(6, 0, [self.x_crm_lead_id.user_id.id])]
+            if self.x_crm_lead_id.user_id
+            else []
+        )
+
         # Get or create task stages (using task type/stage system)
         # For now, we'll use the default project task stages or create if needed
         # Stage: Follow Up
@@ -178,7 +185,7 @@ class ProjectProject(models.Model):
             "name": "Confirm Booking with Client",
             "project_id": self.id,
             "stage_id": follow_up_stage.id,
-            "user_id": self.user_id.id if self.user_id else False,
+            "user_ids": assigned_users,
         })
         
         # Create sub-tasks
@@ -194,7 +201,7 @@ class ProjectProject(models.Model):
                 "project_id": self.id,
                 "parent_id": main_task.id,
                 "stage_id": follow_up_stage.id,
-                "user_id": self.user_id.id if self.user_id else False,
+                "user_ids": assigned_users,
             })
 
     def _get_or_create_task_stage(self, stage_name):
