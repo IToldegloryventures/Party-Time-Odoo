@@ -12,11 +12,20 @@ class ResPartner(models.Model):
     # Vendor Detail Fields
     x_vendor_service_types = fields.Selection(
         [
-            ("dj", "DJ/MC"),
-            ("lighting", "Lighting/AV"),
-            ("photobooth", "Photo Booth"),
+            ("dj", "DJ/MC Services"),
+            ("photovideo", "Photo/Video"),
             ("live_entertainment", "Live Entertainment"),
+            ("lighting", "Lighting/AV"),
+            ("decor", "Decor/Thematic Design"),
+            ("photobooth", "Photo Booth"),
+            ("caricature", "Caricature Artists"),
+            ("casino", "Casino Services"),
             ("catering", "Catering"),
+            ("transportation", "Transportation"),
+            ("rentals", "Rentals (Other)"),
+            ("staffing", "Staffing"),
+            ("venue_sourcing", "Venue Sourcing"),
+            ("coordination", "Event Coordination"),
             ("other", "Other"),
         ],
         string="Service Type",
