@@ -53,6 +53,39 @@ class PttProjectVendorAssignment(models.Model):
         readonly=True,
     )
     notes = fields.Text(string="Notes")
+    
+    # Vendor Status Tracking Fields
+    x_status = fields.Selection(
+        [
+            ("pending", "Pending"),
+            ("confirmed", "Confirmed"),
+            ("completed", "Completed"),
+            ("cancelled", "Cancelled"),
+        ],
+        string="Status",
+        default="pending",
+        help="Track the status of this vendor assignment",
+    )
+    x_confirmed_date = fields.Date(
+        string="Confirmed Date",
+        help="Date when vendor confirmed their assignment",
+    )
+    x_contact_person = fields.Char(
+        string="Contact Person",
+        help="Name of the contact person for this vendor assignment",
+    )
+    x_contact_phone = fields.Char(
+        string="Contact Phone",
+        help="Phone number for vendor contact person",
+    )
+    x_arrival_time = fields.Char(
+        string="Arrival Time",
+        help="Expected arrival/setup time for vendor",
+    )
+    x_equipment_notes = fields.Text(
+        string="Equipment Notes",
+        help="Notes about equipment, setup requirements, or special instructions",
+    )
 
     _order = "id"
 

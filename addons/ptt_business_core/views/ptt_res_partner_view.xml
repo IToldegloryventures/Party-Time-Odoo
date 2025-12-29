@@ -5,10 +5,23 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <!-- Add Vendor checkbox near the top of the form -->
+            <xpath expr="//field[@name='phone']" position="after">
+                <field name="x_is_vendor" widget="boolean_toggle"/>
+            </xpath>
+            
+            <!-- Add Vendor Info tab (only visible when checkbox is checked) -->
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="PTT Info">
+                <page string="Vendor Info" invisible="not x_is_vendor">
                     <group>
-                        <field name="x_is_vendor"/>
+                        <group string="Vendor Details">
+                            <field name="x_vendor_service_types"/>
+                            <field name="x_vendor_rating"/>
+                            <field name="x_vendor_preferred"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="x_vendor_notes" widget="text" nolabel="1"/>
+                        </group>
                     </group>
                 </page>
             </xpath>

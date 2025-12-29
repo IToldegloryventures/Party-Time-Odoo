@@ -7,6 +7,8 @@
             <list>
                 <field name="service_type"/>
                 <field name="vendor_id"/>
+                <field name="x_status" widget="badge" decoration-success="x_status == 'completed'" decoration-info="x_status == 'confirmed'" decoration-warning="x_status == 'pending'" decoration-danger="x_status == 'cancelled'"/>
+                <field name="x_confirmed_date"/>
                 <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="notes"/>
             </list>
@@ -18,13 +20,27 @@
         <field name="model">ptt.project.vendor.assignment</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <field name="x_status" widget="statusbar" statusbar_visible="pending,confirmed,completed"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="project_id" invisible="1"/>
                         <field name="service_type"/>
                         <field name="vendor_id"/>
                         <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                        <field name="notes" widget="text"/>
+                    </group>
+                    <group string="Vendor Contact">
+                        <field name="x_contact_person"/>
+                        <field name="x_contact_phone" widget="phone"/>
+                        <field name="x_confirmed_date"/>
+                    </group>
+                    <group string="Event Details">
+                        <field name="x_arrival_time"/>
+                        <field name="x_equipment_notes" widget="text" nolabel="1" placeholder="Equipment, setup requirements, or special instructions..."/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" widget="text" nolabel="1"/>
                     </group>
                 </sheet>
             </form>
