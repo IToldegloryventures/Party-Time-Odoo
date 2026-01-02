@@ -38,6 +38,7 @@ class PttProjectVendorAssignment(models.Model):
         "res.partner",
         string="Vendor",
         domain="[('x_is_vendor', '=', True)]",
+        ondelete="set null",
         help="Actual vendor assigned for this service",
     )
     actual_cost = fields.Monetary(

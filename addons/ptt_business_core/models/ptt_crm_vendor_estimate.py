@@ -34,7 +34,7 @@ class PttCrmVendorEstimate(models.Model):
         string="Service Type",
         required=True,
     )
-    vendor_name = fields.Char(string="Vendor Name (Estimated)", help="Name of vendor we expect to use")
+    x_vendor_name = fields.Char(string="Vendor Name (Estimated)", help="Name of vendor we expect to use")
     estimated_cost = fields.Monetary(
         string="Estimated Cost",
         currency_field="currency_id",

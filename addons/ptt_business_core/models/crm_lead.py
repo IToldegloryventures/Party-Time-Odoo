@@ -402,6 +402,14 @@ class CrmLead(models.Model):
         string="Vendor Cost Estimates",
         help="Estimated vendor costs for this opportunity.",
     )
+    company_currency = fields.Many2one(
+        "res.currency",
+        string="Company Currency",
+        related="company_id.currency_id",
+        store=True,
+        readonly=True,
+        help="Currency of the company",
+    )
     x_estimated_total_vendor_costs = fields.Monetary(
         string="Total Estimated Vendor Costs",
         compute="_compute_pricing_totals",
@@ -427,6 +435,35 @@ class CrmLead(models.Model):
         store=True,
         help="Estimated margin percentage.",
     )
+    
+    # === ACTUAL MARGIN (from related project) ===
+    x_actual_client_total = fields.Monetary(
+        string="Actual Client Total",
+        compute="_compute_actual_margin",
+        currency_field="company_currency",
+        store=True,
+        help="Actual client total from related project (uses accounting data if available, otherwise project fields).",
+    )
+    x_actual_total_vendor_costs = fields.Monetary(
+        string="Actual Total Vendor Costs",
+        compute="_compute_actual_margin",
+        currency_field="company_currency",
+        store=True,
+        help="Actual vendor costs from related project.",
+    )
+    x_actual_margin = fields.Monetary(
+        string="Actual Margin",
+        compute="_compute_actual_margin",
+        currency_field="company_currency",
+        store=True,
+        help="Actual margin from related project (most accurate when project has accounting data).",
+    )
+    x_actual_margin_percent = fields.Float(
+        string="Actual Margin %",
+        compute="_compute_actual_margin",
+        store=True,
+        help="Actual margin percentage from related project (most accurate when project has accounting data).",
+    )
 
     @api.depends("x_vendor_estimate_ids.estimated_cost", "x_estimated_client_total")
     def _compute_pricing_totals(self):
@@ -439,6 +476,81 @@ class CrmLead(models.Model):
                 lead.x_estimated_margin_percent = (lead.x_estimated_margin / lead.x_estimated_client_total) * 100
             else:
                 lead.x_estimated_margin_percent = 0.0
+    
+    @api.depends(
+        "order_ids", 
+        "order_ids.state", 
+        "order_ids.amount_total", 
+        "order_ids.project_id", 
+        "order_ids.project_id.account_id",
+        "order_ids.project_id.x_actual_total_vendor_costs"  # For fallback calculation
+    )
+    def _compute_actual_margin(self):
+        """Compute actual margin from confirmed Sale Orders (contracts) using hybrid approach.
+        
+        Workflow: CRM Lead → Sale Order (Contract) → Project (Execution)
+        Revenue comes from confirmed Sale Orders (the signed contracts).
+        Costs come from vendor bills/invoices linked to those sale orders or their projects.
+        
+        Note: Accounting data (vendor bills via analytic_distribution) dependencies are complex
+        and not included here. The method queries accounting data directly, so it will recalculate
+        when sale orders or projects change, but may not update immediately when bills are posted.
+        """
+        for lead in self:
+            # Get confirmed sale orders (signed contracts) linked to this CRM lead
+            confirmed_orders = lead.order_ids.filtered(lambda so: so.state == 'sale')
+            
+            if not confirmed_orders:
+                # No confirmed contracts yet - clear actual values
+                lead.x_actual_client_total = 0.0
+                lead.x_actual_total_vendor_costs = 0.0
+                lead.x_actual_margin = 0.0
+                lead.x_actual_margin_percent = 0.0
+                continue
+            
+            # REVENUE: Sum of confirmed sale orders (signed contracts)
+            total_revenue = sum(confirmed_orders.mapped("amount_total"))
+            
+            # COSTS: Vendor bills/invoices linked to sale orders or their projects
+            total_costs = 0.0
+            
+            # Get all projects linked to these sale orders
+            projects = confirmed_orders.mapped("project_id").filtered(lambda p: p)
+            analytic_account_ids = projects.mapped("account_id").filtered(lambda a: a).ids
+            
+            if analytic_account_ids:
+                # PRIMARY: Use accounting data (vendor bills via analytic_distribution)
+                vendor_bill_lines = self.env["account.move.line"].search([
+                    ("move_id.move_type", "in", ["in_invoice", "in_refund"]),
+                    ("move_id.state", "=", "posted"),  # Only posted bills
+                    ("analytic_distribution", "in", analytic_account_ids)
+                ])
+                
+                # Get unique vendor bills and sum their totals (avoid double-counting)
+                vendor_bills = vendor_bill_lines.mapped("move_id")
+                for bill in vendor_bills:
+                    if bill.move_type == "in_invoice":
+                        total_costs += bill.amount_total
+                    elif bill.move_type == "in_refund":
+                        total_costs -= bill.amount_total
+                
+                # If no accounting data found, fall back to project fields
+                if total_costs == 0.0:
+                    total_costs = sum(projects.mapped("x_actual_total_vendor_costs"))
+            else:
+                # FALLBACK: Use project fields (no analytic accounts)
+                total_costs = sum(projects.mapped("x_actual_total_vendor_costs"))
+            
+            # Set the computed values
+            lead.x_actual_client_total = total_revenue
+            lead.x_actual_total_vendor_costs = total_costs
+            lead.x_actual_margin = total_revenue - total_costs
+            
+            # Calculate margin percentage
+            if total_revenue > 0:
+                lead.x_actual_margin_percent = ((total_revenue - total_costs) / total_revenue) * 100
+            else:
+                lead.x_actual_margin_percent = 0.0
 
     # Link to related project (if created)
     x_project_id = fields.Many2one(
@@ -446,6 +558,7 @@ class CrmLead(models.Model):
         string="Related Project",
         help="Project created from this opportunity.",
         index=True,
+        ondelete="set null",
     )
     project_count = fields.Integer(
         string="# Projects",

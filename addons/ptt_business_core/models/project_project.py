@@ -10,6 +10,7 @@ class ProjectProject(models.Model):
         string="Source Opportunity",
         help="The CRM opportunity this project was created from.",
         index=True,
+        ondelete="set null",
     )
 
     # === VENDOR ASSIGNMENTS (ACTUAL) ===

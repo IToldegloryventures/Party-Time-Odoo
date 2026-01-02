@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-level Dashboard Menu -->
+    <menuitem id="menu_ptt_dashboard_root"
+              name="Dashboard"
+              sequence="1"
+              action="action_ptt_dashboard"
+              web_icon="ptt_operational_dashboard,static/description/icon.png"/>
+    
+        <!-- Reports > KPIs submenu -->
+        <menuitem id="menu_reports_kpis"
+                  name="KPIs"
+                  parent="base.menu_reporting"
+                  sequence="10"
+                  action="action_ptt_dashboard"/>
+    
+    <!-- Sales Commission Reports (COO Only) -->
+    <menuitem id="menu_sales_commission"
+              name="Sales Commission"
+              parent="base.menu_reporting"
+              sequence="20"
+              action="action_ptt_sales_commission"
+              groups="ptt_operational_dashboard.group_ptt_coo"/>
+</odoo>
+

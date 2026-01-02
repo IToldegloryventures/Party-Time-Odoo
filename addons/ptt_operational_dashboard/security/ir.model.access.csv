@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ptt_dashboard_widget_user,ptt.dashboard.widget.user,model_ptt_dashboard_widget,base.group_user,1,0,0,0
+access_ptt_dashboard_widget_manager,ptt.dashboard.widget.manager,model_ptt_dashboard_widget,sales_team.group_sale_manager,1,1,1,1
+access_ptt_sales_rep_user,ptt.sales.rep.user,model_ptt_sales_rep,base.group_user,1,0,0,0
+access_ptt_sales_rep_manager,ptt.sales.rep.manager,model_ptt_sales_rep,sales_team.group_sale_manager,1,1,1,1
+access_ptt_sales_commission_coo,ptt.sales.commission.coo,model_ptt_sales_commission,ptt_operational_dashboard.group_ptt_coo,1,1,1,1
+
