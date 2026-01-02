@@ -5,7 +5,7 @@
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["contacts", "crm", "project", "sale_crm", "account"],
+    "depends": ["contacts", "crm", "project", "sale_crm", "sale_project", "account", "analytic"],
     "data": [
         "security/ir.model.access.csv",
         "data/cleanup_orphaned_fields.xml",

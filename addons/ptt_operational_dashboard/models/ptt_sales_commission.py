@@ -223,7 +223,7 @@ class PttSalesCommission(models.Model):
                 vendor_bill_lines = self.env["account.move.line"].search([
                     ("move_id.move_type", "in", ["in_invoice", "in_refund"]),
                     ("move_id.state", "=", "posted"),
-                    ("analytic_distribution", "in", [str(project.account_id.id)])
+                    ("analytic_distribution", "in", [project.account_id.id])
                 ])
                 vendor_bills = vendor_bill_lines.mapped("move_id")
                 for bill in vendor_bills:
@@ -241,7 +241,7 @@ class PttSalesCommission(models.Model):
             vendor_bill_lines = self.env["account.move.line"].search([
                 ("move_id.move_type", "in", ["in_invoice", "in_refund"]),
                 ("move_id.state", "=", "posted"),
-                ("analytic_distribution", "in", [str(project.account_id.id)]),
+                ("analytic_distribution", "in", [project.account_id.id]),
                 ("move_id.date", ">=", month_start),
                 ("move_id.date", "<=", month_end)
             ])

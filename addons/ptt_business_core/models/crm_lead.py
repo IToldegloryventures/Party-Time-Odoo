@@ -480,10 +480,10 @@ class CrmLead(models.Model):
     @api.depends(
         "order_ids", 
         "order_ids.state", 
-        "order_ids.amount_total", 
-        "order_ids.project_id", 
-        "order_ids.project_id.account_id",
-        "order_ids.project_id.x_actual_total_vendor_costs"  # For fallback calculation
+        "order_ids.amount_total",
+        # Note: project_id dependencies removed because project_id field on sale.order
+        # comes from sale_project module which may not be installed. The compute method
+        # handles project_id access dynamically via .mapped("project_id").
     )
     def _compute_actual_margin(self):
         """Compute actual margin from confirmed Sale Orders (contracts) using hybrid approach.
