@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Search View (defined first so action can reference it) -->
+    <record id="ptt_sales_commission_view_search" model="ir.ui.view">
+        <field name="name">ptt.sales.commission.search</field>
+        <field name="model">ptt.sales.commission</field>
+        <field name="arch" type="xml">
+            <search string="Sales Commission Reports">
+                <field name="x_sales_rep_name" string="Sales Rep"/>
+                <field name="report_month" string="Month"/>
+                
+                <separator/>
+                <filter name="filter_month" string="Month" date="report_month" default_period="month"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Sales Rep" name="group_by_rep" context="{'group_by': 'sales_rep_id'}"/>
+                    <filter string="Month" name="group_by_month" context="{'group_by': 'report_month:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action (defined after search view so it can reference it) -->
+    <record id="action_ptt_sales_commission" model="ir.actions.act_window">
+        <field name="name">Sales Commission Reports</field>
+        <field name="res_model">ptt.sales.commission</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="search_view_id" ref="ptt_sales_commission_view_search"/>
+        <field name="context">{'search_default_current_month': 1, 'search_default_group_by_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Sales Commission Reports
+            </p>
+            <p>
+                Commission reports show revenue, margins, and calculated commission for each sales rep by month.
+                Reports default to the current month but can be filtered to any month.
+                Use the Pivot view for spreadsheet-like analysis and Excel export.
+            </p>
+        </field>
+    </record>
+
     <!-- Tree/List View -->
     <record id="ptt_sales_commission_view_tree" model="ir.ui.view">
         <field name="name">ptt.sales.commission.tree</field>
@@ -67,45 +106,6 @@
                     </notebook>
                 </sheet>
             </form>
-        </field>
-    </record>
-
-    <!-- Search View -->
-    <record id="ptt_sales_commission_view_search" model="ir.ui.view">
-        <field name="name">ptt.sales.commission.search</field>
-        <field name="model">ptt.sales.commission</field>
-        <field name="arch" type="xml">
-            <search string="Sales Commission Reports">
-                <field name="x_sales_rep_name" string="Sales Rep"/>
-                <field name="report_month" string="Month"/>
-                
-                <separator/>
-                <filter name="filter_month" string="Month" date="report_month" default_period="month"/>
-                
-                <group expand="0" string="Group By">
-                    <filter string="Sales Rep" name="group_by_rep" context="{'group_by': 'sales_rep_id'}"/>
-                    <filter string="Month" name="group_by_month" context="{'group_by': 'report_month:month'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <!-- Action -->
-    <record id="action_ptt_sales_commission" model="ir.actions.act_window">
-        <field name="name">Sales Commission Reports</field>
-        <field name="res_model">ptt.sales.commission</field>
-        <field name="view_mode">list,pivot,form</field>
-        <field name="search_view_id" ref="ptt_sales_commission_view_search"/>
-        <field name="context">{'search_default_current_month': 1, 'search_default_group_by_month': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create Sales Commission Reports
-            </p>
-            <p>
-                Commission reports show revenue, margins, and calculated commission for each sales rep by month.
-                Reports default to the current month but can be filtered to any month.
-                Use the Pivot view for spreadsheet-like analysis and Excel export.
-            </p>
         </field>
     </record>
 
