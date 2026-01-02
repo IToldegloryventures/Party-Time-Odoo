@@ -3,7 +3,6 @@
     <!-- COO Security Group -->
     <record id="group_ptt_coo" model="res.groups">
         <field name="name">COO: Sales Commission Access</field>
-        <field name="category_id" ref="base.module_category_sales"/>
         <field name="comment">Access to Sales Commission Reports - Chief Operating Officer only.</field>
     </record>
 </odoo>
