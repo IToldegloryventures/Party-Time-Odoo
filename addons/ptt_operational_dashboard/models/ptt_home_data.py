@@ -24,19 +24,32 @@ class PttHomeData(models.AbstractModel):
 
     @api.model
     def get_my_work_tasks(self):
-        """Get tasks assigned to current user, categorized by due date.
+        """Get EVENT tasks assigned to current user, categorized by due date.
         
-        Returns tasks from project.task with action metadata for deep linking.
+        Only returns tasks from projects that are linked to CRM leads (event projects).
+        These are event planning tasks like vendor coordination, client follow-up, etc.
+        
         Categories: today, overdue, upcoming, unscheduled
         """
         user = self.env.user
         today = fields.Date.context_today(self)
         
-        # Get all open tasks assigned to user
         Task = self.env["project.task"]
+        Project = self.env["project.project"]
+        
+        # First, get all projects linked to CRM leads (event projects)
+        if "x_crm_lead_id" in Project._fields:
+            event_project_ids = Project.search([
+                ("x_crm_lead_id", "!=", False)
+            ]).ids
+        else:
+            event_project_ids = []
+        
+        # Get tasks from event projects assigned to user
         domain = [
             ("user_ids", "in", [user.id]),
             ("stage_id.fold", "=", False),  # Not in folded/done stages
+            ("project_id", "in", event_project_ids),  # Only from event projects
         ]
         tasks = Task.search(domain, order="date_deadline asc, priority desc, id")
         
@@ -98,39 +111,41 @@ class PttHomeData(models.AbstractModel):
     
     @api.model
     def get_assigned_tasks(self):
-        """Get all tasks assigned to current user with full hierarchy info.
+        """Get ONE-OFF/MISC tasks assigned to current user.
         
-        Returns tasks organized by due date with links to parent project and CRM lead.
+        Only returns tasks that are NOT from event projects (not linked to CRM leads).
+        These are standalone tasks, internal tasks, or tasks from non-event projects.
         """
         user = self.env.user
         today = fields.Date.context_today(self)
         
         Task = self.env["project.task"]
+        Project = self.env["project.project"]
+        
+        # Get projects that are NOT linked to CRM leads (non-event projects)
+        if "x_crm_lead_id" in Project._fields:
+            event_project_ids = Project.search([
+                ("x_crm_lead_id", "!=", False)
+            ]).ids
+        else:
+            event_project_ids = []
+        
+        # Get tasks NOT from event projects (one-off/misc tasks)
         domain = [
             ("user_ids", "in", [user.id]),
             ("stage_id.fold", "=", False),
         ]
+        
+        # Exclude event project tasks - include tasks with no project or non-event projects
+        if event_project_ids:
+            domain.append("|")
+            domain.append(("project_id", "=", False))
+            domain.append(("project_id", "not in", event_project_ids))
+        
         tasks = Task.search(domain, order="date_deadline asc, project_id, id")
         
         result = []
         for task in tasks:
-            # Get CRM lead if project has one
-            crm_lead = None
-            crm_lead_action = None
-            if task.project_id and hasattr(task.project_id, 'x_crm_lead_id') and task.project_id.x_crm_lead_id:
-                lead = task.project_id.x_crm_lead_id
-                crm_lead = {
-                    "id": lead.id,
-                    "name": lead.name,
-                }
-                crm_lead_action = {
-                    "type": "ir.actions.act_window",
-                    "res_model": "crm.lead",
-                    "res_id": lead.id,
-                    "views": [[False, "form"]],
-                    "target": "current",
-                }
-            
             task_data = {
                 "id": task.id,
                 "name": task.name,
@@ -140,8 +155,6 @@ class PttHomeData(models.AbstractModel):
                 "stage_name": task.stage_id.name if task.stage_id else "",
                 "project_id": task.project_id.id if task.project_id else False,
                 "project_name": task.project_id.name if task.project_id else "",
-                "crm_lead": crm_lead,
-                "crm_lead_action": crm_lead_action,
                 # Action metadata
                 "action": {
                     "type": "ir.actions.act_window",
@@ -213,13 +226,14 @@ class PttHomeData(models.AbstractModel):
         return result
     
     @api.model
-    def get_agenda_events(self, days=30):
+    def get_agenda_events(self, days=14):
         """Get upcoming events from CRM leads for the current user's agenda.
         
         Pulls from crm.lead where x_event_date is set and assigned to user.
-        Shows events in the next N days (default 30).
+        Shows events in the next N days (default 14).
         
-        This shows events at ALL stages - from new leads through booked projects.
+        This shows the USER'S assigned events at ALL stages.
+        For company-wide view, use the Event Calendar tab.
         """
         user = self.env.user
         today = fields.Date.context_today(self)

@@ -4,12 +4,12 @@ import { Component } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 /**
- * AssignedTasks Component
+ * AssignedTasks Component (renamed to "Other Tasks")
  * 
- * Displays all tasks assigned to the current user with:
- * - Deep links to task form
- * - Deep links to parent project
- * - Deep links to related CRM lead
+ * Displays one-off/miscellaneous tasks that are NOT from event projects.
+ * These are standalone tasks, internal tasks, or tasks from non-event projects.
+ * 
+ * Event project tasks are shown in the "Event Tasks" (My Work) section.
  */
 export class AssignedTasks extends Component {
     static template = "ptt_operational_dashboard.AssignedTasks";
@@ -23,7 +23,7 @@ export class AssignedTasks extends Component {
 
     formatDate(dateStr) {
         if (!dateStr) return "No due date";
-        const date = new Date(dateStr);
+        const date = new Date(dateStr + "T00:00:00");
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
@@ -51,17 +51,10 @@ export class AssignedTasks extends Component {
         }
     }
 
-    onLeadClick(ev, task) {
-        ev.stopPropagation();
-        if (task.crm_lead_action) {
-            this.action.doAction(task.crm_lead_action);
-        }
-    }
-
     onViewAllClick() {
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: "My Tasks",
+            name: "Other Tasks",
             res_model: "project.task",
             views: [[false, "list"], [false, "kanban"], [false, "form"]],
             domain: [["stage_id.fold", "=", false]],
@@ -70,4 +63,3 @@ export class AssignedTasks extends Component {
         });
     }
 }
-

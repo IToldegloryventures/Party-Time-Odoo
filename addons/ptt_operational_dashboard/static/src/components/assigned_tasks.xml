@@ -3,7 +3,7 @@
     <t t-name="ptt_operational_dashboard.AssignedTasks">
         <div class="ptt-section">
             <div class="ptt-section-header">
-                <h2><i class="fa fa-user-circle"/> Assigned to Me</h2>
+                <h2><i class="fa fa-clipboard"/> Other Tasks</h2>
                 <a class="ptt-section-action" href="#" t-on-click.prevent="onViewAllClick">
                     View All in Project App →
                 </a>
@@ -13,7 +13,8 @@
                 <t t-if="props.tasks.length === 0">
                     <div class="ptt-empty-state">
                         <i class="fa fa-check-circle"/>
-                        <p>No tasks assigned to you</p>
+                        <p>No other tasks</p>
+                        <small class="text-muted">One-off tasks and non-event project tasks appear here</small>
                     </div>
                 </t>
                 <t t-else="">
@@ -26,7 +27,7 @@
                                     <span t-if="task.is_overdue" class="badge bg-danger ms-2">Overdue</span>
                                 </div>
                                 <div class="ptt-task-meta">
-                                    <!-- Project Link -->
+                                    <!-- Project Link (if any) -->
                                     <span 
                                         t-if="task.project_name" 
                                         class="ptt-task-project"
@@ -34,16 +35,6 @@
                                         title="Open Project">
                                         <i class="fa fa-folder-o me-1"/>
                                         <t t-esc="task.project_name"/>
-                                    </span>
-                                    
-                                    <!-- CRM Lead Link -->
-                                    <span 
-                                        t-if="task.crm_lead" 
-                                        class="ptt-task-project"
-                                        t-on-click="(ev) => this.onLeadClick(ev, task)"
-                                        title="Open CRM Lead">
-                                        <i class="fa fa-bullseye me-1"/>
-                                        <t t-esc="task.crm_lead.name"/>
                                     </span>
                                     
                                     <!-- Due Date -->

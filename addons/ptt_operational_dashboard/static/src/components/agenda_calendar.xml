@@ -14,7 +14,7 @@
                     <t t-if="groupedEvents.length === 0">
                         <div class="ptt-empty-state">
                             <i class="fa fa-calendar-o"/>
-                            <p>No upcoming events in the next 30 days</p>
+                            <p>No upcoming events in the next 14 days</p>
                             <small class="text-muted">Events will appear here when you have CRM leads with event dates assigned to you</small>
                         </div>
                     </t>
