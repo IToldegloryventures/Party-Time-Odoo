@@ -58,9 +58,7 @@
                 <filter name="filter_not_done" string="Active" domain="[('is_done', '=', False)]"/>
                 <filter name="filter_done" string="Completed" domain="[('is_done', '=', True)]"/>
                 <separator/>
-                <filter name="filter_today" string="Today" domain="[('due_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
-                <filter name="filter_overdue" string="Overdue" domain="[('due_date', '&lt;', context_today().strftime('%Y-%m-%d')), ('is_done', '=', False)]"/>
-                <filter name="filter_upcoming" string="Upcoming" domain="[('due_date', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_has_date" string="Has Due Date" domain="[('due_date', '!=', False)]"/>
                 <filter name="filter_unscheduled" string="Unscheduled" domain="[('due_date', '=', False)]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_priority" string="Priority" context="{'group_by': 'priority'}"/>
