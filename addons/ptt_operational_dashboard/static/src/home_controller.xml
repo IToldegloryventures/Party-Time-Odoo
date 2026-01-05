@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.HomeController">
+        <div class="ptt-home-hub">
+            <!-- Top Navigation -->
+            <HomeNavigation 
+                activeTab="state.activeTab"
+                onTabChange.bind="onTabChange"
+                onRefresh.bind="onRefresh"
+                refreshing="state.refreshing"/>
+            
+            <!-- Main Content -->
+            <div class="ptt-home-content">
+                <!-- Error State -->
+                <t t-if="state.error">
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fa fa-exclamation-circle fa-2x me-3"/>
+                        <div class="flex-grow-1">
+                            <strong>Error</strong>
+                            <div t-esc="state.error"/>
+                        </div>
+                        <button class="btn btn-outline-danger" t-on-click="onRefresh">
+                            <i class="fa fa-refresh me-1"/> Retry
+                        </button>
+                    </div>
+                </t>
+                
+                <!-- Loading State -->
+                <t t-elif="state.loading">
+                    <div class="ptt-loading" style="min-height: 400px;">
+                        <div class="ptt-spinner"/>
+                    </div>
+                </t>
+                
+                <!-- Tab Content -->
+                <t t-else="">
+                    <!-- HOME TAB -->
+                    <t t-if="state.activeTab === 'home'">
+                        <div class="row">
+                            <!-- Left Column: My Work + Assigned Tasks -->
+                            <div class="col-lg-8">
+                                <MyWorkSection tasks="myWorkTasks"/>
+                                
+                                <AssignedTasks tasks="assignedTasks"/>
+                            </div>
+                            
+                            <!-- Right Column: Agenda + Personal To-Do + Comments -->
+                            <div class="col-lg-4">
+                                <AgendaCalendar events="agendaEvents"/>
+                                
+                                <PersonalTodo 
+                                    todos="personalTodos"
+                                    onRefresh.bind="loadHomeData"/>
+                                
+                                <AssignedComments comments="assignedComments"/>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <!-- SALES DASHBOARD TAB -->
+                    <t t-if="state.activeTab === 'sales'">
+                        <SalesDashboard/>
+                    </t>
+                    
+                    <!-- COMMISSION TAB -->
+                    <t t-if="state.activeTab === 'commission'">
+                        <div class="ptt-card">
+                            <div class="ptt-section-header">
+                                <h2><i class="fa fa-dollar"/> Commission Dashboard</h2>
+                            </div>
+                            <p class="text-muted">
+                                Commission tracking and reports. 
+                                <a href="#" t-on-click.prevent="openCommissionReports">
+                                    View Commission Reports →
+                                </a>
+                            </p>
+                        </div>
+                    </t>
+                    
+                    <!-- EVENT CALENDAR TAB -->
+                    <t t-if="state.activeTab === 'calendar'">
+                        <EventCalendarFull/>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
+

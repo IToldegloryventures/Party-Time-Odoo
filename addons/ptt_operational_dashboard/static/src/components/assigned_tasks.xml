@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.AssignedTasks">
+        <div class="ptt-section">
+            <div class="ptt-section-header">
+                <h2><i class="fa fa-user-circle"/> Assigned to Me</h2>
+                <a class="ptt-section-action" href="#" t-on-click.prevent="onViewAllClick">
+                    View All in Project App →
+                </a>
+            </div>
+            
+            <div class="ptt-card">
+                <t t-if="props.tasks.length === 0">
+                    <div class="ptt-empty-state">
+                        <i class="fa fa-check-circle"/>
+                        <p>No tasks assigned to you</p>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-foreach="props.tasks.slice(0, 10)" t-as="task" t-key="task.id">
+                        <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                            <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                            <div class="ptt-task-content">
+                                <div class="ptt-task-name">
+                                    <t t-esc="task.name"/>
+                                    <span t-if="task.is_overdue" class="badge bg-danger ms-2">Overdue</span>
+                                </div>
+                                <div class="ptt-task-meta">
+                                    <!-- Project Link -->
+                                    <span 
+                                        t-if="task.project_name" 
+                                        class="ptt-task-project"
+                                        t-on-click="(ev) => this.onProjectClick(ev, task)"
+                                        title="Open Project">
+                                        <i class="fa fa-folder-o me-1"/>
+                                        <t t-esc="task.project_name"/>
+                                    </span>
+                                    
+                                    <!-- CRM Lead Link -->
+                                    <span 
+                                        t-if="task.crm_lead" 
+                                        class="ptt-task-project"
+                                        t-on-click="(ev) => this.onLeadClick(ev, task)"
+                                        title="Open CRM Lead">
+                                        <i class="fa fa-bullseye me-1"/>
+                                        <t t-esc="task.crm_lead.name"/>
+                                    </span>
+                                    
+                                    <!-- Due Date -->
+                                    <span 
+                                        t-att-class="'ptt-task-date' + (task.is_overdue ? ' overdue' : '')">
+                                        <i class="fa fa-clock-o me-1"/>
+                                        <t t-esc="formatDate(task.date_deadline)"/>
+                                    </span>
+                                    
+                                    <!-- Stage -->
+                                    <span t-if="task.stage_name" class="text-muted">
+                                        <i class="fa fa-flag-o me-1"/>
+                                        <t t-esc="task.stage_name"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="ptt-task-action">
+                                <button title="Open Task in Project App">
+                                    <i class="fa fa-external-link"/>
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <t t-if="props.tasks.length > 10">
+                        <div class="text-center mt-3">
+                            <a class="ptt-section-action" href="#" t-on-click.prevent="onViewAllClick">
+                                View all <t t-esc="props.tasks.length"/> tasks →
+                            </a>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
+

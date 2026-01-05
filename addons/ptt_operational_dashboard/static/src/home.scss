@@ -1,0 +1,780 @@
+/**
+ * PTT Home Dashboard Styles
+ * 
+ * Modern, clean design with Party Time Texas branding.
+ * Primary: #CC0000 (PTT Red)
+ * Secondary: #2F2F2F (Dark Gray)
+ */
+
+// Variables
+$ptt-red: #CC0000;
+$ptt-dark: #2F2F2F;
+$ptt-light: #F8F9FA;
+$ptt-border: #DEE2E6;
+
+// Status colors for calendar
+$status-lead: #87CEEB;
+$status-awaiting: #FFD700;
+$status-booked: #28A745;
+$status-planning: #FFA500;
+$status-completed: #6C757D;
+
+// Home Container
+.ptt-home-hub {
+    background-color: $ptt-light;
+    min-height: 100vh;
+    padding: 0;
+    
+    // Top Navigation
+    .ptt-top-nav {
+        background: linear-gradient(135deg, $ptt-dark 0%, darken($ptt-dark, 10%) 100%);
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        
+        .ptt-nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            
+            .ptt-logo {
+                width: 40px;
+                height: 40px;
+                background: $ptt-red;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+                font-size: 1.25rem;
+            }
+            
+            .ptt-title {
+                color: white;
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin: 0;
+            }
+        }
+        
+        .ptt-nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            
+            .ptt-nav-tab {
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                color: rgba(255, 255, 255, 0.7);
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    color: white;
+                    background: rgba(255, 255, 255, 0.1);
+                }
+                
+                &.active {
+                    color: white;
+                    background: $ptt-red;
+                }
+                
+                i {
+                    margin-right: 0.5rem;
+                }
+            }
+        }
+        
+        .ptt-nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            
+            .ptt-user-name {
+                font-size: 0.9rem;
+            }
+            
+            .ptt-refresh-btn {
+                padding: 0.5rem;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                color: white;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                }
+                
+                &.spinning i {
+                    animation: spin 1s linear infinite;
+                }
+            }
+        }
+    }
+    
+    // Main Content Area
+    .ptt-home-content {
+        padding: 1.5rem;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    // Section Headers
+    .ptt-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: $ptt-dark;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            
+            i {
+                color: $ptt-red;
+            }
+        }
+        
+        .ptt-section-action {
+            color: $ptt-red;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+    
+    // Cards
+    .ptt-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: box-shadow 0.2s ease;
+        
+        &:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        &.clickable {
+            cursor: pointer;
+        }
+    }
+    
+    // My Work Categories
+    .ptt-my-work {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+        
+        .ptt-category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            
+            .ptt-category-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 0.75rem;
+                
+                .ptt-category-title {
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    color: $ptt-dark;
+                }
+                
+                .ptt-category-count {
+                    background: $ptt-light;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 12px;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                }
+            }
+            
+            &.overdue .ptt-category-count {
+                background: #FEE2E2;
+                color: #DC2626;
+            }
+            
+            &.today .ptt-category-count {
+                background: #DBEAFE;
+                color: #2563EB;
+            }
+            
+            &.upcoming .ptt-category-count {
+                background: #D1FAE5;
+                color: #059669;
+            }
+            
+            &.unscheduled .ptt-category-count {
+                background: #F3F4F6;
+                color: #6B7280;
+            }
+        }
+    }
+    
+    // Task Items
+    .ptt-task-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: $ptt-light;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: darken($ptt-light, 3%);
+        }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ptt-task-priority {
+            width: 4px;
+            height: 100%;
+            min-height: 24px;
+            border-radius: 2px;
+            margin-right: 0.75rem;
+            
+            &.priority-3 { background: #DC2626; }
+            &.priority-2 { background: #F59E0B; }
+            &.priority-1 { background: #3B82F6; }
+            &.priority-0 { background: #9CA3AF; }
+        }
+        
+        .ptt-task-content {
+            flex: 1;
+            min-width: 0;
+            
+            .ptt-task-name {
+                font-weight: 500;
+                color: $ptt-dark;
+                margin-bottom: 0.25rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .ptt-task-meta {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                font-size: 0.8rem;
+                color: #6B7280;
+                
+                .ptt-task-project {
+                    color: $ptt-red;
+                    cursor: pointer;
+                    
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+                
+                .ptt-task-date {
+                    &.overdue {
+                        color: #DC2626;
+                    }
+                }
+            }
+        }
+        
+        .ptt-task-action {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            
+            button {
+                background: none;
+                border: none;
+                color: #9CA3AF;
+                cursor: pointer;
+                padding: 0.25rem;
+                
+                &:hover {
+                    color: $ptt-red;
+                }
+            }
+        }
+        
+        &:hover .ptt-task-action {
+            opacity: 1;
+        }
+    }
+    
+    // Personal To-Do
+    .ptt-todo-list {
+        .ptt-todo-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: $ptt-light;
+            
+            .ptt-todo-checkbox {
+                width: 20px;
+                height: 20px;
+                border: 2px solid $ptt-border;
+                border-radius: 50%;
+                margin-right: 0.75rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    border-color: $ptt-red;
+                }
+                
+                &.done {
+                    background: $ptt-red;
+                    border-color: $ptt-red;
+                    color: white;
+                }
+            }
+            
+            .ptt-todo-name {
+                flex: 1;
+                
+                &.done {
+                    text-decoration: line-through;
+                    color: #9CA3AF;
+                }
+            }
+            
+            .ptt-todo-delete {
+                opacity: 0;
+                background: none;
+                border: none;
+                color: #9CA3AF;
+                cursor: pointer;
+                
+                &:hover {
+                    color: #DC2626;
+                }
+            }
+            
+            &:hover .ptt-todo-delete {
+                opacity: 1;
+            }
+        }
+        
+        .ptt-todo-add {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            
+            input {
+                flex: 1;
+                padding: 0.5rem 0.75rem;
+                border: 1px solid $ptt-border;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                
+                &:focus {
+                    outline: none;
+                    border-color: $ptt-red;
+                }
+            }
+            
+            button {
+                padding: 0.5rem 1rem;
+                background: $ptt-red;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 500;
+                
+                &:hover {
+                    background: darken($ptt-red, 10%);
+                }
+            }
+        }
+    }
+    
+    // Comments
+    .ptt-comment-item {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: $ptt-light;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        
+        &:hover {
+            background: darken($ptt-light, 3%);
+        }
+        
+        .ptt-comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: $ptt-dark;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .ptt-comment-content {
+            flex: 1;
+            min-width: 0;
+            
+            .ptt-comment-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+                
+                .ptt-comment-author {
+                    font-weight: 600;
+                    color: $ptt-dark;
+                }
+                
+                .ptt-comment-record {
+                    font-size: 0.8rem;
+                    color: $ptt-red;
+                }
+                
+                .ptt-comment-date {
+                    font-size: 0.8rem;
+                    color: #9CA3AF;
+                    margin-left: auto;
+                }
+            }
+            
+            .ptt-comment-body {
+                font-size: 0.9rem;
+                color: #4B5563;
+                
+                // Strip HTML but keep basic formatting
+                p { margin: 0; }
+            }
+        }
+    }
+    
+    // Agenda Calendar
+    .ptt-agenda {
+        .ptt-agenda-day {
+            margin-bottom: 1rem;
+            
+            .ptt-agenda-date {
+                font-weight: 600;
+                color: $ptt-dark;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+                
+                &.today {
+                    color: $ptt-red;
+                }
+            }
+            
+            .ptt-agenda-events {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+        
+        .ptt-agenda-event {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: white;
+            border-left: 4px solid $status-booked;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            
+            &:hover {
+                transform: translateX(4px);
+            }
+            
+            &.status-lead { border-left-color: $status-lead; }
+            &.status-awaiting { border-left-color: $status-awaiting; }
+            &.status-booked { border-left-color: $status-booked; }
+            &.status-planning { border-left-color: $status-planning; }
+            &.status-completed { border-left-color: $status-completed; }
+            
+            .ptt-event-name {
+                font-weight: 500;
+                color: $ptt-dark;
+                flex: 1;
+            }
+            
+            .ptt-event-client {
+                font-size: 0.85rem;
+                color: #6B7280;
+            }
+        }
+    }
+    
+    // Full Calendar
+    .ptt-full-calendar {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        
+        .ptt-calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            
+            .ptt-calendar-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: $ptt-dark;
+            }
+            
+            .ptt-calendar-nav {
+                display: flex;
+                gap: 0.5rem;
+                
+                button {
+                    padding: 0.5rem 0.75rem;
+                    border: 1px solid $ptt-border;
+                    background: white;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    
+                    &:hover {
+                        background: $ptt-light;
+                    }
+                }
+            }
+        }
+        
+        .ptt-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: $ptt-border;
+            border: 1px solid $ptt-border;
+            border-radius: 8px;
+            overflow: hidden;
+            
+            .ptt-calendar-day-header {
+                background: $ptt-light;
+                padding: 0.75rem;
+                text-align: center;
+                font-weight: 600;
+                font-size: 0.8rem;
+                color: #6B7280;
+            }
+            
+            .ptt-calendar-day {
+                background: white;
+                min-height: 100px;
+                padding: 0.5rem;
+                
+                &.other-month {
+                    background: $ptt-light;
+                    
+                    .ptt-day-number {
+                        color: #9CA3AF;
+                    }
+                }
+                
+                &.today {
+                    background: #FEF3F2;
+                    
+                    .ptt-day-number {
+                        background: $ptt-red;
+                        color: white;
+                        border-radius: 50%;
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+                
+                .ptt-day-number {
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                    margin-bottom: 0.25rem;
+                }
+                
+                .ptt-day-events {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                }
+                
+                .ptt-day-event {
+                    font-size: 0.75rem;
+                    padding: 2px 4px;
+                    border-radius: 3px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    cursor: pointer;
+                    color: white;
+                    
+                    &:hover {
+                        filter: brightness(1.1);
+                    }
+                }
+            }
+        }
+        
+        .ptt-calendar-legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid $ptt-border;
+            
+            .ptt-legend-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.85rem;
+                color: #6B7280;
+                
+                .ptt-legend-color {
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 3px;
+                }
+            }
+        }
+    }
+    
+    // Sales Dashboard
+    .ptt-sales-dashboard {
+        .ptt-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .ptt-kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+                transform: translateY(-2px);
+            }
+            
+            .ptt-kpi-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1rem;
+                font-size: 1.25rem;
+                
+                &.leads { background: #DBEAFE; color: #2563EB; }
+                &.quotes { background: #FEF3C7; color: #D97706; }
+                &.outstanding { background: #FEE2E2; color: #DC2626; }
+            }
+            
+            .ptt-kpi-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: $ptt-dark;
+                margin-bottom: 0.25rem;
+            }
+            
+            .ptt-kpi-label {
+                font-size: 0.9rem;
+                color: #6B7280;
+            }
+        }
+    }
+    
+    // Empty States
+    .ptt-empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #9CA3AF;
+        
+        i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+    }
+    
+    // Loading States
+    .ptt-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        
+        .ptt-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid $ptt-light;
+            border-top-color: $ptt-red;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.AgendaCalendar">
+        <div class="ptt-section">
+            <div class="ptt-section-header">
+                <h2><i class="fa fa-calendar"/> Agenda</h2>
+                <a class="ptt-section-action" href="#" t-on-click.prevent="onViewAllClick">
+                    View All Events →
+                </a>
+            </div>
+            
+            <div class="ptt-card">
+                <div class="ptt-agenda">
+                    <t t-if="groupedEvents.length === 0">
+                        <div class="ptt-empty-state">
+                            <i class="fa fa-calendar-o"/>
+                            <p>No upcoming events</p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <t t-foreach="groupedEvents" t-as="day" t-key="day.date">
+                            <div class="ptt-agenda-day">
+                                <div t-att-class="'ptt-agenda-date' + (day.isToday ? ' today' : '')">
+                                    <t t-esc="day.label"/>
+                                </div>
+                                <div class="ptt-agenda-events">
+                                    <t t-foreach="day.events" t-as="event" t-key="event.id">
+                                        <div 
+                                            t-att-class="'ptt-agenda-event ' + getStatusClass(event)"
+                                            t-on-click="() => this.onEventClick(event)">
+                                            <span class="ptt-event-name" t-esc="event.name"/>
+                                            <span t-if="event.partner_name" class="ptt-event-client">
+                                                <t t-esc="event.partner_name"/>
+                                            </span>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
+

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.SalesDashboard">
+        <div class="ptt-sales-dashboard">
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="ptt-loading">
+                    <div class="ptt-spinner"/>
+                </div>
+            </t>
+            
+            <t t-else="">
+                <!-- KPI Cards -->
+                <div class="ptt-kpi-grid">
+                    <!-- Leads -->
+                    <div class="ptt-kpi-card" t-on-click="onLeadsClick">
+                        <div class="ptt-kpi-icon leads">
+                            <i class="fa fa-user-plus"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.kpis?.leads_count || 0"/>
+                        <div class="ptt-kpi-label">Leads to Contact</div>
+                    </div>
+                    
+                    <!-- Quotes -->
+                    <div class="ptt-kpi-card" t-on-click="onQuotesClick">
+                        <div class="ptt-kpi-icon quotes">
+                            <i class="fa fa-file-text"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.kpis?.quotes_count || 0"/>
+                        <div class="ptt-kpi-label">Quotes Pending</div>
+                    </div>
+                    
+                    <!-- Outstanding -->
+                    <div class="ptt-kpi-card" t-on-click="onOutstandingClick">
+                        <div class="ptt-kpi-icon outstanding">
+                            <i class="fa fa-money"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.kpis?.outstanding_amount)"/>
+                        <div class="ptt-kpi-label">Outstanding Payments</div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="ptt-section-header">
+                    <h2><i class="fa fa-bolt"/> Quick Actions</h2>
+                </div>
+                <div class="ptt-card mb-4">
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-primary" t-on-click="onNewLeadClick">
+                            <i class="fa fa-plus me-1"/> New Lead
+                        </button>
+                        <button class="btn btn-success" t-on-click="onNewQuoteClick">
+                            <i class="fa fa-file-text-o me-1"/> New Quote
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recent Quotes -->
+                <div class="ptt-section-header">
+                    <h2><i class="fa fa-file-text-o"/> Recent Quotes</h2>
+                    <a class="ptt-section-action" href="#" t-on-click.prevent="onQuotesClick">
+                        View All →
+                    </a>
+                </div>
+                <div class="ptt-card">
+                    <t t-if="!state.kpis?.quotes || state.kpis.quotes.length === 0">
+                        <div class="ptt-empty-state">
+                            <i class="fa fa-file-text-o"/>
+                            <p>No pending quotes</p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Quote</th>
+                                    <th>Customer</th>
+                                    <th class="text-end">Amount</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.kpis.quotes" t-as="quote" t-key="quote.id">
+                                    <tr class="cursor-pointer" t-on-click="() => this.onQuoteClick(quote)">
+                                        <td t-esc="quote.name"/>
+                                        <td t-esc="quote.partner_name"/>
+                                        <td class="text-end" t-esc="formatCurrency(quote.amount_total)"/>
+                                        <td class="text-end">
+                                            <i class="fa fa-external-link text-muted"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
+

@@ -1,46 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Minimal Dashboard Template - Core Look and Feel Only -->
-    <template id="ptt_operational_dashboard.Dashboard" name="PTT Operational Dashboard">
-        <Layout display="display" className="'o_dashboard h-100'">
-            <div class="ptt_operational_dashboard container-fluid">
-                <!-- Header Row -->
-                <div class="row mb-4 align-items-center">
-                    <div class="col-12">
-                        <h1 class="ptt_dashboard_title mb-0">Party Time Texas - Operational Dashboard</h1>
-                        <p class="text-muted">Welcome to your operational dashboard</p>
-                    </div>
-                </div>
-                
-                <!-- Placeholder Content -->
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card p-3">
-                            <h5>KPI Placeholder 1</h5>
-                            <p class="text-muted">Coming soon...</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card p-3">
-                            <h5>KPI Placeholder 2</h5>
-                            <p class="text-muted">Coming soon...</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card p-3">
-                            <h5>KPI Placeholder 3</h5>
-                            <p class="text-muted">Coming soon...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Layout>
-    </template>
-    
-    <!-- Client Action -->
+    <!-- Legacy Dashboard Action (redirects to Home Hub) -->
     <record id="action_ptt_dashboard" model="ir.actions.client">
         <field name="name">PTT Dashboard</field>
-        <field name="tag">ptt_operational_dashboard</field>
+        <field name="tag">ptt_home_hub</field>
         <field name="target">fullscreen</field>
     </record>
 </odoo>

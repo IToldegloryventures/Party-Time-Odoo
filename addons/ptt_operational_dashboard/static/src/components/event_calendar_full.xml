@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.EventCalendarFull">
+        <div class="ptt-full-calendar">
+            <!-- Calendar Header -->
+            <div class="ptt-calendar-header">
+                <div class="ptt-calendar-title">
+                    <t t-esc="currentMonthYear"/>
+                </div>
+                <div class="ptt-calendar-nav">
+                    <button t-on-click="onPrevMonth" title="Previous Month">
+                        <i class="fa fa-chevron-left"/>
+                    </button>
+                    <button t-on-click="onToday">Today</button>
+                    <button t-on-click="onNextMonth" title="Next Month">
+                        <i class="fa fa-chevron-right"/>
+                    </button>
+                    <button t-on-click="onViewInProjectApp" class="ms-2" title="Open in Project App">
+                        <i class="fa fa-external-link me-1"/>
+                        Open in Project App
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="ptt-loading">
+                    <div class="ptt-spinner"/>
+                </div>
+            </t>
+            
+            <!-- Calendar Grid -->
+            <t t-else="">
+                <div class="ptt-calendar-grid">
+                    <!-- Week Day Headers -->
+                    <t t-foreach="weekDays" t-as="day" t-key="day">
+                        <div class="ptt-calendar-day-header" t-esc="day"/>
+                    </t>
+                    
+                    <!-- Calendar Days -->
+                    <t t-foreach="calendarDays" t-as="day" t-key="day.dateStr">
+                        <div t-att-class="'ptt-calendar-day' + 
+                            (!day.isCurrentMonth ? ' other-month' : '') + 
+                            (day.isToday ? ' today' : '')">
+                            <div class="ptt-day-number">
+                                <t t-esc="day.day"/>
+                            </div>
+                            <div class="ptt-day-events">
+                                <t t-foreach="day.events.slice(0, 3)" t-as="event" t-key="event.id">
+                                    <div 
+                                        class="ptt-day-event"
+                                        t-att-style="'background-color: ' + event.color"
+                                        t-att-title="event.name + (event.partner_name ? ' - ' + event.partner_name : '')"
+                                        t-on-click.stop="() => this.onEventClick(event)">
+                                        <t t-esc="event.name"/>
+                                    </div>
+                                </t>
+                                <t t-if="day.events.length > 3">
+                                    <div class="ptt-day-event" style="background-color: #6B7280;">
+                                        +<t t-esc="day.events.length - 3"/> more
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                
+                <!-- Legend -->
+                <div class="ptt-calendar-legend">
+                    <t t-foreach="legend" t-as="item" t-key="item.label">
+                        <div class="ptt-legend-item">
+                            <div class="ptt-legend-color" t-att-style="'background-color: ' + item.color"/>
+                            <span t-esc="item.label"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
+

@@ -1,7 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_ptt_dashboard_root"
-              name="Dashboard"
+    <!-- Main Home Menu (Top Level App) -->
+    <menuitem id="menu_ptt_home_root"
+              name="Home"
               sequence="1"
-              action="action_ptt_dashboard"/>
+              action="action_ptt_home_hub"
+              web_icon="ptt_operational_dashboard,static/description/icon.png"/>
+    
+    <!-- Submenu Items under Home -->
+    <menuitem id="menu_ptt_home_dashboard"
+              name="Dashboard"
+              parent="menu_ptt_home_root"
+              sequence="10"
+              action="action_ptt_home_hub"/>
+    
+    <menuitem id="menu_ptt_my_tasks"
+              name="My Tasks"
+              parent="menu_ptt_home_root"
+              sequence="20"
+              action="action_ptt_my_tasks"/>
+    
+    <menuitem id="menu_ptt_my_leads"
+              name="My Leads"
+              parent="menu_ptt_home_root"
+              sequence="30"
+              action="action_ptt_my_leads"/>
+    
+    <menuitem id="menu_ptt_my_quotes"
+              name="My Quotes"
+              parent="menu_ptt_home_root"
+              sequence="40"
+              action="action_ptt_my_quotes"/>
+    
+    <menuitem id="menu_ptt_event_calendar"
+              name="Event Calendar"
+              parent="menu_ptt_home_root"
+              sequence="50"
+              action="action_ptt_event_calendar"/>
+    
+    <menuitem id="menu_ptt_personal_todo"
+              name="Personal To-Do"
+              parent="menu_ptt_home_root"
+              sequence="60"
+              action="action_ptt_personal_todo"/>
 </odoo>

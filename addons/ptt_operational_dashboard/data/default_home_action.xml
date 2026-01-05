@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Note: Setting dashboard as default home is optional.
-             Users can access it via the Dashboard menu item.
-             To set as default home, uncomment and configure below:
+        <!-- 
+        Set PTT Home Hub as the default home action for all users.
+        This makes the Home Hub the first thing users see when they log in.
+        
+        Note: This overrides the default Odoo home action. If you want to
+        revert to the default Odoo behavior, you can reset this via:
+        Settings > Technical > Actions > Client Actions > Home
         -->
-        <!--
         <record id="base.action_client_base_menu" model="ir.actions.client">
             <field name="name">Home</field>
-            <field name="tag">ptt_operational_dashboard</field>
+            <field name="tag">ptt_home_hub</field>
         </record>
-        -->
     </data>
 </odoo>
-

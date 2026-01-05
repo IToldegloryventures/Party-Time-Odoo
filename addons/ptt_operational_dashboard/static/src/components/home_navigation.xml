@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.HomeNavigation">
+        <div class="ptt-top-nav">
+            <!-- Brand -->
+            <div class="ptt-nav-brand">
+                <div class="ptt-logo">PTT</div>
+                <h1 class="ptt-title">Party Time Texas</h1>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="ptt-nav-tabs">
+                <t t-foreach="tabs" t-as="tab" t-key="tab.id">
+                    <button 
+                        t-att-class="'ptt-nav-tab' + (props.activeTab === tab.id ? ' active' : '')"
+                        t-on-click="() => this.onTabClick(tab.id)">
+                        <i t-att-class="'fa ' + tab.icon"/>
+                        <t t-esc="tab.label"/>
+                    </button>
+                </t>
+            </div>
+            
+            <!-- User Section -->
+            <div class="ptt-nav-user">
+                <span class="ptt-user-name">
+                    <i class="fa fa-user me-1"/>
+                    <t t-esc="state.userName"/>
+                </span>
+                <button 
+                    t-att-class="'ptt-refresh-btn' + (props.refreshing ? ' spinning' : '')"
+                    t-on-click="onRefreshClick"
+                    title="Refresh Data">
+                    <i class="fa fa-refresh"/>
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>
+
