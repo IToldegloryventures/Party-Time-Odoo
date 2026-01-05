@@ -122,25 +122,29 @@ class PttHomeData(models.AbstractModel):
         Task = self.env["project.task"]
         Project = self.env["project.project"]
         
-        # Get projects that are NOT linked to CRM leads (non-event projects)
+        # Get projects that ARE linked to CRM leads (event projects) to EXCLUDE them
+        event_project_ids = []
         if "x_crm_lead_id" in Project._fields:
-            event_project_ids = Project.search([
-                ("x_crm_lead_id", "!=", False)
-            ]).ids
-        else:
-            event_project_ids = []
+            event_projects = Project.search([("x_crm_lead_id", "!=", False)])
+            event_project_ids = event_projects.ids
         
-        # Get tasks NOT from event projects (one-off/misc tasks)
-        domain = [
-            ("user_ids", "in", [user.id]),
-            ("stage_id.fold", "=", False),
-        ]
-        
-        # Exclude event project tasks - include tasks with no project or non-event projects
+        # Build domain: tasks assigned to user, not done, NOT from event projects
+        # Using proper Odoo domain syntax with '|' at the start
         if event_project_ids:
-            domain.append("|")
-            domain.append(("project_id", "=", False))
-            domain.append(("project_id", "not in", event_project_ids))
+            # Tasks with no project OR tasks from non-event projects
+            domain = [
+                ("user_ids", "in", [user.id]),
+                ("stage_id.fold", "=", False),
+                "|",
+                ("project_id", "=", False),
+                ("project_id", "not in", event_project_ids),
+            ]
+        else:
+            # No event projects exist, show all tasks
+            domain = [
+                ("user_ids", "in", [user.id]),
+                ("stage_id.fold", "=", False),
+            ]
         
         tasks = Task.search(domain, order="date_deadline asc, project_id, id")
         
@@ -597,3 +601,65 @@ class PttHomeData(models.AbstractModel):
             "agenda_events": self.get_agenda_events(),
             "personal_todos": self.env["ptt.personal.todo"].get_my_todos(),
         }
+    
+    @api.model
+    def create_quick_task(self, name, user_id=None, date_deadline=None, project_id=None):
+        """Create a quick task from the dashboard.
+        
+        Args:
+            name: Task name/description
+            user_id: User to assign (defaults to current user)
+            date_deadline: Due date (optional)
+            project_id: Project to link to (optional, for misc tasks leave empty)
+        
+        Returns:
+            dict with task data and action to open it
+        """
+        Task = self.env["project.task"]
+        
+        vals = {
+            "name": name,
+        }
+        
+        # Assign to specified user or current user
+        if user_id:
+            vals["user_ids"] = [(6, 0, [user_id])]
+        else:
+            vals["user_ids"] = [(6, 0, [self.env.user.id])]
+        
+        if date_deadline:
+            vals["date_deadline"] = date_deadline
+        
+        if project_id:
+            vals["project_id"] = project_id
+        
+        task = Task.create(vals)
+        
+        return {
+            "id": task.id,
+            "name": task.name,
+            "action": {
+                "type": "ir.actions.act_window",
+                "res_model": "project.task",
+                "res_id": task.id,
+                "views": [[False, "form"]],
+                "target": "current",
+            },
+        }
+    
+    @api.model
+    def get_assignable_users(self):
+        """Get list of users that can be assigned tasks.
+        
+        Returns internal users for the task assignment dropdown.
+        """
+        User = self.env["res.users"]
+        users = User.search([
+            ("share", "=", False),  # Internal users only
+            ("active", "=", True),
+        ], order="name")
+        
+        return [
+            {"id": u.id, "name": u.name}
+            for u in users
+        ]

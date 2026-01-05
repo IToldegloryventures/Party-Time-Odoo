@@ -126,18 +126,48 @@ $status-completed: #6C757D;
     // Main Content Area
     .ptt-home-content {
         padding: 1.5rem;
-        max-width: 1600px;
+        max-width: 1800px;
         margin: 0 auto;
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
+    }
+    
+    // Dashboard Grid Layout
+    .ptt-dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
         
-        // Better row spacing
-        > .row {
-            margin-bottom: 1rem;
+        .ptt-grid-item {
+            min-width: 0; // Prevent overflow
             
-            > [class*="col-"] {
-                margin-bottom: 1rem;
+            &.ptt-grid-full {
+                grid-column: 1 / -1; // Span all columns
+            }
+            
+            &.ptt-grid-2col {
+                grid-column: span 2;
+            }
+        }
+        
+        // Responsive: 2 columns on medium screens
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(2, 1fr);
+            
+            .ptt-grid-item.ptt-grid-full {
+                grid-column: 1 / -1;
+            }
+        }
+        
+        // Responsive: 1 column on small screens
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            
+            .ptt-grid-item,
+            .ptt-grid-item.ptt-grid-full,
+            .ptt-grid-item.ptt-grid-2col {
+                grid-column: 1;
             }
         }
     }
@@ -258,6 +288,26 @@ $status-completed: #6C757D;
                 background: #F3F4F6;
                 color: #6B7280;
             }
+        }
+    }
+    
+    // Task List Container
+    .ptt-task-list {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+    
+    // Quick Add Task Form
+    .ptt-quick-add-form {
+        .card {
+            border-width: 2px;
+        }
+    }
+    
+    // Other Tasks Section
+    .ptt-other-tasks {
+        .ptt-card {
+            min-height: 200px;
         }
     }
     
