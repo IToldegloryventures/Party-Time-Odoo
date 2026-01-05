@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- 
+    NOTE: Default home action override has been disabled for stability.
+    
+    The PTT Home Hub is accessible via the "Home" menu item instead of
+    being the default landing page. This prevents blank screens if the
+    custom client action has any loading issues.
+    
+    To enable as default home later (once stable), uncomment below:
+    
     <data noupdate="1">
-        <!-- 
-        Set PTT Home Hub as the default home action for all users.
-        This makes the Home Hub the first thing users see when they log in.
-        
-        Note: This overrides the default Odoo home action. If you want to
-        revert to the default Odoo behavior, you can reset this via:
-        Settings > Technical > Actions > Client Actions > Home
-        -->
         <record id="base.action_client_base_menu" model="ir.actions.client">
             <field name="name">Home</field>
             <field name="tag">ptt_home_hub</field>
         </record>
     </data>
+    -->
 </odoo>
