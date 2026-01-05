@@ -22,8 +22,10 @@ $status-completed: #6C757D;
 // Home Container
 .ptt-home-hub {
     background-color: $ptt-light;
-    min-height: 100vh;
-    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     
     // Top Navigation
     .ptt-top-nav {
@@ -126,6 +128,18 @@ $status-completed: #6C757D;
         padding: 1.5rem;
         max-width: 1600px;
         margin: 0 auto;
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        
+        // Better row spacing
+        > .row {
+            margin-bottom: 1rem;
+            
+            > [class*="col-"] {
+                margin-bottom: 1rem;
+            }
+        }
     }
     
     // Section Headers
@@ -159,6 +173,11 @@ $status-completed: #6C757D;
                 text-decoration: underline;
             }
         }
+    }
+    
+    // Sections (wrapper for section header + card)
+    .ptt-section {
+        margin-bottom: 1.5rem;
     }
     
     // Cards
