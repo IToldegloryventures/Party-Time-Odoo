@@ -26,7 +26,7 @@
         <field name="res_model">ptt.sales.commission</field>
         <field name="view_mode">list,pivot,form</field>
         <field name="search_view_id" ref="ptt_sales_commission_view_search"/>
-        <field name="context">{'search_default_current_month': 1, 'search_default_group_by_month': 1}</field>
+        <field name="context">{'search_default_filter_month': 1, 'search_default_group_by_month': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create Sales Commission Reports
