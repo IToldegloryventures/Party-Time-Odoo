@@ -10,10 +10,9 @@
                 <field name="report_month"/>
                 <separator/>
                 <filter name="filter_month" string="Month" date="report_month" default_period="month"/>
-                <group>
-                    <filter string="Sales Rep" name="group_by_rep" domain="[]" context="{'group_by': 'sales_rep_id'}"/>
-                    <filter string="Month" name="group_by_month" domain="[]" context="{'group_by': 'report_month:month'}"/>
-                </group>
+                <separator/>
+                <filter string="Sales Rep" name="group_by_rep" context="{'group_by': 'sales_rep_id'}"/>
+                <filter string="Month" name="group_by_month" context="{'group_by': 'report_month:month'}"/>
             </search>
         </field>
     </record>
