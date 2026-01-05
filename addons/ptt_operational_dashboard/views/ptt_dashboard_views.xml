@@ -1,329 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="Dashboard" name="PTT Operational Dashboard">
+    <!-- Minimal Dashboard Template - Core Look and Feel Only -->
+    <template id="ptt_operational_dashboard.Dashboard" name="PTT Operational Dashboard">
         <Layout display="display" className="'o_dashboard h-100'">
             <div class="ptt_operational_dashboard container-fluid">
                 <!-- Header Row -->
                 <div class="row mb-4 align-items-center">
-                    <div class="col-12 col-md-8">
-                        <div class="d-flex align-items-center gap-3 flex-wrap">
-                            <h1 class="ptt_dashboard_title mb-0">Party Time Texas - Operational Dashboard</h1>
-                            <div class="d-flex align-items-center gap-2">
-                                <button class="btn btn-sm btn-outline-secondary ptt_refresh_btn" 
-                                        t-att-disabled="state.refreshing"
-                                        t-on-click="() => this.refreshData()"
-                                        title="Refresh Dashboard Data">
-                                    <i t-att-class="'fa fa-refresh' + (state.refreshing ? ' fa-spin' : '')"/>
-                                    <span class="d-none d-md-inline ms-1">Refresh</span>
-                                </button>
-                                <small class="text-muted ptt_last_updated" t-if="state.lastUpdated">
-                                    <i class="fa fa-clock-o me-1"/>
-                                    <span t-esc="this.formatLastUpdated()"/>
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 text-end" t-if="state.activeTab === 'overview'">
-                        <div class="dropdown">
-                            <button class="btn btn-success dropdown-toggle ptt_export_btn" 
-                                    type="button" 
-                                    id="exportDropdown"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    t-on-click="() => this.toggleExportMenu()">
-                                <i class="fa fa-download me-1"/> Export Data
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end ptt_export_menu" t-att-class="state.showExportMenu ? 'show' : ''" aria-labelledby="exportDropdown">
-                                <li><h6 class="dropdown-header">Leads</h6></li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_leads_current_month'); }">
-                                        <i class="fa fa-table me-2"/> This Month
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_leads_previous_month'); }">
-                                        <i class="fa fa-table me-2"/> Last Month
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"/></li>
-                                <li><h6 class="dropdown-header">Quotes</h6></li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_quotes_current_month'); }">
-                                        <i class="fa fa-table me-2"/> This Month
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_quotes_previous_month'); }">
-                                        <i class="fa fa-table me-2"/> Last Month
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"/></li>
-                                <li><h6 class="dropdown-header">Events</h6></li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_events_current_month'); }">
-                                        <i class="fa fa-table me-2"/> This Month
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_events_previous_month'); }">
-                                        <i class="fa fa-table me-2"/> Last Month
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"/></li>
-                                <li><h6 class="dropdown-header">Commissions</h6></li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_commissions_current_month'); }">
-                                        <i class="fa fa-table me-2"/> This Month
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#" t-on-click="(ev) => { ev.preventDefault(); this.executeQuickAction('action_view_commissions_previous_month'); }">
-                                        <i class="fa fa-table me-2"/> Last Month
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <DashboardTabs onTabChange.bind="onTabChange"/>
-                
-                <!-- Error State -->
-                <t t-if="state.error and !state.loading">
-                    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
-                        <i class="fa fa-exclamation-circle me-2 fa-2x"/>
-                        <div class="flex-grow-1">
-                            <strong>Error Loading Dashboard</strong>
-                            <div t-esc="state.error"/>
-                        </div>
-                        <div class="ms-3">
-                            <button class="btn btn-sm btn-outline-danger me-2" t-on-click="() => this.retryLoad()">
-                                <i class="fa fa-refresh me-1"/> Retry
-                            </button>
-                            <button type="button" class="btn-close" aria-label="Close" t-on-click="() => state.error = null"/>
-                        </div>
-                    </div>
-                </t>
-                
-                <!-- Loading State (Skeleton) -->
-                <t t-if="state.loading">
-                    <div class="row">
-                        <!-- First Row Skeletons -->
-                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                            <div class="ptt_skeleton_card p-3">
-                                <div class="ptt_skeleton mb-2" style="height: 16px; width: 60%;"/>
-                                <div class="ptt_skeleton mb-2" style="height: 36px; width: 40%;"/>
-                                <div class="ptt_skeleton" style="height: 12px; width: 30%;"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                            <div class="ptt_skeleton_card p-3">
-                                <div class="ptt_skeleton mb-2" style="height: 16px; width: 60%;"/>
-                                <div class="ptt_skeleton mb-2" style="height: 36px; width: 40%;"/>
-                                <div class="ptt_skeleton" style="height: 12px; width: 30%;"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                            <div class="ptt_skeleton_card p-3">
-                                <div class="ptt_skeleton mb-2" style="height: 16px; width: 60%;"/>
-                                <div class="ptt_skeleton mb-2" style="height: 36px; width: 40%;"/>
-                                <div class="ptt_skeleton" style="height: 12px; width: 30%;"/>
-                            </div>
-                        </div>
-                        <!-- Second Row Skeletons -->
-                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                            <div class="ptt_skeleton_card p-3">
-                                <div class="ptt_skeleton mb-2" style="height: 16px; width: 60%;"/>
-                                <div class="ptt_skeleton mb-2" style="height: 36px; width: 40%;"/>
-                                <div class="ptt_skeleton" style="height: 12px; width: 30%;"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3" t-if="state.activeTab === 'overview'">
-                            <div class="ptt_skeleton_card p-3">
-                                <div class="ptt_skeleton mb-2" style="height: 16px; width: 60%;"/>
-                                <div class="ptt_skeleton mb-2" style="height: 36px; width: 40%;"/>
-                                <div class="ptt_skeleton" style="height: 12px; width: 30%;"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3" t-if="state.activeTab === 'overview'">
-                            <div class="ptt_skeleton_card p-3">
-                                <div class="ptt_skeleton mb-2" style="height: 16px; width: 60%;"/>
-                                <div class="ptt_skeleton mb-2" style="height: 36px; width: 40%;"/>
-                                <div class="ptt_skeleton" style="height: 12px; width: 30%;"/>
-                            </div>
-                        </div>
-                    </div>
-                </t>
-                
-                <!-- Empty State -->
-                <t t-if="!state.loading and !state.error and state.isEmpty">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card p-5 text-center">
-                                <i class="fa fa-inbox fa-4x text-muted mb-3"/>
-                                <h4 class="text-muted mb-2">No Data Available</h4>
-                                <p class="text-muted mb-4">
-                                    <t t-if="state.activeTab === 'overview'">
-                                        There are no leads, quotes, or events to display at this time.
-                                    </t>
-                                    <t t-else="">
-                                        This sales representative has no data to display at this time.
-                                    </t>
-                                </p>
-                                <button class="btn btn-primary" t-on-click="() => this.refreshData()">
-                                    <i class="fa fa-refresh me-2"/> Refresh Data
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </t>
-                
-                <!-- KPI Cards Row -->
-                <t t-if="!state.loading and !state.error and !state.isEmpty">
-                <div class="row">
-                    <div class="col-md-4 col-sm-6 mb-3">
-                        <KpiCard title="'Leads to Contact'" 
-                                 t-att-value="state.activeTab === 'overview' ? state.kpis.total_leads or 0 : state.kpis.leads_count or 0"
-                                 icon="'fa-user-plus'"
-                                 color="'#CC0000'"
-                                 clickable="True"
-                                 t-on-click="() => this.executeQuickAction('action_view_leads')"
-                                 t-att-tooltip="'View all ' + (state.activeTab === 'overview' ? state.kpis.total_leads or 0 : state.kpis.leads_count or 0) + ' leads in list/pivot view. Click to open.'"
-                                 t-att-badge="(state.activeTab === 'overview' ? (state.kpis.total_leads or 0) : (state.kpis.leads_count or 0)) > 10 ? 'High' : null"
-                                 badgeClass="'bg-warning'"/>
-                    </div>
-                    <div class="col-md-4 col-sm-6 mb-3">
-                        <KpiCard title="'Quotes Awaiting Approval'"
-                                 t-att-value="state.activeTab === 'overview' ? state.kpis.total_quotes or 0 : state.kpis.quotes_count or 0"
-                                 icon="'fa-file-text'"
-                                 color="'#2F2F2F'"
-                                 clickable="True"
-                                 t-on-click="() => this.executeQuickAction('action_view_quotes')"
-                                 t-att-tooltip="'View all ' + (state.activeTab === 'overview' ? state.kpis.total_quotes or 0 : state.kpis.quotes_count or 0) + ' quotes awaiting approval. Click to open.'"
-                                 t-att-badge="(state.activeTab === 'overview' ? (state.kpis.total_quotes or 0) : (state.kpis.quotes_count or 0)) > 5 ? 'Review' : null"
-                                 badgeClass="'bg-info'"/>
-                    </div>
-                    <div class="col-md-4 col-sm-6 mb-3">
-                        <KpiCard title="'Events This Week'"
-                                 t-att-value="state.activeTab === 'overview' ? state.kpis.total_events_week or 0 : state.kpis.events_count or 0"
-                                 icon="'fa-calendar'"
-                                 color="'#CC0000'"
-                                 clickable="True"
-                                 t-on-click="() => this.executeQuickAction('action_view_events')"
-                                 t-att-tooltip="'View all ' + (state.activeTab === 'overview' ? state.kpis.total_events_week or 0 : state.kpis.events_count or 0) + ' events scheduled this week. Click to open.'"
-                                 t-att-badge="(state.activeTab === 'overview' ? (state.kpis.total_events_week or 0) : (state.kpis.events_count or 0)) > 0 ? 'Active' : null"
-                                 badgeClass="'bg-success'"/>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-4 col-sm-6 mb-3">
-                        <KpiCard title="'Outstanding Payments'"
-                                 t-att-value="'$' + (state.activeTab === 'overview' ? (state.kpis.total_outstanding or 0).toLocaleString() : (state.kpis.outstanding_amount or 0).toLocaleString())"
-                                 icon="'fa-money'"
-                                 color="'#2F2F2F'"
-                                 clickable="True"
-                                 t-on-click="() => this.executeQuickAction('action_view_outstanding')"
-                                 t-att-tooltip="'Total outstanding: $' + (state.activeTab === 'overview' ? (state.kpis.total_outstanding or 0).toLocaleString() : (state.kpis.outstanding_amount or 0).toLocaleString()) + '. Click to view all outstanding invoices.'"
-                                 t-att-badge="(state.activeTab === 'overview' ? (state.kpis.total_outstanding or 0) : (state.kpis.outstanding_amount or 0)) > 10000 ? 'High' : null"
-                                 badgeClass="'bg-danger'"/>
-                    </div>
-                    <div class="col-md-4 col-sm-6 mb-3" t-if="state.activeTab === 'overview'">
-                        <KpiCard title="'Vendor Compliance Issues'"
-                                 t-att-value="state.kpis.vendor_compliance_issues or 0"
-                                 icon="'fa-exclamation-triangle'"
-                                 color="'#CC0000'"
-                                 clickable="True"
-                                 t-on-click="() => this.executeQuickAction('action_view_vendor_compliance')"
-                                 t-att-tooltip="state.kpis.vendor_compliance_issues > 0 ? (state.kpis.vendor_compliance_issues + ' vendor compliance issues require immediate attention. Click to review.') : 'No vendor compliance issues at this time.'"
-                                 t-att-badge="state.kpis.vendor_compliance_issues > 0 ? 'Alert' : null"
-                                 badgeClass="'bg-danger'"/>
-                    </div>
-                    <div class="col-md-4 col-sm-6 mb-3" t-if="state.activeTab === 'overview'">
-                        <KpiCard title="'Event Profit Margin %'"
-                                 t-att-value="(state.kpis.event_profit_margin or 0).toFixed(1) + '%'"
-                                 icon="'fa-line-chart'"
-                                 t-att-color="(state.kpis.event_profit_margin or 0) < 20 ? '#CC0000' : '#2F2F2F'"
-                                 t-att-tooltip="'Average profit margin: ' + (state.kpis.event_profit_margin or 0).toFixed(1) + '%. ' + ((state.kpis.event_profit_margin or 0) < 20 ? 'Below target - review costs.' : 'Within target range.')"
-                                 t-att-badge="(state.kpis.event_profit_margin or 0) < 20 ? 'Low' : null"
-                                 badgeClass="'bg-warning'"/>
-                    </div>
-                </div>
-                
-                <!-- Quick Actions (Overview Only) -->
-                <div class="row mt-4" t-if="state.activeTab === 'overview'">
                     <div class="col-12">
-                        <h4 class="mb-3">
-                            <i class="fa fa-bolt me-2"/> Quick Actions
-                        </h4>
-                    </div>
-                    <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <button class="btn btn-primary w-100 p-2 ptt_quick_action_btn" 
-                                t-on-click="() => this.executeQuickAction('action_new_lead')"
-                                title="Create a new lead record in CRM">
-                            <i class="fa fa-plus d-block mb-1"/> 
-                            <small>New Lead</small>
-                        </button>
-                    </div>
-                    <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <button class="btn btn-primary w-100 p-2 ptt_quick_action_btn" 
-                                t-on-click="() => this.executeQuickAction('action_start_quote')"
-                                title="Create a new sales quote/order">
-                            <i class="fa fa-file-text d-block mb-1"/> 
-                            <small>Start Quote</small>
-                        </button>
-                    </div>
-                    <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <button class="btn btn-primary w-100 p-2 ptt_quick_action_btn" 
-                                t-on-click="() => this.executeQuickAction('action_assign_vendor')"
-                                title="Browse and assign vendors to events">
-                            <i class="fa fa-truck d-block mb-1"/> 
-                            <small>Assign Vendor</small>
-                        </button>
-                    </div>
-                    <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <button class="btn btn-primary w-100 p-2 ptt_quick_action_btn" 
-                                t-on-click="() => this.executeQuickAction('action_record_payment')"
-                                title="Record a customer payment for an invoice">
-                            <i class="fa fa-credit-card d-block mb-1"/> 
-                            <small>Record Payment</small>
-                        </button>
-                    </div>
-                    <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <button class="btn btn-primary w-100 p-2 ptt_quick_action_btn" 
-                                t-on-click="() => this.executeQuickAction('action_upload_vendor_doc')"
-                                title="Upload vendor documents or compliance files">
-                            <i class="fa fa-upload d-block mb-1"/> 
-                            <small>Upload Doc</small>
-                        </button>
-                    </div>
-                    <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <button class="btn btn-primary w-100 p-2 ptt_quick_action_btn" 
-                                t-on-click="() => this.executeQuickAction('action_view_event_timeline')"
-                                title="View all events in timeline/kanban view">
-                            <i class="fa fa-calendar-o d-block mb-1"/> 
-                            <small>Event Timeline</small>
-                        </button>
+                        <h1 class="ptt_dashboard_title mb-0">Party Time Texas - Operational Dashboard</h1>
+                        <p class="text-muted">Welcome to your operational dashboard</p>
                     </div>
                 </div>
                 
-                <!-- Widget Placeholders (Overview Only) -->
-                <div class="row mt-4" t-if="state.activeTab === 'overview'">
-                    <div class="col-md-6">
+                <!-- Placeholder Content -->
+                <div class="row">
+                    <div class="col-md-4 mb-3">
                         <div class="card p-3">
-                            <h5>Event Calendar Widget</h5>
-                            <div id="event_calendar_widget" class="text-muted">Coming soon...</div>
+                            <h5>KPI Placeholder 1</h5>
+                            <p class="text-muted">Coming soon...</p>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4 mb-3">
                         <div class="card p-3">
-                            <h5>Timeline Gaps Widget</h5>
-                            <div id="timeline_gaps_widget" class="text-muted">Coming soon...</div>
+                            <h5>KPI Placeholder 2</h5>
+                            <p class="text-muted">Coming soon...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card p-3">
+                            <h5>KPI Placeholder 3</h5>
+                            <p class="text-muted">Coming soon...</p>
                         </div>
                     </div>
                 </div>
-            </t>
-            
             </div>
         </Layout>
     </template>
@@ -335,4 +44,3 @@
         <field name="target">fullscreen</field>
     </record>
 </odoo>
-
