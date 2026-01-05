@@ -548,41 +548,23 @@ $status-completed: #6C757D;
         }
     }
     
-    // Full Calendar
+    // Full Calendar (DJ Event Planner Style)
     .ptt-full-calendar {
         background: white;
         border-radius: 12px;
-        padding: 1.5rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        height: calc(100vh - 120px);
+        overflow: hidden;
+        
+        .ptt-calendar-main {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
         
         .ptt-calendar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            
-            .ptt-calendar-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: $ptt-dark;
-            }
-            
-            .ptt-calendar-nav {
-                display: flex;
-                gap: 0.5rem;
-                
-                button {
-                    padding: 0.5rem 0.75rem;
-                    border: 1px solid $ptt-border;
-                    background: white;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    
-                    &:hover {
-                        background: $ptt-light;
-                    }
-                }
-            }
+            flex-shrink: 0;
         }
         
         .ptt-calendar-grid {
@@ -590,95 +572,85 @@ $status-completed: #6C757D;
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             background: $ptt-border;
-            border: 1px solid $ptt-border;
-            border-radius: 8px;
+            flex-grow: 1;
             overflow: hidden;
             
             .ptt-calendar-day-header {
                 background: $ptt-light;
-                padding: 0.75rem;
-                text-align: center;
-                font-weight: 600;
-                font-size: 0.8rem;
-                color: #6B7280;
             }
             
             .ptt-calendar-day {
-                background: white;
-                min-height: 100px;
-                padding: 0.5rem;
+                transition: all 0.15s ease;
                 
-                &.other-month {
-                    background: $ptt-light;
-                    
-                    .ptt-day-number {
-                        color: #9CA3AF;
-                    }
+                &:hover {
+                    background: #F0F9FF !important;
                 }
                 
-                &.today {
-                    background: #FEF3F2;
-                    
-                    .ptt-day-number {
-                        background: $ptt-red;
-                        color: white;
-                        border-radius: 50%;
-                        width: 24px;
-                        height: 24px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
+                &.ptt-today {
+                    background: #FEF3F2 !important;
                 }
                 
-                .ptt-day-number {
-                    font-size: 0.85rem;
-                    font-weight: 500;
-                    margin-bottom: 0.25rem;
-                }
-                
-                .ptt-day-events {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 2px;
+                &.ptt-selected {
+                    background: #E0F2FE !important;
+                    box-shadow: inset 0 0 0 2px #0EA5E9;
                 }
                 
                 .ptt-day-event {
-                    font-size: 0.75rem;
-                    padding: 2px 4px;
-                    border-radius: 3px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    cursor: pointer;
-                    color: white;
+                    font-size: 0.7rem;
+                    line-height: 1.3;
                     
                     &:hover {
                         filter: brightness(1.1);
+                        transform: scale(1.02);
                     }
                 }
             }
         }
         
         .ptt-calendar-legend {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid $ptt-border;
+            flex-shrink: 0;
             
-            .ptt-legend-item {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 0.85rem;
-                color: #6B7280;
+            .ptt-legend-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                display: inline-block;
+            }
+        }
+        
+        // Day Panel (Right Sidebar)
+        .ptt-day-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            
+            .ptt-day-panel-content {
+                flex-grow: 1;
+                overflow-y: auto;
+            }
+            
+            .ptt-panel-event {
+                transition: all 0.15s ease;
                 
-                .ptt-legend-color {
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 3px;
+                &:hover {
+                    transform: translateX(4px);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
                 }
+            }
+        }
+        
+        // Responsive adjustments
+        @media (max-width: 1200px) {
+            flex-direction: column;
+            height: auto;
+            
+            .ptt-day-panel {
+                width: 100% !important;
+                min-width: 100% !important;
+                border-left: none !important;
+                border-top: 1px solid $ptt-border;
+                max-height: 300px;
             }
         }
     }
