@@ -12,8 +12,8 @@
                     <h2 class="mb-1 fw-bold" t-esc="props.value"/>
                     <t t-if="props.trend">
                         <div class="d-flex align-items-center mt-2">
-                            <i t-att-class="'fa fa-arrow-' + (props.trend > 0 ? 'up text-success' : props.trend < 0 ? 'down text-danger' : 'right text-muted') + ' me-1'"/>
-                            <small t-att-class="props.trend > 0 ? 'text-success fw-semibold' : props.trend < 0 ? 'text-danger fw-semibold' : 'text-muted'">
+                            <i t-att-class="'fa fa-arrow-' + (props.trend &gt; 0 ? 'up text-success' : props.trend &lt; 0 ? 'down text-danger' : 'right text-muted') + ' me-1'"/>
+                            <small t-att-class="props.trend &gt; 0 ? 'text-success fw-semibold' : props.trend &lt; 0 ? 'text-danger fw-semibold' : 'text-muted'">
                                 <t t-if="props.trend !== 0">
                                     <t t-esc="Math.abs(props.trend)"/>%
                                 </t>
