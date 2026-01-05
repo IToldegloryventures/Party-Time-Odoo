@@ -213,50 +213,65 @@ class PttHomeData(models.AbstractModel):
         return result
     
     @api.model
-    def get_agenda_events(self, days=14):
-        """Get upcoming events/projects for the current user's agenda.
+    def get_agenda_events(self, days=30):
+        """Get upcoming events from CRM leads for the current user's agenda.
         
-        Returns project.project records with x_event_date in the next N days.
+        Pulls from crm.lead where x_event_date is set and assigned to user.
+        Shows events in the next N days (default 30).
+        
+        This shows events at ALL stages - from new leads through booked projects.
         """
         user = self.env.user
         today = fields.Date.context_today(self)
         end_date = today + timedelta(days=days)
         
-        Project = self.env["project.project"]
+        Lead = self.env["crm.lead"]
+        
+        # Check if x_event_date field exists on crm.lead
+        if "x_event_date" not in Lead._fields:
+            return []
+        
+        # Get leads assigned to user with event dates in range
         domain = [
             ("user_id", "=", user.id),
             ("x_event_date", ">=", today),
             ("x_event_date", "<=", end_date),
+            ("x_event_date", "!=", False),
         ]
         
-        # Check if x_event_date field exists
-        if "x_event_date" not in Project._fields:
-            return []
+        leads = Lead.search(domain, order="x_event_date asc", limit=20)
         
-        projects = Project.search(domain, order="x_event_date asc")
+        # PTT CRM Stage Colors
+        stage_colors = {
+            "New": "#17A2B8",
+            "Qualified": "#007BFF",
+            "Approval": "#FFC107",
+            "Quote Sent": "#6F42C1",
+            "Booked": "#28A745",
+            "Lost": "#DC3545",
+        }
+        default_color = "#6C757D"
         
         result = []
-        for project in projects:
-            # Get CRM lead stage for color coding
-            lead_stage = None
-            if hasattr(project, 'x_crm_lead_id') and project.x_crm_lead_id:
-                lead = project.x_crm_lead_id
-                lead_stage = {
-                    "id": lead.stage_id.id if lead.stage_id else False,
-                    "name": lead.stage_id.name if lead.stage_id else "",
-                }
+        for lead in leads:
+            stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
+            color = stage_colors.get(stage_name, default_color)
+            event_name = lead.x_event_name or lead.name or "Untitled Event"
             
             event_data = {
-                "id": project.id,
-                "name": project.name,
-                "event_date": project.x_event_date.isoformat() if project.x_event_date else False,
-                "partner_name": project.partner_id.name if project.partner_id else "",
-                "lead_stage": lead_stage,
-                # Action metadata
+                "id": lead.id,
+                "name": event_name,
+                "lead_name": lead.name,
+                "event_date": lead.x_event_date.isoformat() if lead.x_event_date else False,
+                "partner_name": lead.partner_id.name if lead.partner_id else (lead.partner_name or ""),
+                "stage_name": stage_name,
+                "color": color,
+                "stage_id": lead.stage_id.id if lead.stage_id else False,
+                # Action metadata - opens CRM Lead form
                 "action": {
                     "type": "ir.actions.act_window",
-                    "res_model": "project.project",
-                    "res_id": project.id,
+                    "res_model": "crm.lead",
+                    "res_id": lead.id,
                     "views": [[False, "form"]],
                     "target": "current",
                 },

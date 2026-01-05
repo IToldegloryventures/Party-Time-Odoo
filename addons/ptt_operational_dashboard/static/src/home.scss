@@ -513,6 +513,9 @@ $status-completed: #6C757D;
     
     // Agenda Calendar
     .ptt-agenda {
+        max-height: 400px;
+        overflow-y: auto;
+        
         .ptt-agenda-day {
             margin-bottom: 1rem;
             
@@ -521,6 +524,8 @@ $status-completed: #6C757D;
                 color: $ptt-dark;
                 margin-bottom: 0.5rem;
                 font-size: 0.9rem;
+                padding: 0.25rem 0;
+                border-bottom: 1px solid $ptt-border;
                 
                 &.today {
                     color: $ptt-red;
@@ -536,32 +541,46 @@ $status-completed: #6C757D;
         
         .ptt-agenda-event {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             padding: 0.75rem;
             border-radius: 8px;
-            background: white;
+            background: $ptt-light;
             border-left: 4px solid $status-booked;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
             
             &:hover {
                 transform: translateX(4px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
             
-            &.status-lead { border-left-color: $status-lead; }
-            &.status-awaiting { border-left-color: $status-awaiting; }
-            &.status-booked { border-left-color: $status-booked; }
-            &.status-planning { border-left-color: $status-planning; }
-            &.status-completed { border-left-color: $status-completed; }
+            .ptt-event-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+            }
             
             .ptt-event-name {
                 font-weight: 500;
                 color: $ptt-dark;
                 flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .ptt-event-stage {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+                border-radius: 3px;
+                color: white;
+                white-space: nowrap;
             }
             
             .ptt-event-client {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 color: #6B7280;
             }
         }
