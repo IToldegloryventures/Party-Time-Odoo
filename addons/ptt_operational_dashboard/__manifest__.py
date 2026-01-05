@@ -1,6 +1,6 @@
 {
     "name": "PTT Operational Dashboard",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "summary": "Party Time Texas Home Hub - unified view into all Odoo apps",
     "description": """
         PTT Home Dashboard Hub
@@ -50,8 +50,6 @@
         "views/ptt_dashboard_views.xml",
         # Menus
         "views/ptt_dashboard_menu.xml",
-        # Data (load last)
-        "data/default_home_action.xml",
     ],
     "assets": {
         "web.assets_backend": [
