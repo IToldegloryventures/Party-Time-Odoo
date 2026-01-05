@@ -5,16 +5,14 @@
         <field name="name">ptt.sales.commission.search</field>
         <field name="model">ptt.sales.commission</field>
         <field name="arch" type="xml">
-            <search string="Sales Commission Reports">
-                <field name="x_sales_rep_name" string="Sales Rep"/>
-                <field name="report_month" string="Month"/>
-                
+            <search>
+                <field name="x_sales_rep_name"/>
+                <field name="report_month"/>
                 <separator/>
                 <filter name="filter_month" string="Month" date="report_month" default_period="month"/>
-                
-                <group expand="0" string="Group By">
-                    <filter string="Sales Rep" name="group_by_rep" context="{'group_by': 'sales_rep_id'}"/>
-                    <filter string="Month" name="group_by_month" context="{'group_by': 'report_month:month'}"/>
+                <group>
+                    <filter string="Sales Rep" name="group_by_rep" domain="[]" context="{'group_by': 'sales_rep_id'}"/>
+                    <filter string="Month" name="group_by_month" domain="[]" context="{'group_by': 'report_month:month'}"/>
                 </group>
             </search>
         </field>
@@ -117,7 +115,7 @@
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
-action = model.create_monthly_reports()
+model.create_monthly_reports()
         </field>
     </record>
 </odoo>
