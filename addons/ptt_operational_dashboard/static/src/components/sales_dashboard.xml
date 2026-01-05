@@ -2,6 +2,26 @@
 <templates xml:space="preserve">
     <t t-name="ptt_operational_dashboard.SalesDashboard">
         <div class="ptt-sales-dashboard">
+            <!-- Date Range Filter -->
+            <div class="ptt-date-filter mb-4">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_month')">This Month</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_month')">Last Month</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_quarter')">This Quarter</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_year')">This Year</button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                            t-model="state.startDate" t-on-change="onDateChange"/>
+                        <span class="text-muted">to</span>
+                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                            t-model="state.endDate" t-on-change="onDateChange"/>
+                    </div>
+                    <span class="badge bg-secondary" t-esc="dateRangeLabel"/>
+                </div>
+            </div>
+            
             <!-- Loading State -->
             <t t-if="state.loading">
                 <div class="ptt-loading">
@@ -9,93 +29,98 @@
                 </div>
             </t>
             
-            <t t-else="">
-                <!-- KPI Cards -->
-                <div class="ptt-kpi-grid">
-                    <!-- Leads -->
-                    <div class="ptt-kpi-card" t-on-click="onLeadsClick">
-                        <div class="ptt-kpi-icon leads">
-                            <i class="fa fa-user-plus"/>
+            <t t-elif="state.data">
+                <!-- Main KPI Cards -->
+                <div class="ptt-kpi-grid mb-4">
+                    <!-- Total Booked -->
+                    <div class="ptt-kpi-card booked" t-on-click="onBookedClick">
+                        <div class="ptt-kpi-icon booked">
+                            <i class="fa fa-calendar-check-o"/>
                         </div>
-                        <div class="ptt-kpi-value" t-esc="state.kpis?.leads_count || 0"/>
-                        <div class="ptt-kpi-label">Leads to Contact</div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_booked)"/>
+                        <div class="ptt-kpi-label">Total Booked</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.booked_count"/> events
+                        </div>
                     </div>
                     
-                    <!-- Quotes -->
-                    <div class="ptt-kpi-card" t-on-click="onQuotesClick">
-                        <div class="ptt-kpi-icon quotes">
-                            <i class="fa fa-file-text"/>
+                    <!-- Total Paid -->
+                    <div class="ptt-kpi-card paid" t-on-click="onPaidClick">
+                        <div class="ptt-kpi-icon paid">
+                            <i class="fa fa-check-circle"/>
                         </div>
-                        <div class="ptt-kpi-value" t-esc="state.kpis?.quotes_count || 0"/>
-                        <div class="ptt-kpi-label">Quotes Pending</div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_paid)"/>
+                        <div class="ptt-kpi-label">Total Paid</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.paid_count"/> invoices
+                        </div>
                     </div>
                     
-                    <!-- Outstanding -->
-                    <div class="ptt-kpi-card" t-on-click="onOutstandingClick">
+                    <!-- Outstanding/Overdue -->
+                    <div class="ptt-kpi-card outstanding" t-on-click="onOutstandingClick">
                         <div class="ptt-kpi-icon outstanding">
-                            <i class="fa fa-money"/>
+                            <i class="fa fa-exclamation-circle"/>
                         </div>
-                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.kpis?.outstanding_amount)"/>
-                        <div class="ptt-kpi-label">Outstanding Payments</div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_outstanding)"/>
+                        <div class="ptt-kpi-label">Outstanding</div>
+                        <div class="ptt-kpi-count text-danger" t-if="state.data.overdue_amount > 0">
+                            <t t-esc="formatCurrency(state.data.overdue_amount)"/> overdue
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Quick Actions -->
+                <!-- Sales Rep Cards -->
                 <div class="ptt-section-header">
-                    <h2><i class="fa fa-bolt"/> Quick Actions</h2>
-                </div>
-                <div class="ptt-card mb-4">
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-primary" t-on-click="onNewLeadClick">
-                            <i class="fa fa-plus me-1"/> New Lead
-                        </button>
-                        <button class="btn btn-success" t-on-click="onNewQuoteClick">
-                            <i class="fa fa-file-text-o me-1"/> New Quote
-                        </button>
-                    </div>
+                    <h2><i class="fa fa-users"/> Sales Team Performance</h2>
                 </div>
                 
-                <!-- Recent Quotes -->
-                <div class="ptt-section-header">
-                    <h2><i class="fa fa-file-text-o"/> Recent Quotes</h2>
-                    <a class="ptt-section-action" href="#" t-on-click.prevent="onQuotesClick">
-                        View All →
-                    </a>
+                <div class="ptt-rep-grid">
+                    <t t-foreach="state.data.reps" t-as="rep" t-key="rep.id">
+                        <div class="ptt-rep-card" t-on-click="() => this.onRepClick(rep)">
+                            <div class="ptt-rep-header">
+                                <div class="ptt-rep-avatar" t-att-style="'background-color: ' + (rep.color || '#6366F1')">
+                                    <t t-esc="rep.initials"/>
+                                </div>
+                                <div class="ptt-rep-name" t-esc="rep.name"/>
+                            </div>
+                            <div class="ptt-rep-stats">
+                                <div class="ptt-rep-stat">
+                                    <span class="label">Booked</span>
+                                    <span class="value" t-esc="formatCurrency(rep.booked_amount)"/>
+                                </div>
+                                <div class="ptt-rep-stat">
+                                    <span class="label">Events</span>
+                                    <span class="value" t-esc="rep.booked_count"/>
+                                </div>
+                                <div class="ptt-rep-stat">
+                                    <span class="label">Leads</span>
+                                    <span class="value" t-esc="rep.leads_count"/>
+                                </div>
+                            </div>
+                            <div class="ptt-rep-progress">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" 
+                                        t-att-style="'width: ' + (rep.conversion_rate || 0) + '%'"
+                                        t-att-class="rep.conversion_rate > 50 ? 'bg-success' : rep.conversion_rate > 25 ? 'bg-warning' : 'bg-danger'"/>
+                                </div>
+                                <small class="text-muted">
+                                    <t t-esc="rep.conversion_rate"/>% conversion
+                                </small>
+                            </div>
+                        </div>
+                    </t>
                 </div>
-                <div class="ptt-card">
-                    <t t-if="!state.kpis?.quotes || state.kpis.quotes.length === 0">
+                
+                <!-- Empty state for reps -->
+                <t t-if="!state.data.reps || state.data.reps.length === 0">
+                    <div class="ptt-card">
                         <div class="ptt-empty-state">
-                            <i class="fa fa-file-text-o"/>
-                            <p>No pending quotes</p>
+                            <i class="fa fa-users"/>
+                            <p>No sales data for this period</p>
                         </div>
-                    </t>
-                    <t t-else="">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Quote</th>
-                                    <th>Customer</th>
-                                    <th class="text-end">Amount</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="state.kpis.quotes" t-as="quote" t-key="quote.id">
-                                    <tr class="cursor-pointer" t-on-click="() => this.onQuoteClick(quote)">
-                                        <td t-esc="quote.name"/>
-                                        <td t-esc="quote.partner_name"/>
-                                        <td class="text-end" t-esc="formatCurrency(quote.amount_total)"/>
-                                        <td class="text-end">
-                                            <i class="fa fa-external-link text-muted"/>
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </t>
-                </div>
+                    </div>
+                </t>
             </t>
         </div>
     </t>
 </templates>
-

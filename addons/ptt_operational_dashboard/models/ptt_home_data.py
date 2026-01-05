@@ -507,8 +507,136 @@ class PttHomeData(models.AbstractModel):
         return events
     
     @api.model
+    def get_sales_dashboard_data(self, start_date=None, end_date=None):
+        """Get comprehensive sales dashboard data with date filtering.
+        
+        Args:
+            start_date: Start of date range (YYYY-MM-DD string)
+            end_date: End of date range (YYYY-MM-DD string)
+        
+        Returns:
+            dict with total_booked, total_paid, total_outstanding, and per-rep data
+        """
+        today = fields.Date.context_today(self)
+        
+        # Default to current month if no dates provided
+        if not start_date:
+            start_date = today.replace(day=1)
+        else:
+            start_date = fields.Date.from_string(start_date)
+        
+        if not end_date:
+            # Last day of current month
+            import calendar
+            last_day = calendar.monthrange(today.year, today.month)[1]
+            end_date = today.replace(day=last_day)
+        else:
+            end_date = fields.Date.from_string(end_date)
+        
+        Lead = self.env["crm.lead"]
+        Invoice = self.env["account.move"]
+        
+        # === TOTAL BOOKED (CRM leads in "Booked" stage within date range) ===
+        booked_domain = [
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+        ]
+        # Find "Booked" stage
+        booked_stage = self.env["crm.stage"].search([("name", "ilike", "Booked")], limit=1)
+        if booked_stage:
+            booked_domain.append(("stage_id", "=", booked_stage.id))
+        
+        booked_leads = Lead.search(booked_domain)
+        total_booked = sum(booked_leads.mapped("expected_revenue"))
+        booked_count = len(booked_leads)
+        
+        # === TOTAL PAID INVOICES ===
+        paid_domain = [
+            ("move_type", "=", "out_invoice"),
+            ("payment_state", "=", "paid"),
+            ("invoice_date", ">=", start_date),
+            ("invoice_date", "<=", end_date),
+        ]
+        paid_invoices = Invoice.search(paid_domain)
+        total_paid = sum(paid_invoices.mapped("amount_total"))
+        paid_count = len(paid_invoices)
+        
+        # === OUTSTANDING (unpaid/partial) ===
+        outstanding_domain = [
+            ("move_type", "=", "out_invoice"),
+            ("payment_state", "in", ["not_paid", "partial"]),
+            ("invoice_date", ">=", start_date),
+            ("invoice_date", "<=", end_date),
+        ]
+        outstanding_invoices = Invoice.search(outstanding_domain)
+        total_outstanding = sum(outstanding_invoices.mapped("amount_residual"))
+        
+        # === OVERDUE (past due date) ===
+        overdue_invoices = outstanding_invoices.filtered(
+            lambda inv: inv.invoice_date_due and inv.invoice_date_due < today
+        )
+        overdue_amount = sum(overdue_invoices.mapped("amount_residual"))
+        
+        # === PER-REP DATA ===
+        # Get sales reps (users with CRM leads in this period)
+        all_leads = Lead.search([
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+            ("user_id", "!=", False),
+        ])
+        
+        rep_ids = all_leads.mapped("user_id").ids
+        reps_data = []
+        
+        # Define colors for reps
+        rep_colors = ["#6366F1", "#EC4899", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"]
+        
+        for idx, user_id in enumerate(rep_ids):
+            user = self.env["res.users"].browse(user_id)
+            
+            # Rep's booked leads
+            rep_booked = booked_leads.filtered(lambda l: l.user_id.id == user_id)
+            rep_booked_amount = sum(rep_booked.mapped("expected_revenue"))
+            
+            # Rep's total leads in period
+            rep_all_leads = all_leads.filtered(lambda l: l.user_id.id == user_id)
+            
+            # Conversion rate
+            conversion_rate = 0
+            if len(rep_all_leads) > 0:
+                conversion_rate = round((len(rep_booked) / len(rep_all_leads)) * 100)
+            
+            # Get initials
+            name_parts = (user.name or "").split()
+            initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "?"
+            
+            reps_data.append({
+                "id": user_id,
+                "name": user.name,
+                "initials": initials,
+                "color": rep_colors[idx % len(rep_colors)],
+                "booked_amount": rep_booked_amount,
+                "booked_count": len(rep_booked),
+                "leads_count": len(rep_all_leads),
+                "conversion_rate": conversion_rate,
+            })
+        
+        # Sort by booked amount descending
+        reps_data.sort(key=lambda r: r["booked_amount"], reverse=True)
+        
+        return {
+            "total_booked": total_booked,
+            "booked_count": booked_count,
+            "total_paid": total_paid,
+            "paid_count": paid_count,
+            "total_outstanding": total_outstanding,
+            "overdue_amount": overdue_amount,
+            "reps": reps_data,
+        }
+    
+    @api.model
     def get_sales_kpis(self):
-        """Get sales KPIs for the Sales Dashboard.
+        """Get sales KPIs for the Sales Dashboard (legacy method).
         
         Returns aggregated data from sale.order, crm.lead, account.move.
         """

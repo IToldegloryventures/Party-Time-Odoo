@@ -42,11 +42,7 @@
                                 <MyWorkSection tasks="myWorkTasks"/>
                             </div>
                             
-                            <!-- Row 2: 3-column grid -->
-                            <div class="ptt-grid-item">
-                                <AgendaCalendar events="agendaEvents"/>
-                            </div>
-                            
+                            <!-- Row 2: Other Tasks | Personal To-Do | Assigned Comments -->
                             <div class="ptt-grid-item">
                                 <AssignedTasks tasks="assignedTasks"/>
                             </div>
@@ -57,9 +53,13 @@
                                     onRefresh.bind="loadHomeData"/>
                             </div>
                             
-                            <!-- Row 3: Assigned Comments (full width) -->
-                            <div class="ptt-grid-item ptt-grid-full">
+                            <div class="ptt-grid-item">
                                 <AssignedComments comments="assignedComments"/>
+                            </div>
+                            
+                            <!-- Row 3: Agenda Calendar (full width at bottom) -->
+                            <div class="ptt-grid-item ptt-grid-full">
+                                <AgendaCalendar events="agendaEvents"/>
                             </div>
                         </div>
                     </t>
