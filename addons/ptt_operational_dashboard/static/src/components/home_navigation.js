@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { Component, useState } from "@odoo/owl";
-import { useService } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
 
 /**
  * HomeNavigation Component
@@ -22,9 +22,8 @@ export class HomeNavigation extends Component {
     };
 
     setup() {
-        this.user = useService("user");
         this.state = useState({
-            userName: this.user.name || "User",
+            userName: user.name || "User",
         });
     }
 
