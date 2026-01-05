@@ -5,6 +5,7 @@ This fixes:
 1. The module incorrectly overrode base.action_client_base_menu causing blank screen
 2. Corrupted search views cached in database with invalid <group expand> syntax
 """
+import json
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -26,7 +27,6 @@ def migrate(cr, version):
     if result:
         action_id = result[0]
         # Note: 'name' is a JSON field (translatable) in Odoo 19, so we use JSON format
-        import json
         name_json = json.dumps({"en_US": "Menu"})
         cr.execute(
             "UPDATE ir_act_client SET tag = %s, name = %s WHERE id = %s",
