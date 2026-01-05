@@ -9,6 +9,4 @@ class DashboardController extends Component {
     static components = { Layout };
 }
 
-DashboardController.template = "ptt_operational_dashboard.Dashboard";
-
 registry.category("actions").add("ptt_operational_dashboard", DashboardController);
