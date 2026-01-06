@@ -358,7 +358,7 @@ class PttHomeData(models.AbstractModel):
         # Stages: New, Qualified, Approval, Quote Sent, Booked, Lost
         stage_colors = {
             "New": "#17A2B8",           # Teal/Cyan - New inquiries
-            "Qualified": "#007BFF",     # Blue - Qualified leads
+            "Qualified": "#F97316",     # Orange - Qualified leads
             "Approval": "#FFC107",      # Yellow/Amber - Awaiting approval
             "Quote Sent": "#6F42C1",    # Purple - Quote sent
             "Booked": "#28A745",        # Green - Confirmed bookings
