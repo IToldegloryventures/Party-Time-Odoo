@@ -427,17 +427,32 @@ class PttHomeData(models.AbstractModel):
     
     @api.model
     def _get_crm_stages_with_colors(self, stage_colors, default_color):
-        """Get all CRM stages with their colors for the calendar legend."""
+        """Get PTT CRM stages with their colors for the calendar legend.
+        
+        Returns the official PTT stages in order, matching the stage_colors dict.
+        This ensures consistency even if database stages differ.
+        """
+        # Official PTT stages in pipeline order
+        ptt_stages = [
+            {"name": "New", "sequence": 1},
+            {"name": "Qualified", "sequence": 2},
+            {"name": "Approval", "sequence": 3},
+            {"name": "Quote Sent", "sequence": 4},
+            {"name": "Booked", "sequence": 5},
+            {"name": "Lost", "sequence": 6},
+        ]
+        
+        # Try to get actual stage IDs from database for filtering
         Stage = self.env["crm.stage"]
-        stages = Stage.search([], order="sequence")
+        db_stages = {s.name: s.id for s in Stage.search([])}
         
         result = []
-        for stage in stages:
+        for stage in ptt_stages:
             result.append({
-                "id": stage.id,
-                "name": stage.name,
-                "color": stage_colors.get(stage.name, default_color),
-                "sequence": stage.sequence,
+                "id": db_stages.get(stage["name"], stage["name"]),  # Use DB id or name as fallback
+                "name": stage["name"],
+                "color": stage_colors.get(stage["name"], default_color),
+                "sequence": stage["sequence"],
             })
         
         return result
