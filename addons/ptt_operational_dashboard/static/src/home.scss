@@ -67,8 +67,14 @@ $status-completed: #6C757D;
         .ptt-nav-brand {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
             
+            .ptt-logo-img {
+                height: 45px;
+                width: auto;
+                object-fit: contain;
+            }
+            
+            // Legacy text logo (fallback)
             .ptt-logo {
                 width: 40px;
                 height: 40px;

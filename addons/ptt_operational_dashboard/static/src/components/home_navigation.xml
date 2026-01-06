@@ -9,8 +9,7 @@
             
             <!-- Brand -->
             <div class="ptt-nav-brand">
-                <div class="ptt-logo">PTT</div>
-                <h1 class="ptt-title">Party Time Texas</h1>
+                <img class="ptt-logo-img" src="/ptt_operational_dashboard/static/src/img/logo.png" alt="Party Time Texas"/>
             </div>
             
             <!-- Navigation Tabs -->
