@@ -34,7 +34,35 @@ $status-completed: #6C757D;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 1rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        
+        // Back to Odoo Apps button
+        .ptt-apps-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.4);
+                transform: scale(1.05);
+            }
+            
+            &:active {
+                transform: scale(0.95);
+            }
+        }
         
         .ptt-nav-brand {
             display: flex;

@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { Component, useState } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 
 /**
@@ -11,6 +12,8 @@ import { user } from "@web/core/user";
  * - Sales Dashboard
  * - Commission Dashboard
  * - Event Calendar
+ * 
+ * Also includes a button to go back to Odoo's main apps menu.
  */
 export class HomeNavigation extends Component {
     static template = "ptt_operational_dashboard.HomeNavigation";
@@ -22,6 +25,7 @@ export class HomeNavigation extends Component {
     };
 
     setup() {
+        this.action = useService("action");
         this.state = useState({
             userName: user.name || "User",
         });
@@ -43,5 +47,9 @@ export class HomeNavigation extends Component {
     onRefreshClick() {
         this.props.onRefresh();
     }
-}
 
+    onAppsClick() {
+        // Navigate back to Odoo's main apps menu
+        this.action.doAction("menu");
+    }
+}

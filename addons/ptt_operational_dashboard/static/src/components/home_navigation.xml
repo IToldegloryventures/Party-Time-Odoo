@@ -2,6 +2,11 @@
 <templates xml:space="preserve">
     <t t-name="ptt_operational_dashboard.HomeNavigation">
         <div class="ptt-top-nav">
+            <!-- Back to Odoo Apps -->
+            <button class="ptt-apps-btn" t-on-click="onAppsClick" title="Back to Odoo Apps">
+                <i class="fa fa-th"/>
+            </button>
+            
             <!-- Brand -->
             <div class="ptt-nav-brand">
                 <div class="ptt-logo">PTT</div>
@@ -36,4 +41,3 @@
         </div>
     </t>
 </templates>
-
