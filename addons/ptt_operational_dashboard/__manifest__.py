@@ -42,6 +42,8 @@
         # Security (load first)
         "security/ptt_security.xml",
         "security/ir.model.access.csv",
+        # Data (CRM Stages)
+        "data/crm_stages.xml",
         # Views & Actions (load before menus)
         "views/ptt_personal_todo_views.xml",
         "views/ptt_sales_rep_views.xml",

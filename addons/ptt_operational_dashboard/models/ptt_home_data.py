@@ -354,6 +354,7 @@ class PttHomeData(models.AbstractModel):
         leads = Lead.search(domain, order="x_event_date asc")
         
         # PTT CRM Stage Colors
+        # These are the official PTT pipeline stages
         # Stages: New, Qualified, Approval, Quote Sent, Booked, Lost
         stage_colors = {
             "New": "#17A2B8",           # Teal/Cyan - New inquiries

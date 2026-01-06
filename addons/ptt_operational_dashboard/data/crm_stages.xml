@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!--
+            PTT CRM Pipeline Stages
+            
+            These are the official stages for Party Time Tents CRM pipeline.
+            They will replace/update Odoo's default CRM stages.
+            
+            To customize colors in the calendar, edit:
+            addons/ptt_operational_dashboard/models/ptt_home_data.py
+            Look for "stage_colors" dictionary.
+        -->
+        
+        <!-- Stage 1: New - Fresh inquiries -->
+        <record id="crm_stage_new" model="crm.stage">
+            <field name="name">New</field>
+            <field name="sequence">1</field>
+            <field name="is_won">False</field>
+        </record>
+        
+        <!-- Stage 2: Qualified - Lead has been contacted and qualified -->
+        <record id="crm_stage_qualified" model="crm.stage">
+            <field name="name">Qualified</field>
+            <field name="sequence">2</field>
+            <field name="is_won">False</field>
+        </record>
+        
+        <!-- Stage 3: Approval - Awaiting internal or client approval -->
+        <record id="crm_stage_approval" model="crm.stage">
+            <field name="name">Approval</field>
+            <field name="sequence">3</field>
+            <field name="is_won">False</field>
+        </record>
+        
+        <!-- Stage 4: Quote Sent - Quote/proposal has been sent -->
+        <record id="crm_stage_quote_sent" model="crm.stage">
+            <field name="name">Quote Sent</field>
+            <field name="sequence">4</field>
+            <field name="is_won">False</field>
+        </record>
+        
+        <!-- Stage 5: Booked - Event is confirmed and booked -->
+        <record id="crm_stage_booked" model="crm.stage">
+            <field name="name">Booked</field>
+            <field name="sequence">5</field>
+            <field name="is_won">True</field>
+        </record>
+        
+        <!-- Stage 6: Lost - Opportunity was lost -->
+        <record id="crm_stage_lost" model="crm.stage">
+            <field name="name">Lost</field>
+            <field name="sequence">6</field>
+            <field name="is_won">False</field>
+            <field name="fold">True</field>
+        </record>
+        
+    </data>
+</odoo>
+
