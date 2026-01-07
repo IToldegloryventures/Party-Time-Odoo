@@ -38,6 +38,7 @@
         "account",
         "analytic",
         "sale_project",
+        "ptt_business_core",  # Required for x_is_vendor, x_primary_sales_rep_id fields on res.partner
     ],
     "data": [
         # Security (load first)

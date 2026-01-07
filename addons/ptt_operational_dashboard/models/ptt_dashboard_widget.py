@@ -508,13 +508,18 @@ class PttDashboardWidget(models.Model):
         self.ensure_one()
         # TODO: Replace with actual vendor compliance model when implemented
         # For now, open vendor list filtered to companies
+        Partner = self.env["res.partner"]
+        domain = [("is_company", "=", True)]
+        # x_is_vendor is defined in ptt_business_core; guard for safety
+        if "x_is_vendor" in Partner._fields:
+            domain.append(("x_is_vendor", "=", True))
         return {
             "type": "ir.actions.act_window",
             "name": "Vendor Compliance Issues",
             "res_model": "res.partner",
             "view_mode": "list,form",
             "target": "current",
-            "domain": [("is_company", "=", True), ("x_is_vendor", "=", True)],
+            "domain": domain,
             "context": {
                 "search_default_compliance_issues": 1,
             }

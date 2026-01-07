@@ -8,7 +8,6 @@
     <!-- Quote Approver Group - Can approve quotes before sending to clients -->
     <record id="group_quote_approver" model="res.groups">
         <field name="name">PTT Quote Approver</field>
-        <field name="category_id" ref="base.module_category_sales_sales"/>
         <field name="comment">Users in this group can approve sales quotes before they are sent to clients. Typically assigned to sales managers or owners.</field>
     </record>
 
