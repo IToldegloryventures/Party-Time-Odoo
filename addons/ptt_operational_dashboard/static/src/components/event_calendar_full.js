@@ -26,6 +26,11 @@ export class EventCalendarFull extends Component {
         this.action = useService("action");
         this.orm = useService("orm");
         
+        // Get current month date range
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
         this.state = useState({
             currentDate: new Date(),
             events: [],
@@ -36,6 +41,9 @@ export class EventCalendarFull extends Component {
             selectedDateEvents: [],
             visibleStages: {}, // stage_id -> boolean
             currentUserId: null,
+            startDate: this.formatDateForInput(firstDay),
+            endDate: this.formatDateForInput(lastDay),
+            dateRange: 'this_month', // this_week, this_month, custom
         });
         
         onWillStart(async () => {
@@ -146,15 +154,25 @@ export class EventCalendarFull extends Component {
         return { total, myEvents };
     }
 
+    formatDateForInput(date) {
+        return date.toISOString().split('T')[0];
+    }
+
     async loadCalendarData() {
         this.state.loading = true;
         try {
-            const year = this.state.currentDate.getFullYear();
-            const month = this.state.currentDate.getMonth();
+            let startDate, endDate;
             
-            // Get first and last day of month (with buffer for prev/next month days shown)
-            const startDate = this._formatDateStr(new Date(year, month - 1, 1));
-            const endDate = this._formatDateStr(new Date(year, month + 2, 0));
+            if (this.state.dateRange === 'custom') {
+                startDate = this.state.startDate;
+                endDate = this.state.endDate;
+            } else {
+                // Use current month view
+                const year = this.state.currentDate.getFullYear();
+                const month = this.state.currentDate.getMonth();
+                startDate = this._formatDateStr(new Date(year, month - 1, 1));
+                endDate = this._formatDateStr(new Date(year, month + 2, 0));
+            }
             
             // Call backend method
             const result = await this.orm.call(
@@ -218,6 +236,61 @@ export class EventCalendarFull extends Component {
         await this.loadCalendarData();
     }
 
+    async     setDateRange(range) {
+        const now = new Date();
+        let startDate, endDate;
+        
+        switch (range) {
+            case 'this_week':
+                const dayOfWeek = now.getDay();
+                const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Monday
+                startDate = new Date(now.getFullYear(), now.getMonth(), diff);
+                endDate = new Date(now.getFullYear(), now.getMonth(), diff + 6);
+                this.state.currentDate = new Date(startDate);
+                break;
+            case 'this_month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                this.state.currentDate = new Date(startDate);
+                break;
+            case 'last_month':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+                this.state.currentDate = new Date(startDate);
+                break;
+            case 'ytd':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                this.state.currentDate = new Date(startDate);
+                break;
+            case 'custom':
+                this.state.dateRange = 'custom';
+                return; // Don't reload, let user set dates manually
+            default:
+                return;
+        }
+        
+        this.state.startDate = this.formatDateForInput(startDate);
+        this.state.endDate = this.formatDateForInput(endDate);
+        this.state.dateRange = range;
+        await this.loadCalendarData();
+    }
+
+    async onDateChange() {
+        this.state.dateRange = 'custom';
+        await this.loadCalendarData();
+    }
+
+    get dateRangeLabel() {
+        if (this.state.dateRange === 'custom') {
+            const start = new Date(this.state.startDate + "T00:00:00");
+            const end = new Date(this.state.endDate + "T00:00:00");
+            const options = { month: 'short', day: 'numeric' };
+            return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
+        }
+        return this.currentMonthYear;
+    }
+
     onToggleStage(stageId) {
         this.state.visibleStages[stageId] = !this.state.visibleStages[stageId];
         // Update selected date events
@@ -230,7 +303,10 @@ export class EventCalendarFull extends Component {
     }
 
     onEventClick(event) {
-        if (event.action) {
+        // Prefer Project when available (avoids CRM/Project duplication and matches operational flow)
+        if (event.project_action) {
+            this.action.doAction(event.project_action);
+        } else if (event.action) {
             this.action.doAction(event.action);
         }
     }

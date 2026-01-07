@@ -64,125 +64,26 @@ def migrate(cr, version):
     # === FIX 3: Add NOT NULL constraints to required fields ===
     _logger.info("Adding NOT NULL constraints to required fields...")
     
-    # ptt.dashboard.metric.config - metric_name
-    cr.execute("""
-        SELECT COUNT(*) FROM ptt_dashboard_metric_config 
-        WHERE metric_name IS NULL
-    """)
-    null_count = cr.fetchone()[0]
-    if null_count > 0:
-        _logger.warning("Found %s records with NULL metric_name, setting defaults...", null_count)
+    # NOTE: Dashboard Editor models (ptt.dashboard.metric.config, ptt.dashboard.layout.config) 
+    # were removed in v19.0.1.0.3 - Phase 2 feature. Skip constraint additions for these tables.
+    # If tables exist (from previous installs), they will be dropped during module upgrade.
+    
+    def table_exists(table_name):
+        """Check if a table exists in the database."""
         cr.execute("""
-            UPDATE ptt_dashboard_metric_config 
-            SET metric_name = 'metric_' || id::text 
-            WHERE metric_name IS NULL
-        """)
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = %s
+            )
+        """, (table_name,))
+        return cr.fetchone()[0]
     
-    cr.execute("""
-        ALTER TABLE ptt_dashboard_metric_config 
-        ALTER COLUMN metric_name SET NOT NULL
-    """)
-    _logger.info("Added NOT NULL constraint to ptt_dashboard_metric_config.metric_name")
-    
-    # ptt.dashboard.metric.config - metric_label
-    cr.execute("""
-        SELECT COUNT(*) FROM ptt_dashboard_metric_config 
-        WHERE metric_label IS NULL
-    """)
-    null_count = cr.fetchone()[0]
-    if null_count > 0:
-        _logger.warning("Found %s records with NULL metric_label, setting defaults...", null_count)
-        cr.execute("""
-            UPDATE ptt_dashboard_metric_config 
-            SET metric_label = COALESCE(metric_name, 'Metric ' || id::text)
-            WHERE metric_label IS NULL
-        """)
-    
-    cr.execute("""
-        ALTER TABLE ptt_dashboard_metric_config 
-        ALTER COLUMN metric_label SET NOT NULL
-    """)
-    _logger.info("Added NOT NULL constraint to ptt_dashboard_metric_config.metric_label")
-    
-    # ptt.dashboard.metric.config - tab_assignment (has default, but ensure NOT NULL)
-    cr.execute("""
-        SELECT COUNT(*) FROM ptt_dashboard_metric_config 
-        WHERE tab_assignment IS NULL
-    """)
-    null_count = cr.fetchone()[0]
-    if null_count > 0:
-        _logger.warning("Found %s records with NULL tab_assignment, setting defaults...", null_count)
-        cr.execute("""
-            UPDATE ptt_dashboard_metric_config 
-            SET tab_assignment = 'sales'
-            WHERE tab_assignment IS NULL
-        """)
-    
-    cr.execute("""
-        ALTER TABLE ptt_dashboard_metric_config 
-        ALTER COLUMN tab_assignment SET NOT NULL
-    """)
-    _logger.info("Added NOT NULL constraint to ptt_dashboard_metric_config.tab_assignment")
-    
-    # ptt.dashboard.layout.config - section_name
-    cr.execute("""
-        SELECT COUNT(*) FROM ptt_dashboard_layout_config 
-        WHERE section_name IS NULL
-    """)
-    null_count = cr.fetchone()[0]
-    if null_count > 0:
-        _logger.warning("Found %s records with NULL section_name, setting defaults...", null_count)
-        cr.execute("""
-            UPDATE ptt_dashboard_layout_config 
-            SET section_name = 'section_' || id::text 
-            WHERE section_name IS NULL
-        """)
-    
-    cr.execute("""
-        ALTER TABLE ptt_dashboard_layout_config 
-        ALTER COLUMN section_name SET NOT NULL
-    """)
-    _logger.info("Added NOT NULL constraint to ptt_dashboard_layout_config.section_name")
-    
-    # ptt.dashboard.layout.config - section_label
-    cr.execute("""
-        SELECT COUNT(*) FROM ptt_dashboard_layout_config 
-        WHERE section_label IS NULL
-    """)
-    null_count = cr.fetchone()[0]
-    if null_count > 0:
-        _logger.warning("Found %s records with NULL section_label, setting defaults...", null_count)
-        cr.execute("""
-            UPDATE ptt_dashboard_layout_config 
-            SET section_label = COALESCE(section_name, 'Section ' || id::text)
-            WHERE section_label IS NULL
-        """)
-    
-    cr.execute("""
-        ALTER TABLE ptt_dashboard_layout_config 
-        ALTER COLUMN section_label SET NOT NULL
-    """)
-    _logger.info("Added NOT NULL constraint to ptt_dashboard_layout_config.section_label")
-    
-    # ptt.dashboard.layout.config - tab_assignment
-    cr.execute("""
-        SELECT COUNT(*) FROM ptt_dashboard_layout_config 
-        WHERE tab_assignment IS NULL
-    """)
-    null_count = cr.fetchone()[0]
-    if null_count > 0:
-        _logger.warning("Found %s records with NULL tab_assignment, setting defaults...", null_count)
-        cr.execute("""
-            UPDATE ptt_dashboard_layout_config 
-            SET tab_assignment = 'sales'
-            WHERE tab_assignment IS NULL
-        """)
-    
-    cr.execute("""
-        ALTER TABLE ptt_dashboard_layout_config 
-        ALTER COLUMN tab_assignment SET NOT NULL
-    """)
-    _logger.info("Added NOT NULL constraint to ptt_dashboard_layout_config.tab_assignment")
+    # Only process dashboard editor tables if they exist (for backward compatibility)
+    if table_exists('ptt_dashboard_metric_config'):
+        _logger.info("ptt_dashboard_metric_config table exists - skipping (models removed in v19.0.1.0.3)")
+    if table_exists('ptt_dashboard_layout_config'):
+        _logger.info("ptt_dashboard_layout_config table exists - skipping (models removed in v19.0.1.0.3)")
     
     # Check other required fields in other models
     # ptt.sales.commission - sales_rep_id

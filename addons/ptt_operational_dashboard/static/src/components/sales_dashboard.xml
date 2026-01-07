@@ -2,27 +2,42 @@
 <templates xml:space="preserve">
     <t t-name="ptt_operational_dashboard.SalesDashboard">
         <div class="ptt-sales-dashboard">
-            <!-- Date Range Filter -->
-            <div class="ptt-date-filter mb-4">
+            <!-- Date Range Filter - Segmented Control Style -->
+            <div class="ptt-date-filter">
                 <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <div class="btn-group">
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('today')">Today</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_week')">This Week</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_month')">This Month</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_month')">Last Month</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_quarter')">This Quarter</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_quarter')">Last Quarter</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_year')">This Year</button>
-                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_year')">Last Year</button>
+                    <div class="btn-group" role="group">
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'this_week' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('this_week')">
+                            This Week
+                        </button>
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'this_month' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('this_month')">
+                            This Month
+                        </button>
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'last_month' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('last_month')">
+                            Last Month
+                        </button>
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'ytd' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('ytd')">
+                            YTD
+                        </button>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                        <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
                             t-model="state.startDate" t-on-change="onDateChange"/>
-                        <span class="text-muted">to</span>
-                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                        <span class="text-muted small">to</span>
+                        <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
                             t-model="state.endDate" t-on-change="onDateChange"/>
                     </div>
-                    <span class="badge bg-secondary" t-esc="dateRangeLabel"/>
+                    <span class="badge bg-light text-dark border" style="padding: 0.5rem 0.75rem; font-weight: 500;">
+                        <i class="fa fa-calendar me-1"/>
+                        <t t-esc="dateRangeLabel"/>
+                    </span>
                 </div>
             </div>
             
@@ -130,29 +145,33 @@
                             </div>
                             <div class="ptt-rep-stats">
                                 <div class="ptt-rep-stat">
-                                    <span class="label">Booked (Absolute)</span>
+                                    <span class="label">Revenue</span>
                                     <span class="value" t-esc="formatCurrency(rep.booked_amount)"/>
-                                    <span class="label small" t-if="state.data.total_booked > 0">
-                                        (<t t-esc="((rep.booked_amount / state.data.total_booked) * 100).toFixed(1)"/>% of total)
+                                    <span class="label small" t-if="rep.target_amount > 0">
+                                        Target: <t t-esc="formatCurrency(rep.target_amount)"/>
                                     </span>
                                 </div>
                                 <div class="ptt-rep-stat">
-                                    <span class="label">Events</span>
-                                    <span class="value" t-esc="rep.booked_count"/>
+                                    <span class="label">Won</span>
+                                    <span class="value text-success" t-esc="rep.booked_count"/>
                                 </div>
                                 <div class="ptt-rep-stat">
-                                    <span class="label">Leads</span>
-                                    <span class="value" t-esc="rep.leads_count"/>
+                                    <span class="label">Lost</span>
+                                    <span class="value text-danger" t-esc="rep.lost_count || 0"/>
+                                </div>
+                                <div class="ptt-rep-stat">
+                                    <span class="label">Conversion</span>
+                                    <span class="value" t-esc="rep.conversion_rate + '%'"/>
                                 </div>
                             </div>
                             <div class="ptt-rep-progress">
-                                <div class="progress" style="height: 6px;">
+                                <div class="progress" style="height: 8px; margin-bottom: 0.5rem;">
                                     <div class="progress-bar" 
-                                        t-att-style="'width: ' + (rep.conversion_rate || 0) + '%'"
-                                        t-att-class="rep.conversion_rate > 50 ? 'bg-success' : rep.conversion_rate > 25 ? 'bg-warning' : 'bg-danger'"/>
+                                        t-att-style="'width: ' + Math.min((rep.revenue_vs_target_pct || 0), 100) + '%'"
+                                        t-att-class="rep.revenue_vs_target_pct >= 100 ? 'bg-success' : rep.revenue_vs_target_pct >= 75 ? 'bg-warning' : 'bg-danger'"/>
                                 </div>
                                 <small class="text-muted">
-                                    <t t-esc="rep.conversion_rate"/>% conversion
+                                    <t t-esc="rep.revenue_vs_target_pct || 0"/>% of target
                                 </small>
                             </div>
                         </div>

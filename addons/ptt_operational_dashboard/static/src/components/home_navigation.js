@@ -34,11 +34,9 @@ export class HomeNavigation extends Component {
     get tabs() {
         return [
             { id: "home", label: "Home", icon: "fa-home" },
-            { id: "sales", label: "Sales Dashboard", icon: "fa-chart-bar" },
+            { id: "sales", label: "Sales", icon: "fa-chart-bar" },
             { id: "operations", label: "Operations", icon: "fa-cogs" },
-            { id: "communication", label: "Communication", icon: "fa-comments" },
-            { id: "commission", label: "Commission", icon: "fa-dollar" },
-            { id: "calendar", label: "Event Calendar", icon: "fa-calendar" },
+            { id: "calendar", label: "Calendar", icon: "fa-calendar" },
         ];
     }
 

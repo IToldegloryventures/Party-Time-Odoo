@@ -5,6 +5,7 @@ from datetime import timedelta
 class PttDashboardWidget(models.Model):
     _name = "ptt.dashboard.widget"
     _description = "PTT Dashboard Widget (Singleton)"
+    _rec_name = "name"
     
     name = fields.Char(default="PTT Dashboard", readonly=True)
     
@@ -49,13 +50,14 @@ class PttDashboardWidget(models.Model):
     def _compute_overview_kpis(self):
         """Compute company-wide KPIs.
         
-        Note: @api.depends() is empty because this computes from multiple unrelated models:
+        Depends on last_kpi_update trigger field which is updated when related data changes.
+        Computes from multiple unrelated models:
         - crm.lead (leads)
         - sale.order (quotes, revenue)
         - project.project (events, costs)
         - account.move (outstanding payments, vendor bills)
         
-        This method will recalculate when the dashboard is accessed/refreshed.
+        This method will recalculate when last_kpi_update changes.
         For real-time updates, consider adding a cron job or bus notifications.
         """
         for rec in self:
@@ -69,14 +71,18 @@ class PttDashboardWidget(models.Model):
                 ("state", "in", ["draft", "sent"])
             ])
             
-            # Events this week - using x_event_date from ptt_business_core
+            # Events this week - using x_event_date from this module (project.project inherit)
             today = fields.Date.context_today(self)
             week_start = today - timedelta(days=today.weekday())
             week_end = week_start + timedelta(days=6)
-            rec.total_events_week = self.env["project.project"].search_count([
-                ("x_event_date", ">=", week_start),
-                ("x_event_date", "<=", week_end)
-            ])
+            Project = self.env["project.project"]
+            if "x_event_date" in Project._fields:
+                rec.total_events_week = Project.search_count([
+                    ("x_event_date", ">=", week_start),
+                    ("x_event_date", "<=", week_end),
+                ])
+            else:
+                rec.total_events_week = 0
             
             invoices = self.env["account.move"].search([
                 ("move_type", "=", "out_invoice"),
@@ -109,11 +115,17 @@ class PttDashboardWidget(models.Model):
                 analytic_account_ids = projects_with_accounts.mapped("account_id").ids
                 
                 # Costs: Vendor bills linked to projects via analytic_distribution
-                vendor_bill_lines = self.env["account.move.line"].search([
+                MoveLine = self.env["account.move.line"]
+                domain = [
                     ("move_id.move_type", "in", ["in_invoice", "in_refund"]),
                     ("move_id.state", "=", "posted"),  # Only posted bills
-                    ("analytic_distribution", "in", analytic_account_ids)
-                ])
+                ]
+                # Prefer the computed helper field when available (analytic.mixin), fallback otherwise.
+                if "distribution_analytic_account_ids" in MoveLine._fields:
+                    domain.append(("distribution_analytic_account_ids", "in", analytic_account_ids))
+                else:
+                    domain.append(("analytic_distribution", "in", analytic_account_ids))
+                vendor_bill_lines = MoveLine.search(domain)
                 
                 # Get unique vendor bills and sum their totals (avoid double-counting)
                 vendor_bills = vendor_bill_lines.mapped("move_id")
@@ -125,7 +137,10 @@ class PttDashboardWidget(models.Model):
             
             # FALLBACK: Use project fields for projects without analytic accounts
             if projects_without_accounts:
-                fallback_costs = sum(projects_without_accounts.mapped("x_actual_total_vendor_costs"))
+                if "x_actual_total_vendor_costs" in Project._fields:
+                    fallback_costs = sum(projects_without_accounts.mapped("x_actual_total_vendor_costs"))
+                else:
+                    fallback_costs = 0.0
                 total_costs += fallback_costs
             
             # Calculate profit margin percentage
@@ -162,13 +177,18 @@ class PttDashboardWidget(models.Model):
     def action_assign_vendor(self):
         """Open vendor list filtered to companies."""
         self.ensure_one()
+        Partner = self.env["res.partner"]
+        domain = [("is_company", "=", True)]
+        # x_is_vendor is typically a Studio/custom field; guard to avoid crashing on clean databases.
+        if "x_is_vendor" in Partner._fields:
+            domain.append(("x_is_vendor", "=", True))
         return {
             "type": "ir.actions.act_window",
             "name": "Assign Vendor",
             "res_model": "res.partner",
             "view_mode": "list,form",
             "target": "current",
-            "domain": [("is_company", "=", True), ("x_is_vendor", "=", True)]
+            "domain": domain,
         }
     
     def action_record_payment(self):
@@ -340,6 +360,16 @@ class PttDashboardWidget(models.Model):
     def action_view_events(self):
         """Open events list/pivot view where users can use standard Odoo export or pivot Excel export."""
         self.ensure_one()
+        Project = self.env["project.project"]
+        if "x_event_date" not in Project._fields:
+            today = fields.Date.context_today(self)
+            return {
+                "type": "ir.actions.act_window",
+                "name": "Events",
+                "res_model": "project.project",
+                "view_mode": "list,form",
+                "target": "current",
+            }
         today = fields.Date.context_today(self)
         return {
             "type": "ir.actions.act_window",
@@ -356,12 +386,21 @@ class PttDashboardWidget(models.Model):
     def action_view_events_current_month(self):
         """Open events pivot view filtered to current month - can export as Excel."""
         self.ensure_one()
+        Project = self.env["project.project"]
+        if "x_event_date" not in Project._fields:
+            return self.action_view_events()
         today = fields.Date.context_today(self)
         month_start = today.replace(day=1)
         if today.month == 12:
             month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
         else:
             month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+        context = {}
+        if "x_actual_total_vendor_costs" in Project._fields:
+            context.update({
+                "pivot_measures": ["x_actual_total_vendor_costs"],
+                "pivot_column_groupby": ["x_event_date:month"],
+            })
         return {
             "type": "ir.actions.act_window",
             "name": "Events - Current Month",
@@ -372,15 +411,15 @@ class PttDashboardWidget(models.Model):
                 ("x_event_date", ">=", month_start.strftime("%Y-%m-%d")),
                 ("x_event_date", "<=", month_end.strftime("%Y-%m-%d"))
             ],
-            "context": {
-                "pivot_measures": ["x_actual_total_vendor_costs"],
-                "pivot_column_groupby": ["x_event_date:month"],
-            }
+            "context": context,
         }
     
     def action_view_events_previous_month(self):
         """Open events pivot view filtered to previous month - can export as Excel."""
         self.ensure_one()
+        Project = self.env["project.project"]
+        if "x_event_date" not in Project._fields:
+            return self.action_view_events()
         today = fields.Date.context_today(self)
         if today.month == 1:
             prev_month_start = today.replace(year=today.year - 1, month=12, day=1)
@@ -388,6 +427,12 @@ class PttDashboardWidget(models.Model):
         else:
             prev_month_start = today.replace(month=today.month - 1, day=1)
             prev_month_end = today.replace(day=1) - timedelta(days=1)
+        context = {}
+        if "x_actual_total_vendor_costs" in Project._fields:
+            context.update({
+                "pivot_measures": ["x_actual_total_vendor_costs"],
+                "pivot_column_groupby": ["x_event_date:month"],
+            })
         return {
             "type": "ir.actions.act_window",
             "name": "Events - Previous Month",
@@ -398,10 +443,7 @@ class PttDashboardWidget(models.Model):
                 ("x_event_date", ">=", prev_month_start.strftime("%Y-%m-%d")),
                 ("x_event_date", "<=", prev_month_end.strftime("%Y-%m-%d"))
             ],
-            "context": {
-                "pivot_measures": ["x_actual_total_vendor_costs"],
-                "pivot_column_groupby": ["x_event_date:month"],
-            }
+            "context": context,
         }
     
     def action_view_commissions(self):

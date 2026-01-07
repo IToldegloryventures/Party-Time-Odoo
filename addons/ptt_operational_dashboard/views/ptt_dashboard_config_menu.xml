@@ -8,27 +8,8 @@
               action="action_ptt_dashboard_config"
               groups="base.group_system"/>
 
-    <!-- Sub-menu items -->
-    <menuitem id="menu_ptt_dashboard_metric_config"
-              name="Metric Configuration"
-              parent="menu_ptt_dashboard_config"
-              sequence="10"
-              action="action_ptt_dashboard_metric_config"
-              groups="base.group_system"/>
-
-    <menuitem id="menu_ptt_dashboard_layout_config"
-              name="Layout Configuration"
-              parent="menu_ptt_dashboard_config"
-              sequence="20"
-              action="action_ptt_dashboard_layout_config"
-              groups="base.group_system"/>
-
-    <menuitem id="menu_ptt_dashboard_editor"
-              name="Dashboard Editor"
-              parent="menu_ptt_dashboard_config"
-              sequence="30"
-              action="action_ptt_dashboard_editor"
-              groups="base.group_system"/>
+    <!-- NOTE: Dashboard Editor menu items (Metric Config, Layout Config, Editor) removed in v19.0.1.0.3 -->
+    <!-- Phase 2 feature - drag-and-drop editor will be reintroduced later -->
 </odoo>
 
 

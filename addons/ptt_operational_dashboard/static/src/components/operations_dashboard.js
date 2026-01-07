@@ -34,6 +34,7 @@ export class OperationsDashboard extends Component {
             loading: true,
             startDate: this.formatDateForInput(firstDay),
             endDate: this.formatDateForInput(lastDay),
+            dateRange: 'this_month', // Track active date range
         });
         
         onWillStart(async () => {
@@ -70,6 +71,7 @@ export class OperationsDashboard extends Component {
     }
 
     async onDateChange() {
+        this.state.dateRange = 'custom';
         await this.loadData();
     }
 
@@ -111,6 +113,7 @@ export class OperationsDashboard extends Component {
         
         this.state.startDate = this.formatDateForInput(startDate);
         this.state.endDate = this.formatDateForInput(endDate);
+        this.state.dateRange = range;
         this.loadData();
     }
 
@@ -133,6 +136,35 @@ export class OperationsDashboard extends Component {
         const end = new Date(this.state.endDate + "T00:00:00");
         const options = { month: 'short', day: 'numeric' };
         return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
+    }
+
+    onTaskMetricClick(metricType) {
+        const today = new Date().toISOString().split('T')[0];
+        let domain = [["stage_id.fold", "=", false]];
+        
+        switch (metricType) {
+            case "assigned":
+                domain.push(["user_ids", "!=", false]);
+                break;
+            case "overdue":
+                domain.push(["date_deadline", "<", today], ["date_deadline", "!=", false]);
+                break;
+            case "unassigned":
+                domain.push(["user_ids", "=", false]);
+                break;
+            case "completed":
+                domain = [["stage_id.fold", "=", true]];
+                break;
+        }
+        
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: `Tasks - ${metricType}`,
+            res_model: "project.task",
+            views: [[false, "list"], [false, "form"]],
+            domain: domain,
+            target: "current",
+        });
     }
 }
 

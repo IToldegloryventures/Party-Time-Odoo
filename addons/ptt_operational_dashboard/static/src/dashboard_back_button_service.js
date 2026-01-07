@@ -16,6 +16,8 @@ const dashboardBackButtonService = {
     start(env, { action }) {
         let component = null;
         let mounted = false;
+        let mountRetries = 0;
+        const MAX_RETRIES = 10;
         
         const mountButton = () => {
             if (mounted) return;
@@ -28,25 +30,48 @@ const dashboardBackButtonService = {
                 document.body.appendChild(container);
             }
             
-            // Mount component
-            component = mount(DashboardBackButton, container, {
-                env,
-            });
-            mounted = true;
+            try {
+                // Mount component
+                // Template should be available due to asset ordering (XML loads before this service)
+                component = mount(DashboardBackButton, container, {
+                    env,
+                });
+                mounted = true;
+                mountRetries = 0;
+            } catch (error) {
+                // If template not found, retry a few times
+                if (error.message && error.message.includes("Missing template") && mountRetries < MAX_RETRIES) {
+                    mountRetries++;
+                    console.warn(`Template not yet available, retrying (${mountRetries}/${MAX_RETRIES})...`);
+                    setTimeout(mountButton, 200);
+                    return;
+                }
+                console.error("Failed to mount DashboardBackButton:", error);
+                mounted = false;
+            }
         };
         
         const unmountButton = () => {
             if (component) {
-                component.destroy();
+                try {
+                    component.destroy();
+                } catch (error) {
+                    console.warn("Error unmounting DashboardBackButton:", error);
+                }
                 component = null;
                 mounted = false;
             }
         };
         
-        // Mount after a small delay to ensure templates are loaded
-        setTimeout(() => {
-            mountButton();
-        }, 100);
+        // Mount after DOM is ready and templates should be loaded
+        // Asset ordering ensures XML template loads before this service
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", () => {
+                setTimeout(mountButton, 100);
+            });
+        } else {
+            setTimeout(mountButton, 100);
+        }
         
         // Listen for navigation changes
         const checkAndUpdate = () => {

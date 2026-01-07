@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.DashboardTasksSection">
+        <div class="ptt-dashboard-tasks-section">
+            <div class="ptt-section-header mb-3">
+                <h2><i class="fa fa-tasks"/> Dashboard Tasks</h2>
+            </div>
+            
+            <!-- Task Sections Grid -->
+            <div class="row g-3">
+                <!-- Assigned Tasks -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="ptt-card">
+                        <div class="ptt-section-header">
+                            <h3><i class="fa fa-user"/> Assigned Tasks</h3>
+                            <span class="badge bg-primary"><t t-esc="getSectionCount('assigned_tasks')"/></span>
+                        </div>
+                        <div class="ptt-task-list">
+                            <t t-if="getSectionCount('assigned_tasks') === 0">
+                                <div class="ptt-empty-state small">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No assigned tasks</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="getSectionTasks('assigned_tasks').slice(0, 5)" t-as="task" t-key="task.id">
+                                    <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                        <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                        <div class="ptt-task-content">
+                                            <div class="ptt-task-name">
+                                                <t t-esc="task.name"/>
+                                                <span t-if="task.is_overdue" class="badge bg-danger ms-1" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; font-weight: 600;">
+                                                    <i class="fa fa-exclamation-triangle me-1"/>Overdue
+                                                </span>
+                                                <span t-att-class="'badge ms-1 ' + (task.priority === 3 ? 'bg-danger' : task.priority === 2 ? 'bg-warning' : task.priority === 1 ? 'bg-info' : 'bg-secondary')" 
+                                                      style="font-size: 0.65rem; padding: 0.15rem 0.35rem; font-weight: 600;">
+                                                    <t t-if="task.priority === 3">High</t>
+                                                    <t t-elif="task.priority === 2">Medium</t>
+                                                    <t t-elif="task.priority === 1">Low</t>
+                                                    <t t-else="">Normal</t>
+                                                </span>
+                                            </div>
+                                            <div class="ptt-task-meta small">
+                                                <span t-if="task.project_name" class="text-muted">
+                                                    <i class="fa fa-folder-o me-1"/>
+                                                    <t t-esc="task.project_name"/>
+                                                </span>
+                                                <span t-att-class="'ms-2' + (task.is_overdue ? ' text-danger fw-semibold' : '')">
+                                                    <i class="fa fa-clock-o me-1"/>
+                                                    <t t-esc="formatDate(task.date_deadline)"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-if="getSectionCount('assigned_tasks') > 5">
+                                    <div class="text-center mt-2">
+                                        <a href="#" t-on-click.prevent="() => this.onViewAllClick('assigned')" class="small">
+                                            View all <t t-esc="getSectionCount('assigned_tasks')"/> →
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Unassigned Tasks -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="ptt-card">
+                        <div class="ptt-section-header">
+                            <h3><i class="fa fa-user-slash"/> Unassigned Tasks</h3>
+                            <span class="badge bg-warning"><t t-esc="getSectionCount('unassigned_tasks')"/></span>
+                        </div>
+                        <div class="ptt-task-list">
+                            <t t-if="getSectionCount('unassigned_tasks') === 0">
+                                <div class="ptt-empty-state small">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No unassigned tasks</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="getSectionTasks('unassigned_tasks').slice(0, 5)" t-as="task" t-key="task.id">
+                                    <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                        <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                        <div class="ptt-task-content">
+                                            <div class="ptt-task-name">
+                                                <t t-esc="task.name"/>
+                                            </div>
+                                            <div class="ptt-task-meta small">
+                                                <span t-if="task.project_name" class="text-muted">
+                                                    <i class="fa fa-folder-o me-1"/>
+                                                    <t t-esc="task.project_name"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-if="getSectionCount('unassigned_tasks') > 5">
+                                    <div class="text-center mt-2">
+                                        <a href="#" t-on-click.prevent="() => this.onViewAllClick('unassigned')" class="small">
+                                            View all <t t-esc="getSectionCount('unassigned_tasks')"/> →
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Due Today -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="ptt-card">
+                        <div class="ptt-section-header">
+                            <h3><i class="fa fa-calendar-day"/> Due Today</h3>
+                            <span class="badge bg-info"><t t-esc="getSectionCount('due_today')"/></span>
+                        </div>
+                        <div class="ptt-task-list">
+                            <t t-if="getSectionCount('due_today') === 0">
+                                <div class="ptt-empty-state small">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No tasks due today</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="getSectionTasks('due_today').slice(0, 5)" t-as="task" t-key="task.id">
+                                    <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                        <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                        <div class="ptt-task-content">
+                                            <div class="ptt-task-name">
+                                                <t t-esc="task.name"/>
+                                            </div>
+                                            <div class="ptt-task-meta small">
+                                                <span t-if="task.user_names" class="text-muted">
+                                                    <i class="fa fa-user me-1"/>
+                                                    <t t-esc="task.user_names"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-if="getSectionCount('due_today') > 5">
+                                    <div class="text-center mt-2">
+                                        <a href="#" t-on-click.prevent="() => this.onViewAllClick('due_today')" class="small">
+                                            View all <t t-esc="getSectionCount('due_today')"/> →
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Overdue -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="ptt-card border-danger">
+                        <div class="ptt-section-header">
+                            <h3><i class="fa fa-exclamation-triangle text-danger"/> Overdue</h3>
+                            <span class="badge bg-danger"><t t-esc="getSectionCount('overdue')"/></span>
+                        </div>
+                        <div class="ptt-task-list">
+                            <t t-if="getSectionCount('overdue') === 0">
+                                <div class="ptt-empty-state small">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No overdue tasks</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="getSectionTasks('overdue').slice(0, 5)" t-as="task" t-key="task.id">
+                                    <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                        <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                        <div class="ptt-task-content">
+                                            <div class="ptt-task-name">
+                                                <t t-esc="task.name"/>
+                                                <span class="badge bg-danger ms-1" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; font-weight: 600;">
+                                                    <i class="fa fa-exclamation-triangle me-1"/>Overdue
+                                                </span>
+                                                <span t-att-class="'badge ms-1 ' + (task.priority === 3 ? 'bg-danger' : task.priority === 2 ? 'bg-warning' : task.priority === 1 ? 'bg-info' : 'bg-secondary')" 
+                                                      style="font-size: 0.65rem; padding: 0.15rem 0.35rem; font-weight: 600;">
+                                                    <t t-if="task.priority === 3">High</t>
+                                                    <t t-elif="task.priority === 2">Medium</t>
+                                                    <t t-elif="task.priority === 1">Low</t>
+                                                    <t t-else="">Normal</t>
+                                                </span>
+                                            </div>
+                                            <div class="ptt-task-meta small">
+                                                <span class="text-danger fw-semibold">
+                                                    <i class="fa fa-clock-o me-1"/>
+                                                    <t t-esc="formatDate(task.date_deadline)"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-if="getSectionCount('overdue') > 5">
+                                    <div class="text-center mt-2">
+                                        <a href="#" t-on-click.prevent="() => this.onViewAllClick('overdue')" class="small">
+                                            View all <t t-esc="getSectionCount('overdue')"/> →
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- No Due Date -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="ptt-card">
+                        <div class="ptt-section-header">
+                            <h3><i class="fa fa-calendar-times-o"/> No Due Date</h3>
+                            <span class="badge bg-secondary"><t t-esc="getSectionCount('no_due_date')"/></span>
+                        </div>
+                        <div class="ptt-task-list">
+                            <t t-if="getSectionCount('no_due_date') === 0">
+                                <div class="ptt-empty-state small">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No unscheduled tasks</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="getSectionTasks('no_due_date').slice(0, 5)" t-as="task" t-key="task.id">
+                                    <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                        <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                        <div class="ptt-task-content">
+                                            <div class="ptt-task-name">
+                                                <t t-esc="task.name"/>
+                                            </div>
+                                            <div class="ptt-task-meta small">
+                                                <span t-if="task.user_names" class="text-muted">
+                                                    <i class="fa fa-user me-1"/>
+                                                    <t t-esc="task.user_names"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-if="getSectionCount('no_due_date') > 5">
+                                    <div class="text-center mt-2">
+                                        <a href="#" t-on-click.prevent="() => this.onViewAllClick('no_due_date')" class="small">
+                                            View all <t t-esc="getSectionCount('no_due_date')"/> →
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- All Combined (Service + Event + CRM) -->
+                <div class="col-md-12">
+                    <div class="ptt-card">
+                        <div class="ptt-section-header">
+                            <h3><i class="fa fa-list-alt"/> All Service + Event + CRM Tasks</h3>
+                            <span class="badge bg-success"><t t-esc="getSectionCount('all_combined')"/></span>
+                        </div>
+                        <div class="ptt-task-list">
+                            <t t-if="getSectionCount('all_combined') === 0">
+                                <div class="ptt-empty-state">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No service, event, or CRM tasks</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="row g-2">
+                                    <t t-foreach="getSectionTasks('all_combined').slice(0, 10)" t-as="task" t-key="task.id">
+                                        <div class="col-md-6">
+                                            <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                                <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                                <div class="ptt-task-content">
+                                                    <div class="ptt-task-name">
+                                                        <t t-esc="task.name"/>
+                                                        <span t-if="task.is_overdue" class="badge bg-danger ms-1">!</span>
+                                                        <span t-if="task.sale_line_id" class="badge bg-info ms-1">Service</span>
+                                                    </div>
+                                                    <div class="ptt-task-meta small">
+                                                        <span t-if="task.project_name" class="text-muted">
+                                                            <i class="fa fa-folder-o me-1"/>
+                                                            <t t-esc="task.project_name"/>
+                                                        </span>
+                                                        <span t-if="task.user_names" class="ms-2 text-muted">
+                                                            <i class="fa fa-user me-1"/>
+                                                            <t t-esc="task.user_names"/>
+                                                        </span>
+                                                        <span t-att-class="'ms-2' + (task.is_overdue ? ' text-danger' : '')">
+                                                            <i class="fa fa-clock-o me-1"/>
+                                                            <t t-esc="formatDate(task.date_deadline)"/>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                                <t t-if="getSectionCount('all_combined') > 10">
+                                    <div class="text-center mt-3">
+                                        <a href="#" t-on-click.prevent="() => this.onViewAllClick('all_combined')" class="btn btn-sm btn-outline-primary">
+                                            View all <t t-esc="getSectionCount('all_combined')"/> tasks →
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
+

@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { Component, onMounted, onWillUnmount, useRef } from "@odoo/owl";
+import { loadJS } from "@web/core/assets";
 
 /**
  * MetricChart Component
@@ -19,24 +20,26 @@ export class MetricChart extends Component {
     setup() {
         this.canvasRef = useRef("canvas");
         this.chart = null;
-    }
 
-    onMounted() {
-        if (this.props.type === 'table') {
-            // Table doesn't need Chart.js
-            return;
-        }
-        
-        // Load Chart.js dynamically
-        this.loadChartJS().then(() => {
-            this.renderChart();
+        // Owl 2 lifecycle hooks
+        onMounted(async () => {
+            if (this.props.type === "table") {
+                return; // table doesn't need Chart.js
+            }
+            try {
+                await this.loadChartJS();
+                this.renderChart();
+            } catch (e) {
+                // Never crash OWL runtime if Chart.js isn't available in this environment.
+                console.warn("Chart.js unavailable; MetricChart skipped rendering:", e);
+            }
         });
-    }
 
-    onWillUnmount() {
-        if (this.chart) {
-            this.chart.destroy();
-        }
+        onWillUnmount(() => {
+            if (this.chart) {
+                this.chart.destroy();
+            }
+        });
     }
 
     async loadChartJS() {
@@ -45,14 +48,16 @@ export class MetricChart extends Component {
             return;
         }
         
-        // Load Chart.js from CDN
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
+        // Load Chart.js from Odoo's bundled web assets (Odoo.sh-safe; no external URLs)
+        // Try common paths across Odoo versions.
+        try {
+            await loadJS("/web/static/lib/Chart/Chart.js");
+        } catch {
+            await loadJS("/web/static/lib/Chart/Chart.min.js");
+        }
+        if (!window.Chart) {
+            throw new Error("Chart.js did not load from Odoo web assets");
+        }
     }
 
     renderChart() {

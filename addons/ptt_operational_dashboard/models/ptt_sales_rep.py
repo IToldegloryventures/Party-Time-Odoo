@@ -5,6 +5,7 @@ from datetime import timedelta
 class PttSalesRep(models.Model):
     _name = "ptt.sales.rep"
     _description = "PTT Sales Representative"
+    _rec_name = "name"
     
     user_id = fields.Many2one("res.users", string="User", required=True, ondelete="cascade")
     name = fields.Char(related="user_id.name", store=True, readonly=True)

@@ -180,6 +180,232 @@ class PttHomeData(models.AbstractModel):
         return result
     
     @api.model
+    def get_dashboard_tasks(self):
+        """Get comprehensive task aggregation for dashboard homepage.
+        
+        Returns all required sections:
+        - assigned_tasks: Tasks assigned to current user
+        - unassigned_tasks: Tasks with no user assigned
+        - due_today: Tasks due today
+        - overdue: Tasks past due date
+        - no_due_date: Tasks without a due date
+        - all_combined: All service + event + CRM tasks (without duplication)
+        
+        All tasks come from standard Odoo models only (project.task).
+        Service tasks are de-duplicated using sale_line_id as unique identifier.
+        """
+        user = self.env.user
+        today = fields.Date.context_today(self)
+        
+        Task = self.env["project.task"]
+        Project = self.env["project.project"]
+        
+        # Get event project IDs (projects linked to CRM leads)
+        event_project_ids = []
+        if "x_crm_lead_id" in Project._fields:
+            event_projects = Project.search([("x_crm_lead_id", "!=", False)])
+            event_project_ids = event_projects.ids
+        
+        # Base domain: all active tasks (not in folded/done stages)
+        base_domain = [("stage_id.fold", "=", False)]
+        
+        # 1. ASSIGNED TASKS (Current User)
+        assigned_domain = base_domain + [("user_ids", "in", [user.id])]
+        assigned_tasks = Task.search(assigned_domain, order="date_deadline asc, priority desc, id")
+        
+        # 2. UNASSIGNED TASKS
+        unassigned_domain = base_domain + [("user_ids", "=", False)]
+        unassigned_tasks = Task.search(unassigned_domain, order="date_deadline asc, priority desc, id")
+        
+        # 3. DUE TODAY
+        due_today_domain = base_domain + [("date_deadline", "=", today)]
+        due_today_tasks = Task.search(due_today_domain, order="priority desc, id")
+        
+        # 4. OVERDUE
+        overdue_domain = base_domain + [("date_deadline", "<", today), ("date_deadline", "!=", False)]
+        overdue_tasks = Task.search(overdue_domain, order="date_deadline asc, priority desc, id")
+        
+        # 5. NO DUE DATE
+        no_due_date_domain = base_domain + [("date_deadline", "=", False)]
+        no_due_date_tasks = Task.search(no_due_date_domain, order="priority desc, id")
+        
+        # 6. ALL SERVICE + EVENT + CRM TASKS COMBINED (with de-duplication)
+        all_combined_tasks = self._get_all_combined_tasks(base_domain, event_project_ids)
+        
+        # Format all task lists
+        return {
+            "assigned_tasks": [self._format_task_data_simple(t, today) for t in assigned_tasks],
+            "unassigned_tasks": [self._format_task_data_simple(t, today) for t in unassigned_tasks],
+            "due_today": [self._format_task_data_simple(t, today) for t in due_today_tasks],
+            "overdue": [self._format_task_data_simple(t, today) for t in overdue_tasks],
+            "no_due_date": [self._format_task_data_simple(t, today) for t in no_due_date_tasks],
+            "all_combined": all_combined_tasks,
+        }
+    
+    def _get_all_combined_tasks(self, base_domain, event_project_ids):
+        """Get all service + event + CRM tasks without duplication.
+        
+        Service tasks are identified by sale_line_id and de-duplicated.
+        Event tasks are from projects linked to CRM leads.
+        CRM tasks are tasks linked to CRM leads via mail.activity or project.
+        
+        Returns list of unique tasks.
+        """
+        Task = self.env["project.task"]
+        today = fields.Date.context_today(self)
+        
+        # Build domain for all relevant tasks
+        # Include: event tasks, service tasks (with sale_line_id), and CRM-related tasks
+        combined_domain = base_domain.copy()
+        
+        # Get all tasks that could be service, event, or CRM related
+        # Service tasks: have sale_line_id
+        # Event tasks: from event projects
+        # CRM tasks: linked to CRM leads via activities or projects
+        
+        # Start with all active tasks
+        all_tasks = Task.search(base_domain, order="date_deadline asc, priority desc, id")
+        
+        # Filter to get service, event, and CRM tasks
+        relevant_tasks = []
+        seen_sale_line_ids = set()  # For de-duplication of service tasks
+        
+        for task in all_tasks:
+            is_service_task = False
+            is_event_task = False
+            is_crm_task = False
+            
+            # Check if it's a service task (has sale_line_id)
+            if hasattr(task, 'sale_line_id') and task.sale_line_id:
+                is_service_task = True
+                # De-duplicate: if we've seen this sale_line_id, skip it
+                sale_line_id = task.sale_line_id.id
+                if sale_line_id in seen_sale_line_ids:
+                    continue  # Skip duplicate service task
+                seen_sale_line_ids.add(sale_line_id)
+            
+            # Check if it's an event task (from event project)
+            if task.project_id and task.project_id.id in event_project_ids:
+                is_event_task = True
+            
+            # Check if it's a CRM task (linked to CRM lead via project or activity)
+            if task.project_id and hasattr(task.project_id, 'x_crm_lead_id') and task.project_id.x_crm_lead_id:
+                is_crm_task = True
+            
+            # Include task if it matches any category
+            if is_service_task or is_event_task or is_crm_task:
+                relevant_tasks.append(task)
+        
+        # Format and return
+        return [self._format_task_data_simple(t, today) for t in relevant_tasks]
+    
+    def _format_task_data_simple(self, task, today):
+        """Format a task with basic metadata for dashboard display."""
+        return {
+            "id": task.id,
+            "name": task.name,
+            "date_deadline": task.date_deadline.isoformat() if task.date_deadline else False,
+            "is_overdue": task.date_deadline and task.date_deadline < today if task.date_deadline else False,
+            "priority": task.priority,
+            "stage_name": task.stage_id.name if task.stage_id else "",
+            "user_ids": task.user_ids.ids if hasattr(task, 'user_ids') else [],
+            "user_names": ", ".join(task.user_ids.mapped("name")) if hasattr(task, 'user_ids') and task.user_ids else "Unassigned",
+            "project_id": task.project_id.id if task.project_id else False,
+            "project_name": task.project_id.name if task.project_id else "",
+            "sale_line_id": task.sale_line_id.id if hasattr(task, 'sale_line_id') and task.sale_line_id else False,
+            "sale_order_id": task.sale_order_id.id if hasattr(task, 'sale_order_id') and task.sale_order_id else False,
+            # Action metadata
+            "action": {
+                "type": "ir.actions.act_window",
+                "res_model": "project.task",
+                "res_id": task.id,
+                "views": [[False, "form"]],
+                "target": "current",
+            },
+            "project_action": {
+                "type": "ir.actions.act_window",
+                "res_model": "project.project",
+                "res_id": task.project_id.id,
+                "views": [[False, "form"]],
+                "target": "current",
+            } if task.project_id else None,
+        }
+    
+    @api.model
+    def get_task_leaderboard(self):
+        """Get task performance leaderboard by user.
+        
+        Groups project.task by user_id and calculates:
+        - Total assigned tasks
+        - Completed tasks (stage_id.fold == True)
+        - Overdue count
+        
+        Returns list of users with their task metrics.
+        Uses ORM grouping only (no custom tables).
+        """
+        Task = self.env["project.task"]
+        today = fields.Date.context_today(self)
+        
+        # Get all active users
+        User = self.env["res.users"]
+        users = User.search([
+            ("share", "=", False),  # Internal users only
+            ("active", "=", True),
+        ], order="name")
+        
+        leaderboard = []
+        
+        for user in users:
+            # Total assigned tasks (not in folded stages)
+            total_tasks = Task.search_count([
+                ("user_ids", "in", [user.id]),
+                ("stage_id.fold", "=", False),
+            ])
+            
+            # Completed tasks (in folded stages)
+            completed_tasks = Task.search_count([
+                ("user_ids", "in", [user.id]),
+                ("stage_id.fold", "=", True),
+            ])
+            
+            # Overdue tasks
+            overdue_tasks = Task.search_count([
+                ("user_ids", "in", [user.id]),
+                ("date_deadline", "<", today),
+                ("date_deadline", "!=", False),
+                ("stage_id.fold", "=", False),
+            ])
+            
+            # Get initials
+            name_parts = (user.name or "").split()
+            initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "?"
+            
+            leaderboard.append({
+                "id": user.id,
+                "name": user.name,
+                "initials": initials,
+                "total_tasks": total_tasks,
+                "completed_tasks": completed_tasks,
+                "overdue_tasks": overdue_tasks,
+                "completion_rate": round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0, 1),
+                # Action to view user's tasks
+                "action": {
+                    "type": "ir.actions.act_window",
+                    "name": f"{user.name}'s Tasks",
+                    "res_model": "project.task",
+                    "views": [[False, "list"], [False, "form"]],
+                    "domain": [("user_ids", "in", [user.id])],
+                    "context": {"search_default_my_tasks": 1},
+                    "target": "current",
+                },
+            })
+        
+        # Sort by total tasks descending
+        leaderboard.sort(key=lambda x: x["total_tasks"], reverse=True)
+        
+        return leaderboard
+    
+    @api.model
     def get_assigned_comments(self, limit=20):
         """Get comments/messages where current user is mentioned or assigned.
         
@@ -271,13 +497,22 @@ class PttHomeData(models.AbstractModel):
         default_color = "#6C757D"
         
         result = []
+        # If CRM leads are already linked to projects, show ONE event (prefer the project as the canonical record)
+        seen_project_ids = set()
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
             color = stage_colors.get(stage_name, default_color)
             event_name = lead.x_event_name or lead.name or "Untitled Event"
+
+            project = lead.x_project_id if hasattr(lead, "x_project_id") else False
+            if project:
+                # De-duplicate: if multiple leads point to the same project, only show it once
+                if project.id in seen_project_ids:
+                    continue
+                seen_project_ids.add(project.id)
             
             event_data = {
-                "id": lead.id,
+                "id": f"project_{project.id}" if project else lead.id,
                 "name": event_name,
                 "lead_name": lead.name,
                 "event_date": lead.x_event_date.isoformat() if lead.x_event_date else False,
@@ -285,6 +520,8 @@ class PttHomeData(models.AbstractModel):
                 "stage_name": stage_name,
                 "color": color,
                 "stage_id": lead.stage_id.id if lead.stage_id else False,
+                "project_id": project.id if project else False,
+                "project_name": project.name if project else "",
                 # Action metadata - opens CRM Lead form
                 "action": {
                     "type": "ir.actions.act_window",
@@ -293,6 +530,13 @@ class PttHomeData(models.AbstractModel):
                     "views": [[False, "form"]],
                     "target": "current",
                 },
+                "project_action": {
+                    "type": "ir.actions.act_window",
+                    "res_model": "project.project",
+                    "res_id": project.id,
+                    "views": [[False, "form"]],
+                    "target": "current",
+                } if project else None,
             }
             result.append(event_data)
         
@@ -367,6 +611,7 @@ class PttHomeData(models.AbstractModel):
         default_color = "#6C757D"  # Gray for unknown stages
         
         events = []
+        seen_project_ids = set()
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
             color = stage_colors.get(stage_name, default_color)
@@ -378,8 +623,14 @@ class PttHomeData(models.AbstractModel):
             assignee_name = lead.user_id.name if lead.user_id else "Unassigned"
             is_mine = lead.user_id.id == user.id if lead.user_id else False
             
+            project = lead.x_project_id if hasattr(lead, "x_project_id") else False
+            if project:
+                if project.id in seen_project_ids:
+                    continue
+                seen_project_ids.add(project.id)
+
             event_data = {
-                "id": lead.id,
+                "id": f"project_{project.id}" if project else lead.id,
                 "name": event_name,
                 "lead_name": lead.name,
                 "event_date": lead.x_event_date.isoformat() if lead.x_event_date else False,
@@ -396,8 +647,8 @@ class PttHomeData(models.AbstractModel):
                 "assignee_name": assignee_name,
                 "is_mine": is_mine,
                 # Project link if exists
-                "project_id": lead.x_project_id.id if hasattr(lead, 'x_project_id') and lead.x_project_id else False,
-                "project_name": lead.x_project_id.name if hasattr(lead, 'x_project_id') and lead.x_project_id else "",
+                "project_id": project.id if project else False,
+                "project_name": project.name if project else "",
                 # Action metadata - opens CRM Lead form
                 "action": {
                     "type": "ir.actions.act_window",
@@ -409,12 +660,58 @@ class PttHomeData(models.AbstractModel):
                 "project_action": {
                     "type": "ir.actions.act_window",
                     "res_model": "project.project",
-                    "res_id": lead.x_project_id.id,
+                    "res_id": project.id,
                     "views": [[False, "form"]],
                     "target": "current",
-                } if hasattr(lead, 'x_project_id') and lead.x_project_id else None,
+                } if project else None,
             }
             events.append(event_data)
+
+        # Also include projects with event dates that are NOT linked to CRM leads (project-only events)
+        Project = self.env["project.project"]
+        if "x_event_date" in Project._fields:
+            project_domain = [
+                ("x_event_date", ">=", start_date),
+                ("x_event_date", "<=", end_date),
+                ("x_event_date", "!=", False),
+            ]
+            if my_events_only:
+                project_domain.append(("user_id", "=", user.id))
+            if "x_crm_lead_id" in Project._fields:
+                project_domain.append(("x_crm_lead_id", "=", False))
+            projects = Project.search(project_domain, order="x_event_date asc")
+            for project in projects:
+                if project.id in seen_project_ids:
+                    continue
+                seen_project_ids.add(project.id)
+                events.append({
+                    "id": f"project_{project.id}",
+                    "name": project.name or "Project Event",
+                    "lead_name": "",
+                    "event_date": project.x_event_date.isoformat() if project.x_event_date else False,
+                    "event_time": "",
+                    "partner_name": "",
+                    "contact_name": "",
+                    "stage_id": "project",
+                    "stage_name": "Project",
+                    "color": "#2563EB",
+                    "event_type": "",
+                    "venue_name": "",
+                    "guest_count": 0,
+                    "assignee_id": project.user_id.id if project.user_id else False,
+                    "assignee_name": project.user_id.name if project.user_id else "Unassigned",
+                    "is_mine": project.user_id.id == user.id if project.user_id else False,
+                    "project_id": project.id,
+                    "project_name": project.name or "",
+                    "action": None,
+                    "project_action": {
+                        "type": "ir.actions.act_window",
+                        "res_model": "project.project",
+                        "res_id": project.id,
+                        "views": [[False, "form"]],
+                        "target": "current",
+                    },
+                })
         
         # Get all stages for the legend
         stages = self._get_crm_stages_with_colors(stage_colors, default_color)
@@ -496,12 +793,19 @@ class PttHomeData(models.AbstractModel):
         default_color = "#6C757D"
         
         events = []
+        seen_project_ids = set()
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
             event_name = lead.x_event_name or lead.name or "Untitled Event"
-            
+
+            project = lead.x_project_id if hasattr(lead, "x_project_id") else False
+            if project:
+                if project.id in seen_project_ids:
+                    continue
+                seen_project_ids.add(project.id)
+
             events.append({
-                "id": lead.id,
+                "id": f"project_{project.id}" if project else lead.id,
                 "name": event_name,
                 "lead_name": lead.name,
                 "event_time": lead.x_event_time if hasattr(lead, 'x_event_time') else "",
@@ -511,6 +815,8 @@ class PttHomeData(models.AbstractModel):
                 "venue_name": lead.x_venue_name if hasattr(lead, 'x_venue_name') else "",
                 "assignee_name": lead.user_id.name if lead.user_id else "Unassigned",
                 "is_mine": lead.user_id.id == user.id if lead.user_id else False,
+                "project_id": project.id if project else False,
+                "project_name": project.name if project else "",
                 "action": {
                     "type": "ir.actions.act_window",
                     "res_model": "crm.lead",
@@ -518,6 +824,13 @@ class PttHomeData(models.AbstractModel):
                     "views": [[False, "form"]],
                     "target": "current",
                 },
+                "project_action": {
+                    "type": "ir.actions.act_window",
+                    "res_model": "project.project",
+                    "res_id": project.id,
+                    "views": [[False, "form"]],
+                    "target": "current",
+                } if project else None,
             })
         
         return events
@@ -626,15 +939,46 @@ class PttHomeData(models.AbstractModel):
             name_parts = (user.name or "").split()
             initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "?"
             
+            # Get won/lost opportunities
+            won_count = len(rep_booked)
+            lost_stage = self.env["crm.stage"].search([("name", "ilike", "Lost")], limit=1)
+            lost_count = 0
+            if lost_stage:
+                rep_lost = rep_all_leads.filtered(lambda l: l.stage_id.id == lost_stage.id)
+                lost_count = len(rep_lost)
+            
+            # Revenue vs Target (if target exists - check for custom field or use default calculation)
+            # For now, we'll calculate a target based on average or use a placeholder
+            # In production, this would come from a sales target model or user field
+            target_amount = 0.0
+            if hasattr(user, 'x_sales_target') and user.x_sales_target:
+                target_amount = user.x_sales_target
+            elif hasattr(user, 'sales_target') and user.sales_target:
+                target_amount = user.sales_target
+            else:
+                # Default: use average of all reps' booked amounts as target
+                if len(reps_data) > 0:
+                    avg_booked = sum([r.get("booked_amount", 0) for r in reps_data]) / len(reps_data)
+                    target_amount = avg_booked * 1.2  # 20% above average as target
+                else:
+                    target_amount = rep_booked_amount * 1.2
+            
+            revenue_vs_target_pct = 0.0
+            if target_amount > 0:
+                revenue_vs_target_pct = round((rep_booked_amount / target_amount) * 100, 1)
+            
             reps_data.append({
                 "id": user_id,
                 "name": user.name,
                 "initials": initials,
                 "color": rep_colors[idx % len(rep_colors)],
                 "booked_amount": rep_booked_amount,
-                "booked_count": len(rep_booked),
+                "booked_count": won_count,
+                "lost_count": lost_count,
                 "leads_count": len(rep_all_leads),
                 "conversion_rate": conversion_rate,
+                "target_amount": target_amount,
+                "revenue_vs_target_pct": revenue_vs_target_pct,
             })
         
         # Sort by booked amount descending
@@ -877,6 +1221,8 @@ class PttHomeData(models.AbstractModel):
             "assigned_comments": self.get_assigned_comments(),
             "agenda_events": self.get_agenda_events(),
             "personal_todos": self.env["ptt.personal.todo"].get_my_todos(),
+            "dashboard_tasks": self.get_dashboard_tasks(),
+            "task_leaderboard": self.get_task_leaderboard(),
         }
     
     @api.model
@@ -975,6 +1321,8 @@ class PttHomeData(models.AbstractModel):
         collection_time = self._get_collection_time_metrics(start_date, end_date)
         avg_time_to_event = self._get_avg_time_to_event(start_date, end_date)
         event_metrics = self._get_event_level_metrics(start_date, end_date)
+        task_metrics = self._get_task_metrics()
+        communication_metrics = self._get_communication_metrics()
         users_data = self._get_operations_users_data(start_date, end_date)
         
         return {
@@ -984,6 +1332,8 @@ class PttHomeData(models.AbstractModel):
             "collection_time": collection_time,
             "avg_time_to_event": avg_time_to_event,
             "event_metrics": event_metrics,
+            "task_metrics": task_metrics,
+            "communication_metrics": communication_metrics,
             "users": users_data,
         }
     
@@ -1221,8 +1571,12 @@ class PttHomeData(models.AbstractModel):
     def _get_operations_users_data(self, start_date, end_date):
         """Get operational metrics broken out by user.
         
-        Returns per-user data for POs, refunds, collection time, etc.
+        Returns per-user data for POs, refunds, collection time, task metrics, and communication metrics.
         """
+        today = fields.Date.context_today(self)
+        Task = self.env["project.task"]
+        Message = self.env["mail.message"]
+        
         # Get all active users
         User = self.env["res.users"]
         users = User.search([
@@ -1279,6 +1633,34 @@ class PttHomeData(models.AbstractModel):
             name_parts = (user.name or "").split()
             initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "?"
             
+            # Get user's task metrics
+            user_total_assigned = Task.search_count([
+                ("user_ids", "in", [user.id]),
+                ("stage_id.fold", "=", False),
+            ])
+            user_overdue = Task.search_count([
+                ("user_ids", "in", [user.id]),
+                ("date_deadline", "<", today),
+                ("date_deadline", "!=", False),
+                ("stage_id.fold", "=", False),
+            ])
+            user_unassigned = Task.search_count([
+                ("user_ids", "=", False),
+                ("stage_id.fold", "=", False),
+            ])
+            user_completed = Task.search_count([
+                ("user_ids", "in", [user.id]),
+                ("stage_id.fold", "=", True),
+            ])
+            
+            # Get user's communication metrics
+            thirty_days_ago = today - timedelta(days=30)
+            user_messages = Message.search_count([
+                ("date", ">=", thirty_days_ago),
+                ("message_type", "in", ["email", "comment"]),
+                ("author_id", "=", user.partner_id.id),
+            ])
+            
             users_data.append({
                 "id": user.id,
                 "name": user.name,
@@ -1286,9 +1668,82 @@ class PttHomeData(models.AbstractModel):
                 "po_amount": po_amount,
                 "refund_amount": refund_amount,
                 "collection_time": collection_time,
+                "task_total_assigned": user_total_assigned,
+                "task_overdue": user_overdue,
+                "task_unassigned": user_unassigned,
+                "task_completed": user_completed,
+                "messages_sent": user_messages,
             })
         
         return users_data
+    
+    def _get_task_metrics(self):
+        """Get company-wide task metrics.
+        
+        Returns total assigned, overdue, unassigned, and completed task counts.
+        """
+        today = fields.Date.context_today(self)
+        Task = self.env["project.task"]
+        
+        # Total assigned (not in folded stages)
+        total_assigned = Task.search_count([
+            ("user_ids", "!=", False),
+            ("stage_id.fold", "=", False),
+        ])
+        
+        # Overdue tasks
+        overdue = Task.search_count([
+            ("date_deadline", "<", today),
+            ("date_deadline", "!=", False),
+            ("stage_id.fold", "=", False),
+        ])
+        
+        # Unassigned tasks
+        unassigned = Task.search_count([
+            ("user_ids", "=", False),
+            ("stage_id.fold", "=", False),
+        ])
+        
+        # Completed tasks (in folded stages)
+        completed = Task.search_count([
+            ("stage_id.fold", "=", True),
+        ])
+        
+        return {
+            "total_assigned": total_assigned,
+            "overdue": overdue,
+            "unassigned": unassigned,
+            "completed": completed,
+        }
+    
+    def _get_communication_metrics(self):
+        """Get company-wide communication metrics from mail.message.
+        
+        Returns open discussions count and messages sent count.
+        """
+        Message = self.env["mail.message"]
+        today = fields.Date.context_today(self)
+        
+        # Messages sent (last 30 days)
+        thirty_days_ago = today - timedelta(days=30)
+        messages_sent = Message.search_count([
+            ("date", ">=", thirty_days_ago),
+            ("message_type", "in", ["email", "comment"]),
+            ("author_id", "!=", False),
+        ])
+        
+        # Open discussions (threads with recent activity)
+        # This is a simplified metric - in practice you might want to track
+        # threads with unread messages or active conversations
+        open_discussions = Message.search_count([
+            ("date", ">=", thirty_days_ago),
+            ("message_type", "in", ["email", "comment"]),
+        ])
+        
+        return {
+            "open_discussions": open_discussions,
+            "messages_sent": messages_sent,
+        }
     
     @api.model
     def get_communication_dashboard_data(self, start_date=None, end_date=None):

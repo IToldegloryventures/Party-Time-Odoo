@@ -78,7 +78,9 @@ export class AgendaCalendar extends Component {
     }
 
     onEventClick(event) {
-        if (event.action) {
+        if (event.project_action) {
+            this.action.doAction(event.project_action);
+        } else if (event.action) {
             this.action.doAction(event.action);
         }
     }

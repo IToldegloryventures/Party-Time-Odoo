@@ -58,7 +58,7 @@ class PttDashboardConfig(models.Model):
         help="Allow users to export dashboard data"
     )
 
-    @api.depends()
+    @api.depends()  # No dependencies - constant value
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = "Dashboard Configuration"

@@ -97,6 +97,20 @@ export const homeService = {
             },
             
             /**
+             * Get comprehensive dashboard tasks (all sections)
+             */
+            async getDashboardTasks() {
+                return await orm.call("ptt.home.data", "get_dashboard_tasks", []);
+            },
+            
+            /**
+             * Get task leaderboard by user
+             */
+            async getTaskLeaderboard() {
+                return await orm.call("ptt.home.data", "get_task_leaderboard", []);
+            },
+            
+            /**
              * Create a new personal todo
              */
             async createPersonalTodo(name, dueDate = null, priority = "1") {

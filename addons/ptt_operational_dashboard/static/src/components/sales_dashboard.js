@@ -32,6 +32,7 @@ export class SalesDashboard extends Component {
             loading: true,
             startDate: this.formatDateForInput(firstDay),
             endDate: this.formatDateForInput(lastDay),
+            dateRange: 'this_month', // Track active date range
         });
         
         onWillStart(async () => {
@@ -68,6 +69,7 @@ export class SalesDashboard extends Component {
     }
 
     async onDateChange() {
+        this.state.dateRange = 'custom';
         await this.loadData();
     }
 
@@ -76,10 +78,6 @@ export class SalesDashboard extends Component {
         let startDate, endDate;
         
         switch (range) {
-            case 'today':
-                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                break;
             case 'this_week':
                 const dayOfWeek = now.getDay();
                 const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Monday
@@ -94,25 +92,9 @@ export class SalesDashboard extends Component {
                 startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
                 endDate = new Date(now.getFullYear(), now.getMonth(), 0);
                 break;
-            case 'this_quarter':
-                const quarter = Math.floor(now.getMonth() / 3);
-                startDate = new Date(now.getFullYear(), quarter * 3, 1);
-                endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0);
-                break;
-            case 'last_quarter':
-                const lastQuarter = Math.floor(now.getMonth() / 3) - 1;
-                const lastQuarterMonth = lastQuarter < 0 ? 9 : lastQuarter * 3;
-                const lastQuarterYear = lastQuarter < 0 ? now.getFullYear() - 1 : now.getFullYear();
-                startDate = new Date(lastQuarterYear, lastQuarterMonth, 1);
-                endDate = new Date(lastQuarterYear, lastQuarterMonth + 3, 0);
-                break;
-            case 'this_year':
+            case 'ytd':
                 startDate = new Date(now.getFullYear(), 0, 1);
-                endDate = new Date(now.getFullYear(), 11, 31);
-                break;
-            case 'last_year':
-                startDate = new Date(now.getFullYear() - 1, 0, 1);
-                endDate = new Date(now.getFullYear() - 1, 11, 31);
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                 break;
             default:
                 return;
@@ -120,6 +102,7 @@ export class SalesDashboard extends Component {
         
         this.state.startDate = this.formatDateForInput(startDate);
         this.state.endDate = this.formatDateForInput(endDate);
+        this.state.dateRange = range;
         this.loadData();
     }
     

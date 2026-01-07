@@ -3,8 +3,7 @@
     <!-- Main Home Menu (Top Level App) - NO ACTION, just a container -->
     <menuitem id="menu_ptt_home_root"
               name="Home"
-              sequence="999"
-              web_icon="ptt_operational_dashboard,static/description/icon.png"/>
+              sequence="999"/>
     
     <!-- Submenu Items under Home -->
     <menuitem id="menu_ptt_home_dashboard"

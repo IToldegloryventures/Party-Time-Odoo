@@ -13,6 +13,7 @@ export class AssignedTasks extends Component {
     static template = "ptt_operational_dashboard.AssignedTasks";
     static props = {
         tasks: { type: Array },
+        onRefresh: { type: Function, optional: true },
     };
 
     setup() {
@@ -105,8 +106,10 @@ export class AssignedTasks extends Component {
             this.notification.add(`Task "${result.name}" created!`, { type: "success" });
             this.state.showAddForm = false;
             
-            // Trigger refresh of parent
-            window.location.reload(); // Simple refresh for now
+            // Trigger refresh of parent (avoid full page reload)
+            if (this.props.onRefresh) {
+                await this.props.onRefresh();
+            }
         } catch (e) {
             console.error("Failed to create task:", e);
             this.notification.add("Failed to create task", { type: "danger" });

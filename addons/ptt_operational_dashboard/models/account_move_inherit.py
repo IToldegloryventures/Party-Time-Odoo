@@ -99,10 +99,11 @@ class AccountMove(models.Model):
             return
         
         # Find CRM Leads linked to these sale orders
-        # Note: order_ids field comes from sale_crm module (dependency required)
-        crm_leads = self.env['crm.lead'].search([
-            ('order_ids', 'in', sale_orders.ids)
-        ])
+        # Note: order_ids field comes from sale_crm module
+        Lead = self.env["crm.lead"]
+        if "order_ids" not in Lead._fields:
+            return
+        crm_leads = Lead.search([("order_ids", "in", sale_orders.ids)])
         
         if crm_leads:
             # Trigger recalculation by marking dependency fields as modified

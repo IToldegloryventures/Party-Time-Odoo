@@ -7,20 +7,55 @@
                 <!-- Calendar Header -->
                 <div class="ptt-calendar-header d-flex justify-content-between align-items-center p-3 bg-white border-bottom">
                     <div class="d-flex align-items-center gap-3">
-                        <h4 class="mb-0 fw-bold">
+                        <h4 class="mb-0 fw-bold" style="color: #1F2937; font-size: 1.5rem;">
                             <t t-esc="currentMonthYear"/>
                         </h4>
-                        <div class="btn-group">
-                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onPrevMonth" title="Previous Month">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onPrevMonth" title="Previous Month" style="border-radius: 8px 0 0 8px;">
                                 <i class="fa fa-chevron-left"/>
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onToday">Today</button>
-                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onNextMonth" title="Next Month">
+                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onToday" style="border-radius: 0;">Today</button>
+                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onNextMonth" title="Next Month" style="border-radius: 0 8px 8px 0;">
                                 <i class="fa fa-chevron-right"/>
                             </button>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <!-- Date Range Filters - Segmented Control -->
+                        <div class="btn-group" role="group">
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'this_week' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('this_week')">
+                                This Week
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'this_month' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('this_month')">
+                                This Month
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'last_month' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('last_month')">
+                                Last Month
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'ytd' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('ytd')">
+                                YTD
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'custom' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('custom')">
+                                Custom
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2" t-if="state.dateRange === 'custom'">
+                            <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
+                                t-model="state.startDate" t-on-change="onDateChange"/>
+                            <span class="text-muted small">to</span>
+                            <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
+                                t-model="state.endDate" t-on-change="onDateChange"/>
+                        </div>
                         <!-- My Events Toggle -->
                         <div class="form-check form-switch">
                             <input 
@@ -103,18 +138,19 @@
                     </div>
                     
                     <!-- Stage Legend / Filters -->
-                    <div class="ptt-calendar-legend d-flex flex-wrap gap-3 p-3 bg-white border-top">
-                        <span class="fw-semibold me-2">Filter by Stage:</span>
+                    <div class="ptt-calendar-legend d-flex flex-wrap align-items-center gap-3 p-3 bg-white border-top">
+                        <span class="fw-semibold me-2" style="color: #4B5563;">Filter by Stage:</span>
                         <t t-foreach="state.stages" t-as="stage" t-key="stage.id">
-                            <div class="form-check form-check-inline">
+                            <div class="form-check form-check-inline mb-0">
                                 <input 
                                     type="checkbox" 
                                     class="form-check-input"
                                     t-att-id="'stage_' + stage.id"
                                     t-att-checked="state.visibleStages[stage.id] !== false"
-                                    t-on-change="() => this.onToggleStage(stage.id)"/>
-                                <label t-att-for="'stage_' + stage.id" class="form-check-label d-flex align-items-center gap-1">
-                                    <span class="ptt-legend-dot" t-att-style="'background-color: ' + stage.color"/>
+                                    t-on-change="() => this.onToggleStage(stage.id)"
+                                    style="cursor: pointer;"/>
+                                <label t-att-for="'stage_' + stage.id" class="form-check-label d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 500; color: #374151;">
+                                    <span class="ptt-legend-dot" t-att-style="'background-color: ' + stage.color + '; width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: 0 1px 3px rgba(0,0,0,0.2);'"/>
                                     <t t-esc="stage.name"/>
                                 </label>
                             </div>

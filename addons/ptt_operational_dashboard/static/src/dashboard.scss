@@ -62,7 +62,8 @@
     
     .ptt_kpi_card {
         background: white;
-        border-radius: 12px;
+        // ClickUp-style rounded cards
+        border-radius: 16px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         min-height: 150px;
@@ -234,7 +235,7 @@
     .ptt_skeleton_card {
         min-height: 140px;
         background: white;
-        border-radius: 8px;
+        border-radius: 16px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         
         @media (max-width: 768px) {
