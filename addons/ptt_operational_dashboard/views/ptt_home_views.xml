@@ -2,9 +2,9 @@
 <odoo>
     <!-- PTT Home Hub Client Action -->
     <record id="action_ptt_home_hub" model="ir.actions.client">
-        <field name="name">Home</field>
+        <field name="name">PTT Dashboard</field>
         <field name="tag">ptt_home_hub</field>
-        <field name="target">fullscreen</field>
+        <field name="target">current</field>
     </record>
     
     <!-- Event Calendar Action (for direct access) -->

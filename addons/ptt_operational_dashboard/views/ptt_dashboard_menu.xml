@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Main Home Menu (Top Level App) -->
+    <!-- Main Home Menu (Top Level App) - NO ACTION, just a container -->
     <menuitem id="menu_ptt_home_root"
               name="Home"
-              sequence="1"
-              action="action_ptt_home_hub"
+              sequence="100"
               web_icon="ptt_operational_dashboard,static/description/icon.png"/>
     
     <!-- Submenu Items under Home -->
