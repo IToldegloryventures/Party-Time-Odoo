@@ -83,7 +83,7 @@ class CrmLead(models.Model):
             ("walk_in", "Walk-In"),
             ("social_media", "Social Media"),
         ],
-        string="Inquiry Source",
+        string="Lead Source",  # Changed from "Inquiry Source" to avoid Studio field conflict
         default="phone",
         tracking=True,
         help="How did this lead find us?",
@@ -136,11 +136,11 @@ class CrmLead(models.Model):
             ("themed_masquerade", "Themed - Masquerade Balls"),
             ("themed_cigar_whiskey", "Themed - Cigar & Whiskey Nights"),
         ],
-        string="Event Type",
+        string="Event Category",  # Changed from "Event Type" to avoid Studio field conflict
     )
     x_event_name = fields.Char(string="Event Name (if known)")
     x_event_specific_goal = fields.Char(string="Specific Goal")
-    x_event_date = fields.Date(string="Event Date")
+    x_event_date = fields.Date(string="Scheduled Date")  # Changed from "Event Date" to avoid Studio field conflict
     x_event_time = fields.Char(string="Event Time")
     x_total_hours = fields.Float(string="Total Hours")
     x_estimated_guest_count = fields.Integer(string="Estimated Guest Count")

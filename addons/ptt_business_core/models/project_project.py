@@ -101,7 +101,7 @@ class ProjectProject(models.Model):
         return projects
 
     # Core event identity
-    x_event_id = fields.Char(string="Event ID")
+    x_event_id = fields.Char(string="Event Number")  # Changed from "Event ID" to avoid Studio field conflict
     x_event_type = fields.Selection(
         [
             # Corporate Events
@@ -143,11 +143,11 @@ class ProjectProject(models.Model):
             ("themed_masquerade", "Themed - Masquerade Balls"),
             ("themed_cigar_whiskey", "Themed - Cigar & Whiskey Nights"),
         ],
-        string="Event Type",
+        string="Event Category",  # Changed from "Event Type" to avoid Studio field conflict
         help="Copied from the related opportunity / lead.",
     )
     x_event_name = fields.Char(string="Event Name")
-    x_event_date = fields.Date(string="Event Date")
+    x_event_date = fields.Date(string="Scheduled Date")  # Changed from "Event Date" to avoid Studio field conflict
     x_event_time = fields.Char(string="Event Time")
     x_guest_count = fields.Integer(string="Guest Count")
     x_venue_name = fields.Char(string="Venue")
