@@ -10,12 +10,6 @@
                 <field name="x_is_vendor" widget="boolean_toggle" string="Vendor"/>
             </xpath>
             
-            <!-- Add Sales Rep Assignment section in Sales & Purchase tab -->
-            <xpath expr="//page[@name='sales_purchases']//group[@name='sale']" position="inside">
-                <field name="x_primary_sales_rep_id" string="Primary SR"/>
-                <field name="x_secondary_sales_rep_id" string="Secondary SR"/>
-            </xpath>
-            
             <!-- Add Vendor Info tab (only visible when checkbox is checked) -->
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="Vendor Info" invisible="not x_is_vendor">
@@ -30,53 +24,6 @@
                         </group>
                     </group>
                 </page>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- Add SR fields to Contact kanban/card view -->
-    <record id="view_partner_kanban_ptt" model="ir.ui.view">
-        <field name="name">res.partner.kanban.ptt</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
-        <field name="arch" type="xml">
-            <!-- Add SR fields to the kanban card templates section -->
-            <xpath expr="//templates" position="before">
-                <field name="x_primary_sales_rep_id"/>
-                <field name="x_secondary_sales_rep_id"/>
-            </xpath>
-            <!-- Display Primary SR on the kanban card -->
-            <xpath expr="//div[hasclass('oe_kanban_details')]//ul" position="inside">
-                <li t-if="record.x_primary_sales_rep_id.value">
-                    <span class="fw-bold">SR: </span>
-                    <field name="x_primary_sales_rep_id"/>
-                </li>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- Add SR fields to Contact list view for quick visibility -->
-    <record id="view_partner_tree_ptt" model="ir.ui.view">
-        <field name="name">res.partner.tree.ptt</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='user_id']" position="after">
-                <field name="x_primary_sales_rep_id" string="Primary SR" optional="show"/>
-                <field name="x_secondary_sales_rep_id" string="Secondary SR" optional="hide"/>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- Add SR fields to Contact search/filter -->
-    <record id="view_partner_search_ptt" model="ir.ui.view">
-        <field name="name">res.partner.search.ptt</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_res_partner_filter"/>
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='salesperson']" position="after">
-                <filter string="Primary Sales Rep" name="filter_primary_sr" context="{'group_by': 'x_primary_sales_rep_id'}"/>
-                <filter string="Secondary Sales Rep" name="filter_secondary_sr" context="{'group_by': 'x_secondary_sales_rep_id'}"/>
             </xpath>
         </field>
     </record>

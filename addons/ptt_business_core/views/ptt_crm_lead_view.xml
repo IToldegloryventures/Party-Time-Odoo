@@ -44,11 +44,6 @@
                     class="oe_highlight" invisible="x_project_id or type == 'lead' or (not stage_id or stage_id.name != 'Booked')" 
                     help="Create a project from this opportunity and copy all event data"/>
             </xpath>
-            <!-- Add Secondary Sales Rep field near main Salesperson field -->
-            <xpath expr="//field[@name='user_id']" position="after">
-                <field name="x_secondary_sales_rep_id" string="Secondary SR"/>
-            </xpath>
-            
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
                 <page name="lead_intake" string="Lead Intake">
                     <!-- Lead Contact Information - Using Standard Odoo Fields -->

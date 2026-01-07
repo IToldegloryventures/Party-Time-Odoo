@@ -13,42 +13,6 @@ class CrmLead(models.Model):
     # NOTE: email_from = Email Address (standard Odoo field)
     # NOTE: description = Additional Notes (standard Odoo field - use that)
     
-    # Store secondary SR from partner for reference on leads
-    x_secondary_sales_rep_id = fields.Many2one(
-        "res.users",
-        string="Secondary Sales Rep",
-        help="Secondary sales rep pulled from the contact record.",
-        domain="[('share', '=', False)]",
-    )
-    
-    @api.onchange("partner_id")
-    def _onchange_partner_id_sales_rep(self):
-        """Auto-populate sales rep from partner's assigned Primary SR.
-        
-        When a repeat customer comes into CRM:
-        1. Find matching company/contact (partner_id)
-        2. Pull primary sales rep if assigned on contact
-        3. Pull secondary sales rep for reference
-        """
-        if self.partner_id:
-            # Check if partner has a primary sales rep assigned
-            if self.partner_id.x_primary_sales_rep_id:
-                # Only update if user_id is not already set (don't override manual selection)
-                if not self.user_id:
-                    self.user_id = self.partner_id.x_primary_sales_rep_id
-            
-            # Also pull secondary SR for reference
-            if self.partner_id.x_secondary_sales_rep_id:
-                self.x_secondary_sales_rep_id = self.partner_id.x_secondary_sales_rep_id
-            
-            # Also check the commercial partner (parent company) if individual contact
-            if not self.user_id and self.partner_id.commercial_partner_id != self.partner_id:
-                commercial = self.partner_id.commercial_partner_id
-                if commercial.x_primary_sales_rep_id:
-                    self.user_id = commercial.x_primary_sales_rep_id
-                if commercial.x_secondary_sales_rep_id and not self.x_secondary_sales_rep_id:
-                    self.x_secondary_sales_rep_id = commercial.x_secondary_sales_rep_id
-    
     x_date_of_call = fields.Date(
         string="Date of Call",
         help="Date of the initial inquiry call.",
