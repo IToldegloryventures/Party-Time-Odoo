@@ -28,9 +28,10 @@
         "views/ptt_project_project_view.xml",
         "views/ptt_sale_order_view.xml",
     ],
-    "demo": [
-        "data/demo_data.xml",
-    ],
+    # Demo data disabled - was causing test failures on Odoo.sh
+    # "demo": [
+    #     "data/demo_data.xml",
+    # ],
     "installable": True,
     "application": False,
     "pre_init_hook": "pre_init_hook",
