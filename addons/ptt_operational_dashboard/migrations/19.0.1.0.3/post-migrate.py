@@ -25,7 +25,82 @@ def migrate(cr, version):
     )
 
     try:
-        _logger.info("Cleaning up stale views/actions/menus for removed models...")
+        _logger.info("Cleaning up stale records for removed models...")
+        
+        # Initialize counters
+        model_count = field_count = access_count = data_count = view_count = act_count = menu_count = 0
+
+        # 0.0) ir.model records (the model definitions themselves)
+        cr.execute("""
+            SELECT COUNT(1) FROM ir_model
+            WHERE model = ANY(%s)
+        """, (list(removed_models),))
+        model_count = cr.fetchone()[0]
+        if model_count:
+            _logger.info("Found %s stale ir.model records to delete", model_count)
+            # Delete ir.model.data first
+            cr.execute("""
+                DELETE FROM ir_model_data
+                WHERE model = 'ir.model'
+                  AND res_id IN (SELECT id FROM ir_model WHERE model = ANY(%s))
+            """, (list(removed_models),))
+            # Then delete the models
+            cr.execute("""
+                DELETE FROM ir_model
+                WHERE model = ANY(%s)
+            """, (list(removed_models),))
+
+        # 0.0b) ir.model.fields records (field definitions)
+        cr.execute("""
+            SELECT COUNT(1) FROM ir_model_fields
+            WHERE model = ANY(%s)
+        """, (list(removed_models),))
+        field_count = cr.fetchone()[0]
+        if field_count:
+            _logger.info("Found %s stale ir.model.fields records to delete", field_count)
+            # Delete ir.model.data first
+            cr.execute("""
+                DELETE FROM ir_model_data
+                WHERE model = 'ir.model.fields'
+                  AND res_id IN (SELECT id FROM ir_model_fields WHERE model = ANY(%s))
+            """, (list(removed_models),))
+            # Then delete the fields
+            cr.execute("""
+                DELETE FROM ir_model_fields
+                WHERE model = ANY(%s)
+            """, (list(removed_models),))
+
+        # 0.0c) ir.model.access records (security rules)
+        # Check for access rules that reference these models
+        cr.execute("""
+            SELECT COUNT(1) FROM ir_model_access a
+            JOIN ir_model m ON m.id = a.model_id
+            WHERE m.model = ANY(%s)
+        """, (list(removed_models),))
+        access_count = cr.fetchone()[0]
+        if access_count:
+            _logger.info("Found %s stale ir.model.access records to delete", access_count)
+            cr.execute("""
+                DELETE FROM ir_model_access a
+                USING ir_model m
+                WHERE a.model_id = m.id
+                  AND m.model = ANY(%s)
+            """, (list(removed_models),))
+
+        # 0.0d) Any other ir.model.data records referencing these models
+        cr.execute("""
+            SELECT COUNT(1) FROM ir_model_data
+            WHERE (name LIKE '%metric.config%' OR name LIKE '%layout.config%')
+              AND module = 'ptt_operational_dashboard'
+        """)
+        data_count = cr.fetchone()[0]
+        if data_count:
+            _logger.info("Found %s additional ir.model.data records to delete", data_count)
+            cr.execute("""
+                DELETE FROM ir_model_data
+                WHERE (name LIKE '%metric.config%' OR name LIKE '%layout.config%')
+                  AND module = 'ptt_operational_dashboard'
+            """)
 
         # 0.a) Views linked to removed models (scoped to this module)
         cr.execute("""
@@ -130,7 +205,8 @@ def migrate(cr, version):
                   )
             """, (list(removed_models),))
 
-        _logger.info("Cleanup complete. Views: %s, Actions: %s, Menus: %s", view_count, act_count, menu_count)
+        _logger.info("Cleanup complete. Models: %s, Fields: %s, Access: %s, Data: %s, Views: %s, Actions: %s, Menus: %s", 
+                     model_count, field_count, access_count, data_count, view_count, act_count, menu_count)
     except Exception as e:
         _logger.warning("Cleanup for removed models failed (continuing migration): %s", e)
     
