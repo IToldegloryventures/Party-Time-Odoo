@@ -64,7 +64,8 @@
             "ptt_operational_dashboard/static/src/home.scss",
             "ptt_operational_dashboard/static/src/dashboard.scss",
             # Components (load XML templates before JS to ensure templates are registered)
-            "ptt_operational_dashboard/static/src/components/dashboard_back_button.xml",
+            # DashboardBackButton template - load from xml directory first to ensure registration
+            "ptt_operational_dashboard/static/src/xml/dashboard_templates.xml",
             "ptt_operational_dashboard/static/src/components/dashboard_back_button.js",
             "ptt_operational_dashboard/static/src/components/home_navigation.xml",
             "ptt_operational_dashboard/static/src/components/home_navigation.js",
