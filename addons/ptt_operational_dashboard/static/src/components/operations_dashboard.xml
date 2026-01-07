@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.OperationsDashboard">
+        <div class="ptt-operations-dashboard">
+            <!-- Date Range Filter -->
+            <div class="ptt-date-filter mb-4">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('today')">Today</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_week')">This Week</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_month')">This Month</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_month')">Last Month</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_quarter')">This Quarter</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_year')">This Year</button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                            t-model="state.startDate" t-on-change="onDateChange"/>
+                        <span class="text-muted">to</span>
+                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                            t-model="state.endDate" t-on-change="onDateChange"/>
+                    </div>
+                    <span class="badge bg-secondary" t-esc="dateRangeLabel"/>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="ptt-loading">
+                    <div class="ptt-spinner"/>
+                </div>
+            </t>
+            
+            <t t-elif="state.data">
+                <!-- Company Total Section -->
+                <div class="ptt-section-header mb-3">
+                    <h2><i class="fa fa-building"/> Company Total</h2>
+                </div>
+                
+                <!-- Main KPI Cards - Company Total -->
+                <div class="ptt-kpi-grid mb-4">
+                    <!-- POs Month to Date -->
+                    <div class="ptt-kpi-card" t-if="state.data.po_metrics">
+                        <div class="ptt-kpi-icon" style="background: #DBEAFE; color: #2563EB;">
+                            <i class="fa fa-shopping-cart"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.po_metrics.total_amount)"/>
+                        <div class="ptt-kpi-label">POs Month to Date</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.po_metrics.count"/> POs
+                        </div>
+                    </div>
+                    
+                    <!-- Refunds -->
+                    <div class="ptt-kpi-card" t-if="state.data.refund_metrics">
+                        <div class="ptt-kpi-icon" style="background: #FEE2E2; color: #DC2626;">
+                            <i class="fa fa-undo"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.refund_metrics.total_amount)"/>
+                        <div class="ptt-kpi-label">Refunds Being Issued</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.refund_metrics.count"/> refunds
+                        </div>
+                    </div>
+                    
+                    <!-- Rain Delays -->
+                    <div class="ptt-kpi-card" t-if="state.data.rain_delay_metrics">
+                        <div class="ptt-kpi-icon" style="background: #FEF3C7; color: #D97706;">
+                            <i class="fa fa-cloud-rain"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.rain_delay_metrics.count"/>
+                        <div class="ptt-kpi-label">Rain Delays</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.rain_delay_metrics.percentage"/>% of events
+                        </div>
+                    </div>
+                    
+                    <!-- Time to Collect -->
+                    <div class="ptt-kpi-card" t-if="state.data.collection_time">
+                        <div class="ptt-kpi-icon" style="background: #DCFCE7; color: #16A34A;">
+                            <i class="fa fa-clock-o"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatDays(state.data.collection_time.avg_days)"/>
+                        <div class="ptt-kpi-label">Avg Time to Collect</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.collection_time.invoice_count"/> invoices
+                        </div>
+                    </div>
+                    
+                    <!-- Avg Time to Event -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_time_to_event">
+                        <div class="ptt-kpi-icon" style="background: #E0E7FF; color: #6366F1;">
+                            <i class="fa fa-calendar"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatDays(state.data.avg_time_to_event.avg_days)"/>
+                        <div class="ptt-kpi-label">Avg Time to Event</div>
+                        <div class="ptt-kpi-count">
+                            Lead → Event
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Level Metrics -->
+                <div class="ptt-section-header mb-3 mt-4">
+                    <h2><i class="fa fa-chart-bar"/> Event Level Metrics</h2>
+                </div>
+                
+                <div class="ptt-kpi-grid mb-4" t-if="state.data.event_metrics">
+                    <div class="ptt-kpi-card">
+                        <div class="ptt-kpi-icon" style="background: #DCFCE7; color: #16A34A;">
+                            <i class="fa fa-dollar"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.event_metrics.avg_revenue_per_event)"/>
+                        <div class="ptt-kpi-label">Avg $ per Event</div>
+                        <div class="ptt-kpi-count">
+                            Min: <t t-esc="formatCurrency(state.data.event_metrics.min_revenue)"/> | 
+                            Max: <t t-esc="formatCurrency(state.data.event_metrics.max_revenue)"/>
+                        </div>
+                    </div>
+                    
+                    <div class="ptt-kpi-card">
+                        <div class="ptt-kpi-icon" style="background: #DBEAFE; color: #2563EB;">
+                            <i class="fa fa-cogs"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.event_metrics.avg_services_per_event"/>
+                        <div class="ptt-kpi-label">Avg Services/Event</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.event_metrics.total_events"/> events
+                        </div>
+                    </div>
+                    
+                    <div class="ptt-kpi-card">
+                        <div class="ptt-kpi-icon" style="background: #FEF3C7; color: #D97706;">
+                            <i class="fa fa-list"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.event_metrics.avg_line_items_per_event"/>
+                        <div class="ptt-kpi-label">Avg Line Items/Event</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.event_metrics.total_events"/> events
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- All Users Section -->
+                <div class="ptt-section-header mb-3 mt-4">
+                    <h2><i class="fa fa-users"/> All Users Performance</h2>
+                </div>
+                
+                <div class="ptt-rep-grid" t-if="state.data.users">
+                    <t t-foreach="state.data.users" t-as="user" t-key="user.id">
+                        <div class="ptt-rep-card">
+                            <div class="ptt-rep-header">
+                                <div class="ptt-rep-avatar" style="background-color: #6366F1;">
+                                    <t t-esc="user.initials"/>
+                                </div>
+                                <div class="ptt-rep-name" t-esc="user.name"/>
+                            </div>
+                            <div class="ptt-rep-stats">
+                                <div class="ptt-rep-stat" t-if="user.po_amount !== undefined">
+                                    <span class="label">POs</span>
+                                    <span class="value" t-esc="formatCurrency(user.po_amount)"/>
+                                </div>
+                                <div class="ptt-rep-stat" t-if="user.refund_amount !== undefined">
+                                    <span class="label">Refunds</span>
+                                    <span class="value" t-esc="formatCurrency(user.refund_amount)"/>
+                                </div>
+                                <div class="ptt-rep-stat" t-if="user.collection_time !== undefined">
+                                    <span class="label">Collection Time</span>
+                                    <span class="value" t-esc="formatDays(user.collection_time)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
+

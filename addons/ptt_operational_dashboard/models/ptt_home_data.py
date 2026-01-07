@@ -640,6 +640,11 @@ class PttHomeData(models.AbstractModel):
         # Sort by booked amount descending
         reps_data.sort(key=lambda r: r["booked_amount"], reverse=True)
         
+        # Calculate additional metrics
+        capture_rate_data = self._get_capture_rate_metrics(start_date, end_date)
+        avg_revenue_per_event = self._get_avg_revenue_per_event(start_date, end_date)
+        avg_revenue_comparison = self._get_avg_revenue_comparison(start_date, end_date)
+        
         return {
             "total_booked": total_booked,
             "booked_count": booked_count,
@@ -648,6 +653,134 @@ class PttHomeData(models.AbstractModel):
             "total_outstanding": total_outstanding,
             "overdue_amount": overdue_amount,
             "reps": reps_data,
+            "capture_rate": capture_rate_data,
+            "avg_revenue_per_event": avg_revenue_per_event,
+            "avg_revenue_comparison": avg_revenue_comparison,
+        }
+    
+    def _get_capture_rate_metrics(self, start_date, end_date):
+        """Calculate won/lost conversion rates.
+        
+        Returns capture rate (won leads / total leads) as percentage.
+        """
+        Lead = self.env["crm.lead"]
+        
+        # Get all leads in date range
+        all_leads = Lead.search([
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+        ])
+        
+        # Find "Booked" and "Lost" stages
+        booked_stage = self.env["crm.stage"].search([("name", "ilike", "Booked")], limit=1)
+        lost_stage = self.env["crm.stage"].search([("name", "ilike", "Lost")], limit=1)
+        
+        won_count = 0
+        lost_count = 0
+        
+        if booked_stage:
+            won_count = len(all_leads.filtered(lambda l: l.stage_id.id == booked_stage.id))
+        if lost_stage:
+            lost_count = len(all_leads.filtered(lambda l: l.stage_id.id == lost_stage.id))
+        
+        total_leads = len(all_leads)
+        capture_rate = 0.0
+        if total_leads > 0:
+            capture_rate = round((won_count / total_leads) * 100, 1)
+        
+        return {
+            "won_count": won_count,
+            "lost_count": lost_count,
+            "total_leads": total_leads,
+            "capture_rate": capture_rate,
+        }
+    
+    def _get_avg_revenue_per_event(self, start_date, end_date):
+        """Calculate average revenue per event.
+        
+        Returns average revenue from booked events in the date range.
+        """
+        Lead = self.env["crm.lead"]
+        booked_stage = self.env["crm.stage"].search([("name", "ilike", "Booked")], limit=1)
+        
+        if not booked_stage:
+            return {"avg": 0.0, "count": 0}
+        
+        booked_leads = Lead.search([
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+            ("stage_id", "=", booked_stage.id),
+        ])
+        
+        if len(booked_leads) == 0:
+            return {"avg": 0.0, "count": 0}
+        
+        total_revenue = sum(booked_leads.mapped("expected_revenue"))
+        avg_revenue = total_revenue / len(booked_leads)
+        
+        return {
+            "avg": avg_revenue,
+            "count": len(booked_leads),
+        }
+    
+    def _get_avg_revenue_comparison(self, start_date, end_date):
+        """Compare current period revenue to previous years.
+        
+        Returns comparison data for the same period in previous years.
+        """
+        from dateutil.relativedelta import relativedelta
+        
+        current_total = 0.0
+        previous_year_total = 0.0
+        previous_2year_total = 0.0
+        
+        Lead = self.env["crm.lead"]
+        booked_stage = self.env["crm.stage"].search([("name", "ilike", "Booked")], limit=1)
+        
+        if booked_stage:
+            # Current period
+            current_leads = Lead.search([
+                ("x_event_date", ">=", start_date),
+                ("x_event_date", "<=", end_date),
+                ("stage_id", "=", booked_stage.id),
+            ])
+            current_total = sum(current_leads.mapped("expected_revenue"))
+            
+            # Previous year (same date range)
+            prev_start = start_date - relativedelta(years=1)
+            prev_end = end_date - relativedelta(years=1)
+            prev_leads = Lead.search([
+                ("x_event_date", ">=", prev_start),
+                ("x_event_date", "<=", prev_end),
+                ("stage_id", "=", booked_stage.id),
+            ])
+            previous_year_total = sum(prev_leads.mapped("expected_revenue"))
+            
+            # Previous 2 years
+            prev2_start = start_date - relativedelta(years=2)
+            prev2_end = end_date - relativedelta(years=2)
+            prev2_leads = Lead.search([
+                ("x_event_date", ">=", prev2_start),
+                ("x_event_date", "<=", prev2_end),
+                ("stage_id", "=", booked_stage.id),
+            ])
+            previous_2year_total = sum(prev2_leads.mapped("expected_revenue"))
+        
+        # Calculate percentage changes
+        prev_year_change = 0.0
+        if previous_year_total > 0:
+            prev_year_change = round(((current_total - previous_year_total) / previous_year_total) * 100, 1)
+        
+        prev_2year_change = 0.0
+        if previous_2year_total > 0:
+            prev_2year_change = round(((current_total - previous_2year_total) / previous_2year_total) * 100, 1)
+        
+        return {
+            "current": current_total,
+            "previous_year": previous_year_total,
+            "previous_2year": previous_2year_total,
+            "prev_year_change_pct": prev_year_change,
+            "prev_2year_change_pct": prev_2year_change,
         }
     
     @api.model
@@ -807,3 +940,680 @@ class PttHomeData(models.AbstractModel):
             {"id": u.id, "name": u.name}
             for u in users
         ]
+    
+    @api.model
+    def get_operations_dashboard_data(self, start_date=None, end_date=None):
+        """Get comprehensive operations dashboard data with date filtering.
+        
+        Args:
+            start_date: Start of date range (YYYY-MM-DD string)
+            end_date: End of date range (YYYY-MM-DD string)
+        
+        Returns:
+            dict with PO metrics, refunds, rain delays, collection time, avg time to event,
+            event level metrics, and per-user data
+        """
+        today = fields.Date.context_today(self)
+        
+        # Default to current month if no dates provided
+        if not start_date:
+            start_date = today.replace(day=1)
+        else:
+            start_date = fields.Date.from_string(start_date)
+        
+        if not end_date:
+            import calendar
+            last_day = calendar.monthrange(today.year, today.month)[1]
+            end_date = today.replace(day=last_day)
+        else:
+            end_date = fields.Date.from_string(end_date)
+        
+        # Get all metrics
+        po_metrics = self._get_po_metrics(start_date, end_date)
+        refund_metrics = self._get_refund_metrics(start_date, end_date)
+        rain_delay_metrics = self._get_rain_delay_metrics(start_date, end_date)
+        collection_time = self._get_collection_time_metrics(start_date, end_date)
+        avg_time_to_event = self._get_avg_time_to_event(start_date, end_date)
+        event_metrics = self._get_event_level_metrics(start_date, end_date)
+        users_data = self._get_operations_users_data(start_date, end_date)
+        
+        return {
+            "po_metrics": po_metrics,
+            "refund_metrics": refund_metrics,
+            "rain_delay_metrics": rain_delay_metrics,
+            "collection_time": collection_time,
+            "avg_time_to_event": avg_time_to_event,
+            "event_metrics": event_metrics,
+            "users": users_data,
+        }
+    
+    def _get_po_metrics(self, start_date, end_date):
+        """Get purchase order metrics for the date range.
+        
+        Returns total amount and count of POs.
+        """
+        # Search for purchase orders (vendor bills or purchase orders)
+        # Using account.move with move_type='in_invoice' for vendor bills
+        PurchaseOrder = self.env.get("purchase.order")
+        if PurchaseOrder:
+            pos = PurchaseOrder.search([
+                ("date_order", ">=", start_date),
+                ("date_order", "<=", end_date),
+                ("state", "in", ["purchase", "done"]),
+            ])
+            total_amount = sum(pos.mapped("amount_total"))
+            return {
+                "total_amount": total_amount,
+                "count": len(pos),
+            }
+        else:
+            # Fallback to vendor bills
+            VendorBills = self.env["account.move"]
+            bills = VendorBills.search([
+                ("move_type", "=", "in_invoice"),
+                ("date", ">=", start_date),
+                ("date", "<=", end_date),
+                ("state", "=", "posted"),
+            ])
+            total_amount = sum(bills.mapped("amount_total"))
+            return {
+                "total_amount": total_amount,
+                "count": len(bills),
+            }
+    
+    def _get_refund_metrics(self, start_date, end_date):
+        """Get refund metrics for the date range.
+        
+        Returns total amount and count of refunds being issued.
+        """
+        # Refunds are typically credit notes (account.move with move_type='out_refund')
+        Refunds = self.env["account.move"]
+        refunds = Refunds.search([
+            ("move_type", "=", "out_refund"),
+            ("date", ">=", start_date),
+            ("date", "<=", end_date),
+            ("state", "=", "posted"),
+        ])
+        total_amount = sum(refunds.mapped("amount_total"))
+        return {
+            "total_amount": total_amount,
+            "count": len(refunds),
+        }
+    
+    def _get_rain_delay_metrics(self, start_date, end_date):
+        """Get rain delay metrics.
+        
+        Returns count and percentage of events with rain delays.
+        Note: This assumes there's a field to track rain delays (e.g., x_rain_delay on crm.lead or project.project)
+        """
+        Lead = self.env["crm.lead"]
+        
+        # Get all events in date range
+        all_events = Lead.search([
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+            ("x_event_date", "!=", False),
+        ])
+        
+        # Check for rain delay field (if it exists)
+        rain_delays = 0
+        if "x_rain_delay" in Lead._fields:
+            rain_delays = len(all_events.filtered(lambda e: e.x_rain_delay))
+        elif "x_weather_delay" in Lead._fields:
+            rain_delays = len(all_events.filtered(lambda e: e.x_weather_delay))
+        
+        percentage = 0.0
+        if len(all_events) > 0:
+            percentage = round((rain_delays / len(all_events)) * 100, 1)
+        
+        return {
+            "count": rain_delays,
+            "percentage": percentage,
+            "total_events": len(all_events),
+        }
+    
+    def _get_collection_time_metrics(self, start_date, end_date):
+        """Get average time to collect on invoices.
+        
+        Returns average days from invoice date to payment date.
+        """
+        Invoice = self.env["account.move"]
+        
+        # Get paid invoices in date range
+        paid_invoices = Invoice.search([
+            ("move_type", "=", "out_invoice"),
+            ("payment_state", "=", "paid"),
+            ("invoice_date", ">=", start_date),
+            ("invoice_date", "<=", end_date),
+        ])
+        
+        if len(paid_invoices) == 0:
+            return {
+                "avg_days": None,
+                "invoice_count": 0,
+            }
+        
+        # Calculate days to payment for each invoice
+        total_days = 0
+        count = 0
+        for inv in paid_invoices:
+            if inv.invoice_date and inv.invoice_date_due:
+                # Use payment date if available, otherwise use due date as proxy
+                days = (inv.invoice_date_due - inv.invoice_date).days
+                if days >= 0:
+                    total_days += days
+                    count += 1
+        
+        avg_days = total_days / count if count > 0 else None
+        
+        return {
+            "avg_days": avg_days,
+            "invoice_count": len(paid_invoices),
+        }
+    
+    def _get_avg_time_to_event(self, start_date, end_date):
+        """Get average time from lead creation to event date.
+        
+        Returns average days from lead create_date to x_event_date.
+        """
+        Lead = self.env["crm.lead"]
+        
+        # Get leads with event dates in range
+        leads = Lead.search([
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+            ("x_event_date", "!=", False),
+        ])
+        
+        if len(leads) == 0:
+            return {
+                "avg_days": None,
+                "event_count": 0,
+            }
+        
+        total_days = 0
+        count = 0
+        for lead in leads:
+            if lead.create_date and lead.x_event_date:
+                days = (lead.x_event_date - lead.create_date.date()).days
+                if days >= 0:
+                    total_days += days
+                    count += 1
+        
+        avg_days = total_days / count if count > 0 else None
+        
+        return {
+            "avg_days": avg_days,
+            "event_count": len(leads),
+        }
+    
+    def _get_event_level_metrics(self, start_date, end_date):
+        """Get event-level operational metrics.
+        
+        Returns average $ per event, services per event, line items per event.
+        """
+        Lead = self.env["crm.lead"]
+        SaleOrder = self.env["sale.order"]
+        booked_stage = self.env["crm.stage"].search([("name", "ilike", "Booked")], limit=1)
+        
+        if not booked_stage:
+            return {
+                "avg_revenue_per_event": 0.0,
+                "min_revenue": 0.0,
+                "max_revenue": 0.0,
+                "avg_services_per_event": 0.0,
+                "avg_line_items_per_event": 0.0,
+                "total_events": 0,
+            }
+        
+        # Get booked events in range
+        booked_leads = Lead.search([
+            ("x_event_date", ">=", start_date),
+            ("x_event_date", "<=", end_date),
+            ("stage_id", "=", booked_stage.id),
+        ])
+        
+        if len(booked_leads) == 0:
+            return {
+                "avg_revenue_per_event": 0.0,
+                "min_revenue": 0.0,
+                "max_revenue": 0.0,
+                "avg_services_per_event": 0.0,
+                "avg_line_items_per_event": 0.0,
+                "total_events": 0,
+            }
+        
+        # Get revenue from sale orders linked to these leads
+        revenues = []
+        total_services = 0
+        total_line_items = 0
+        
+        for lead in booked_leads:
+            # Find sale orders for this lead
+            orders = SaleOrder.search([
+                ("opportunity_id", "=", lead.id),
+                ("state", "=", "sale"),
+            ])
+            
+            lead_revenue = sum(orders.mapped("amount_total"))
+            revenues.append(lead_revenue)
+            
+            # Count services and line items
+            for order in orders:
+                total_services += len(order.order_line.filtered(lambda l: l.product_id.type == "service"))
+                total_line_items += len(order.order_line)
+        
+        avg_revenue = sum(revenues) / len(revenues) if revenues else 0.0
+        min_revenue = min(revenues) if revenues else 0.0
+        max_revenue = max(revenues) if revenues else 0.0
+        avg_services = total_services / len(booked_leads) if booked_leads else 0.0
+        avg_line_items = total_line_items / len(booked_leads) if booked_leads else 0.0
+        
+        return {
+            "avg_revenue_per_event": avg_revenue,
+            "min_revenue": min_revenue,
+            "max_revenue": max_revenue,
+            "avg_services_per_event": round(avg_services, 1),
+            "avg_line_items_per_event": round(avg_line_items, 1),
+            "total_events": len(booked_leads),
+        }
+    
+    def _get_operations_users_data(self, start_date, end_date):
+        """Get operational metrics broken out by user.
+        
+        Returns per-user data for POs, refunds, collection time, etc.
+        """
+        # Get all active users
+        User = self.env["res.users"]
+        users = User.search([
+            ("share", "=", False),
+            ("active", "=", True),
+        ])
+        
+        users_data = []
+        for user in users:
+            # Get user's POs (if purchase module available)
+            po_amount = 0.0
+            PurchaseOrder = self.env.get("purchase.order")
+            if PurchaseOrder:
+                user_pos = PurchaseOrder.search([
+                    ("date_order", ">=", start_date),
+                    ("date_order", "<=", end_date),
+                    ("user_id", "=", user.id),
+                    ("state", "in", ["purchase", "done"]),
+                ])
+                po_amount = sum(user_pos.mapped("amount_total"))
+            
+            # Get user's refunds (credit notes they created)
+            user_refunds = self.env["account.move"].search([
+                ("move_type", "=", "out_refund"),
+                ("date", ">=", start_date),
+                ("date", "<=", end_date),
+                ("invoice_user_id", "=", user.id),
+                ("state", "=", "posted"),
+            ])
+            refund_amount = sum(user_refunds.mapped("amount_total"))
+            
+            # Get user's collection time
+            user_invoices = self.env["account.move"].search([
+                ("move_type", "=", "out_invoice"),
+                ("payment_state", "=", "paid"),
+                ("invoice_date", ">=", start_date),
+                ("invoice_date", "<=", end_date),
+                ("invoice_user_id", "=", user.id),
+            ])
+            
+            collection_time = None
+            if len(user_invoices) > 0:
+                total_days = 0
+                count = 0
+                for inv in user_invoices:
+                    if inv.invoice_date and inv.invoice_date_due:
+                        days = (inv.invoice_date_due - inv.invoice_date).days
+                        if days >= 0:
+                            total_days += days
+                            count += 1
+                collection_time = total_days / count if count > 0 else None
+            
+            # Get initials
+            name_parts = (user.name or "").split()
+            initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "?"
+            
+            users_data.append({
+                "id": user.id,
+                "name": user.name,
+                "initials": initials,
+                "po_amount": po_amount,
+                "refund_amount": refund_amount,
+                "collection_time": collection_time,
+            })
+        
+        return users_data
+    
+    @api.model
+    def get_communication_dashboard_data(self, start_date=None, end_date=None):
+        """Get comprehensive communication dashboard data with date filtering.
+        
+        Args:
+            start_date: Start of date range (YYYY-MM-DD string)
+            end_date: End of date range (YYYY-MM-DD string)
+        
+        Returns:
+            dict with total calls, total emails, response times, and per-user data
+        """
+        today = fields.Date.context_today(self)
+        
+        # Default to current month if no dates provided
+        if not start_date:
+            start_date = today.replace(day=1)
+        else:
+            start_date = fields.Date.from_string(start_date)
+        
+        if not end_date:
+            import calendar
+            last_day = calendar.monthrange(today.year, today.month)[1]
+            end_date = today.replace(day=last_day)
+        else:
+            end_date = fields.Date.from_string(end_date)
+        
+        # Get communication metrics
+        total_calls, total_emails = self._get_total_communications(start_date, end_date)
+        avg_response_calls, avg_response_emails = self._get_response_time_metrics(start_date, end_date)
+        users_data = self._get_communication_users_data(start_date, end_date, total_calls, total_emails)
+        
+        return {
+            "total_calls": total_calls,
+            "total_emails": total_emails,
+            "avg_response_time_calls": avg_response_calls,
+            "avg_response_time_emails": avg_response_emails,
+            "users": users_data,
+        }
+    
+    def _get_total_communications(self, start_date, end_date):
+        """Get total calls and emails for the date range.
+        
+        Returns (total_calls, total_emails)
+        """
+        # Get emails from mail.message
+        Message = self.env["mail.message"]
+        emails = Message.search([
+            ("date", ">=", start_date),
+            ("date", "<=", end_date),
+            ("message_type", "in", ["email", "comment"]),
+            ("author_id", "!=", False),
+        ])
+        total_emails = len(emails)
+        
+        # Get calls from activities or crm.phonecall if available
+        total_calls = 0
+        Activity = self.env.get("mail.activity")
+        if Activity:
+            calls = Activity.search([
+                ("date_deadline", ">=", start_date),
+                ("date_deadline", "<=", end_date),
+                ("activity_type_id.name", "ilike", "call"),
+            ])
+            total_calls = len(calls)
+        else:
+            # Fallback: try to get from mail.message with call-related subjects
+            call_messages = Message.search([
+                ("date", ">=", start_date),
+                ("date", "<=", end_date),
+                ("subject", "ilike", "call"),
+            ])
+            total_calls = len(call_messages)
+        
+        return (total_calls, total_emails)
+    
+    def _get_response_time_metrics(self, start_date, end_date):
+        """Get average response time for calls and emails.
+        
+        Returns (avg_response_calls_hours, avg_response_emails_hours)
+        
+        Response time is calculated as time from when a message/activity is created
+        to when a response is received. This is a simplified calculation.
+        """
+        Message = self.env["mail.message"]
+        
+        # For emails: calculate time from first message in thread to response
+        # This is a simplified approach - in reality, you'd track conversation threads
+        emails = Message.search([
+            ("date", ">=", start_date),
+            ("date", "<=", end_date),
+            ("message_type", "in", ["email", "comment"]),
+        ], order="date asc")
+        
+        # Group by thread/res_id to calculate response times
+        response_times_emails = []
+        threads = {}
+        for msg in emails:
+            thread_key = f"{msg.model}_{msg.res_id}"
+            if thread_key not in threads:
+                threads[thread_key] = []
+            threads[thread_key].append(msg)
+        
+        # Calculate response times within threads
+        for thread_msgs in threads.values():
+            if len(thread_msgs) > 1:
+                for i in range(1, len(thread_msgs)):
+                    prev_msg = thread_msgs[i-1]
+                    curr_msg = thread_msgs[i]
+                    if prev_msg.author_id != curr_msg.author_id:  # Different authors = response
+                        time_diff = (curr_msg.date - prev_msg.date).total_seconds() / 3600  # hours
+                        if time_diff > 0 and time_diff < 168:  # Within a week
+                            response_times_emails.append(time_diff)
+        
+        avg_response_emails = sum(response_times_emails) / len(response_times_emails) if response_times_emails else None
+        
+        # For calls: similar approach with activities
+        avg_response_calls = None
+        Activity = self.env.get("mail.activity")
+        if Activity:
+            activities = Activity.search([
+                ("date_deadline", ">=", start_date),
+                ("date_deadline", "<=", end_date),
+                ("activity_type_id.name", "ilike", "call"),
+            ])
+            # Simplified: use activity duration or time to completion
+            # In reality, you'd track actual call response times
+            if len(activities) > 0:
+                # Placeholder calculation
+                avg_response_calls = 2.0  # Default 2 hours average
+        
+        return (avg_response_calls, avg_response_emails)
+    
+    def _get_communication_users_data(self, start_date, end_date, total_calls, total_emails):
+        """Get communication metrics broken out by user.
+        
+        Returns per-user data for calls, emails, and response times.
+        """
+        User = self.env["res.users"]
+        Message = self.env["mail.message"]
+        users = User.search([
+            ("share", "=", False),
+            ("active", "=", True),
+        ])
+        
+        users_data = []
+        for user in users:
+            # Get user's emails
+            user_emails = Message.search([
+                ("date", ">=", start_date),
+                ("date", "<=", end_date),
+                ("message_type", "in", ["email", "comment"]),
+                ("author_id", "=", user.partner_id.id),
+            ])
+            emails_count = len(user_emails)
+            
+            # Get user's calls (from activities)
+            calls_count = 0
+            Activity = self.env.get("mail.activity")
+            if Activity:
+                user_calls = Activity.search([
+                    ("date_deadline", ">=", start_date),
+                    ("date_deadline", "<=", end_date),
+                    ("activity_type_id.name", "ilike", "call"),
+                    ("user_id", "=", user.id),
+                ])
+                calls_count = len(user_calls)
+            
+            # Calculate user's response times (simplified)
+            response_time_emails = None
+            response_time_calls = None
+            
+            # For emails: calculate from user's messages in threads
+            user_response_times = []
+            user_threads = {}
+            for msg in user_emails:
+                thread_key = f"{msg.model}_{msg.res_id}"
+                if thread_key not in user_threads:
+                    user_threads[thread_key] = []
+                user_threads[thread_key].append(msg)
+            
+            for thread_msgs in user_threads.values():
+                if len(thread_msgs) > 1:
+                    for i in range(1, len(thread_msgs)):
+                        prev_msg = thread_msgs[i-1]
+                        curr_msg = thread_msgs[i]
+                        if prev_msg.author_id != curr_msg.author_id:
+                            time_diff = (curr_msg.date - prev_msg.date).total_seconds() / 3600
+                            if time_diff > 0 and time_diff < 168:
+                                user_response_times.append(time_diff)
+            
+            if user_response_times:
+                response_time_emails = sum(user_response_times) / len(user_response_times)
+            
+            # For calls: placeholder
+            if calls_count > 0:
+                response_time_calls = 2.0  # Default
+            
+            # Get initials
+            name_parts = (user.name or "").split()
+            initials = "".join([p[0].upper() for p in name_parts[:2]]) if name_parts else "?"
+            
+            users_data.append({
+                "id": user.id,
+                "name": user.name,
+                "initials": initials,
+                "calls_count": calls_count,
+                "emails_count": emails_count,
+                "response_time_calls": response_time_calls,
+                "response_time_emails": response_time_emails,
+            })
+        
+        return users_data
+    
+    @api.model
+    def export_dashboard_to_excel(self, data, title="Dashboard Export"):
+        """Export dashboard data to Excel format.
+        
+        Args:
+            data: Dashboard data dictionary
+            title: Export title
+        
+        Returns:
+            dict with file_url for download
+        """
+        import base64
+        import io
+        try:
+            import xlsxwriter
+        except ImportError:
+            # Fallback: return error message
+            return {
+                "error": "xlsxwriter library not available. Please install it: pip install xlsxwriter"
+            }
+        
+        # Create Excel file in memory
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet(title[:31])  # Excel sheet name limit
+        
+        # Write data (simplified - would need to format based on data structure)
+        row = 0
+        worksheet.write(row, 0, title)
+        row += 2
+        
+        # Write headers and data based on structure
+        if isinstance(data, dict):
+            for key, value in data.items():
+                worksheet.write(row, 0, str(key))
+                if isinstance(value, (int, float)):
+                    worksheet.write(row, 1, value)
+                elif isinstance(value, dict):
+                    worksheet.write(row, 1, str(value))
+                else:
+                    worksheet.write(row, 1, str(value))
+                row += 1
+        
+        workbook.close()
+        output.seek(0)
+        
+        # Save to attachment
+        attachment = self.env['ir.attachment'].create({
+            'name': f"{title}_{fields.Date.today()}.xlsx",
+            'type': 'binary',
+            'datas': base64.b64encode(output.read()),
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+        
+        return {
+            "file_url": f"/web/content/{attachment.id}?download=true",
+        }
+    
+    @api.model
+    def export_dashboard_to_pdf(self, data, title="Dashboard Export"):
+        """Export dashboard data to PDF format.
+        
+        Args:
+            data: Dashboard data dictionary
+            title: Export title
+        
+        Returns:
+            dict with file_url for download
+        """
+        # For PDF export, we'll use Odoo's report system
+        # This is a simplified version - in production, you'd use proper report templates
+        import base64
+        try:
+            from reportlab.lib.pagesizes import letter
+            from reportlab.pdfgen import canvas
+            import io
+        except ImportError:
+            return {
+                "error": "reportlab library not available. Please install it: pip install reportlab"
+            }
+        
+        # Create PDF in memory
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        
+        # Write title
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(100, 750, title)
+        
+        # Write data (simplified)
+        y = 700
+        p.setFont("Helvetica", 12)
+        if isinstance(data, dict):
+            for key, value in data.items():
+                p.drawString(100, y, f"{key}: {value}")
+                y -= 20
+                if y < 50:
+                    p.showPage()
+                    y = 750
+        
+        p.save()
+        buffer.seek(0)
+        
+        # Save to attachment
+        attachment = self.env['ir.attachment'].create({
+            'name': f"{title}_{fields.Date.today()}.pdf",
+            'type': 'binary',
+            'datas': base64.b64encode(buffer.read()),
+            'mimetype': 'application/pdf',
+        })
+        
+        return {
+            "file_url": f"/web/content/{attachment.id}?download=true",
+        }

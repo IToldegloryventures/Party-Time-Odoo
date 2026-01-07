@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Create default dashboard configuration -->
+    <record id="ptt_dashboard_config_default" model="ptt.dashboard.config">
+        <field name="default_date_range">this_month</field>
+        <field name="show_all_users" eval="True"/>
+        <field name="min_events_to_show" eval="0"/>
+        <field name="enable_export" eval="True"/>
+    </record>
+
+    <!-- Default Sales Metrics -->
+    <record id="metric_total_booked" model="ptt.dashboard.metric.config">
+        <field name="metric_name">total_booked</field>
+        <field name="metric_label">Total Booked Revenue</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="10"/>
+        <field name="kpi_size">large</field>
+        <field name="format_type">currency</field>
+    </record>
+
+    <record id="metric_total_paid" model="ptt.dashboard.metric.config">
+        <field name="metric_name">total_paid</field>
+        <field name="metric_label">Total Paid</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="20"/>
+        <field name="kpi_size">large</field>
+        <field name="format_type">currency</field>
+    </record>
+
+    <record id="metric_total_outstanding" model="ptt.dashboard.metric.config">
+        <field name="metric_name">total_outstanding</field>
+        <field name="metric_label">Total Outstanding</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="30"/>
+        <field name="kpi_size">large</field>
+        <field name="format_type">currency</field>
+    </record>
+
+    <record id="metric_capture_rate" model="ptt.dashboard.metric.config">
+        <field name="metric_name">capture_rate</field>
+        <field name="metric_label">Capture Rate</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="40"/>
+        <field name="kpi_size">compact</field>
+        <field name="format_type">percentage</field>
+        <field name="threshold_green_min" eval="50.0"/>
+        <field name="threshold_yellow_min" eval="30.0"/>
+    </record>
+
+    <record id="metric_avg_revenue_per_event" model="ptt.dashboard.metric.config">
+        <field name="metric_name">avg_revenue_per_event</field>
+        <field name="metric_label">Avg Revenue per Event</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="50"/>
+        <field name="kpi_size">compact</field>
+        <field name="format_type">currency</field>
+    </record>
+
+    <!-- Default Operations Metrics -->
+    <record id="metric_po_month_to_date" model="ptt.dashboard.metric.config">
+        <field name="metric_name">po_month_to_date</field>
+        <field name="metric_label">POs Month to Date</field>
+        <field name="tab_assignment">operations</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="10"/>
+        <field name="kpi_size">compact</field>
+        <field name="format_type">currency</field>
+    </record>
+
+    <record id="metric_refunds" model="ptt.dashboard.metric.config">
+        <field name="metric_name">refunds</field>
+        <field name="metric_label">Refunds Being Issued</field>
+        <field name="tab_assignment">operations</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="20"/>
+        <field name="kpi_size">compact</field>
+        <field name="format_type">currency</field>
+    </record>
+
+    <!-- Default Layout Configurations -->
+    <record id="layout_company_total_sales" model="ptt.dashboard.layout.config">
+        <field name="section_name">company_total</field>
+        <field name="section_label">Company Total</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="10"/>
+        <field name="grid_columns" eval="3"/>
+    </record>
+
+    <record id="layout_all_users_sales" model="ptt.dashboard.layout.config">
+        <field name="section_name">all_users</field>
+        <field name="section_label">All Users Performance</field>
+        <field name="tab_assignment">sales</field>
+        <field name="visible" eval="True"/>
+        <field name="sequence" eval="20"/>
+        <field name="grid_columns" eval="4"/>
+    </record>
+</odoo>
+

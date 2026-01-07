@@ -857,6 +857,27 @@ $status-completed: #6C757D;
             &.booked .ptt-kpi-icon { background: #DCFCE7; color: #16A34A; }
             &.paid .ptt-kpi-icon { background: #DBEAFE; color: #2563EB; }
             &.outstanding .ptt-kpi-icon { background: #FEE2E2; color: #DC2626; }
+            
+            // Large KPI cards (for important metrics)
+            &.ptt-kpi-large {
+                padding: 1.5rem;
+                
+                .ptt-kpi-icon {
+                    width: 64px;
+                    height: 64px;
+                    font-size: 1.5rem;
+                    margin-bottom: 1.25rem;
+                }
+                
+                .ptt-kpi-value {
+                    font-size: 2.5rem;
+                }
+                
+                .ptt-kpi-label {
+                    font-size: 1rem;
+                    font-weight: 600;
+                }
+            }
         }
         
         // Date filter bar
@@ -983,5 +1004,58 @@ $status-completed: #6C757D;
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+// Back to Dashboard Floating Button
+.ptt-back-to-dashboard-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: linear-gradient(135deg, $ptt-red 0%, darken($ptt-red, 10%) 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    animation: slideInRight 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(135deg, darken($ptt-red, 5%) 0%, darken($ptt-red, 15%) 100%);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+    
+    i {
+        font-size: 1.25rem;
+    }
+    
+    .ptt-back-btn-label {
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 

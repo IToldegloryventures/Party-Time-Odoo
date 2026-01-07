@@ -13,6 +13,8 @@ import { AssignedComments } from "./components/assigned_comments";
 import { AgendaCalendar } from "./components/agenda_calendar";
 import { EventCalendarFull } from "./components/event_calendar_full";
 import { SalesDashboard } from "./components/sales_dashboard";
+import { OperationsDashboard } from "./components/operations_dashboard";
+import { CommunicationDashboard } from "./components/communication_dashboard";
 
 /**
  * HomeController
@@ -31,6 +33,8 @@ export class HomeController extends Component {
         AgendaCalendar,
         EventCalendarFull,
         SalesDashboard,
+        OperationsDashboard,
+        CommunicationDashboard,
     };
 
     setup() {
@@ -70,8 +74,13 @@ export class HomeController extends Component {
         this.state.refreshing = false;
     }
 
-    onTabChange(tabId) {
+    async onTabChange(tabId) {
         this.state.activeTab = tabId;
+        // Refresh data when switching tabs
+        if (tabId !== "home") {
+            // For dashboard tabs, refresh is handled by individual components
+            // Home tab data is already loaded
+        }
     }
 
     // Getters for template

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Configuration Menu -->
+    <menuitem id="menu_ptt_dashboard_config"
+              name="Dashboard Configuration"
+              parent="base.menu_administration"
+              sequence="100"
+              action="action_ptt_dashboard_config"
+              groups="base.group_system"/>
+
+    <!-- Sub-menu items -->
+    <menuitem id="menu_ptt_dashboard_metric_config"
+              name="Metric Configuration"
+              parent="menu_ptt_dashboard_config"
+              sequence="10"
+              action="action_ptt_dashboard_metric_config"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ptt_dashboard_layout_config"
+              name="Layout Configuration"
+              parent="menu_ptt_dashboard_config"
+              sequence="20"
+              action="action_ptt_dashboard_layout_config"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ptt_dashboard_editor"
+              name="Dashboard Editor"
+              parent="menu_ptt_dashboard_config"
+              sequence="30"
+              action="action_ptt_dashboard_editor"
+              groups="base.group_system"/>
+</odoo>
+
+

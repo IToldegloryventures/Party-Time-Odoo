@@ -38,6 +38,11 @@ export class SalesDashboard extends Component {
             await this.loadData();
         });
     }
+    
+    // Refresh data when component is mounted or tab becomes active
+    async refreshData() {
+        await this.loadData();
+    }
 
     formatDateForInput(date) {
         return date.toISOString().split('T')[0];
@@ -71,6 +76,16 @@ export class SalesDashboard extends Component {
         let startDate, endDate;
         
         switch (range) {
+            case 'today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                break;
+            case 'this_week':
+                const dayOfWeek = now.getDay();
+                const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Monday
+                startDate = new Date(now.getFullYear(), now.getMonth(), diff);
+                endDate = new Date(now.getFullYear(), now.getMonth(), diff + 6);
+                break;
             case 'this_month':
                 startDate = new Date(now.getFullYear(), now.getMonth(), 1);
                 endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -84,9 +99,20 @@ export class SalesDashboard extends Component {
                 startDate = new Date(now.getFullYear(), quarter * 3, 1);
                 endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0);
                 break;
+            case 'last_quarter':
+                const lastQuarter = Math.floor(now.getMonth() / 3) - 1;
+                const lastQuarterMonth = lastQuarter < 0 ? 9 : lastQuarter * 3;
+                const lastQuarterYear = lastQuarter < 0 ? now.getFullYear() - 1 : now.getFullYear();
+                startDate = new Date(lastQuarterYear, lastQuarterMonth, 1);
+                endDate = new Date(lastQuarterYear, lastQuarterMonth + 3, 0);
+                break;
             case 'this_year':
                 startDate = new Date(now.getFullYear(), 0, 1);
                 endDate = new Date(now.getFullYear(), 11, 31);
+                break;
+            case 'last_year':
+                startDate = new Date(now.getFullYear() - 1, 0, 1);
+                endDate = new Date(now.getFullYear() - 1, 11, 31);
                 break;
             default:
                 return;
@@ -95,6 +121,17 @@ export class SalesDashboard extends Component {
         this.state.startDate = this.formatDateForInput(startDate);
         this.state.endDate = this.formatDateForInput(endDate);
         this.loadData();
+    }
+    
+    formatPercentage(value) {
+        return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+    }
+    
+    getThresholdColor(value, thresholds) {
+        if (!thresholds) return 'default';
+        if (value >= thresholds.green) return 'success';
+        if (value >= thresholds.yellow) return 'warning';
+        return 'danger';
     }
 
     formatCurrency(amount) {

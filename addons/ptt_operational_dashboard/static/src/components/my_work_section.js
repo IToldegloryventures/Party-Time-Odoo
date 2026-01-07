@@ -67,9 +67,19 @@ export class MyWorkSection extends Component {
     }
 
     onTaskClick(task) {
-        // Deep link to project.task form
+        // Deep link to project.task form with return context
         if (task.action) {
-            this.action.doAction(task.action);
+            // Add breadcrumb context to show this came from dashboard
+            const actionWithContext = {
+                ...task.action,
+                context: {
+                    ...(task.action.context || {}),
+                    active_id: task.id,
+                    from_dashboard: true,
+                    return_action: "ptt_home_hub",
+                },
+            };
+            this.action.doAction(actionWithContext);
         }
     }
 

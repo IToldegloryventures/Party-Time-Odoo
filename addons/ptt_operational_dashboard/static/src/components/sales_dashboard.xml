@@ -6,10 +6,14 @@
             <div class="ptt-date-filter mb-4">
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('today')">Today</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_week')">This Week</button>
                         <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_month')">This Month</button>
                         <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_month')">Last Month</button>
                         <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_quarter')">This Quarter</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_quarter')">Last Quarter</button>
                         <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_year')">This Year</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_year')">Last Year</button>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <input type="date" class="form-control form-control-sm" style="width: 140px;"
@@ -30,22 +34,27 @@
             </t>
             
             <t t-elif="state.data">
-                <!-- Main KPI Cards -->
+                <!-- Company Total Section -->
+                <div class="ptt-section-header mb-3">
+                    <h2><i class="fa fa-building"/> Company Total</h2>
+                </div>
+                
+                <!-- Main KPI Cards - Company Total -->
                 <div class="ptt-kpi-grid mb-4">
-                    <!-- Total Booked -->
-                    <div class="ptt-kpi-card booked" t-on-click="onBookedClick">
+                    <!-- Total Booked (Large) -->
+                    <div class="ptt-kpi-card booked ptt-kpi-large" t-on-click="onBookedClick">
                         <div class="ptt-kpi-icon booked">
                             <i class="fa fa-calendar-check-o"/>
                         </div>
                         <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_booked)"/>
-                        <div class="ptt-kpi-label">Total Booked</div>
+                        <div class="ptt-kpi-label">Total Booked Revenue</div>
                         <div class="ptt-kpi-count">
                             <t t-esc="state.data.booked_count"/> events
                         </div>
                     </div>
                     
-                    <!-- Total Paid -->
-                    <div class="ptt-kpi-card paid" t-on-click="onPaidClick">
+                    <!-- Total Paid (Large) -->
+                    <div class="ptt-kpi-card paid ptt-kpi-large" t-on-click="onPaidClick">
                         <div class="ptt-kpi-icon paid">
                             <i class="fa fa-check-circle"/>
                         </div>
@@ -56,8 +65,8 @@
                         </div>
                     </div>
                     
-                    <!-- Outstanding/Overdue -->
-                    <div class="ptt-kpi-card outstanding" t-on-click="onOutstandingClick">
+                    <!-- Outstanding/Overdue (Large) -->
+                    <div class="ptt-kpi-card outstanding ptt-kpi-large" t-on-click="onOutstandingClick">
                         <div class="ptt-kpi-icon outstanding">
                             <i class="fa fa-exclamation-circle"/>
                         </div>
@@ -67,11 +76,47 @@
                             <t t-esc="formatCurrency(state.data.overdue_amount)"/> overdue
                         </div>
                     </div>
+                    
+                    <!-- Capture Rate -->
+                    <div class="ptt-kpi-card" t-if="state.data.capture_rate">
+                        <div class="ptt-kpi-icon" style="background: #DBEAFE; color: #2563EB;">
+                            <i class="fa fa-percent"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.capture_rate.capture_rate + '%'"/>
+                        <div class="ptt-kpi-label">Capture Rate</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.capture_rate.won_count"/> won / <t t-esc="state.data.capture_rate.total_leads"/> total
+                        </div>
+                    </div>
+                    
+                    <!-- Avg Revenue per Event -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_revenue_per_event">
+                        <div class="ptt-kpi-icon" style="background: #DCFCE7; color: #16A34A;">
+                            <i class="fa fa-dollar"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.avg_revenue_per_event.avg)"/>
+                        <div class="ptt-kpi-label">Avg Revenue/Event</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.avg_revenue_per_event.count"/> events
+                        </div>
+                    </div>
+                    
+                    <!-- Revenue Comparison -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_revenue_comparison">
+                        <div class="ptt-kpi-icon" style="background: #FEF3C7; color: #D97706;">
+                            <i class="fa fa-line-chart"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatPercentage(state.data.avg_revenue_comparison.prev_year_change_pct)"/>
+                        <div class="ptt-kpi-label">vs Last Year</div>
+                        <div class="ptt-kpi-count">
+                            Current: <t t-esc="formatCurrency(state.data.avg_revenue_comparison.current)"/>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Sales Rep Cards -->
-                <div class="ptt-section-header">
-                    <h2><i class="fa fa-users"/> Sales Team Performance</h2>
+                <!-- All Users Section -->
+                <div class="ptt-section-header mb-3 mt-4">
+                    <h2><i class="fa fa-users"/> All Users Performance</h2>
                 </div>
                 
                 <div class="ptt-rep-grid">
@@ -85,8 +130,11 @@
                             </div>
                             <div class="ptt-rep-stats">
                                 <div class="ptt-rep-stat">
-                                    <span class="label">Booked</span>
+                                    <span class="label">Booked (Absolute)</span>
                                     <span class="value" t-esc="formatCurrency(rep.booked_amount)"/>
+                                    <span class="label small" t-if="state.data.total_booked > 0">
+                                        (<t t-esc="((rep.booked_amount / state.data.total_booked) * 100).toFixed(1)"/>% of total)
+                                    </span>
                                 </div>
                                 <div class="ptt-rep-stat">
                                     <span class="label">Events</span>

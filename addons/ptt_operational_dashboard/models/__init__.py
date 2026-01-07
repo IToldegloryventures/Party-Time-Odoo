@@ -4,6 +4,9 @@
 from . import ptt_personal_todo
 from . import ptt_home_data
 from . import project_task_inherit
+from . import ptt_dashboard_config
+from . import ptt_dashboard_metric_config
+from . import ptt_dashboard_layout_config
 
 # Existing dashboard models
 from . import ptt_dashboard_widget

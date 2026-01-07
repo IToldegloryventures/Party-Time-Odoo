@@ -69,6 +69,16 @@
                         <SalesDashboard/>
                     </t>
                     
+                    <!-- OPERATIONS TAB -->
+                    <t t-if="state.activeTab === 'operations'">
+                        <OperationsDashboard/>
+                    </t>
+                    
+                    <!-- COMMUNICATION TAB -->
+                    <t t-if="state.activeTab === 'communication'">
+                        <CommunicationDashboard/>
+                    </t>
+                    
                     <!-- COMMISSION TAB -->
                     <t t-if="state.activeTab === 'commission'">
                         <div class="ptt-card">
