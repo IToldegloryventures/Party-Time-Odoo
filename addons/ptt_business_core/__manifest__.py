@@ -5,7 +5,7 @@
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["contacts", "crm", "project", "sale", "sale_crm", "sale_project", "account", "analytic"],
+    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "account", "analytic"],
     "data": [
         # Security (load groups first, then access rules)
         "security/ptt_security.xml",
