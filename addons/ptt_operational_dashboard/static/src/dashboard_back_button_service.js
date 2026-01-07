@@ -11,9 +11,9 @@ import { DashboardBackButton } from "./components/dashboard_back_button";
  * Mounts the component to appear on all pages (except the dashboard itself).
  */
 const dashboardBackButtonService = {
-    dependencies: ["action", "router"],
+    dependencies: ["action"],
     
-    start(env, { action, router }) {
+    start(env, { action }) {
         let component = null;
         let mounted = false;
         
