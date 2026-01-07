@@ -1,10 +1,11 @@
 """
-Post-migration script to fix blank database screen issue.
+Post-migration script to fix blank database screen issue and add NOT NULL constraints.
 
 This fixes:
 1. Clears any user home actions pointing to PTT dashboard
 2. Clears session storage references to PTT menu
 3. Ensures default Odoo home action is restored
+4. Adds NOT NULL constraints to required fields
 """
 import json
 import logging
@@ -13,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    """Fix blank database screen by clearing PTT dashboard references."""
+    """Fix blank database screen and add NOT NULL constraints."""
     
     # === FIX 1: Clear user home actions pointing to PTT dashboard ===
     _logger.info("Clearing user home actions pointing to PTT dashboard...")
@@ -60,21 +61,171 @@ def migrate(cr, version):
     else:
         _logger.warning("Could not find base.action_client_base_menu.")
     
-    # === FIX 3: Clear any menu selections in ir_ui_menu that might be broken ===
-    _logger.info("Verifying menu structure...")
+    # === FIX 3: Add NOT NULL constraints to required fields ===
+    _logger.info("Adding NOT NULL constraints to required fields...")
     
-    # Check if PTT root menu exists and has proper structure
+    # ptt.dashboard.metric.config - metric_name
     cr.execute("""
-        SELECT id FROM ir_ui_menu 
-        WHERE complete_name LIKE 'Home%' 
-        AND action IS NULL
-        ORDER BY sequence
-        LIMIT 1
+        SELECT COUNT(*) FROM ptt_dashboard_metric_config 
+        WHERE metric_name IS NULL
     """)
-    menu_result = cr.fetchone()
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL metric_name, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_dashboard_metric_config 
+            SET metric_name = 'metric_' || id::text 
+            WHERE metric_name IS NULL
+        """)
     
-    if menu_result:
-        _logger.info("PTT Home menu found (id=%s).", menu_result[0])
+    cr.execute("""
+        ALTER TABLE ptt_dashboard_metric_config 
+        ALTER COLUMN metric_name SET NOT NULL
+    """)
+    _logger.info("Added NOT NULL constraint to ptt_dashboard_metric_config.metric_name")
     
-    _logger.info("Migration completed. Database should now show standard Odoo home screen.")
+    # ptt.dashboard.metric.config - metric_label
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_dashboard_metric_config 
+        WHERE metric_label IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL metric_label, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_dashboard_metric_config 
+            SET metric_label = COALESCE(metric_name, 'Metric ' || id::text)
+            WHERE metric_label IS NULL
+        """)
+    
+    cr.execute("""
+        ALTER TABLE ptt_dashboard_metric_config 
+        ALTER COLUMN metric_label SET NOT NULL
+    """)
+    _logger.info("Added NOT NULL constraint to ptt_dashboard_metric_config.metric_label")
+    
+    # ptt.dashboard.metric.config - tab_assignment (has default, but ensure NOT NULL)
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_dashboard_metric_config 
+        WHERE tab_assignment IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL tab_assignment, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_dashboard_metric_config 
+            SET tab_assignment = 'sales'
+            WHERE tab_assignment IS NULL
+        """)
+    
+    cr.execute("""
+        ALTER TABLE ptt_dashboard_metric_config 
+        ALTER COLUMN tab_assignment SET NOT NULL
+    """)
+    _logger.info("Added NOT NULL constraint to ptt_dashboard_metric_config.tab_assignment")
+    
+    # ptt.dashboard.layout.config - section_name
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_dashboard_layout_config 
+        WHERE section_name IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL section_name, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_dashboard_layout_config 
+            SET section_name = 'section_' || id::text 
+            WHERE section_name IS NULL
+        """)
+    
+    cr.execute("""
+        ALTER TABLE ptt_dashboard_layout_config 
+        ALTER COLUMN section_name SET NOT NULL
+    """)
+    _logger.info("Added NOT NULL constraint to ptt_dashboard_layout_config.section_name")
+    
+    # ptt.dashboard.layout.config - section_label
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_dashboard_layout_config 
+        WHERE section_label IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL section_label, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_dashboard_layout_config 
+            SET section_label = COALESCE(section_name, 'Section ' || id::text)
+            WHERE section_label IS NULL
+        """)
+    
+    cr.execute("""
+        ALTER TABLE ptt_dashboard_layout_config 
+        ALTER COLUMN section_label SET NOT NULL
+    """)
+    _logger.info("Added NOT NULL constraint to ptt_dashboard_layout_config.section_label")
+    
+    # ptt.dashboard.layout.config - tab_assignment
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_dashboard_layout_config 
+        WHERE tab_assignment IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL tab_assignment, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_dashboard_layout_config 
+            SET tab_assignment = 'sales'
+            WHERE tab_assignment IS NULL
+        """)
+    
+    cr.execute("""
+        ALTER TABLE ptt_dashboard_layout_config 
+        ALTER COLUMN tab_assignment SET NOT NULL
+    """)
+    _logger.info("Added NOT NULL constraint to ptt_dashboard_layout_config.tab_assignment")
+    
+    # Check other required fields in other models
+    # ptt.sales.commission - sales_rep_id
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_sales_commission 
+        WHERE sales_rep_id IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL sales_rep_id, these will need manual cleanup", null_count)
+        # Don't set a default, just log - these records are invalid
+    
+    # ptt.sales.commission - report_month
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_sales_commission 
+        WHERE report_month IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL report_month, setting defaults...", null_count)
+        cr.execute("""
+            UPDATE ptt_sales_commission 
+            SET report_month = DATE_TRUNC('month', CURRENT_DATE)
+            WHERE report_month IS NULL
+        """)
+    
+    # ptt.sales.rep - user_id
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_sales_rep 
+        WHERE user_id IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL user_id, these will need manual cleanup", null_count)
+    
+    # ptt.personal.todo - user_id and name
+    cr.execute("""
+        SELECT COUNT(*) FROM ptt_personal_todo 
+        WHERE user_id IS NULL OR name IS NULL
+    """)
+    null_count = cr.fetchone()[0]
+    if null_count > 0:
+        _logger.warning("Found %s records with NULL user_id or name, these will need manual cleanup", null_count)
+    
+    _logger.info("Migration completed. NOT NULL constraints added and database should now show standard Odoo home screen.")
 
