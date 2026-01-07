@@ -15,6 +15,124 @@ _logger = logging.getLogger(__name__)
 
 def migrate(cr, version):
     """Fix blank database screen and add NOT NULL constraints."""
+    # === CLEANUP 0: Remove stale records referencing removed models ===
+    # In v19.0.1.0.3 we removed the Dashboard Editor models. If a database had
+    # previous versions installed, their views/actions/menus may still exist and
+    # refer to non-existent models, causing "Missing model ..." errors at load.
+    removed_models = (
+        "ptt.dashboard.metric.config",
+        "ptt.dashboard.layout.config",
+    )
+
+    try:
+        _logger.info("Cleaning up stale views/actions/menus for removed models...")
+
+        # 0.a) Views linked to removed models (scoped to this module)
+        cr.execute("""
+            SELECT COUNT(1)
+            FROM ir_ui_view v
+            JOIN ir_model_data d
+              ON d.model = 'ir.ui.view'
+             AND d.res_id = v.id
+            WHERE d.module = 'ptt_operational_dashboard'
+              AND v.model = ANY(%s)
+        """, (list(removed_models),))
+        view_count = cr.fetchone()[0]
+        if view_count:
+            _logger.info("Found %s stale ir.ui.view records to delete", view_count)
+            cr.execute("""
+                DELETE FROM ir_model_data d
+                USING ir_ui_view v
+                WHERE d.model = 'ir.ui.view'
+                  AND d.res_id = v.id
+                  AND d.module = 'ptt_operational_dashboard'
+                  AND v.model = ANY(%s)
+            """, (list(removed_models),))
+            cr.execute("""
+                DELETE FROM ir_ui_view v
+                WHERE v.model = ANY(%s)
+                  AND NOT EXISTS (
+                    SELECT 1 FROM ir_model_data d
+                    WHERE d.model = 'ir.ui.view' AND d.res_id = v.id
+                  )
+            """, (list(removed_models),))
+
+        # 0.b) Window actions linked to removed models (scoped to this module)
+        cr.execute("""
+            SELECT COUNT(1)
+            FROM ir_act_window w
+            JOIN ir_model_data d
+              ON d.model = 'ir.actions.act_window'
+             AND d.res_id = w.id
+            WHERE d.module = 'ptt_operational_dashboard'
+              AND w.res_model = ANY(%s)
+        """, (list(removed_models),))
+        act_count = cr.fetchone()[0]
+        if act_count:
+            _logger.info("Found %s stale ir.actions.act_window records to delete", act_count)
+            cr.execute("""
+                DELETE FROM ir_model_data d
+                USING ir_act_window w
+                WHERE d.model = 'ir.actions.act_window'
+                  AND d.res_id = w.id
+                  AND d.module = 'ptt_operational_dashboard'
+                  AND w.res_model = ANY(%s)
+            """, (list(removed_models),))
+            cr.execute("""
+                DELETE FROM ir_actions_actions a
+                USING ir_act_window w
+                WHERE a.id = w.id
+                  AND w.res_model = ANY(%s)
+                  AND NOT EXISTS (
+                    SELECT 1 FROM ir_model_data d
+                    WHERE d.model = 'ir.actions.act_window' AND d.res_id = a.id
+                  )
+            """, (list(removed_models),))
+
+        # 0.c) Menus pointing to actions of removed models (scoped to this module)
+        # Join ir_ui_menu -> ir_actions_actions (a) -> ir_act_window (w)
+        cr.execute("""
+            SELECT COUNT(1)
+            FROM ir_ui_menu m
+            JOIN ir_model_data dm
+              ON dm.model = 'ir.ui.menu'
+             AND dm.res_id = m.id
+            JOIN ir_actions_actions a
+              ON a.id = m.action
+            LEFT JOIN ir_act_window w
+              ON w.id = a.id
+            WHERE dm.module = 'ptt_operational_dashboard'
+              AND w.res_model = ANY(%s)
+        """, (list(removed_models),))
+        menu_count = cr.fetchone()[0]
+        if menu_count:
+            _logger.info("Found %s stale ir.ui_menu entries pointing to removed models", menu_count)
+            # Delete their ir.model.data and the menus themselves
+            cr.execute("""
+                DELETE FROM ir_model_data d
+                USING ir_ui_menu m, ir_actions_actions a, ir_act_window w
+                WHERE d.model = 'ir.ui.menu'
+                  AND d.res_id = m.id
+                  AND d.module = 'ptt_operational_dashboard'
+                  AND a.id = m.action
+                  AND w.id = a.id
+                  AND w.res_model = ANY(%s)
+            """, (list(removed_models),))
+            cr.execute("""
+                DELETE FROM ir_ui_menu m
+                USING ir_actions_actions a, ir_act_window w
+                WHERE a.id = m.action
+                  AND w.id = a.id
+                  AND w.res_model = ANY(%s)
+                  AND NOT EXISTS (
+                    SELECT 1 FROM ir_model_data d
+                    WHERE d.model = 'ir.ui.menu' AND d.res_id = m.id
+                  )
+            """, (list(removed_models),))
+
+        _logger.info("Cleanup complete. Views: %s, Actions: %s, Menus: %s", view_count, act_count, menu_count)
+    except Exception as e:
+        _logger.warning("Cleanup for removed models failed (continuing migration): %s", e)
     
     # === FIX 1: Clear user home actions pointing to PTT dashboard ===
     _logger.info("Clearing user home actions pointing to PTT dashboard...")
