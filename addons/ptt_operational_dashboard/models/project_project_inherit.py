@@ -1,24 +1,14 @@
-from odoo import models, fields, api
+from odoo import models, api
 from datetime import datetime
 
 
 class ProjectProject(models.Model):
-    """Inherit Project to add PTT event fields and trigger dashboard KPI updates."""
+    """Inherit Project to trigger dashboard KPI updates.
+    
+    Note: PTT event fields (x_event_date, x_crm_lead_id) are defined in
+    ptt_business_core.models.project_project - do NOT redefine them here.
+    """
     _inherit = "project.project"
-
-    # PTT Event Fields - Links project to CRM lead and event date
-    x_event_date = fields.Date(
-        string="Event Date",
-        help="The date when the event is scheduled to occur.",
-        index=True,
-    )
-    x_crm_lead_id = fields.Many2one(
-        "crm.lead",
-        string="CRM Lead",
-        help="The CRM lead/opportunity this project was created from.",
-        index=True,
-        ondelete="set null",
-    )
     
     def write(self, vals):
         """Override write to trigger dashboard KPI update when projects change."""
