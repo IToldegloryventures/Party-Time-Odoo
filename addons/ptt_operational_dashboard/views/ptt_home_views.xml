@@ -11,7 +11,7 @@
     <record id="action_ptt_event_calendar" model="ir.actions.act_window">
         <field name="name">Event Calendar</field>
         <field name="res_model">project.project</field>
-        <field name="view_mode">calendar,list,form</field>
+        <field name="view_mode">calendar,tree,form</field>
         <field name="domain">[('x_event_date', '!=', False)]</field>
         <field name="context">{'search_default_my_projects': 1}</field>
         <field name="help" type="html">
@@ -28,7 +28,7 @@
     <record id="action_ptt_my_tasks" model="ir.actions.act_window">
         <field name="name">My Tasks</field>
         <field name="res_model">project.task</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('stage_id.fold', '=', False)]</field>
         <field name="context">{'search_default_my_tasks': 1}</field>
         <field name="help" type="html">
@@ -42,7 +42,7 @@
     <record id="action_ptt_my_leads" model="ir.actions.act_window">
         <field name="name">My Leads</field>
         <field name="res_model">crm.lead</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('type', '=', 'lead')]</field>
         <field name="context">{'search_default_assigned_to_me': 1}</field>
     </record>
@@ -51,7 +51,7 @@
     <record id="action_ptt_my_quotes" model="ir.actions.act_window">
         <field name="name">My Quotes</field>
         <field name="res_model">sale.order</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="domain">[('state', 'in', ['draft', 'sent'])]</field>
         <field name="context">{'search_default_my_quotations': 1}</field>
     </record>
