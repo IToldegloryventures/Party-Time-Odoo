@@ -14,7 +14,6 @@ export class DashboardBackButton extends Component {
 
     setup() {
         this.action = useService("action");
-        this.router = useService("router");
         this.state = useState({
             visible: false,
         });

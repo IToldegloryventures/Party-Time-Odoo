@@ -43,8 +43,10 @@ const dashboardBackButtonService = {
             }
         };
         
-        // Mount on service start
-        mountButton();
+        // Mount after a small delay to ensure templates are loaded
+        setTimeout(() => {
+            mountButton();
+        }, 100);
         
         // Listen for navigation changes
         const checkAndUpdate = () => {
