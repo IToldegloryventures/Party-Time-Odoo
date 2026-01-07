@@ -42,7 +42,7 @@ def migrate(cr, version):
     cr.execute("""
         DELETE FROM ir_model_fields
         WHERE model = 'project.project'
-          AND name IN ('x_plan2_id',)
+          AND name = 'x_plan2_id'
     """)
     deleted_project_fields = cr.rowcount
     _logger.info(f"Deleted {deleted_project_fields} orphaned project.project field records")
