@@ -10,30 +10,43 @@ import { useService } from "@web/core/utils/hooks";
  * from the dashboard. Provides quick navigation back to the dashboard.
  * 
  * Registered via main_components registry to be rendered within the main Owl app.
+ * 
+ * IMPORTANT: This component loads early in the app lifecycle, so we must be
+ * defensive about service availability.
  */
 export class DashboardBackButton extends Component {
     static template = "ptt_operational_dashboard.DashboardBackButton";
     static props = {};
 
     setup() {
-        this.action = useService("action");
+        // Use try-catch for service in case it's not ready yet
+        try {
+            this.action = useService("action");
+        } catch (e) {
+            console.warn("DashboardBackButton: action service not ready yet");
+            this.action = null;
+        }
+        
         this.state = useState({
             visible: false,
         });
 
-        // Check if we're in a standard Odoo app (not the dashboard)
+        // Only set up listeners after a delay to ensure app is fully loaded
         onMounted(() => {
-            this.checkVisibility();
-            // Listen for route changes
-            this.routeChangeHandler = () => {
-                setTimeout(() => this.checkVisibility(), 100);
-            };
-            window.addEventListener("popstate", this.routeChangeHandler);
-            window.addEventListener("hashchange", this.routeChangeHandler);
-            // Check periodically in case user navigates via action service
-            this.visibilityInterval = setInterval(() => {
+            // Delay initial setup to let the app fully initialize
+            setTimeout(() => {
                 this.checkVisibility();
-            }, 500);
+                // Listen for route changes
+                this.routeChangeHandler = () => {
+                    setTimeout(() => this.checkVisibility(), 100);
+                };
+                window.addEventListener("popstate", this.routeChangeHandler);
+                window.addEventListener("hashchange", this.routeChangeHandler);
+                // Check periodically in case user navigates via action service
+                this.visibilityInterval = setInterval(() => {
+                    this.checkVisibility();
+                }, 1000); // Increased interval to reduce overhead
+            }, 1000); // Wait 1 second for app to fully load
         });
 
         onWillUnmount(() => {
@@ -48,6 +61,9 @@ export class DashboardBackButton extends Component {
     }
 
     checkVisibility() {
+        // Safety check - don't run if component is destroyed
+        if (!this.state) return;
+        
         // Check if current URL/action is NOT the dashboard
         const currentUrl = window.location.href;
         const hash = window.location.hash || "";
@@ -66,9 +82,18 @@ export class DashboardBackButton extends Component {
     }
 
     onBackClick() {
-        // Navigate back to dashboard
+        // Safety check for action service
+        if (!this.action) {
+            console.warn("DashboardBackButton: action service not available");
+            // Fallback: use direct navigation
+            window.location.hash = "#action=ptt_home_hub";
+            return;
+        }
+        
+        // Navigate back to dashboard - use safer options
         this.action.doAction("ptt_home_hub", {
             clearBreadcrumbs: true,
+            stackPosition: "replaceCurrentAction",
         });
     }
 }

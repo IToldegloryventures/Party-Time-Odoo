@@ -1,33 +1,43 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { DashboardBackButton } from "./components/dashboard_back_button";
 
 /**
  * Dashboard Back Button Service
  * 
- * Registers the DashboardBackButton component via Odoo's main_components registry.
- * This is the proper way to add floating components in Odoo 19 - they get rendered
- * within the main Owl app and have access to all registered templates.
+ * Provides navigation utility for returning to the PTT Dashboard.
+ * 
+ * NOTE: The DashboardBackButton main_component has been DISABLED because
+ * main_components load very early in the app lifecycle and can cause
+ * "Cannot read properties of undefined (reading 'applyState')" errors
+ * when the action service isn't fully ready.
+ * 
+ * TODO: Re-enable once we find a safe way to register main_components
+ * that doesn't break app initialization.
  */
 
-// Register the component in main_components registry
-// This is how Odoo 19 handles floating/overlay components like notifications, dialogs, etc.
-registry.category("main_components").add("DashboardBackButton", {
-    Component: DashboardBackButton,
-    props: {},
-});
+// DISABLED: main_components registration - causes startup errors
+// import { DashboardBackButton } from "./components/dashboard_back_button";
+// registry.category("main_components").add("DashboardBackButton", {
+//     Component: DashboardBackButton,
+//     props: {},
+// });
 
-// Simple service to provide navigation utility (optional, for future expansion)
+// Simple service to provide navigation utility
 const dashboardBackButtonService = {
     dependencies: ["action"],
     
     start(env, { action }) {
         return {
             navigateToDashboard() {
-                action.doAction("ptt_home_hub", {
-                    clearBreadcrumbs: true,
-                });
+                if (action && action.doAction) {
+                    action.doAction("ptt_home_hub", {
+                        clearBreadcrumbs: true,
+                    });
+                } else {
+                    // Fallback: use direct hash navigation
+                    window.location.hash = "#action=ptt_home_hub";
+                }
             },
         };
     },

@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from datetime import datetime, timedelta
 
 
 class ProjectProject(models.Model):
@@ -90,11 +91,12 @@ class ProjectProject(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to auto-create event tasks for event projects."""
+        """Override create to auto-create event tasks and set initial stage for event projects."""
         projects = super().create(vals_list)
         for project in projects:
             # Only create tasks if this is an event project (has CRM lead)
             if project.x_crm_lead_id:
+                project._set_initial_project_stage()
                 project._create_event_tasks()
         return projects
 
@@ -163,50 +165,211 @@ class ProjectProject(models.Model):
     x_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
     x_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
 
+    def _set_initial_project_stage(self):
+        """Set initial project stage based on event date and current date."""
+        self.ensure_one()
+        if not self.x_event_date:
+            return
+        
+        # Get the Planning stage (default for new projects)
+        planning_stage = self.env.ref("ptt_business_core.project_stage_planning", raise_if_not_found=False)
+        if planning_stage:
+            self.stage_id = planning_stage.id
+    
     def _create_event_tasks(self):
-        """Auto-create event planning tasks and sub-tasks for event projects."""
+        """Auto-create comprehensive event planning tasks and sub-tasks for event projects.
+        
+        Creates tasks organized by event phase:
+        - Booking Confirmation
+        - Planning & Coordination
+        - Vendor Management
+        - Setup & Logistics
+        - Event Day Execution
+        - Teardown & Follow-up
+        """
         self.ensure_one()
         if not self.x_crm_lead_id:
             return  # Only for event projects
 
-        # Get assigned users from CRM Lead's salesperson (Odoo 19 uses user_ids Many2many)
+        # Get assigned users from CRM Lead's salesperson
         assigned_users = (
             [(6, 0, [self.x_crm_lead_id.user_id.id])]
             if self.x_crm_lead_id.user_id
             else []
         )
 
-        # Get or create task stages (using task type/stage system)
-        # For now, we'll use the default project task stages or create if needed
-        # Stage: Follow Up
-        follow_up_stage = self._get_or_create_task_stage("Follow Up")
+        # Get task types (use the new event-specific types)
+        todo_type = self.env.ref("ptt_business_core.task_type_todo", raise_if_not_found=False)
+        if not todo_type:
+            todo_type = self._get_or_create_task_stage("To Do")
         
-        # Create main task: "Confirm Booking with Client"
-        main_task = self.env["project.task"].create({
+        # Task 1: Confirm Booking with Client
+        booking_task = self.env["project.task"].create({
             "name": "Confirm Booking with Client",
             "project_id": self.id,
-            "stage_id": follow_up_stage.id,
+            "stage_id": todo_type.id,
             "user_ids": assigned_users,
+            "description": "Verify contract signed and retainer received",
         })
         
-        # Create sub-tasks
-        sub_tasks_data = [
+        # Booking sub-tasks
+        booking_subtasks = [
             "Verify Retainer has been paid. Verify remaining balance owed.",
             "Send confirmation email stating contract signed + retainer received",
             "Reiterate event date, venue, time, and agreed services",
         ]
         
-        for sub_task_name in sub_tasks_data:
+        for sub_task_name in booking_subtasks:
             self.env["project.task"].create({
                 "name": sub_task_name,
                 "project_id": self.id,
-                "parent_id": main_task.id,
-                "stage_id": follow_up_stage.id,
+                "parent_id": booking_task.id,
+                "stage_id": todo_type.id,
                 "user_ids": assigned_users,
             })
+        
+        # Task 2: Planning & Coordination
+        planning_task = self.env["project.task"].create({
+            "name": "Event Planning & Coordination",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Coordinate all event details and logistics",
+        })
+        
+        planning_subtasks = [
+            "Finalize event timeline and schedule",
+            "Confirm vendor assignments and contracts",
+            "Coordinate with venue (if applicable)",
+            "Prepare event day checklist",
+            "Confirm guest count and special requirements",
+        ]
+        
+        for sub_task_name in planning_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": planning_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
+        
+        # Task 3: Vendor Management
+        vendor_task = self.env["project.task"].create({
+            "name": "Vendor Management & Coordination",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Manage all vendor assignments and confirmations",
+        })
+        
+        vendor_subtasks = [
+            "Confirm all vendor assignments",
+            "Verify vendor contracts and pricing",
+            "Coordinate vendor delivery/setup times",
+            "Confirm vendor contact information",
+        ]
+        
+        for sub_task_name in vendor_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": vendor_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
+        
+        # Task 4: Setup & Logistics (only if event date is set)
+        if self.x_event_date:
+            setup_task = self.env["project.task"].create({
+                "name": "Setup & Logistics",
+                "project_id": self.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+                "date_deadline": self.x_event_date,  # Due on event date
+                "description": "Equipment delivery and setup coordination",
+            })
+            
+            setup_subtasks = [
+                "Confirm equipment delivery schedule",
+                "Coordinate setup crew assignments",
+                "Verify all equipment is available and in good condition",
+                "Prepare setup checklist",
+            ]
+            
+            for sub_task_name in setup_subtasks:
+                self.env["project.task"].create({
+                    "name": sub_task_name,
+                    "project_id": self.id,
+                    "parent_id": setup_task.id,
+                    "stage_id": todo_type.id,
+                    "user_ids": assigned_users,
+                })
+        
+        # Task 5: Event Day Execution
+        if self.x_event_date:
+            event_day_task = self.env["project.task"].create({
+                "name": "Event Day Execution",
+                "project_id": self.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+                "date_deadline": self.x_event_date,
+                "description": "On-site event management and coordination",
+            })
+            
+            event_day_subtasks = [
+                "Arrive on-site for final setup check",
+                "Coordinate with all vendors on-site",
+                "Manage event timeline and flow",
+                "Handle any issues or special requests",
+                "Ensure guest satisfaction",
+            ]
+            
+            for sub_task_name in event_day_subtasks:
+                self.env["project.task"].create({
+                    "name": sub_task_name,
+                    "project_id": self.id,
+                    "parent_id": event_day_task.id,
+                    "stage_id": todo_type.id,
+                    "user_ids": assigned_users,
+                })
+        
+        # Task 6: Teardown & Follow-up
+        if self.x_event_date:
+            # Teardown typically happens day after event
+            # x_event_date is a Date field, so it's already a date object
+            teardown_date = self.x_event_date + timedelta(days=1) if self.x_event_date else None
+            teardown_task = self.env["project.task"].create({
+                "name": "Teardown & Follow-up",
+                "project_id": self.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+                "date_deadline": teardown_date,
+                "description": "Equipment removal and post-event follow-up",
+            })
+            
+            teardown_subtasks = [
+                "Coordinate equipment teardown and removal",
+                "Verify all equipment is returned and accounted for",
+                "Send thank you email to client",
+                "Request client feedback and testimonials",
+                "Update project with final costs and margin",
+            ]
+            
+            for sub_task_name in teardown_subtasks:
+                self.env["project.task"].create({
+                    "name": sub_task_name,
+                    "project_id": self.id,
+                    "parent_id": teardown_task.id,
+                    "stage_id": todo_type.id,
+                    "user_ids": assigned_users,
+                })
 
     def _get_or_create_task_stage(self, stage_name):
-        """Get or create a task stage for the project."""
+        """Get or create a task stage for the project.
+        
+        This is a fallback method if the XML-defined task types are not found.
+        """
         # Search for existing stage linked to this project
         stage = self.env["project.task.type"].search([
             ("name", "=", stage_name),
@@ -234,6 +397,52 @@ class ProjectProject(models.Model):
                 stage.write({"project_ids": [(4, self.id)]})
         
         return stage
+    
+    @api.depends("x_event_date")
+    def _compute_project_stage_from_date(self):
+        """Auto-update project stage based on event date.
+        
+        This method can be called manually or via scheduled action to update
+        project stages based on event timeline.
+        """
+        today = fields.Date.today()
+        for project in self:
+            if not project.x_event_date:
+                continue
+            
+            event_date = project.x_event_date
+            days_until_event = (event_date - today).days
+            
+            # Get project stages
+            planning_stage = self.env.ref("ptt_business_core.project_stage_planning", raise_if_not_found=False)
+            setup_stage = self.env.ref("ptt_business_core.project_stage_setup", raise_if_not_found=False)
+            event_day_stage = self.env.ref("ptt_business_core.project_stage_event_day", raise_if_not_found=False)
+            teardown_stage = self.env.ref("ptt_business_core.project_stage_teardown", raise_if_not_found=False)
+            completed_stage = self.env.ref("ptt_business_core.project_stage_completed", raise_if_not_found=False)
+            
+            # Auto-assign stage based on timeline
+            if days_until_event < 0:
+                # Event is in the past
+                if days_until_event >= -1:
+                    # Event was yesterday or today - might be in teardown
+                    if teardown_stage:
+                        project.stage_id = teardown_stage.id
+                else:
+                    # Event was more than 1 day ago - should be completed
+                    if completed_stage:
+                        project.stage_id = completed_stage.id
+            elif days_until_event == 0:
+                # Event is today
+                if event_day_stage:
+                    project.stage_id = event_day_stage.id
+            elif days_until_event <= 3:
+                # Event is within 3 days - setup phase
+                if setup_stage:
+                    project.stage_id = setup_stage.id
+            else:
+                # Event is more than 3 days away - planning phase
+                if planning_stage:
+                    project.stage_id = planning_stage.id
 
     def action_view_crm_lead(self):
         """Open the source CRM opportunity."""
@@ -264,3 +473,82 @@ class ProjectProject(models.Model):
             },
         }
 
+    # === SCHEDULED ACTIONS (CRON) ===
+    
+    @api.model
+    def _cron_10day_event_reminder(self):
+        """Create 10-day reminder activities for upcoming events.
+        
+        Runs daily. Finds event projects with x_event_date exactly 10 days from today
+        and creates reminder activities for the project manager.
+        """
+        today = fields.Date.today()
+        target_date = today + timedelta(days=10)
+        
+        # Find projects with events 10 days out
+        projects = self.search([
+            ("x_event_date", "=", target_date),
+            ("x_crm_lead_id", "!=", False),  # Only event projects
+        ])
+        
+        # Get the 10-day confirmation activity type
+        activity_type = self.env.ref(
+            "ptt_business_core.activity_type_10day_confirmation", 
+            raise_if_not_found=False
+        )
+        
+        for project in projects:
+            # Check if activity already exists
+            existing = self.env["mail.activity"].search([
+                ("res_model", "=", "project.project"),
+                ("res_id", "=", project.id),
+                ("activity_type_id", "=", activity_type.id if activity_type else False),
+            ], limit=1)
+            
+            if not existing:
+                project.activity_schedule(
+                    act_type_xmlid="ptt_business_core.activity_type_10day_confirmation",
+                    date_deadline=today,
+                    summary=f"10-Day Confirmation: {project.name}",
+                    note=f"Event in 10 days ({target_date}). Confirm all details with client and vendors.",
+                    user_id=project.user_id.id if project.user_id else self.env.user.id,
+                )
+    
+    @api.model
+    def _cron_3day_vendor_reminder(self):
+        """Create 3-day vendor reminder activities for upcoming events.
+        
+        Runs daily. Finds event projects with x_event_date exactly 3 days from today
+        and creates reminder activities for vendor follow-up.
+        """
+        today = fields.Date.today()
+        target_date = today + timedelta(days=3)
+        
+        # Find projects with events 3 days out
+        projects = self.search([
+            ("x_event_date", "=", target_date),
+            ("x_crm_lead_id", "!=", False),  # Only event projects
+        ])
+        
+        # Get the 3-day vendor reminder activity type
+        activity_type = self.env.ref(
+            "ptt_business_core.activity_type_3day_vendor_reminder", 
+            raise_if_not_found=False
+        )
+        
+        for project in projects:
+            # Check if activity already exists
+            existing = self.env["mail.activity"].search([
+                ("res_model", "=", "project.project"),
+                ("res_id", "=", project.id),
+                ("activity_type_id", "=", activity_type.id if activity_type else False),
+            ], limit=1)
+            
+            if not existing:
+                project.activity_schedule(
+                    act_type_xmlid="ptt_business_core.activity_type_3day_vendor_reminder",
+                    date_deadline=today,
+                    summary=f"3-Day Vendor Reminder: {project.name}",
+                    note=f"Event in 3 days ({target_date}). Send final reminders to all vendors.",
+                    user_id=project.user_id.id if project.user_id else self.env.user.id,
+                )

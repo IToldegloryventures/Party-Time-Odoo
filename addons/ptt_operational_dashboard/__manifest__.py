@@ -64,8 +64,9 @@
             "ptt_operational_dashboard/static/src/home.scss",
             "ptt_operational_dashboard/static/src/dashboard.scss",
             # Components (load XML templates before JS to ensure templates are registered)
-            "ptt_operational_dashboard/static/src/components/dashboard_back_button.xml",
-            "ptt_operational_dashboard/static/src/components/dashboard_back_button.js",
+            # NOTE: dashboard_back_button disabled - causes applyState errors on startup
+            # "ptt_operational_dashboard/static/src/components/dashboard_back_button.xml",
+            # "ptt_operational_dashboard/static/src/components/dashboard_back_button.js",
             "ptt_operational_dashboard/static/src/components/home_navigation.xml",
             "ptt_operational_dashboard/static/src/components/home_navigation.js",
             "ptt_operational_dashboard/static/src/components/my_work_section.xml",

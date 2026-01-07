@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="1">
+    <!-- Event-Specific Task Types for Party Time Texas -->
+    
+    <!-- To Do -->
+    <record id="task_type_todo" model="project.task.type">
+        <field name="name">To Do</field>
+        <field name="description">Task not yet started</field>
+    </record>
+    
+    <!-- In Progress -->
+    <record id="task_type_in_progress" model="project.task.type">
+        <field name="name">In Progress</field>
+        <field name="description">Task currently being worked on</field>
+    </record>
+    
+    <!-- Waiting -->
+    <record id="task_type_waiting" model="project.task.type">
+        <field name="name">Waiting</field>
+        <field name="description">Waiting on external dependency or approval</field>
+    </record>
+    
+    <!-- Done -->
+    <record id="task_type_done" model="project.task.type">
+        <field name="name">Done</field>
+        <field name="description">Task completed</field>
+    </record>
+    
+    <!-- Cancelled -->
+    <record id="task_type_cancelled" model="project.task.type">
+        <field name="name">Cancelled</field>
+        <field name="fold" eval="True"/>
+        <field name="description">Task cancelled</field>
+    </record>
+    
+</odoo>
