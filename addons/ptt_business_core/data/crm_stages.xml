@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="1">
+    <!-- 
+        Party Time Texas CRM Pipeline Stages
+        Based on meeting transcript workflow:
+        Intake → Qualification → Proposal Sent → Contract Sent → Booked → Execution → Closed/Won
+    -->
+    
+    <!-- Stage 1: Intake (New leads coming in) -->
+    <record id="ptt_crm_stage_intake" model="crm.stage">
+        <field name="name">Intake</field>
+        <field name="sequence">1</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 2: Qualification (Gathering event details, checking fit) -->
+    <record id="ptt_crm_stage_qualification" model="crm.stage">
+        <field name="name">Qualification</field>
+        <field name="sequence">2</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 3: Proposal Sent (Quote/proposal sent to client) -->
+    <record id="ptt_crm_stage_proposal_sent" model="crm.stage">
+        <field name="name">Proposal Sent</field>
+        <field name="sequence">3</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 4: Contract Sent (Contract sent, awaiting signature) -->
+    <record id="ptt_crm_stage_contract_sent" model="crm.stage">
+        <field name="name">Contract Sent</field>
+        <field name="sequence">4</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 5: Booked (Contract signed + retainer received) -->
+    <record id="ptt_crm_stage_booked" model="crm.stage">
+        <field name="name">Booked</field>
+        <field name="sequence">5</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 6: Execution (Event is in progress or imminent) -->
+    <record id="ptt_crm_stage_execution" model="crm.stage">
+        <field name="name">Execution</field>
+        <field name="sequence">6</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 7: Closed/Won (Event completed successfully) -->
+    <record id="ptt_crm_stage_closed_won" model="crm.stage">
+        <field name="name">Closed/Won</field>
+        <field name="sequence">7</field>
+        <field name="is_won">True</field>
+    </record>
+    
+</odoo>

@@ -13,6 +13,42 @@ class CrmLead(models.Model):
     # NOTE: email_from = Email Address (standard Odoo field)
     # NOTE: description = Additional Notes (standard Odoo field - use that)
     
+    # Store secondary SR from partner for reference on leads
+    x_secondary_sales_rep_id = fields.Many2one(
+        "res.users",
+        string="Secondary Sales Rep",
+        help="Secondary sales rep pulled from the contact record.",
+        domain="[('share', '=', False)]",
+    )
+    
+    @api.onchange("partner_id")
+    def _onchange_partner_id_sales_rep(self):
+        """Auto-populate sales rep from partner's assigned Primary SR.
+        
+        When a repeat customer comes into CRM:
+        1. Find matching company/contact (partner_id)
+        2. Pull primary sales rep if assigned on contact
+        3. Pull secondary sales rep for reference
+        """
+        if self.partner_id:
+            # Check if partner has a primary sales rep assigned
+            if self.partner_id.x_primary_sales_rep_id:
+                # Only update if user_id is not already set (don't override manual selection)
+                if not self.user_id:
+                    self.user_id = self.partner_id.x_primary_sales_rep_id
+            
+            # Also pull secondary SR for reference
+            if self.partner_id.x_secondary_sales_rep_id:
+                self.x_secondary_sales_rep_id = self.partner_id.x_secondary_sales_rep_id
+            
+            # Also check the commercial partner (parent company) if individual contact
+            if not self.user_id and self.partner_id.commercial_partner_id != self.partner_id:
+                commercial = self.partner_id.commercial_partner_id
+                if commercial.x_primary_sales_rep_id:
+                    self.user_id = commercial.x_primary_sales_rep_id
+                if commercial.x_secondary_sales_rep_id and not self.x_secondary_sales_rep_id:
+                    self.x_secondary_sales_rep_id = commercial.x_secondary_sales_rep_id
+    
     x_date_of_call = fields.Date(
         string="Date of Call",
         help="Date of the initial inquiry call.",
@@ -36,6 +72,26 @@ class CrmLead(models.Model):
         ],
         string="Lead Type",
         help="Whether this lead is an individual or a business client.",
+    )
+
+    x_inquiry_source = fields.Selection(
+        [
+            ("web_form", "Web Form"),
+            ("phone", "Phone Call"),
+            ("email", "Email"),
+            ("referral", "Referral"),
+            ("walk_in", "Walk-In"),
+            ("social_media", "Social Media"),
+        ],
+        string="Inquiry Source",
+        default="phone",
+        tracking=True,
+        help="How did this lead find us?",
+    )
+
+    x_referral_source = fields.Char(
+        string="Referral Details",
+        help="If referral, who referred this client?",
     )
 
     # === TIER 1: EVENT OVERVIEW ===
@@ -770,4 +826,65 @@ class CrmLead(models.Model):
         """Include x_project_id in merge dependencies."""
         merge_fields = super()._merge_get_fields()
         return merge_fields + ["x_project_id"]
+    
+    def action_suggest_sale_template(self):
+        """Suggest appropriate sale order template based on event type.
+        
+        Returns the template ID that best matches the event type.
+        This can be used when creating a sale order from the CRM lead.
+        """
+        self.ensure_one()
+        if not self.x_event_type:
+            return False
+        
+        # Map event types to sale order templates
+        template_mapping = {
+            # Wedding events
+            "private_wedding": "ptt_business_core.sale_order_template_wedding",
+            # Corporate events
+            "corporate_conference": "ptt_business_core.sale_order_template_corporate",
+            "corporate_groundbreaking": "ptt_business_core.sale_order_template_corporate",
+            "corporate_ribbon_cutting": "ptt_business_core.sale_order_template_corporate",
+            "corporate_product_launch": "ptt_business_core.sale_order_template_corporate",
+            "corporate_awards": "ptt_business_core.sale_order_template_corporate",
+            "corporate_team_building": "ptt_business_core.sale_order_template_team_building",
+            "corporate_holiday": "ptt_business_core.sale_order_template_corporate",
+            # Private events
+            "private_luxury": "ptt_business_core.sale_order_template_private",
+            "private_graduation": "ptt_business_core.sale_order_template_private",
+            "private_reunion": "ptt_business_core.sale_order_template_private",
+            "private_cultural": "ptt_business_core.sale_order_template_private",
+            "private_barmitzvah": "ptt_business_core.sale_order_template_private",
+            "private_desi": "ptt_business_core.sale_order_template_private",
+            "private_quinceanera": "ptt_business_core.sale_order_template_private",
+            "private_birthday": "ptt_business_core.sale_order_template_private",
+            # Community events
+            "community_hoa": "ptt_business_core.sale_order_template_community",
+            "community_cities_schools": "ptt_business_core.sale_order_template_community",
+            "community_festivals": "ptt_business_core.sale_order_template_community",
+            "community_pool_party": "ptt_business_core.sale_order_template_community",
+            "community_holiday": "ptt_business_core.sale_order_template_community",
+            "community_movie_night": "ptt_business_core.sale_order_template_community",
+            "community_vendor_fair": "ptt_business_core.sale_order_template_community",
+            # Charity events
+            "charity_banquet": "ptt_business_core.sale_order_template_community",
+            "charity_race": "ptt_business_core.sale_order_template_community",
+            "charity_awareness": "ptt_business_core.sale_order_template_community",
+            "charity_donor": "ptt_business_core.sale_order_template_community",
+            # Themed events - default to private
+            "themed_casino": "ptt_business_core.sale_order_template_private",
+            "themed_watch_party": "ptt_business_core.sale_order_template_private",
+            "themed_sports": "ptt_business_core.sale_order_template_private",
+            "themed_decade": "ptt_business_core.sale_order_template_private",
+            "themed_masquerade": "ptt_business_core.sale_order_template_private",
+            "themed_cigar_whiskey": "ptt_business_core.sale_order_template_private",
+        }
+        
+        template_xmlid = template_mapping.get(self.x_event_type)
+        if template_xmlid:
+            template = self.env.ref(template_xmlid, raise_if_not_found=False)
+            if template:
+                return template.id
+        
+        return False
 

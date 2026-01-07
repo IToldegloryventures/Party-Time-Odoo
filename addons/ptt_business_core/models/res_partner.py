@@ -4,6 +4,23 @@ from odoo import models, fields
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
+    # === SALES REP ASSIGNMENT ===
+    x_primary_sales_rep_id = fields.Many2one(
+        "res.users",
+        string="Primary Sales Rep",
+        help="Primary sales representative assigned to this contact.",
+        domain="[('share', '=', False)]",  # Only internal users
+        tracking=True,
+    )
+    x_secondary_sales_rep_id = fields.Many2one(
+        "res.users",
+        string="Secondary Sales Rep",
+        help="Secondary/backup sales representative for this contact.",
+        domain="[('share', '=', False)]",  # Only internal users
+        tracking=True,
+    )
+
+    # === VENDOR FIELDS ===
     x_is_vendor = fields.Boolean(
         string="Vendor",
         help="Mark this contact as a vendor / service provider.",

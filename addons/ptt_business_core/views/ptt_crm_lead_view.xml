@@ -44,12 +44,20 @@
                     class="oe_highlight" invisible="x_project_id or type == 'lead' or (not stage_id or stage_id.name != 'Booked')" 
                     help="Create a project from this opportunity and copy all event data"/>
             </xpath>
+            <!-- Add Secondary Sales Rep field near main Salesperson field -->
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="x_secondary_sales_rep_id" string="Secondary SR"/>
+            </xpath>
+            
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
                 <page name="lead_intake" string="Lead Intake">
                     <!-- Lead Contact Information - Using Standard Odoo Fields -->
                     <!-- Standard fields (user_id=Salesperson, contact_name, partner_name, phone, email_from) are on main form -->
+                    <!-- Secondary SR is auto-populated from partner when partner is selected -->
                     <group string="PTT Additional Contact Information">
                         <group>
+                            <field name="x_inquiry_source"/>
+                            <field name="x_referral_source" invisible="x_inquiry_source != 'referral'"/>
                             <field name="x_date_of_call"/>
                             <field name="x_lead_type"/>
                             <field name="x_preferred_contact_method"/>
