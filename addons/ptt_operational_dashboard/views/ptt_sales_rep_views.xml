@@ -32,7 +32,7 @@
         <field name="name">ptt.sales.rep.tree</field>
         <field name="model">ptt.sales.rep</field>
         <field name="arch" type="xml">
-            <tree string="Sales Representatives">
+            <list string="Sales Representatives">
                 <field name="name"/>
                 <field name="user_id"/>
                 <field name="active"/>
@@ -40,7 +40,7 @@
                 <field name="leads_count"/>
                 <field name="quotes_count"/>
                 <field name="events_count"/>
-            </tree>
+            </list>
         </field>
     </record>
     

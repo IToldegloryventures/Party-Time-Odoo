@@ -37,7 +37,7 @@
         <field name="name">ptt.dashboard.metric.config.tree</field>
         <field name="model">ptt.dashboard.metric.config</field>
         <field name="arch" type="xml">
-            <tree string="Metric Configuration" editable="bottom">
+            <list string="Metric Configuration" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="metric_name"/>
                 <field name="metric_label"/>
@@ -45,7 +45,7 @@
                 <field name="tab_assignment"/>
                 <field name="kpi_size"/>
                 <field name="sequence"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -98,7 +98,7 @@
         <field name="name">ptt.dashboard.layout.config.tree</field>
         <field name="model">ptt.dashboard.layout.config</field>
         <field name="arch" type="xml">
-            <tree string="Layout Configuration" editable="bottom">
+            <list string="Layout Configuration" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="section_name"/>
                 <field name="section_label"/>
@@ -106,7 +106,7 @@
                 <field name="visible"/>
                 <field name="grid_columns"/>
                 <field name="card_size"/>
-            </tree>
+            </list>
         </field>
     </record>
 

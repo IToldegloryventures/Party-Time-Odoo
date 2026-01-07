@@ -41,7 +41,7 @@
         <field name="name">ptt.sales.commission.tree</field>
         <field name="model">ptt.sales.commission</field>
         <field name="arch" type="xml">
-            <tree string="Sales Commission Reports" decoration-info="report_month == context_today().replace(day=1)" decoration-muted="report_month &lt; context_today().replace(day=1)">
+            <list string="Sales Commission Reports" decoration-info="report_month == context_today().replace(day=1)" decoration-muted="report_month &lt; context_today().replace(day=1)">
                 <field name="x_sales_rep_name"/>
                 <field name="report_month" widget="date"/>
                 <field name="total_revenue" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -49,7 +49,7 @@
                 <field name="margin_percent" widget="percentage"/>
                 <field name="commission_amount" widget="monetary" options="{'currency_field': 'currency_id'}" decoration-success="commission_amount > 0"/>
                 <field name="commission_percent" widget="percentage"/>
-            </tree>
+            </list>
         </field>
     </record>
 

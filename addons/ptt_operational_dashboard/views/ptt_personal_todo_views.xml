@@ -5,13 +5,13 @@
         <field name="name">ptt.personal.todo.list</field>
         <field name="model">ptt.personal.todo</field>
         <field name="arch" type="xml">
-            <tree string="Personal To-Do" editable="bottom" default_order="sequence, due_date">
+            <list string="Personal To-Do" editable="bottom" default_order="sequence, due_date">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="due_date"/>
                 <field name="priority" widget="priority"/>
                 <field name="is_done" widget="boolean_toggle"/>
-            </tree>
+            </list>
         </field>
     </record>
 
