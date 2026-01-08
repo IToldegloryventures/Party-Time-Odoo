@@ -1,11 +1,11 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.1.2.7",
+    "version": "19.0.1.2.8",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "account", "analytic"],
+    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic"],
     "data": [
         # Security (load groups first, then access rules)
         "security/ptt_security.xml",

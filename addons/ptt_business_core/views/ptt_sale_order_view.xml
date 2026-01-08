@@ -78,4 +78,38 @@
         </field>
     </record>
     
+    <!-- Sale Order Line List View - Add Cost, Target Margin, and Target Margin Price fields -->
+    <record id="view_sale_order_line_tree_ptt" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.ptt</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add Cost, Target Margin, and Target Margin Price fields after Unit Price -->
+            <xpath expr="//field[@name='price_unit']" position="after">
+                <field name="purchase_price" string="Cost" widget="monetary" 
+                       options="{'currency_field': 'currency_id'}" 
+                       optional="show" groups="base.group_user"/>
+                <field name="x_target_margin" optional="show"/>
+                <field name="x_target_margin_price" string="Target Price" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" 
+                       optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Sale Order Line Form View - Add Target Margin and Target Margin Price fields (embedded in order form) -->
+    <record id="view_sale_order_form_line_ptt" model="ir.ui.view">
+        <field name="name">sale.order.form.line.ptt</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Target Margin and Target Margin Price fields in order line form view (after purchase_price from sale_margin) -->
+            <xpath expr="//field[@name='order_line']//form//field[@name='purchase_price']" position="after">
+                <field name="x_target_margin"/>
+                <field name="x_target_margin_price" widget="monetary" 
+                       options="{'currency_field': 'currency_id'}"/>
+            </xpath>
+        </field>
+    </record>
+    
 </odoo>
