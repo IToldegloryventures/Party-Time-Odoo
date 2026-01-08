@@ -603,7 +603,7 @@ class CrmLead(models.Model):
                 # Check if any confirmed Sales Order has a project
                 confirmed_orders = record.order_ids.filtered(lambda so: so.state == 'sale')
                 if confirmed_orders:
-                    # Check if any confirmed SO has a project linked via project_ids or project_id
+                    # Check if any confirmed SO has a project linked via project_ids
                     projects_from_so = confirmed_orders.mapped('project_ids').filtered(lambda p: p)
                     # Also check projects linked via x_crm_lead_id
                     projects_from_crm = self.env['project.project'].search([
@@ -613,9 +613,6 @@ class CrmLead(models.Model):
                     if all_projects:
                         record.project_count = len(all_projects)
                         record.x_has_project = True
-                        # Set x_project_id to the first project if not already set
-                        if not record.x_project_id:
-                            record.x_project_id = all_projects[0].id
                     else:
                         record.project_count = 0
                         record.x_has_project = False
