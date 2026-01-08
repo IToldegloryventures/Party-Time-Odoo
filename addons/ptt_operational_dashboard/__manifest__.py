@@ -44,8 +44,9 @@
         # Security (load first)
         "security/ptt_security.xml",
         "security/ir.model.access.csv",
-        # Data (CRM Stages)
-        "data/crm_stages.xml",
+        # Data
+        # NOTE: CRM stages removed - using stages from ptt_business_core instead
+        # "data/crm_stages.xml",
         "data/dashboard_default_config.xml",
         # Views & Actions (load before menus)
         "views/ptt_personal_todo_views.xml",
