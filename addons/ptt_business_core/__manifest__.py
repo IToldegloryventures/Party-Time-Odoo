@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.1.3.2",
+    "version": "19.0.1.3.3",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -12,8 +12,8 @@
         "security/ir.model.access.csv",
         # Data files
         "data/cleanup_orphaned_fields.xml",
-        "data/rename_default_crm_stages.xml",  # Rename default Odoo CRM stages (New→Intake, Qualified→Qualification, Proposition→Proposal Sent, Won→Closed/Won)
-        "data/crm_stages.xml",  # Additional stages: Contract Sent, Booked, Lost
+        # CRM stages managed directly in database via SQL - XML files removed to prevent conflicts
+        # Stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         "data/crm_tags.xml",
         "data/crm_lost_reasons.xml",
         "data/mail_activity_type.xml",
