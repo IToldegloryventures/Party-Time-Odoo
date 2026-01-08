@@ -1,339 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 
-        Contact Us Landing Page - Party Time Texas
-        Brand: Black #040303, Gold #D4BF91, Red #A4031F, Gray #B2B4B3
-        Font: Open Sans
-        
-        Use ?embed=1 for WordPress iframe integration (hides header/footer)
-    -->
+    <!-- Premium Contact Form - Party Time Texas -->
     
-    <!-- Contact Us Main Page -->
     <template id="contact_us_page" name="Contact Us - Party Time Texas">
-        <t t-call="portal.frontend_layout">
-            <t t-set="no_header" t-value="True"/>
-            <t t-set="no_footer" t-value="True"/>
-            
-            <!-- Explicitly load CSS (fixes Odoo 19 asset loading) -->
-            <t t-set="head">
-                <link rel="stylesheet" type="text/css" href="/ptt_contact_forms/static/src/css/contact_form.css"/>
+        <t t-call="web.html_container">
+            <head>
+                <meta charset="UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>Contact Us - Party Time Texas</title>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap"/>
-            </t>
-            
-            <div t-attf-class="ptt-contact-page #{embed and 'embed-mode' or ''}">
+                <link rel="stylesheet" type="text/css" href="/ptt_contact_forms/static/src/css/contact_form.css"/>
+            </head>
+            <body class="ptt-embed-body">
                 
-                <!-- Header (hidden in embed mode via CSS) -->
-                <div class="ptt-header">
-                    <div class="container">
-                        <h1>Contact Us</h1>
-                        <p class="ptt-phone">Call <a href="tel:+12143408000">(214) 340-8000</a> for More Information</p>
-                    </div>
-                </div>
-                
-                <!-- Main Content -->
-                <div class="container py-4">
-                    <div class="row justify-content-center">
-                        <div class="col-12">
+                <div class="ptt-form-wrapper">
+                    <div class="ptt-form-card">
+                        
+                        <!-- Header -->
+                        <div class="ptt-form-header">
+                            <h1>Let's Plan Your Event</h1>
+                            <p>Tell us about your vision and we'll make it happen</p>
+                        </div>
+                        
+                        <!-- Error -->
+                        <t t-if="error">
+                            <div class="alert alert-danger mb-4"><t t-out="error"/></div>
+                        </t>
+                        
+                        <form action="/contact-us/submit" method="POST" class="ptt-contact-form" id="contactForm">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="embed" value="1"/>
                             
-                            <!-- Error Message -->
-                            <t t-if="error">
-                                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                                    <i class="fa fa-exclamation-circle me-2"/>
-                                    <t t-out="error"/>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+                            <!-- SECTION: Contact Info -->
+                            <div class="ptt-section">
+                                <div class="ptt-section-title">Your Information</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="name" class="form-control ptt-input" required="required" placeholder="Your full name"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Company <span class="text-muted">(optional)</span></label>
+                                        <input type="text" name="company" class="form-control ptt-input" placeholder="Company name"/>
+                                    </div>
                                 </div>
-                            </t>
-                            
-                            <!-- Contact Form -->
-                            <div class="ptt-form-card">
-                                <form action="/contact-us/submit" method="POST" class="ptt-contact-form" id="contactForm">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <input type="hidden" name="embed" t-att-value="embed or ''"/>
-                                    
-                                    <!-- Row 1: Name & Company -->
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Name <span class="text-danger">*</span></label>
-                                            <input type="text" name="name" class="form-control ptt-input" required="required" placeholder="Your full name"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Company <span class="text-muted">(for corporate clients)</span></label>
-                                            <input type="text" name="company" class="form-control ptt-input" placeholder="Company name (optional)"/>
-                                        </div>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" name="email" class="form-control ptt-input" required="required" placeholder="your@email.com"/>
                                     </div>
-                                    
-                                    <!-- Row 2: Event Type -->
-                                    <div class="row g-3 mt-2">
-                                        <div class="col-12">
-                                            <label class="form-label">Event Type <span class="text-danger">*</span></label>
-                                            <select name="event_type" class="form-select ptt-input" required="required">
-                                                <option value="">Select Event Type</option>
-                                                <option value="Anniversary">Anniversary</option>
-                                                <option value="Bar/Bat Mitzvah">Bar/Bat Mitzvah</option>
-                                                <option value="Birthday (Child)">Birthday (Child)</option>
-                                                <option value="Birthday (Teen)">Birthday (Teen)</option>
-                                                <option value="Birthday (Adult)">Birthday (Adult)</option>
-                                                <option value="Civic Event">Civic Event</option>
-                                                <option value="Corporate Event">Corporate Event</option>
-                                                <option value="Fund Raiser">Fund Raiser</option>
-                                                <option value="Holiday Party">Holiday Party</option>
-                                                <option value="School Function">School Function</option>
-                                                <option value="Wedding/Reception">Wedding/Reception</option>
-                                                <option value="Other Event">Other Event</option>
-                                            </select>
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone <span class="text-danger">*</span></label>
+                                        <input type="tel" name="phone" class="form-control ptt-input" required="required" placeholder="(555) 555-5555"/>
                                     </div>
-                                    
-                                    <!-- Row 3: Email & Event Location -->
-                                    <div class="row g-3 mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Email <span class="text-danger">*</span></label>
-                                            <input type="email" name="email" class="form-control ptt-input" required="required" placeholder="your@email.com"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Event Location <span class="text-danger">*</span></label>
-                                            <input type="text" name="event_location" class="form-control ptt-input" required="required" placeholder="Venue name or city"/>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Row 4: Phone & Event Date -->
-                                    <div class="row g-3 mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                            <input type="tel" name="phone" class="form-control ptt-input" required="required" placeholder="(555) 555-5555"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Event Date <span class="text-danger">*</span></label>
-                                            <input type="date" name="event_date" class="form-control ptt-input" required="required"/>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Row 5: Guest Count & Time -->
-                                    <div class="row g-3 mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Approximate Guest Count</label>
-                                            <input type="number" name="guest_count" class="form-control ptt-input" min="1" placeholder="Expected number of guests"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Estimated Start and End Time <span class="text-danger">*</span></label>
-                                            <input type="text" name="event_time" class="form-control ptt-input" 
-                                                   placeholder="e.g., 6:00 PM - 11:00 PM" required="required"/>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Row 6: Budget & Indoor/Outdoor -->
-                                    <div class="row g-3 mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Estimated Budget <span class="text-danger">*</span></label>
-                                            <input type="text" name="budget" class="form-control ptt-input" 
-                                                   placeholder="e.g., $2,000 - $5,000" required="required"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Indoors or Outdoors? <span class="text-danger">*</span></label>
-                                            <select name="indoor_outdoor" class="form-select ptt-input" required="required">
-                                                <option value="">Select...</option>
-                                                <option value="Indoors">Indoors</option>
-                                                <option value="Outdoors">Outdoors</option>
-                                                <option value="Not Sure">Not Sure</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Services of Interest -->
-                                    <div class="mt-4">
-                                        <label class="form-label fw-semibold">Services of Interest <span class="text-muted fw-normal">(choose one or more)</span></label>
-                                        <div class="ptt-services-grid">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="DJ (Music + MC)" id="svc1"/>
-                                                <label class="form-check-label" for="svc1">DJ (Music + MC)</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="DJ (Only Music)" id="svc2"/>
-                                                <label class="form-check-label" for="svc2">DJ (Only Music)</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Band" id="svc3"/>
-                                                <label class="form-check-label" for="svc3">Band</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Karaoke" id="svc4"/>
-                                                <label class="form-check-label" for="svc4">Karaoke</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Lighting/Light Show" id="svc5"/>
-                                                <label class="form-check-label" for="svc5">Lighting/Light Show</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Photography" id="svc6"/>
-                                                <label class="form-check-label" for="svc6">Photography</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Videography" id="svc7"/>
-                                                <label class="form-check-label" for="svc7">Videography</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Event Coordination" id="svc8"/>
-                                                <label class="form-check-label" for="svc8">Event Coordination</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Interactive Dancers/Party Masters" id="svc9"/>
-                                                <label class="form-check-label" for="svc9">Interactive Dancers</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="AV Rentals" id="svc10"/>
-                                                <label class="form-check-label" for="svc10">AV Rentals</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Casino" id="svc11"/>
-                                                <label class="form-check-label" for="svc11">Casino</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Dance Instruction" id="svc12"/>
-                                                <label class="form-check-label" for="svc12">Dance Instruction</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Caricature Artist" id="svc13"/>
-                                                <label class="form-check-label" for="svc13">Caricature Artist</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Team Building/Game Show" id="svc14"/>
-                                                <label class="form-check-label" for="svc14">Team Building/Game Show</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Celebrity Look-a-likes" id="svc15"/>
-                                                <label class="form-check-label" for="svc15">Celebrity Look-a-likes</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Psychics" id="svc16"/>
-                                                <label class="form-check-label" for="svc16">Psychics</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Green Screen Photos" id="svc17"/>
-                                                <label class="form-check-label" for="svc17">Green Screen Photos</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Airbrush Artist" id="svc18"/>
-                                                <label class="form-check-label" for="svc18">Airbrush Artist</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Magician" id="svc19"/>
-                                                <label class="form-check-label" for="svc19">Magician</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="services" value="Inflatables" id="svc20"/>
-                                                <label class="form-check-label" for="svc20">Inflatables</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Other Services -->
-                                    <div class="mt-3">
-                                        <label class="form-label">Other (please describe):</label>
-                                        <input type="text" name="other_services" class="form-control ptt-input" placeholder="Any other services you're interested in"/>
-                                    </div>
-                                    
-                                    <!-- Special Requests -->
-                                    <div class="mt-3">
-                                        <label class="form-label">Share any details or special requests about your event:</label>
-                                        <textarea name="special_requests" class="form-control ptt-input" rows="4" placeholder="Tell us more about your vision for the event..."></textarea>
-                                    </div>
-                                    
-                                    <!-- Submit Button -->
-                                    <div class="mt-4 text-center">
-                                        <button type="submit" class="btn ptt-submit-btn">
-                                            Submit
-                                        </button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                             
-                        </div>
+                            <!-- SECTION: Event Details -->
+                            <div class="ptt-section">
+                                <div class="ptt-section-title">Event Details</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Event Type <span class="text-danger">*</span></label>
+                                        <select name="event_type" class="form-select ptt-input" required="required">
+                                            <option value="">Select event type...</option>
+                                            <option value="Wedding/Reception">Wedding / Reception</option>
+                                            <option value="Corporate Event">Corporate Event</option>
+                                            <option value="Birthday (Adult)">Birthday (Adult)</option>
+                                            <option value="Birthday (Teen)">Birthday (Teen)</option>
+                                            <option value="Birthday (Child)">Birthday (Child)</option>
+                                            <option value="Anniversary">Anniversary</option>
+                                            <option value="Bar/Bat Mitzvah">Bar/Bat Mitzvah</option>
+                                            <option value="Holiday Party">Holiday Party</option>
+                                            <option value="School Function">School Function</option>
+                                            <option value="Fund Raiser">Fund Raiser</option>
+                                            <option value="Civic Event">Civic Event</option>
+                                            <option value="Other Event">Other Event</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Event Date <span class="text-danger">*</span></label>
+                                        <input type="date" name="event_date" class="form-control ptt-input" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Location <span class="text-danger">*</span></label>
+                                        <input type="text" name="event_location" class="form-control ptt-input" required="required" placeholder="Venue name or city"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Time <span class="text-danger">*</span></label>
+                                        <input type="text" name="event_time" class="form-control ptt-input" required="required" placeholder="e.g., 6:00 PM - 11:00 PM"/>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Guest Count</label>
+                                        <input type="number" name="guest_count" class="form-control ptt-input" min="1" placeholder="# of guests"/>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Budget <span class="text-danger">*</span></label>
+                                        <input type="text" name="budget" class="form-control ptt-input" required="required" placeholder="$2,000 - $5,000"/>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Setting <span class="text-danger">*</span></label>
+                                        <select name="indoor_outdoor" class="form-select ptt-input" required="required">
+                                            <option value="">Select...</option>
+                                            <option value="Indoors">Indoors</option>
+                                            <option value="Outdoors">Outdoors</option>
+                                            <option value="Both">Both</option>
+                                            <option value="Not Sure">Not Sure</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SECTION: Services -->
+                            <div class="ptt-section ptt-services-section">
+                                <div class="ptt-section-title">Services of Interest</div>
+                                <div class="ptt-services-grid">
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="DJ (Music + MC)" id="svc1"/>
+                                        <label class="ptt-service-label" for="svc1">DJ (Music + MC)</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="DJ (Music Only)" id="svc2"/>
+                                        <label class="ptt-service-label" for="svc2">DJ (Music Only)</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Live Band" id="svc3"/>
+                                        <label class="ptt-service-label" for="svc3">Live Band</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Photography" id="svc4"/>
+                                        <label class="ptt-service-label" for="svc4">Photography</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Videography" id="svc5"/>
+                                        <label class="ptt-service-label" for="svc5">Videography</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Lighting" id="svc6"/>
+                                        <label class="ptt-service-label" for="svc6">Lighting</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Event Coordination" id="svc7"/>
+                                        <label class="ptt-service-label" for="svc7">Coordination</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Interactive Dancers" id="svc8"/>
+                                        <label class="ptt-service-label" for="svc8">Dancers</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="AV Rentals" id="svc9"/>
+                                        <label class="ptt-service-label" for="svc9">AV Rentals</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Karaoke" id="svc10"/>
+                                        <label class="ptt-service-label" for="svc10">Karaoke</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Casino" id="svc11"/>
+                                        <label class="ptt-service-label" for="svc11">Casino</label>
+                                    </div>
+                                    <div class="ptt-service-item">
+                                        <input type="checkbox" name="services" value="Other" id="svc12"/>
+                                        <label class="ptt-service-label" for="svc12">Other</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SECTION: Message -->
+                            <div class="ptt-section">
+                                <div class="ptt-section-title">Additional Details</div>
+                                <textarea name="special_requests" class="form-control ptt-input" rows="3" placeholder="Tell us more about your event vision, special requests, or any questions..."></textarea>
+                            </div>
+                            
+                            <!-- Submit -->
+                            <div class="ptt-submit-wrapper">
+                                <button type="submit" class="btn ptt-submit-btn">Get My Quote</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 
-                <!-- Contact Info Footer (hidden in embed mode via CSS) -->
-                <div class="ptt-contact-footer">
-                    <div class="container">
-                        <div class="row text-center">
-                            <div class="col-md-4 mb-3 mb-md-0">
-                                <h5>Call Us</h5>
-                                <a href="tel:+12143408000">(214) 340-8000</a>
-                            </div>
-                            <div class="col-md-4 mb-3 mb-md-0">
-                                <h5>Email Us</h5>
-                                <a href="mailto:Sales@Partytimetexas.com">Sales@Partytimetexas.com</a>
-                            </div>
-                            <div class="col-md-4">
-                                <h5>Visit Us</h5>
-                                <span>330 Industrial Blvd, Ste 106<br/>McKinney TX 75069</span>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4">
-                            <p class="mb-0"><strong>Hours:</strong> Mon-Fri: 9:00AM-5:00PM | Sat-Sun: By Appointment</p>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
+                <script src="/ptt_contact_forms/static/src/js/contact_form.js"></script>
+            </body>
         </t>
     </template>
     
     <!-- Thank You Page -->
     <template id="contact_us_thank_you" name="Thank You - Party Time Texas">
-        <t t-call="portal.frontend_layout">
-            <t t-set="no_header" t-value="True"/>
-            <t t-set="no_footer" t-value="True"/>
-            
-            <!-- Explicitly load CSS (fixes Odoo 19 asset loading) -->
-            <t t-set="head">
-                <link rel="stylesheet" type="text/css" href="/ptt_contact_forms/static/src/css/contact_form.css"/>
+        <t t-call="web.html_container">
+            <head>
+                <meta charset="UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>Thank You - Party Time Texas</title>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap"/>
-            </t>
-            
-            <div t-attf-class="ptt-contact-page ptt-thank-you #{embed and 'embed-mode' or ''}">
+                <link rel="stylesheet" type="text/css" href="/ptt_contact_forms/static/src/css/contact_form.css"/>
+            </head>
+            <body class="ptt-embed-body">
                 
-                <div class="ptt-header">
-                    <div class="container">
-                        <h1>Thank You!</h1>
-                    </div>
-                </div>
-                
-                <div class="container py-5">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-6 col-md-8 text-center">
-                            
-                            <div class="ptt-success-icon mb-4">
-                                <i class="fa fa-check-circle"/>
-                            </div>
-                            
-                            <h2>Your inquiry has been received!</h2>
-                            <p class="lead mb-4">
-                                One of our event specialists will contact you within 24 hours to discuss your event.
-                            </p>
-                            
-                            <div class="ptt-form-card p-4 mb-4">
-                                <h4 class="mb-3">What happens next?</h4>
-                                <ul class="list-unstyled text-start">
-                                    <li class="mb-2"><i class="fa fa-check text-success me-2"/>We review your event details</li>
-                                    <li class="mb-2"><i class="fa fa-check text-success me-2"/>A specialist contacts you to discuss options</li>
-                                    <li class="mb-2"><i class="fa fa-check text-success me-2"/>We create a custom proposal for your event</li>
-                                    <li class="mb-2"><i class="fa fa-check text-success me-2"/>Let's make your event amazing!</li>
-                                </ul>
-                            </div>
-                            
-                            <p class="mb-4">
-                                <strong>Need immediate assistance?</strong><br/>
-                                Call us at <a href="tel:+12143408000" style="color: #D4BF91;">(214) 340-8000</a>
-                            </p>
-                            
-                            <a t-attf-href="/contact-us#{embed and '?embed=1' or ''}" class="btn ptt-submit-btn">
-                                Submit Another Inquiry
-                            </a>
-                            
+                <div class="ptt-form-wrapper">
+                    <div class="ptt-form-card ptt-thank-you-card">
+                        <div class="ptt-success-icon">✓</div>
+                        <h2>You're All Set!</h2>
+                        <p class="lead">Your inquiry has been received.</p>
+                        <p>One of our event specialists will reach out within 24 hours to discuss your vision and create a custom proposal.</p>
+                        <hr/>
+                        <p class="mb-1"><strong>Need to talk now?</strong></p>
+                        <a href="tel:+12143408000" class="ptt-phone-link">(214) 340-8000</a>
+                        <div class="mt-4">
+                            <a href="/contact-us" class="btn ptt-submit-btn">Submit Another Inquiry</a>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+            </body>
         </t>
     </template>
     
