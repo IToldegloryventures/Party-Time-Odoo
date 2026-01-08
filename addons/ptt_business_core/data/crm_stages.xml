@@ -2,10 +2,13 @@
 <odoo noupdate="1">
     <!-- 
         Party Time Texas CRM Pipeline Stages
-        Workflow: Intake → Qualification → Quote Sent → Contract Sent → Booked (Won)
+        Workflow: Intake → Qualified → Quote Sent → Contract Sent → Booked (Won)
         
         Note: Execution happens in the Project phase, not CRM. "Booked" means the
         lead is won - contract signed, retainer paid, and project created.
+        
+        Note: "Qualified" stage exists (from operational dashboard), so "Qualification"
+        is not created here to avoid duplicates.
     -->
     
     <!-- Stage 1: Intake (New leads coming in) -->
@@ -15,12 +18,7 @@
         <field name="is_won">False</field>
     </record>
     
-    <!-- Stage 2: Qualification (Gathering event details, checking fit) -->
-    <record id="ptt_crm_stage_qualification" model="crm.stage">
-        <field name="name">Qualification</field>
-        <field name="sequence">2</field>
-        <field name="is_won">False</field>
-    </record>
+    <!-- Note: "Qualified" stage (sequence 2) exists from operational dashboard, not defined here -->
     
     <!-- Stage 3: Quote Sent (Quote/proposal sent to client) -->
     <record id="ptt_crm_stage_quote_sent" model="crm.stage">
