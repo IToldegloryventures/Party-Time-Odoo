@@ -93,6 +93,16 @@
                         <field name="x_crm_lead_id" class="o_stat_value" readonly="1"/>
                     </div>
                 </button>
+                <button name="action_view_sale_orders" type="object"
+                    class="oe_stat_button" icon="fa-usd"
+                    invisible="x_sale_order_count == 0 or not x_crm_lead_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Sales Orders</span>
+                        <span class="o_stat_value">
+                            <field name="x_sale_order_count" widget="integer"/>
+                        </span>
+                    </div>
+                </button>
                 <button name="action_view_tasks" type="object"
                     class="oe_stat_button" icon="fa-tasks">
                     <div class="o_stat_info">

@@ -591,6 +591,20 @@ class ProjectProject(models.Model):
                 if planning_stage:
                     project.stage_id = planning_stage.id
 
+    x_sale_order_count = fields.Integer(
+        string="# Sales Orders",
+        compute="_compute_sale_order_count",
+        help="Number of Sales Orders from the source CRM opportunity",
+    )
+    
+    @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids")
+    def _compute_sale_order_count(self):
+        for project in self:
+            if project.x_crm_lead_id:
+                project.x_sale_order_count = len(project.x_crm_lead_id.order_ids)
+            else:
+                project.x_sale_order_count = 0
+    
     def action_view_crm_lead(self):
         """Open the source CRM opportunity."""
         self.ensure_one()
@@ -602,6 +616,20 @@ class ProjectProject(models.Model):
             "res_model": "crm.lead",
             "res_id": self.x_crm_lead_id.id,
             "view_mode": "form",
+            "target": "current",
+        }
+    
+    def action_view_sale_orders(self):
+        """Open Sales Orders from the source CRM opportunity."""
+        self.ensure_one()
+        if not self.x_crm_lead_id or not self.x_crm_lead_id.order_ids:
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Sales Orders",
+            "res_model": "sale.order",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", self.x_crm_lead_id.order_ids.ids)],
             "target": "current",
         }
 
