@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.1.3.8",
+    "version": "19.0.1.3.9",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -37,5 +37,6 @@
     "installable": True,
     "application": False,
     "pre_init_hook": "pre_init_hook",
+    "post_init_hook": "post_init_hook",
 }
 

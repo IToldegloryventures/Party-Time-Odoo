@@ -1,7 +1,70 @@
 import logging
+import re
 from . import models
 
 _logger = logging.getLogger(__name__)
+
+
+def post_init_hook(env):
+    """
+    Post-init hook: Clean up Studio customizations that cause Owl errors.
+    
+    This runs AFTER the module is installed with full ORM/env access.
+    In Odoo 19, post_init_hook receives 'env' (Environment).
+    
+    Specifically fixes: "project.project"."x_plan2_id" field is undefined
+    """
+    _logger.info("PTT Business Core: Running post_init_hook cleanup")
+    
+    # === CLEANUP: Delete views referencing x_plan2_id ===
+    try:
+        # Find all views that reference x_plan2_id
+        views_to_delete = env['ir.ui.view'].sudo().search([
+            ('arch_db', 'ilike', 'x_plan2_id')
+        ])
+        
+        if views_to_delete:
+            _logger.info(f"PTT Business Core: Found {len(views_to_delete)} views referencing x_plan2_id")
+            for view in views_to_delete:
+                _logger.info(f"PTT Business Core: Processing view {view.id} ({view.name})")
+                try:
+                    # Try to clean the view by removing x_plan2_id references
+                    if view.arch_db:
+                        new_arch = view.arch_db
+                        # Remove field elements
+                        new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        # Remove label elements
+                        new_arch = re.sub(r'<label[^>]*for=["\']x_plan2_id["\'][^/>]*/?>', '', new_arch)
+                        # Remove any other elements with x_plan2_id
+                        new_arch = re.sub(r'<[^>]*x_plan2_id[^>]*/?>', '', new_arch)
+                        
+                        if new_arch != view.arch_db:
+                            view.sudo().write({'arch_db': new_arch})
+                            _logger.info(f"PTT Business Core: Cleaned view {view.id}")
+                        
+                        # If it's a Studio customization, delete it entirely
+                        if 'studio' in (view.name or '').lower() or view.key and 'studio' in view.key:
+                            view.sudo().unlink()
+                            _logger.info(f"PTT Business Core: Deleted Studio view {view.id}")
+                except Exception as e:
+                    _logger.warning(f"PTT Business Core: Error cleaning view {view.id}: {e}")
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error in post_init_hook: {e}")
+    
+    # === CLEANUP: Delete the x_plan2_id field definition if it exists ===
+    try:
+        field_to_delete = env['ir.model.fields'].sudo().search([
+            ('name', '=', 'x_plan2_id'),
+            ('model', '=', 'project.project')
+        ])
+        if field_to_delete:
+            _logger.info(f"PTT Business Core: Deleting x_plan2_id field definition")
+            field_to_delete.sudo().unlink()
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error deleting x_plan2_id field: {e}")
+    
+    _logger.info("PTT Business Core: post_init_hook cleanup completed")
 
 
 def pre_init_hook(cr):
