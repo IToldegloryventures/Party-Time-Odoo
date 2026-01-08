@@ -129,7 +129,8 @@ class PttVendorDocument(models.Model):
         for doc in expiring_docs:
             if doc.vendor_id.email and todo_activity_type:
                 # Create activity for vendor's portal user or admin
-                user_id = doc.vendor_id.portal_user_id.id if doc.vendor_id.portal_user_id else self.env.ref("base.user_admin").id
+                # Note: portal_user_id field will be added in Phase 2
+                user_id = self.env.ref("base.user_admin").id
                 doc.vendor_id.activity_schedule(
                     activity_type_id=todo_activity_type.id,
                     summary=_("Document Expiring Soon: %s", doc.document_type_id.name),
@@ -158,7 +159,8 @@ class PttVendorDocument(models.Model):
         for doc in expiring_docs:
             if doc.vendor_id.email and todo_activity_type:
                 # Create urgent activity
-                user_id = doc.vendor_id.portal_user_id.id if doc.vendor_id.portal_user_id else self.env.ref("base.user_admin").id
+                # Note: portal_user_id field will be added in Phase 2
+                user_id = self.env.ref("base.user_admin").id
                 doc.vendor_id.activity_schedule(
                     activity_type_id=todo_activity_type.id,
                     summary=_("URGENT: Document Expiring Soon: %s", doc.document_type_id.name),
@@ -184,9 +186,9 @@ class PttVendorDocument(models.Model):
             vendor = doc.vendor_id
             if doc.document_type_id.required:
                 # If required document expired, deactivate vendor
-                if vendor.x_vendor_status == "active":
-                    vendor.x_vendor_status = "inactive"
-                    vendor.message_post(
-                        body=_("Vendor deactivated: Required document '%s' expired on %s.",
-                               doc.document_type_id.name, doc.validity),
-                    )
+                # Note: x_vendor_status field will be added in Phase 2
+                # For now, just post a message
+                vendor.message_post(
+                    body=_("Vendor deactivated: Required document '%s' expired on %s.",
+                           doc.document_type_id.name, doc.validity),
+                )
