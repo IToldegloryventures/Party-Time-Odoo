@@ -2,8 +2,10 @@
 <odoo noupdate="1">
     <!-- 
         Party Time Texas CRM Pipeline Stages
-        Based on meeting transcript workflow:
-        Intake → Qualification → Proposal Sent → Contract Sent → Booked → Execution → Closed/Won
+        Workflow: Intake → Qualification → Quote Sent → Contract Sent → Booked (Won)
+        
+        Note: Execution happens in the Project phase, not CRM. "Booked" means the
+        lead is won - contract signed, retainer paid, and project created.
     -->
     
     <!-- Stage 1: Intake (New leads coming in) -->
@@ -20,9 +22,9 @@
         <field name="is_won">False</field>
     </record>
     
-    <!-- Stage 3: Proposal Sent (Quote/proposal sent to client) -->
-    <record id="ptt_crm_stage_proposal_sent" model="crm.stage">
-        <field name="name">Proposal Sent</field>
+    <!-- Stage 3: Quote Sent (Quote/proposal sent to client) -->
+    <record id="ptt_crm_stage_quote_sent" model="crm.stage">
+        <field name="name">Quote Sent</field>
         <field name="sequence">3</field>
         <field name="is_won">False</field>
     </record>
@@ -34,24 +36,10 @@
         <field name="is_won">False</field>
     </record>
     
-    <!-- Stage 5: Booked (Contract signed + retainer received) -->
+    <!-- Stage 5: Booked (Won - Contract signed + retainer received, project created) -->
     <record id="ptt_crm_stage_booked" model="crm.stage">
         <field name="name">Booked</field>
         <field name="sequence">5</field>
-        <field name="is_won">False</field>
-    </record>
-    
-    <!-- Stage 6: Execution (Event is in progress or imminent) -->
-    <record id="ptt_crm_stage_execution" model="crm.stage">
-        <field name="name">Execution</field>
-        <field name="sequence">6</field>
-        <field name="is_won">False</field>
-    </record>
-    
-    <!-- Stage 7: Closed/Won (Event completed successfully) -->
-    <record id="ptt_crm_stage_closed_won" model="crm.stage">
-        <field name="name">Closed/Won</field>
-        <field name="sequence">7</field>
         <field name="is_won">True</field>
     </record>
     
