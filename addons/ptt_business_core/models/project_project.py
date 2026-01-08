@@ -13,6 +13,15 @@ class ProjectProject(models.Model):
         index=True,
         ondelete="set null",
     )
+    
+    # Related field for Sales Rep from CRM (for display in project header)
+    x_sales_rep_id = fields.Many2one(
+        "res.users",
+        string="Sales Rep",
+        related="x_crm_lead_id.user_id",
+        readonly=True,
+        help="Sales representative from the source CRM opportunity.",
+    )
 
     # === VENDOR ASSIGNMENTS (ACTUAL) ===
     x_vendor_assignment_ids = fields.One2many(

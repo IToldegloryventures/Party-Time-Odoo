@@ -46,10 +46,8 @@
                         <div class="col-md-4">
                             <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Sales Rep:</div>
                             <div>
-                                <field name="x_crm_lead_id" readonly="1" invisible="not x_crm_lead_id">
-                                    <field name="user_id" readonly="1" widget="many2one"/>
-                                </field>
-                                <span invisible="x_crm_lead_id">Not Assigned</span>
+                                <field name="x_sales_rep_id" readonly="1" widget="many2one" invisible="not x_sales_rep_id"/>
+                                <span invisible="x_sales_rep_id">Not Assigned</span>
                             </div>
                         </div>
                         <div class="col-md-4">
