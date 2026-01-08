@@ -7,7 +7,10 @@
         <field name="arch" type="xml">
             <!-- Add Vendor checkbox near company_type (Person/Company selector) -->
             <xpath expr="//field[@name='company_type']" position="after">
-                <field name="x_is_vendor" widget="boolean_toggle" string="Vendor"/>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <label for="x_is_vendor" string="Vendor"/>
+                    <field name="x_is_vendor" widget="boolean_toggle" nolabel="1"/>
+                </div>
             </xpath>
             
             <!-- Add Vendor Info tab (only visible when checkbox is checked) -->
