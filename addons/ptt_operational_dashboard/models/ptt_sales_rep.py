@@ -61,7 +61,7 @@ class PttSalesRep(models.Model):
             rep.leads_count = self.env["crm.lead"].search_count([
                 ("user_id", "=", rep.user_id.id),
                 ("type", "=", "lead"),
-                ("stage_id.name", "in", ["New", "Qualified"])
+                ("stage_id.name", "in", ["Intake", "Qualification"])
             ])
             
             rep.quotes_count = self.env["sale.order"].search_count([

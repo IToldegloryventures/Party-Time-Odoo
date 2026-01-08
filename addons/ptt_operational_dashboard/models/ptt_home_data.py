@@ -487,12 +487,13 @@ class PttHomeData(models.AbstractModel):
         
         # PTT CRM Stage Colors
         stage_colors = {
-            "New": "#17A2B8",
-            "Qualified": "#007BFF",
-            "Approval": "#FFC107",
-            "Quote Sent": "#6F42C1",
-            "Booked": "#28A745",
-            "Lost": "#DC3545",
+            "Intake": "#17A2B8",              # Teal/Cyan - New inquiries
+            "Qualification": "#007BFF",        # Blue - Qualification in progress
+            "Proposal Sent": "#6F42C1",        # Purple - Proposal sent to client
+            "Contract Sent": "#FF9800",        # Orange - Contract sent, awaiting signature
+            "Booked": "#28A745",               # Green - Confirmed bookings (won)
+            "Closed/Won": "#155724",           # Dark Green - Completed and won
+            "Lost": "#DC3545",                 # Red - Lost opportunities
         }
         default_color = "#6C757D"
         
@@ -599,14 +600,15 @@ class PttHomeData(models.AbstractModel):
         
         # PTT CRM Stage Colors
         # These are the official PTT pipeline stages
-        # Stages: New, Qualified, Approval, Quote Sent, Booked, Lost
+        # Stages: Intake, Qualification, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         stage_colors = {
-            "New": "#17A2B8",           # Teal/Cyan - New inquiries
-            "Qualified": "#F97316",     # Orange - Qualified leads
-            "Approval": "#FFC107",      # Yellow/Amber - Awaiting approval
-            "Quote Sent": "#6F42C1",    # Purple - Quote sent
-            "Booked": "#28A745",        # Green - Confirmed bookings
-            "Lost": "#DC3545",          # Red - Lost opportunities
+            "Intake": "#17A2B8",              # Teal/Cyan - New inquiries
+            "Qualification": "#007BFF",        # Blue - Qualification in progress
+            "Proposal Sent": "#6F42C1",        # Purple - Proposal sent to client
+            "Contract Sent": "#FF9800",        # Orange - Contract sent, awaiting signature
+            "Booked": "#28A745",               # Green - Confirmed bookings (won)
+            "Closed/Won": "#155724",           # Dark Green - Completed and won
+            "Lost": "#DC3545",                 # Red - Lost opportunities
         }
         default_color = "#6C757D"  # Gray for unknown stages
         
@@ -731,12 +733,13 @@ class PttHomeData(models.AbstractModel):
         """
         # Official PTT stages in pipeline order
         ptt_stages = [
-            {"name": "New", "sequence": 1},
-            {"name": "Qualified", "sequence": 2},
-            {"name": "Approval", "sequence": 3},
-            {"name": "Quote Sent", "sequence": 4},
+            {"name": "Intake", "sequence": 1},
+            {"name": "Qualification", "sequence": 2},
+            {"name": "Proposal Sent", "sequence": 3},
+            {"name": "Contract Sent", "sequence": 4},
             {"name": "Booked", "sequence": 5},
-            {"name": "Lost", "sequence": 6},
+            {"name": "Closed/Won", "sequence": 6},
+            {"name": "Lost", "sequence": 7},
         ]
         
         # Try to get actual stage IDs from database for filtering
@@ -783,12 +786,13 @@ class PttHomeData(models.AbstractModel):
         leads = Lead.search(domain, order="x_event_time asc, name asc")
         
         stage_colors = {
-            "New": "#17A2B8",
-            "Qualified": "#007BFF",
-            "Approval": "#FFC107",
-            "Quote Sent": "#6F42C1",
-            "Booked": "#28A745",
-            "Lost": "#DC3545",
+            "Intake": "#17A2B8",              # Teal/Cyan - New inquiries
+            "Qualification": "#007BFF",        # Blue - Qualification in progress
+            "Proposal Sent": "#6F42C1",        # Purple - Proposal sent to client
+            "Contract Sent": "#FF9800",        # Orange - Contract sent, awaiting signature
+            "Booked": "#28A745",               # Green - Confirmed bookings (won)
+            "Closed/Won": "#155724",           # Dark Green - Completed and won
+            "Lost": "#DC3545",                 # Red - Lost opportunities
         }
         default_color = "#6C757D"
         

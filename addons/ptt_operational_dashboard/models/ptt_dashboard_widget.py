@@ -64,7 +64,7 @@ class PttDashboardWidget(models.Model):
             # Aggregate across all sales reps
             rec.total_leads = self.env["crm.lead"].search_count([
                 ("type", "=", "lead"),
-                ("stage_id.name", "in", ["New", "Qualified"])
+                ("stage_id.name", "in", ["Intake", "Qualification"])
             ])
             
             rec.total_quotes = self.env["sale.order"].search_count([
