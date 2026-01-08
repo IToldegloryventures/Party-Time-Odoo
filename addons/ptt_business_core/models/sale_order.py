@@ -88,11 +88,10 @@ class SaleOrder(models.Model):
         
         When SO is confirmed (customer accepts):
         1. Mark contract as signed with timestamp
-        2. Generate Event ID on CRM Lead
-        3. Create Event Project with tasks
-        4. Move CRM to 'Booked' stage
+        2. Create Event Project with tasks (uses Event ID from CRM if set)
+        3. Move CRM to 'Booked' stage
         
-        This is the KEY trigger for project creation.
+        Note: Event ID should be manually entered on the CRM Lead before confirmation.
         """
         res = super().action_confirm()
         
@@ -112,22 +111,7 @@ class SaleOrder(models.Model):
                 if order.opportunity_id:
                     lead = order.opportunity_id
                     
-                    # STEP 1: Generate Event ID on CRM Lead
-                    if not lead.x_event_id:
-                        try:
-                            lead._generate_event_id()
-                            lead.message_post(
-                                body=_("Event ID generated: %s") % lead.x_event_id,
-                                message_type="notification",
-                            )
-                        except Exception as e:
-                            lead.message_post(
-                                body=_("Error generating Event ID: %s") % str(e),
-                                message_type="notification",
-                                subtype_xmlid="mail.mt_note",
-                            )
-                    
-                    # STEP 2: Create Event Project if it doesn't exist
+                    # Create Event Project if it doesn't exist
                     if not lead.x_project_id:
                         try:
                             lead.action_create_project_from_lead()
@@ -142,7 +126,7 @@ class SaleOrder(models.Model):
                                 subtype_xmlid="mail.mt_note",
                             )
                     
-                    # STEP 3: Move CRM to Booked stage
+                    # Move CRM to Booked stage
                     self._update_crm_stage(
                         "Booked",
                         _("CRM stage updated to Booked: Customer accepted contract.")

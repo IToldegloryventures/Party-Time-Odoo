@@ -83,6 +83,16 @@
                         </group>
                     </group>
 
+                    <!-- Event ID - Links CRM, SO, Project, Tasks -->
+                    <group string="Event Identification">
+                        <group>
+                            <field name="x_event_id" placeholder="Enter Event ID (e.g., 000001)"/>
+                        </group>
+                        <group>
+                            <field name="x_project_id" readonly="1"/>
+                        </group>
+                    </group>
+
                     <!-- Event Overview -->
                     <group string="Event Overview">
                         <group>
