@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- List View -->
     <record id="view_ptt_project_vendor_assignment_list" model="ir.ui.view">
         <field name="name">ptt.project.vendor.assignment.list</field>
         <field name="model">ptt.project.vendor.assignment</field>
@@ -7,43 +8,91 @@
             <list>
                 <field name="service_type"/>
                 <field name="vendor_id"/>
-                <field name="x_status" widget="badge" decoration-success="x_status == 'completed'" decoration-info="x_status == 'confirmed'" decoration-warning="x_status == 'pending'" decoration-danger="x_status == 'cancelled'"/>
-                <field name="x_confirmed_date"/>
+                <field name="x_event_name" string="Event"/>
+                <field name="x_event_date" string="Date"/>
+                <field name="x_status" widget="badge" 
+                       decoration-success="x_status in ['accepted', 'completed']" 
+                       decoration-info="x_status == 'confirmed'" 
+                       decoration-warning="x_status == 'pending'" 
+                       decoration-danger="x_status in ['declined', 'cancelled']"/>
+                <field name="x_vendor_response_date" string="Response" optional="hide"/>
+                <field name="x_confirmed_date" optional="hide"/>
                 <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                <field name="notes"/>
+                <field name="notes" optional="hide"/>
             </list>
         </field>
     </record>
 
+    <!-- Form View -->
     <record id="view_ptt_project_vendor_assignment_form" model="ir.ui.view">
         <field name="name">ptt.project.vendor.assignment.form</field>
         <field name="model">ptt.project.vendor.assignment</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="x_status" widget="statusbar" statusbar_visible="pending,confirmed,completed"/>
+                    <field name="x_status" widget="statusbar" statusbar_visible="pending,accepted,confirmed,completed"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="x_display_name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="project_id" invisible="1"/>
-                        <field name="service_type"/>
-                        <field name="vendor_id"/>
-                        <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <group string="Assignment">
+                            <field name="project_id"/>
+                            <field name="service_type"/>
+                            <field name="vendor_id"/>
+                            <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Vendor Response">
+                            <field name="x_vendor_response_date" readonly="1"/>
+                            <field name="x_confirmed_date"/>
+                        </group>
                     </group>
-                    <group string="Vendor Contact">
-                        <field name="x_contact_person"/>
-                        <field name="x_contact_phone" widget="phone"/>
-                        <field name="x_confirmed_date"/>
+                    <group>
+                        <group string="Vendor Contact">
+                            <field name="x_contact_person"/>
+                            <field name="x_contact_phone" widget="phone"/>
+                            <field name="x_arrival_time"/>
+                        </group>
+                        <group string="Event Info (from Project)">
+                            <field name="x_event_id" readonly="1"/>
+                            <field name="x_event_name" readonly="1"/>
+                            <field name="x_event_date" readonly="1"/>
+                            <field name="x_event_time" readonly="1"/>
+                            <field name="x_venue_name" readonly="1"/>
+                        </group>
                     </group>
-                    <group string="Event Details">
-                        <field name="x_arrival_time"/>
-                        <field name="x_equipment_notes" widget="text" nolabel="1" placeholder="Equipment, setup requirements, or special instructions..."/>
-                    </group>
-                    <group string="Notes">
-                        <field name="notes" widget="text" nolabel="1"/>
-                    </group>
+                    <notebook>
+                        <page name="equipment" string="Equipment &amp; Instructions">
+                            <field name="x_equipment_notes" placeholder="Equipment, setup requirements, or special instructions..."/>
+                        </page>
+                        <page name="notes" string="Notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
                 </sheet>
+                <!-- Chatter -->
+                <chatter/>
             </form>
+        </field>
+    </record>
+
+    <!-- Standalone Action (for menu access if needed) -->
+    <record id="action_ptt_project_vendor_assignment" model="ir.actions.act_window">
+        <field name="name">Vendor Assignments</field>
+        <field name="res_model">ptt.project.vendor.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No vendor assignments yet
+            </p>
+            <p>
+                Vendor assignments are created from Projects when you add vendors
+                to handle specific services for events.
+            </p>
         </field>
     </record>
 </odoo>

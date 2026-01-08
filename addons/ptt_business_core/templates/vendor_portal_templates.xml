@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Vendor Portal Templates
+        =======================
+        Portal views for vendors to manage their assignments.
+        Following Odoo 19 portal patterns.
+    -->
+
+    <!-- Add "My Assignments" link to portal home -->
+    <template id="portal_my_home_vendor_assignments" name="Portal My Home: Vendor Assignments"
+              inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_vendor_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="after">
+            <t t-if="vendor_assignment_count" groups="base.group_portal">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fa fa-briefcase me-2"/>Vendor Portal
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <a href="/my/vendor-assignments" class="d-flex align-items-center text-decoration-none">
+                                <div class="flex-grow-1">
+                                    <span class="h5 mb-0">My Assignments</span>
+                                    <p class="text-muted mb-0 small">View and manage your work orders</p>
+                                </div>
+                                <span class="badge bg-primary rounded-pill fs-5">
+                                    <t t-out="vendor_assignment_count"/>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!-- Vendor Assignment List View -->
+    <template id="portal_vendor_assignment_list" name="Vendor Assignments">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Assignments</t>
+            </t>
+
+            <!-- Alert Messages -->
+            <t t-if="request.params.get('message')">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <t t-if="request.params.get('message') == 'accepted'">
+                        <i class="fa fa-check-circle me-2"/>Assignment accepted successfully!
+                    </t>
+                    <t t-if="request.params.get('message') == 'declined'">
+                        <i class="fa fa-times-circle me-2"/>Assignment declined.
+                    </t>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"/>
+                </div>
+            </t>
+
+            <t t-if="not assignments">
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle me-2"/>
+                    You don't have any assignments yet.
+                </div>
+            </t>
+
+            <t t-if="assignments">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Service</th>
+                                <th>Event</th>
+                                <th>Date</th>
+                                <th>Venue</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="assignments" t-as="assignment">
+                                <tr>
+                                    <td>
+                                        <a t-attf-href="/my/vendor-assignments/#{assignment.id}">
+                                            <strong t-out="dict(assignment._fields['service_type'].selection).get(assignment.service_type, assignment.service_type)"/>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span t-out="assignment.x_event_name or assignment.project_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-if="assignment.x_event_date" t-field="assignment.x_event_date"/>
+                                        <span t-else="" class="text-muted">TBD</span>
+                                    </td>
+                                    <td>
+                                        <span t-out="assignment.x_venue_name or '-'"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="assignment.x_status == 'pending'">
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        </t>
+                                        <t t-elif="assignment.x_status == 'accepted'">
+                                            <span class="badge bg-success">Accepted</span>
+                                        </t>
+                                        <t t-elif="assignment.x_status == 'declined'">
+                                            <span class="badge bg-danger">Declined</span>
+                                        </t>
+                                        <t t-elif="assignment.x_status == 'confirmed'">
+                                            <span class="badge bg-info">Confirmed</span>
+                                        </t>
+                                        <t t-elif="assignment.x_status == 'completed'">
+                                            <span class="badge bg-secondary">Completed</span>
+                                        </t>
+                                        <t t-elif="assignment.x_status == 'cancelled'">
+                                            <span class="badge bg-dark">Cancelled</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-end">
+                                        <a t-attf-href="/my/vendor-assignments/#{assignment.id}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa fa-eye"/> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pager -->
+                <div t-if="pager" class="o_portal_pager text-center">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Vendor Assignment Detail View -->
+    <template id="portal_vendor_assignment_detail" name="Vendor Assignment Details">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert" groups="base.group_user">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/web#model=ptt.project.vendor.assignment&amp;id=%s&amp;view_type=form' % assignment.id"/>
+                </t>
+            </t>
+
+            <!-- Breadcrumb -->
+            <div class="row mb-4">
+                <div class="col">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/my">Home</a></li>
+                            <li class="breadcrumb-item"><a href="/my/vendor-assignments">My Assignments</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <t t-out="dict(assignment._fields['service_type'].selection).get(assignment.service_type, assignment.service_type)"/>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Alert Messages -->
+            <t t-if="request.params.get('message')">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <t t-if="request.params.get('message') == 'accepted'">
+                        <i class="fa fa-check-circle me-2"/>You have accepted this assignment. The team has been notified.
+                    </t>
+                    <t t-if="request.params.get('message') == 'declined'">
+                        <i class="fa fa-times-circle me-2"/>You have declined this assignment. The team has been notified.
+                    </t>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"/>
+                </div>
+            </t>
+            <t t-if="request.params.get('error')">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fa fa-exclamation-triangle me-2"/>
+                    <t t-out="request.params.get('error')"/>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"/>
+                </div>
+            </t>
+
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <!-- Assignment Card -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <i class="fa fa-briefcase me-2"/>
+                                <t t-out="dict(assignment._fields['service_type'].selection).get(assignment.service_type, assignment.service_type)"/>
+                            </h4>
+                            <t t-if="assignment.x_status == 'pending'">
+                                <span class="badge bg-warning text-dark fs-6">Awaiting Your Response</span>
+                            </t>
+                            <t t-elif="assignment.x_status == 'accepted'">
+                                <span class="badge bg-success fs-6">Accepted</span>
+                            </t>
+                            <t t-elif="assignment.x_status == 'declined'">
+                                <span class="badge bg-danger fs-6">Declined</span>
+                            </t>
+                            <t t-elif="assignment.x_status == 'confirmed'">
+                                <span class="badge bg-info fs-6">Confirmed</span>
+                            </t>
+                            <t t-elif="assignment.x_status == 'completed'">
+                                <span class="badge bg-secondary fs-6">Completed</span>
+                            </t>
+                            <t t-elif="assignment.x_status == 'cancelled'">
+                                <span class="badge bg-dark fs-6">Cancelled</span>
+                            </t>
+                        </div>
+                        <div class="card-body">
+                            <!-- Accept/Decline Buttons (only if pending) -->
+                            <t t-if="assignment.x_can_respond">
+                                <div class="alert alert-info mb-4">
+                                    <h5 class="alert-heading">
+                                        <i class="fa fa-question-circle me-2"/>Action Required
+                                    </h5>
+                                    <p class="mb-3">Please review the event details below and confirm your availability.</p>
+                                    <div class="d-flex gap-2">
+                                        <form t-attf-action="/my/vendor-assignments/#{assignment.id}/accept" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn btn-success btn-lg">
+                                                <i class="fa fa-check me-2"/>Accept Assignment
+                                            </button>
+                                        </form>
+                                        <form t-attf-action="/my/vendor-assignments/#{assignment.id}/decline" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn btn-outline-danger btn-lg">
+                                                <i class="fa fa-times me-2"/>Decline
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Event Information -->
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fa fa-calendar me-2"/>Event Information
+                            </h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <dl class="row mb-0">
+                                        <dt class="col-5 text-muted">Event Name</dt>
+                                        <dd class="col-7">
+                                            <strong t-out="assignment.x_event_name or assignment.project_id.name or '-'"/>
+                                        </dd>
+                                        <dt class="col-5 text-muted">Event ID</dt>
+                                        <dd class="col-7" t-out="assignment.x_event_id or '-'"/>
+                                        <dt class="col-5 text-muted">Event Type</dt>
+                                        <dd class="col-7">
+                                            <t t-if="assignment.x_event_type">
+                                                <t t-out="dict(assignment._fields['x_event_type'].selection).get(assignment.x_event_type, assignment.x_event_type)"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </dd>
+                                        <dt class="col-5 text-muted">Guest Count</dt>
+                                        <dd class="col-7" t-out="assignment.x_guest_count or '-'"/>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <dl class="row mb-0">
+                                        <dt class="col-5 text-muted">Event Date</dt>
+                                        <dd class="col-7">
+                                            <t t-if="assignment.x_event_date">
+                                                <strong t-field="assignment.x_event_date"/>
+                                            </t>
+                                            <t t-else="">TBD</t>
+                                        </dd>
+                                        <dt class="col-5 text-muted">Event Time</dt>
+                                        <dd class="col-7" t-out="assignment.x_event_time or 'TBD'"/>
+                                        <dt class="col-5 text-muted">Venue</dt>
+                                        <dd class="col-7" t-out="assignment.x_venue_name or 'TBD'"/>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <!-- Your Assignment Details -->
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fa fa-clipboard me-2"/>Your Assignment Details
+                            </h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <dl class="row mb-0">
+                                        <dt class="col-5 text-muted">Arrival Time</dt>
+                                        <dd class="col-7" t-out="assignment.x_arrival_time or 'To be confirmed'"/>
+                                        <dt class="col-5 text-muted">Contact Person</dt>
+                                        <dd class="col-7" t-out="assignment.x_contact_person or '-'"/>
+                                        <dt class="col-5 text-muted">Contact Phone</dt>
+                                        <dd class="col-7">
+                                            <t t-if="assignment.x_contact_phone">
+                                                <a t-attf-href="tel:#{assignment.x_contact_phone}" t-out="assignment.x_contact_phone"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <dl class="row mb-0">
+                                        <dt class="col-5 text-muted">Response Date</dt>
+                                        <dd class="col-7">
+                                            <t t-if="assignment.x_vendor_response_date">
+                                                <span t-field="assignment.x_vendor_response_date" t-options='{"widget": "datetime"}'/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <!-- Equipment/Special Notes -->
+                            <t t-if="assignment.x_equipment_notes or assignment.notes">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fa fa-sticky-note me-2"/>Notes &amp; Instructions
+                                </h5>
+                                <t t-if="assignment.x_equipment_notes">
+                                    <div class="mb-3">
+                                        <strong>Equipment Notes:</strong>
+                                        <p class="mb-0 mt-1" t-out="assignment.x_equipment_notes"/>
+                                    </div>
+                                </t>
+                                <t t-if="assignment.notes">
+                                    <div class="mb-3">
+                                        <strong>Additional Notes:</strong>
+                                        <p class="mb-0 mt-1" t-out="assignment.notes"/>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Communication Section -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fa fa-comments me-2"/>Communication
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Message Input -->
+                            <form t-attf-action="/my/vendor-assignments/#{assignment.id}/message" method="POST" class="mb-4">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mb-3">
+                                    <textarea name="message" class="form-control" rows="3" 
+                                              placeholder="Type your message here... Questions, updates, or any information for the team."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-paper-plane me-2"/>Send Message
+                                </button>
+                            </form>
+
+                            <!-- Message History (Chatter) -->
+                            <h6 class="text-muted mb-3">Message History</h6>
+                            <div class="o_portal_chatter">
+                                <t t-call="portal.message_thread">
+                                    <t t-set="object" t-value="assignment"/>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- File Upload Card -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fa fa-paperclip me-2"/>Attachments
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Upload Form -->
+                            <form t-attf-action="/my/vendor-assignments/#{assignment.id}/upload" method="POST" 
+                                  enctype="multipart/form-data" class="mb-3">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mb-3">
+                                    <input type="file" name="attachment" class="form-control" required="required"/>
+                                    <div class="form-text">Upload contracts, W9s, insurance certificates, etc.</div>
+                                </div>
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fa fa-upload me-2"/>Upload File
+                                </button>
+                            </form>
+
+                            <!-- Existing Attachments -->
+                            <t t-if="attachments">
+                                <hr/>
+                                <h6 class="text-muted mb-2">Uploaded Files</h6>
+                                <ul class="list-unstyled mb-0">
+                                    <t t-foreach="attachments" t-as="att">
+                                        <li class="mb-2">
+                                            <a t-attf-href="/web/content/#{att.id}?download=true" class="text-decoration-none">
+                                                <i class="fa fa-file me-2"/>
+                                                <span t-out="att.name"/>
+                                            </a>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted small mb-0">No files uploaded yet.</p>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Quick Info Card -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fa fa-info-circle me-2"/>Quick Info
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fa fa-calendar text-primary me-2"/>
+                                    <strong>Event Date:</strong>
+                                    <t t-if="assignment.x_event_date">
+                                        <span t-field="assignment.x_event_date"/>
+                                    </t>
+                                    <t t-else="">TBD</t>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fa fa-clock-o text-primary me-2"/>
+                                    <strong>Time:</strong>
+                                    <span t-out="assignment.x_event_time or 'TBD'"/>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fa fa-map-marker text-primary me-2"/>
+                                    <strong>Venue:</strong>
+                                    <span t-out="assignment.x_venue_name or 'TBD'"/>
+                                </li>
+                                <li>
+                                    <i class="fa fa-users text-primary me-2"/>
+                                    <strong>Guests:</strong>
+                                    <span t-out="assignment.x_guest_count or 'TBD'"/>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="row mt-4">
+                <div class="col">
+                    <a href="/my/vendor-assignments" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left me-2"/>Back to Assignments
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

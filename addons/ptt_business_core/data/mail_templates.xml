@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Email Templates for Vendor Portal
+        ==================================
+        Mail templates for automated notifications.
+    -->
+
+    <!-- Vendor Assignment Notification Email -->
+    <record id="mail_template_vendor_assignment" model="mail.template">
+        <field name="name">Vendor Portal: New Assignment Notification</field>
+        <field name="model_id" ref="model_ptt_project_vendor_assignment"/>
+        <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.vendor_id.email }}</field>
+        <field name="subject">New Assignment: {{ object.service_type }} for {{ object.x_event_name or object.project_id.name }}</field>
+        <field name="body_html" type="html">
+<![CDATA[
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Verdana Regular', Verdana, Arial, sans-serif; color: #454748; width: 100%; border-collapse: separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: #FFFFFF; border: 1px solid #e1e1e1;">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="padding-bottom: 20px; border-bottom: 2px solid #875A7B;">
+                            <h1 style="margin: 0; color: #875A7B; font-size: 24px;">New Vendor Assignment</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Greeting -->
+                    <tr>
+                        <td style="padding-top: 20px;">
+                            <p style="margin: 0 0 10px 0; font-size: 15px;">
+                                Hello <strong>{{ object.vendor_id.name }}</strong>,
+                            </p>
+                            <p style="margin: 0 0 20px 0;">
+                                You have been assigned to provide <strong>{{ dict(object._fields['service_type'].selection).get(object.service_type, object.service_type) }}</strong> services for an upcoming event. Please review the details below and respond at your earliest convenience.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Event Details Box -->
+                    <tr>
+                        <td>
+                            <table border="0" cellpadding="10" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-radius: 4px; margin-bottom: 20px;">
+                                <tr>
+                                    <td colspan="2" style="border-bottom: 1px solid #dee2e6; padding-bottom: 10px;">
+                                        <strong style="color: #875A7B; font-size: 16px;">Event Details</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="40%" style="color: #6c757d;">Event Name:</td>
+                                    <td><strong>{{ object.x_event_name or object.project_id.name or 'TBD' }}</strong></td>
+                                </tr>
+                                {% if object.x_event_id %}
+                                <tr>
+                                    <td style="color: #6c757d;">Event ID:</td>
+                                    <td>{{ object.x_event_id }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td style="color: #6c757d;">Event Date:</td>
+                                    <td><strong>{{ object.x_event_date or 'TBD' }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #6c757d;">Event Time:</td>
+                                    <td>{{ object.x_event_time or 'TBD' }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #6c757d;">Venue:</td>
+                                    <td>{{ object.x_venue_name or 'TBD' }}</td>
+                                </tr>
+                                {% if object.x_guest_count %}
+                                <tr>
+                                    <td style="color: #6c757d;">Guest Count:</td>
+                                    <td>{{ object.x_guest_count }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Your Assignment Box -->
+                    <tr>
+                        <td>
+                            <table border="0" cellpadding="10" cellspacing="0" width="100%" style="background-color: #fff3cd; border-radius: 4px; margin-bottom: 20px; border: 1px solid #ffc107;">
+                                <tr>
+                                    <td colspan="2" style="border-bottom: 1px solid #ffc107; padding-bottom: 10px;">
+                                        <strong style="color: #856404; font-size: 16px;">Your Assignment</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="40%" style="color: #856404;">Service Type:</td>
+                                    <td><strong>{{ dict(object._fields['service_type'].selection).get(object.service_type, object.service_type) }}</strong></td>
+                                </tr>
+                                {% if object.x_arrival_time %}
+                                <tr>
+                                    <td style="color: #856404;">Arrival Time:</td>
+                                    <td>{{ object.x_arrival_time }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if object.x_equipment_notes %}
+                                <tr>
+                                    <td style="color: #856404;">Notes:</td>
+                                    <td>{{ object.x_equipment_notes }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Call to Action -->
+                    <tr>
+                        <td align="center" style="padding: 20px 0;">
+                            <p style="margin: 0 0 15px 0; font-size: 14px;">
+                                Please log in to the Vendor Portal to accept or decline this assignment:
+                            </p>
+                            <a href="{{ object.get_base_url() }}/my/vendor-assignments/{{ object.id }}" 
+                               style="display: inline-block; padding: 12px 30px; background-color: #875A7B; color: #FFFFFF; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                                View Assignment &amp; Respond
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <!-- Contact Info -->
+                    {% if object.x_contact_person or object.x_contact_phone %}
+                    <tr>
+                        <td style="padding-top: 20px; border-top: 1px solid #e1e1e1;">
+                            <p style="margin: 0; font-size: 13px; color: #6c757d;">
+                                <strong>Questions?</strong> Contact:
+                                {% if object.x_contact_person %}{{ object.x_contact_person }}{% endif %}
+                                {% if object.x_contact_phone %} at {{ object.x_contact_phone }}{% endif %}
+                            </p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding-top: 20px; border-top: 1px solid #e1e1e1;">
+                            <p style="margin: 0; font-size: 12px; color: #999999;">
+                                This is an automated message from the Vendor Portal. Please do not reply directly to this email.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+]]>
+        </field>
+        <field name="lang">{{ object.vendor_id.lang }}</field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>
