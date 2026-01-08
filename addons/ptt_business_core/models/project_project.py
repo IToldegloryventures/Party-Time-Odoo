@@ -179,13 +179,16 @@ class ProjectProject(models.Model):
     def _create_event_tasks(self):
         """Auto-create comprehensive event planning tasks and sub-tasks for event projects.
         
-        Creates tasks organized by event phase:
-        - Booking Confirmation
-        - Planning & Coordination
-        - Vendor Management
-        - Setup & Logistics
-        - Event Day Execution
-        - Teardown & Follow-up
+        Creates 9 standard event tasks that apply to all events:
+        1. Confirm Booking with Client
+        2. Collect Tier-3 Fulfillment Details
+        3. Review Client Deliverables Checklist
+        4. Coordinate Vendor Assignments
+        5. Vendor Brief & Confirmation
+        6. Prepare Event Resources & Logistics
+        7. Client Communications & Check-Ins
+        8. Final Payment Check & Invoice Follow-up
+        9. Post-Event Closure / Review
         """
         self.ensure_one()
         if not self.x_crm_lead_id:
@@ -198,7 +201,7 @@ class ProjectProject(models.Model):
             else []
         )
 
-        # Get task types (use the new event-specific types)
+        # Get task types (use the standard task types)
         todo_type = self.env.ref("ptt_business_core.task_type_todo", raise_if_not_found=False)
         if not todo_type:
             todo_type = self._get_or_create_task_stage("To Do")
@@ -212,7 +215,6 @@ class ProjectProject(models.Model):
             "description": "Verify contract signed and retainer received",
         })
         
-        # Booking sub-tasks
         booking_subtasks = [
             "Verify Retainer has been paid. Verify remaining balance owed.",
             "Send confirmation email stating contract signed + retainer received",
@@ -228,142 +230,207 @@ class ProjectProject(models.Model):
                 "user_ids": assigned_users,
             })
         
-        # Task 2: Planning & Coordination
-        planning_task = self.env["project.task"].create({
-            "name": "Event Planning & Coordination",
+        # Task 2: Collect Tier-3 Fulfillment Details
+        tier3_task = self.env["project.task"].create({
+            "name": "Collect Tier-3 Fulfillment Details",
             "project_id": self.id,
             "stage_id": todo_type.id,
             "user_ids": assigned_users,
-            "description": "Coordinate all event details and logistics",
+            "description": "Gather venue access info, rider/equipment specifications, vendor needs, and logistics",
         })
         
-        planning_subtasks = [
-            "Finalize event timeline and schedule",
-            "Confirm vendor assignments and contracts",
-            "Coordinate with venue (if applicable)",
-            "Prepare event day checklist",
-            "Confirm guest count and special requirements",
+        tier3_subtasks = [
+            "Venue access info (load-in times, restrictions, contacts)",
+            "Rider / Equipment Setup specifications",
+            "Vendor needs, power, staging, logistics",
+            "Special requests (e.g. backup, transportation)",
         ]
         
-        for sub_task_name in planning_subtasks:
+        for sub_task_name in tier3_subtasks:
             self.env["project.task"].create({
                 "name": sub_task_name,
                 "project_id": self.id,
-                "parent_id": planning_task.id,
+                "parent_id": tier3_task.id,
                 "stage_id": todo_type.id,
                 "user_ids": assigned_users,
             })
         
-        # Task 3: Vendor Management
-        vendor_task = self.env["project.task"].create({
-            "name": "Vendor Management & Coordination",
+        # Task 3: Review Client Deliverables Checklist
+        deliverables_task = self.env["project.task"].create({
+            "name": "Review Client Deliverables Checklist",
             "project_id": self.id,
             "stage_id": todo_type.id,
             "user_ids": assigned_users,
-            "description": "Manage all vendor assignments and confirmations",
+            "description": "Review and confirm all client-provided deliverables",
         })
         
-        vendor_subtasks = [
-            "Confirm all vendor assignments",
-            "Verify vendor contracts and pricing",
-            "Coordinate vendor delivery/setup times",
-            "Confirm vendor contact information",
+        deliverables_subtasks = [
+            "Song selections (first dance, special requests)",
+            "Timeline (ceremony, reception, breaks)",
+            "Venue logistics (floor plan, layout)",
+            "Contact point on event day",
+            "Guest count confirmation",
         ]
         
-        for sub_task_name in vendor_subtasks:
+        for sub_task_name in deliverables_subtasks:
             self.env["project.task"].create({
                 "name": sub_task_name,
                 "project_id": self.id,
-                "parent_id": vendor_task.id,
+                "parent_id": deliverables_task.id,
                 "stage_id": todo_type.id,
                 "user_ids": assigned_users,
             })
         
-        # Task 4: Setup & Logistics (only if event date is set)
-        if self.x_event_date:
-            setup_task = self.env["project.task"].create({
-                "name": "Setup & Logistics",
-                "project_id": self.id,
-                "stage_id": todo_type.id,
-                "user_ids": assigned_users,
-                "date_deadline": self.x_event_date,  # Due on event date
-                "description": "Equipment delivery and setup coordination",
-            })
-            
-            setup_subtasks = [
-                "Confirm equipment delivery schedule",
-                "Coordinate setup crew assignments",
-                "Verify all equipment is available and in good condition",
-                "Prepare setup checklist",
-            ]
-            
-            for sub_task_name in setup_subtasks:
-                self.env["project.task"].create({
-                    "name": sub_task_name,
-                    "project_id": self.id,
-                    "parent_id": setup_task.id,
-                    "stage_id": todo_type.id,
-                    "user_ids": assigned_users,
-                })
+        # Task 4: Coordinate Vendor Assignments
+        vendor_assign_task = self.env["project.task"].create({
+            "name": "Coordinate Vendor Assignments",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Assign internal vendors to event and provide task lists",
+        })
         
-        # Task 5: Event Day Execution
-        if self.x_event_date:
-            event_day_task = self.env["project.task"].create({
-                "name": "Event Day Execution",
-                "project_id": self.id,
-                "stage_id": todo_type.id,
-                "user_ids": assigned_users,
-                "date_deadline": self.x_event_date,
-                "description": "On-site event management and coordination",
-            })
-            
-            event_day_subtasks = [
-                "Arrive on-site for final setup check",
-                "Coordinate with all vendors on-site",
-                "Manage event timeline and flow",
-                "Handle any issues or special requests",
-                "Ensure guest satisfaction",
-            ]
-            
-            for sub_task_name in event_day_subtasks:
-                self.env["project.task"].create({
-                    "name": sub_task_name,
-                    "project_id": self.id,
-                    "parent_id": event_day_task.id,
-                    "stage_id": todo_type.id,
-                    "user_ids": assigned_users,
-                })
+        vendor_assign_subtasks = [
+            "Assign internal vendor(s) to event",
+            "Provide vendors with relevant task list, rider info, schedule",
+            "Confirm vendors' availability, rates, and contracts",
+        ]
         
-        # Task 6: Teardown & Follow-up
-        if self.x_event_date:
-            # Teardown typically happens day after event
-            # x_event_date is a Date field, so it's already a date object
-            teardown_date = self.x_event_date + timedelta(days=1) if self.x_event_date else None
-            teardown_task = self.env["project.task"].create({
-                "name": "Teardown & Follow-up",
+        for sub_task_name in vendor_assign_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
                 "project_id": self.id,
+                "parent_id": vendor_assign_task.id,
                 "stage_id": todo_type.id,
                 "user_ids": assigned_users,
-                "date_deadline": teardown_date,
-                "description": "Equipment removal and post-event follow-up",
             })
-            
-            teardown_subtasks = [
-                "Coordinate equipment teardown and removal",
-                "Verify all equipment is returned and accounted for",
-                "Send thank you email to client",
-                "Request client feedback and testimonials",
-                "Update project with final costs and margin",
-            ]
-            
-            for sub_task_name in teardown_subtasks:
-                self.env["project.task"].create({
-                    "name": sub_task_name,
-                    "project_id": self.id,
-                    "parent_id": teardown_task.id,
-                    "stage_id": todo_type.id,
-                    "user_ids": assigned_users,
-                })
+        
+        # Task 5: Vendor Brief & Confirmation
+        vendor_brief_task = self.env["project.task"].create({
+            "name": "Vendor Brief & Confirmation",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Confirm vendor requirements and acceptance",
+        })
+        
+        vendor_brief_subtasks = [
+            "Confirm vendor requirements for equipment, load-in, contact person",
+            "Confirm required documents (COI, contract, tax info)",
+            "Confirm vendor acceptance",
+        ]
+        
+        for sub_task_name in vendor_brief_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": vendor_brief_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
+        
+        # Task 6: Prepare Event Resources & Logistics
+        resources_task = self.env["project.task"].create({
+            "name": "Prepare Event Resources & Logistics",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Prepare inventory, transport, and backup resources",
+        })
+        
+        resources_subtasks = [
+            "Inventory / equipment prep",
+            "Transport / loading plan",
+            "Backup gear / redundancy checks",
+            "Power & staging setup plan",
+        ]
+        
+        for sub_task_name in resources_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": resources_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
+        
+        # Task 7: Client Communications & Check-Ins
+        communications_task = self.env["project.task"].create({
+            "name": "Client Communications & Check-Ins",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Execute appropriate check-ins and confirm logistics",
+        })
+        
+        communications_subtasks = [
+            "Execute appropriate check-ins",
+            "Confirm all logistics 1-2 weeks prior",
+            "Issue reminders for outstanding client tasks (song lists, special requests)",
+        ]
+        
+        for sub_task_name in communications_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": communications_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
+        
+        # Task 8: Final Payment Check & Invoice Follow-up
+        payment_task = self.env["project.task"].create({
+            "name": "Final Payment Check & Invoice Follow-up",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "description": "Review invoice balance and confirm full payment status",
+        })
+        
+        payment_subtasks = [
+            "Review invoice balance and confirm full payment status",
+            "Flag and follow up on unpaid balances",
+            "Update system status to \"Final Payment Received\"",
+        ]
+        
+        for sub_task_name in payment_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": payment_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
+        
+        # Task 9: Post-Event Closure / Review
+        # Set deadline to day after event if event date exists
+        post_event_deadline = None
+        if self.x_event_date:
+            post_event_deadline = self.x_event_date + timedelta(days=1)
+        
+        post_event_task = self.env["project.task"].create({
+            "name": "Post-Event Closure / Review",
+            "project_id": self.id,
+            "stage_id": todo_type.id,
+            "user_ids": assigned_users,
+            "date_deadline": post_event_deadline,
+            "description": "Confirm event completion and gather feedback",
+        })
+        
+        post_event_subtasks = [
+            "Confirm event ended as scheduled",
+            "Gather client feedback / survey link",
+            "Document lessons learned or special notes for future events",
+        ]
+        
+        for sub_task_name in post_event_subtasks:
+            self.env["project.task"].create({
+                "name": sub_task_name,
+                "project_id": self.id,
+                "parent_id": post_event_task.id,
+                "stage_id": todo_type.id,
+                "user_ids": assigned_users,
+            })
 
     def _get_or_create_task_stage(self, stage_name):
         """Get or create a task stage for the project.

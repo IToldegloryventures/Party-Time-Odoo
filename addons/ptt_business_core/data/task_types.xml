@@ -12,9 +12,10 @@
         <field name="name">In Progress</field>
     </record>
     
-    <!-- Waiting -->
+    <!-- Waiting - Folded (not in active workflow) -->
     <record id="task_type_waiting" model="project.task.type">
         <field name="name">Waiting</field>
+        <field name="fold" eval="True"/>
     </record>
     
     <!-- Done -->
@@ -22,7 +23,7 @@
         <field name="name">Done</field>
     </record>
     
-    <!-- Cancelled -->
+    <!-- Cancelled - Folded (not in active workflow) -->
     <record id="task_type_cancelled" model="project.task.type">
         <field name="name">Cancelled</field>
         <field name="fold" eval="True"/>
