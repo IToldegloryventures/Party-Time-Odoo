@@ -33,14 +33,23 @@
                 <attribute name="invisible">invoice_status != 'no' or state != 'sale' or invoice_count &gt; 0</attribute>
             </xpath>
             
-            <!-- Add Contract Signed action button in button_box -->
+            <!-- Add Contract workflow buttons in button_box -->
             <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Send Contract button - visible when SO confirmed but contract not yet sent -->
+                <button name="action_send_contract" 
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-paper-plane"
+                        invisible="x_contract_status != 'not_sent' or state != 'sale'">
+                    <span class="o_stat_text">Send Contract</span>
+                </button>
+                <!-- Mark Contract Signed button - visible when contract sent but not yet signed -->
                 <button name="action_mark_contract_signed" 
                         type="object"
                         class="oe_stat_button"
                         icon="fa-file-signature"
-                        invisible="x_contract_status == 'signed' or state != 'sale'">
-                    <span class="o_stat_text">Mark Contract Signed</span>
+                        invisible="x_contract_status != 'sent' or state != 'sale'">
+                    <span class="o_stat_text">Mark Signed</span>
                 </button>
             </xpath>
             
