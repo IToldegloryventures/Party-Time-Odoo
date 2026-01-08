@@ -3,35 +3,43 @@
     <!-- 
         Party Time Texas CRM Pipeline Stages
         
-        Note: Default Odoo stages (Intake, Qualification, Proposal Sent, Closed/Won) are renamed
-        in fold_default_crm_stages.xml (which should be renamed to rename_default_crm_stages.xml).
+        Note: Default Odoo stages (Intake, Qualification, Approval, Closed/Won) are renamed
+        in rename_default_crm_stages.xml.
         
-        This file only contains the additional stages we need:
-        - Contract Sent (sequence 4)
-        - Booked (sequence 5)
-        - Lost (sequence 7)
+        This file contains the additional stages we need:
+        - Proposal Sent (sequence 4)
+        - Contract Sent (sequence 5)
+        - Booked (sequence 6)
+        - Lost (sequence 8)
         
-        Full workflow: Intake → Qualification → Proposal Sent → Contract Sent → Booked → Closed/Won → Lost
+        Full workflow: Intake → Qualification → Approval → Proposal Sent → Contract Sent → Booked → Closed/Won → Lost
     -->
     
-    <!-- Stage 4: Contract Sent (Contract sent, awaiting signature) -->
-    <record id="ptt_crm_stage_contract_sent" model="crm.stage">
-        <field name="name">Contract Sent</field>
+    <!-- Stage 4: Proposal Sent (Quote/proposal sent to client) -->
+    <record id="ptt_crm_stage_proposal_sent" model="crm.stage">
+        <field name="name">Proposal Sent</field>
         <field name="sequence">4</field>
         <field name="is_won">False</field>
     </record>
     
-    <!-- Stage 5: Booked (Won - Contract signed + retainer received, project created) -->
+    <!-- Stage 5: Contract Sent (Contract sent, awaiting signature) -->
+    <record id="ptt_crm_stage_contract_sent" model="crm.stage">
+        <field name="name">Contract Sent</field>
+        <field name="sequence">5</field>
+        <field name="is_won">False</field>
+    </record>
+    
+    <!-- Stage 6: Booked (Won - Contract signed + retainer received, project created) -->
     <record id="ptt_crm_stage_booked" model="crm.stage">
         <field name="name">Booked</field>
-        <field name="sequence">5</field>
+        <field name="sequence">6</field>
         <field name="is_won">True</field>
     </record>
     
-    <!-- Stage 7: Lost (Opportunity was lost) -->
+    <!-- Stage 8: Lost (Opportunity was lost) -->
     <record id="ptt_crm_stage_lost" model="crm.stage">
         <field name="name">Lost</field>
-        <field name="sequence">7</field>
+        <field name="sequence">8</field>
         <field name="is_won">False</field>
         <field name="fold">True</field>
     </record>

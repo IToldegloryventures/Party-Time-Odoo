@@ -8,8 +8,8 @@
         Mapping:
         - stage_lead1: "New" → "Intake" (sequence 1)
         - stage_lead2: "Qualified" → "Qualification" (sequence 2)
-        - stage_lead3: "Proposition" → "Proposal Sent" (sequence 3)
-        - stage_lead4: "Won" → "Closed/Won" (sequence 6, is_won=True)
+        - stage_lead3: "Proposition" → "Approval" (sequence 3)
+        - stage_lead4: "Won" → "Closed/Won" (sequence 7, is_won=True)
         
         Note: Additional stages (Contract Sent, Booked, Lost) are defined in crm_stages.xml
     -->
@@ -30,9 +30,9 @@
         <field name="fold" eval="False"/>
     </record>
     
-    <!-- Rename "Proposition" stage to "Proposal Sent" -->
+    <!-- Rename "Proposition" stage to "Approval" -->
     <record id="crm.stage_lead3" model="crm.stage" forcecreate="0">
-        <field name="name">Proposal Sent</field>
+        <field name="name">Approval</field>
         <field name="sequence">3</field>
         <field name="is_won">False</field>
         <field name="fold" eval="False"/>
@@ -41,7 +41,7 @@
     <!-- Rename "Won" stage to "Closed/Won" and update sequence -->
     <record id="crm.stage_lead4" model="crm.stage" forcecreate="0">
         <field name="name">Closed/Won</field>
-        <field name="sequence">6</field>
+        <field name="sequence">7</field>
         <field name="is_won">True</field>
         <field name="fold" eval="False"/>
     </record>

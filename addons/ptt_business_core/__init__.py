@@ -111,7 +111,9 @@ def pre_init_hook(cr):
     
     # === CLEANUP 4: DELETE unwanted CRM stages (don't fold, actually delete them) ===
     # Delete all unwanted duplicate stages completely
-    unwanted_stage_names = ['Qualified', 'Quote Sent', 'Approval', 'Execution', 'New', 'Proposition']
+    # ONLY keep: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
+    wanted_stage_names = ['Intake', 'Qualification', 'Approval', 'Proposal Sent', 'Contract Sent', 'Booked', 'Closed/Won', 'Lost']
+    unwanted_stage_names = ['Qualified', 'Quote Sent', 'Execution', 'New', 'Proposition']
     try:
         # First, get IDs of stages to delete (but keep the default Odoo stages we're renaming)
         for stage_name in unwanted_stage_names:
