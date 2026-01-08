@@ -180,9 +180,9 @@ class PttProjectVendorAssignment(models.Model):
         compute="_compute_can_respond",
         help="True if current user can accept/decline this assignment",
     )
-    x_display_name = fields.Char(
-        string="Display Name",
-        compute="_compute_display_name",
+    x_assignment_title = fields.Char(
+        string="Assignment Title",
+        compute="_compute_assignment_title",
         store=True,
     )
 
@@ -210,13 +210,13 @@ class PttProjectVendorAssignment(models.Model):
             rec.x_event_type_display = event_labels.get(rec.x_event_type, rec.x_event_type or "")
 
     @api.depends("service_type", "project_id.name", "x_event_name")
-    def _compute_display_name(self):
-        """Generate a display name for the assignment."""
+    def _compute_assignment_title(self):
+        """Generate a title for the assignment."""
         service_labels = dict(self._fields["service_type"].selection)
         for rec in self:
             service = service_labels.get(rec.service_type, rec.service_type or "")
             event = rec.x_event_name or rec.project_id.name or ""
-            rec.x_display_name = f"{service} - {event}" if event else service
+            rec.x_assignment_title = f"{service} - {event}" if event else service
 
     @api.depends("vendor_id", "x_status")
     def _compute_can_respond(self):

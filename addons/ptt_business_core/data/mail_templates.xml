@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!--
-        Email Templates for Vendor Portal
-        ==================================
-        Mail templates for automated notifications.
-        Using Jinja2 templating (Odoo 19 standard).
-    -->
+    <data noupdate="0">
+        <!--
+            Email Templates for Vendor Portal
+            ==================================
+            Mail templates for automated notifications.
+            Using Jinja2 templating (Odoo 19 standard).
+        -->
 
-    <!-- Vendor Assignment Notification Email -->
-    <record id="mail_template_vendor_assignment" model="mail.template">
-        <field name="name">Vendor Portal: New Assignment Notification</field>
-        <field name="model_id" ref="model_ptt_project_vendor_assignment"/>
-        <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
-        <field name="email_to">{{ object.vendor_id.email }}</field>
-        <field name="subject">New Assignment: {{ object.x_service_type_display or object.service_type }} for {{ object.x_event_name or object.project_id.name }}</field>
-        <field name="body_html" type="html">
+        <!-- Vendor Assignment Notification Email -->
+        <record id="mail_template_vendor_assignment" model="mail.template">
+            <field name="name">Vendor Portal: New Assignment Notification</field>
+            <field name="model_id" ref="model_ptt_project_vendor_assignment"/>
+            <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.vendor_id.email }}</field>
+            <field name="subject">New Assignment: {{ object.x_service_type_display or object.service_type }} for {{ object.x_event_name or object.project_id.name }}</field>
+            <field name="body_html" type="html">
 <![CDATA[
 <div style="margin: 0px; padding: 0px; font-size: 13px;">
     <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Verdana Regular', Verdana, Arial, sans-serif; color: #454748; width: 100%; border-collapse: separate;">
@@ -138,9 +139,9 @@
     </table>
 </div>
 ]]>
-        </field>
-        <field name="lang">{{ object.vendor_id.lang }}</field>
-        <field name="auto_delete" eval="False"/>
-    </record>
-
+            </field>
+            <field name="lang">{{ object.vendor_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+    </data>
 </odoo>

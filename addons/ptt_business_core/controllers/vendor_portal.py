@@ -20,7 +20,7 @@ from odoo import http, _
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError, UserError
-from odoo.osv.expression import AND
+from odoo.tools.expression import AND
 
 # Allowed file extensions for uploads (security)
 ALLOWED_EXTENSIONS = {
