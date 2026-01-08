@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Vendor Document Record Rules
+        ============================
+        Portal users can only see/upload documents for their own vendor account.
+        Internal users see all documents.
+    -->
+
+    <data noupdate="1">
+        <!-- Rule 1: Portal Vendor Access - Vendors see only their own documents -->
+        <record id="rule_vendor_document_portal" model="ir.rule">
+            <field name="name">Vendor Document: Portal Vendor Access</field>
+            <field name="model_id" ref="ptt_business_core.model_ptt_vendor_document"/>
+            <field name="domain_force">[('vendor_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule 2: Internal User Access - Staff see all vendor documents -->
+        <record id="rule_vendor_document_internal" model="ir.rule">
+            <field name="name">Vendor Document: Internal User Full Access</field>
+            <field name="model_id" ref="ptt_business_core.model_ptt_vendor_document"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+    </data>
+
+</odoo>

@@ -7,5 +7,9 @@ from . import ptt_crm_vendor_estimate
 from . import ptt_project_vendor_assignment
 from . import sale_order
 from . import sale_order_line
+from . import ptt_document_type
+from . import ptt_vendor_document
+from . import ptt_vendor_restriction
+from . import ptt_vendor_service
 
 
