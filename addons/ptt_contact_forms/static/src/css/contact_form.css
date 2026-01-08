@@ -1,0 +1,271 @@
+/**
+ * Party Time Texas - Contact Form Styles
+ * Dark theme to match partytimetexas.com
+ */
+
+/* ===== PAGE LAYOUT ===== */
+.ptt-contact-page {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+/* ===== HEADER ===== */
+.ptt-header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 40px 0;
+    text-align: center;
+    border-bottom: 3px solid #e94560;
+}
+
+.ptt-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.ptt-phone {
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.ptt-phone a {
+    color: #e94560;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.ptt-phone a:hover {
+    color: #ff6b6b;
+    text-decoration: underline;
+}
+
+/* ===== FORM CARD ===== */
+.ptt-form-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== FORM ELEMENTS ===== */
+.ptt-contact-form .form-label {
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.ptt-contact-form .text-danger {
+    color: #e94560 !important;
+}
+
+.ptt-contact-form .text-muted {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.85rem;
+}
+
+.ptt-input {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    transition: all 0.3s ease !important;
+}
+
+.ptt-input:focus {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: #e94560 !important;
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.25) !important;
+    outline: none !important;
+}
+
+.ptt-input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Select dropdowns */
+.ptt-input option {
+    background: #1a1a2e;
+    color: #ffffff;
+}
+
+/* ===== SERVICES GRID ===== */
+.ptt-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ptt-services-grid .form-check {
+    margin: 0;
+    padding: 8px 12px 8px 30px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.ptt-services-grid .form-check:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ptt-services-grid .form-check-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+.ptt-services-grid .form-check-input:checked {
+    background-color: #e94560;
+    border-color: #e94560;
+}
+
+.ptt-services-grid .form-check-label {
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.ptt-submit-btn {
+    background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+    color: #ffffff;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+}
+
+.ptt-submit-btn:hover {
+    background: linear-gradient(135deg, #ff6b6b 0%, #e94560 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.5);
+    color: #ffffff;
+}
+
+.ptt-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ===== CONTACT FOOTER ===== */
+.ptt-contact-footer {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ptt-contact-footer h5 {
+    color: #e94560;
+    margin-bottom: 10px;
+}
+
+.ptt-contact-footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.ptt-contact-footer a:hover {
+    color: #e94560;
+}
+
+.ptt-contact-footer span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+/* ===== THANK YOU PAGE ===== */
+.ptt-thank-you .ptt-success-icon {
+    font-size: 5rem;
+    color: #4ecdc4;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.ptt-thank-you h2 {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.ptt-thank-you .lead {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.ptt-thank-you .list-unstyled li {
+    color: rgba(255, 255, 255, 0.9);
+    padding: 8px 0;
+}
+
+.ptt-thank-you .text-success {
+    color: #4ecdc4 !important;
+}
+
+/* ===== ALERTS ===== */
+.ptt-contact-page .alert-danger {
+    background: rgba(233, 69, 96, 0.2);
+    border: 1px solid #e94560;
+    color: #ffffff;
+    border-radius: 10px;
+}
+
+.ptt-contact-page .alert-danger .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .ptt-header h1 {
+        font-size: 2rem;
+    }
+    
+    .ptt-form-card {
+        padding: 25px 20px;
+    }
+    
+    .ptt-services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ptt-contact-footer .row > div {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 20px;
+    }
+    
+    .ptt-contact-footer .row > div:last-child {
+        border-bottom: none;
+    }
+}
+
+/* ===== EMBED MODE (for iframe) ===== */
+.ptt-contact-page.embed-mode .ptt-header {
+    padding: 20px 0;
+}
+
+.ptt-contact-page.embed-mode .ptt-header h1 {
+    font-size: 2rem;
+}
+
+.ptt-contact-page.embed-mode .ptt-contact-footer {
+    display: none;
+}
