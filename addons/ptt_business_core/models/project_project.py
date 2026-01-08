@@ -5,6 +5,17 @@ from datetime import datetime, timedelta
 class ProjectProject(models.Model):
     _inherit = "project.project"
 
+    # === COMPATIBILITY FIELD ===
+    # This field is a placeholder for orphaned Studio/Analytic view references.
+    # A view in the database references x_plan2_id but the field doesn't exist.
+    # Adding this dummy field prevents "field is undefined" errors.
+    # TODO: Remove this once the orphaned view is cleaned from the database.
+    x_plan2_id = fields.Many2one(
+        "account.analytic.account",
+        string="Legacy Plan Reference",
+        help="Compatibility field - not used. Exists to prevent view errors from orphaned Studio customizations.",
+    )
+
     # Link back to source CRM Lead
     x_crm_lead_id = fields.Many2one(
         "crm.lead",
