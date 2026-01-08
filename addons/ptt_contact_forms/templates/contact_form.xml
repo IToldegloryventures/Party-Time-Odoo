@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Premium Contact Form - Party Time Texas -->
+    <!-- Contact Form - Party Time Texas (iframe embed) -->
     
     <template id="contact_us_page" name="Contact Us - Party Time Texas">
         <t t-call="web.html_container">
@@ -17,15 +17,9 @@
                 <div class="ptt-form-wrapper">
                     <div class="ptt-form-card">
                         
-                        <!-- Header -->
-                        <div class="ptt-form-header">
-                            <h1>Let's Plan Your Event</h1>
-                            <p>Tell us about your vision and we'll make it happen</p>
-                        </div>
-                        
                         <!-- Error -->
                         <t t-if="error">
-                            <div class="alert alert-danger mb-4"><t t-out="error"/></div>
+                            <div class="alert alert-danger"><t t-out="error"/></div>
                         </t>
                         
                         <form action="/contact-us/submit" method="POST" class="ptt-contact-form" id="contactForm">
@@ -174,12 +168,12 @@
                             <!-- SECTION: Message -->
                             <div class="ptt-section">
                                 <div class="ptt-section-title">Additional Details</div>
-                                <textarea name="special_requests" class="form-control ptt-input" rows="3" placeholder="Tell us more about your event vision, special requests, or any questions..."></textarea>
+                                <textarea name="special_requests" class="form-control ptt-input" rows="4" placeholder="Tell us more about your event vision, special requests, or questions..."></textarea>
                             </div>
                             
                             <!-- Submit -->
                             <div class="ptt-submit-wrapper">
-                                <button type="submit" class="btn ptt-submit-btn">Get My Quote</button>
+                                <button type="submit" class="btn ptt-submit-btn">Submit</button>
                             </div>
                         </form>
                     </div>
@@ -206,11 +200,11 @@
                 <div class="ptt-form-wrapper">
                     <div class="ptt-form-card ptt-thank-you-card">
                         <div class="ptt-success-icon">✓</div>
-                        <h2>You're All Set!</h2>
+                        <h2>Thank You!</h2>
                         <p class="lead">Your inquiry has been received.</p>
                         <p>One of our event specialists will reach out within 24 hours to discuss your vision and create a custom proposal.</p>
                         <hr/>
-                        <p class="mb-1"><strong>Need to talk now?</strong></p>
+                        <p class="mb-1"><strong style="color: #D4BF91;">Need to talk now?</strong></p>
                         <a href="tel:+12143408000" class="ptt-phone-link">(214) 340-8000</a>
                         <div class="mt-4">
                             <a href="/contact-us" class="btn ptt-submit-btn">Submit Another Inquiry</a>
