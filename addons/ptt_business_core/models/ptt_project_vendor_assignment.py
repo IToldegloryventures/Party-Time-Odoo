@@ -1,6 +1,6 @@
+import uuid
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from datetime import datetime
 
 
 class PttProjectVendorAssignment(models.Model):
@@ -8,6 +8,11 @@ class PttProjectVendorAssignment(models.Model):
     
     This model supports portal access for vendors to view their assignments,
     accept/decline work orders, and communicate via chatter.
+    
+    Security model:
+    - Portal users can only READ their own assignments (via record rules)
+    - All write operations happen through action_vendor_accept/decline methods
+      which are called on sudo records from the portal controller
     """
     _name = "ptt.project.vendor.assignment"
     _description = "Project Vendor Assignment"
@@ -66,6 +71,14 @@ class PttProjectVendorAssignment(models.Model):
         readonly=True,
     )
     notes = fields.Text(string="Notes")
+
+    # === PORTAL ACCESS TOKEN ===
+    access_token = fields.Char(
+        string="Access Token",
+        copy=False,
+        default=lambda self: str(uuid.uuid4()),
+        help="Token for portal access via email links",
+    )
 
     # === VENDOR STATUS TRACKING ===
     x_status = fields.Selection(
@@ -152,7 +165,16 @@ class PttProjectVendorAssignment(models.Model):
         readonly=True,
     )
 
-    # === COMPUTED FIELDS ===
+    # === COMPUTED DISPLAY FIELDS ===
+    # These provide human-readable values for templates without accessing _fields
+    x_service_type_display = fields.Char(
+        string="Service Type (Display)",
+        compute="_compute_service_type_display",
+    )
+    x_event_type_display = fields.Char(
+        string="Event Type (Display)",
+        compute="_compute_event_type_display",
+    )
     x_can_respond = fields.Boolean(
         string="Can Respond",
         compute="_compute_can_respond",
@@ -163,6 +185,29 @@ class PttProjectVendorAssignment(models.Model):
         compute="_compute_display_name",
         store=True,
     )
+
+    @api.depends("service_type")
+    def _compute_service_type_display(self):
+        """Get human-readable service type label for templates."""
+        service_labels = dict(self._fields["service_type"].selection)
+        for rec in self:
+            rec.x_service_type_display = service_labels.get(rec.service_type, rec.service_type or "")
+
+    @api.depends("x_event_type")
+    def _compute_event_type_display(self):
+        """Get human-readable event type label for templates."""
+        # x_event_type is a related field, get labels from project model
+        try:
+            event_type_field = self.env["project.project"]._fields.get("x_event_type")
+            if event_type_field and hasattr(event_type_field, "selection"):
+                event_labels = dict(event_type_field.selection)
+            else:
+                event_labels = {}
+        except Exception:
+            event_labels = {}
+        
+        for rec in self:
+            rec.x_event_type_display = event_labels.get(rec.x_event_type, rec.x_event_type or "")
 
     @api.depends("service_type", "project_id.name", "x_event_name")
     def _compute_display_name(self):
@@ -181,6 +226,9 @@ class PttProjectVendorAssignment(models.Model):
         - They are logged in as a portal user
         - Their partner matches the vendor_id
         - Status is still 'pending'
+        
+        Note: When called on a sudo record from portal controller,
+        self.env.user is still the actual portal user (env is not changed).
         """
         current_partner = self.env.user.partner_id
         for rec in self:
@@ -194,21 +242,22 @@ class PttProjectVendorAssignment(models.Model):
     def action_vendor_accept(self):
         """Accept the vendor assignment.
         
-        This method is called from the portal when a vendor accepts work.
-        It validates that the current user is the assigned vendor and
-        updates the status accordingly.
+        This method is called from the portal on a sudo record.
+        It validates that the current user (from env, not changed by sudo)
+        is the assigned vendor before allowing the action.
         """
         self.ensure_one()
+        # env.user is still the portal user even when called on sudo record
         current_partner = self.env.user.partner_id
 
-        # Validate the vendor
+        # Validate the vendor - security check
         if not self.vendor_id or self.vendor_id.id != current_partner.id:
             raise UserError(_("You can only accept assignments that are assigned to you."))
 
         if self.x_status != "pending":
             raise UserError(_("This assignment has already been responded to."))
 
-        # Update status
+        # Update status (happens as sudo since self is sudo)
         self.write({
             "x_status": "accepted",
             "x_vendor_response_date": fields.Datetime.now(),
@@ -227,9 +276,8 @@ class PttProjectVendorAssignment(models.Model):
     def action_vendor_decline(self):
         """Decline the vendor assignment.
         
-        This method is called from the portal when a vendor declines work.
-        It validates that the current user is the assigned vendor and
-        updates the status accordingly.
+        This method is called from the portal on a sudo record.
+        It validates that the current user is the assigned vendor.
         """
         self.ensure_one()
         current_partner = self.env.user.partner_id
@@ -259,7 +307,12 @@ class PttProjectVendorAssignment(models.Model):
     # === OVERRIDE METHODS ===
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to send notification when vendor is assigned."""
+        """Override create to generate access token and send notification when vendor is assigned."""
+        # Ensure access_token is set for each record
+        for vals in vals_list:
+            if not vals.get("access_token"):
+                vals["access_token"] = str(uuid.uuid4())
+        
         records = super().create(vals_list)
         for record in records:
             if record.vendor_id:
@@ -303,7 +356,7 @@ class PttProjectVendorAssignment(models.Model):
                 body=_(
                     "You have been assigned to provide <b>%s</b> services for the event <b>%s</b> on <b>%s</b>. "
                     "Please log in to the vendor portal to accept or decline this assignment.",
-                    dict(self._fields["service_type"].selection).get(self.service_type, self.service_type),
+                    self.x_service_type_display or self.service_type,
                     self.x_event_name or self.project_id.name,
                     self.x_event_date or "TBD",
                 ),
@@ -311,3 +364,8 @@ class PttProjectVendorAssignment(models.Model):
                 message_type="notification",
                 subtype_xmlid="mail.mt_comment",
             )
+
+    def get_portal_url(self):
+        """Get the portal URL for this assignment (with access token for email links)."""
+        self.ensure_one()
+        return f"/my/vendor-assignments/{self.id}?access_token={self.access_token}"

@@ -4,6 +4,7 @@
         Email Templates for Vendor Portal
         ==================================
         Mail templates for automated notifications.
+        Using Jinja2 templating (Odoo 19 standard).
     -->
 
     <!-- Vendor Assignment Notification Email -->
@@ -12,7 +13,7 @@
         <field name="model_id" ref="model_ptt_project_vendor_assignment"/>
         <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
         <field name="email_to">{{ object.vendor_id.email }}</field>
-        <field name="subject">New Assignment: {{ object.service_type }} for {{ object.x_event_name or object.project_id.name }}</field>
+        <field name="subject">New Assignment: {{ object.x_service_type_display or object.service_type }} for {{ object.x_event_name or object.project_id.name }}</field>
         <field name="body_html" type="html">
 <![CDATA[
 <div style="margin: 0px; padding: 0px; font-size: 13px;">
@@ -34,7 +35,7 @@
                                 Hello <strong>{{ object.vendor_id.name }}</strong>,
                             </p>
                             <p style="margin: 0 0 20px 0;">
-                                You have been assigned to provide <strong>{{ dict(object._fields['service_type'].selection).get(object.service_type, object.service_type) }}</strong> services for an upcoming event. Please review the details below and respond at your earliest convenience.
+                                You have been assigned to provide <strong>{{ object.x_service_type_display or object.service_type }}</strong> services for an upcoming event. Please review the details below and respond at your earliest convenience.
                             </p>
                         </td>
                     </tr>
@@ -52,12 +53,10 @@
                                     <td width="40%" style="color: #6c757d;">Event Name:</td>
                                     <td><strong>{{ object.x_event_name or object.project_id.name or 'TBD' }}</strong></td>
                                 </tr>
-                                {% if object.x_event_id %}
                                 <tr>
                                     <td style="color: #6c757d;">Event ID:</td>
-                                    <td>{{ object.x_event_id }}</td>
+                                    <td>{{ object.x_event_id or '-' }}</td>
                                 </tr>
-                                {% endif %}
                                 <tr>
                                     <td style="color: #6c757d;">Event Date:</td>
                                     <td><strong>{{ object.x_event_date or 'TBD' }}</strong></td>
@@ -70,12 +69,10 @@
                                     <td style="color: #6c757d;">Venue:</td>
                                     <td>{{ object.x_venue_name or 'TBD' }}</td>
                                 </tr>
-                                {% if object.x_guest_count %}
                                 <tr>
                                     <td style="color: #6c757d;">Guest Count:</td>
-                                    <td>{{ object.x_guest_count }}</td>
+                                    <td>{{ object.x_guest_count or 'TBD' }}</td>
                                 </tr>
-                                {% endif %}
                             </table>
                         </td>
                     </tr>
@@ -91,20 +88,16 @@
                                 </tr>
                                 <tr>
                                     <td width="40%" style="color: #856404;">Service Type:</td>
-                                    <td><strong>{{ dict(object._fields['service_type'].selection).get(object.service_type, object.service_type) }}</strong></td>
+                                    <td><strong>{{ object.x_service_type_display or object.service_type }}</strong></td>
                                 </tr>
-                                {% if object.x_arrival_time %}
                                 <tr>
                                     <td style="color: #856404;">Arrival Time:</td>
-                                    <td>{{ object.x_arrival_time }}</td>
+                                    <td>{{ object.x_arrival_time or 'To be confirmed' }}</td>
                                 </tr>
-                                {% endif %}
-                                {% if object.x_equipment_notes %}
                                 <tr>
                                     <td style="color: #856404;">Notes:</td>
-                                    <td>{{ object.x_equipment_notes }}</td>
+                                    <td>{{ object.x_equipment_notes or '-' }}</td>
                                 </tr>
-                                {% endif %}
                             </table>
                         </td>
                     </tr>
@@ -115,7 +108,7 @@
                             <p style="margin: 0 0 15px 0; font-size: 14px;">
                                 Please log in to the Vendor Portal to accept or decline this assignment:
                             </p>
-                            <a href="{{ object.get_base_url() }}/my/vendor-assignments/{{ object.id }}" 
+                            <a href="{{ object.get_base_url() }}{{ object.get_portal_url() }}" 
                                style="display: inline-block; padding: 12px 30px; background-color: #875A7B; color: #FFFFFF; text-decoration: none; border-radius: 4px; font-weight: bold;">
                                 View Assignment &amp; Respond
                             </a>
@@ -123,17 +116,13 @@
                     </tr>
                     
                     <!-- Contact Info -->
-                    {% if object.x_contact_person or object.x_contact_phone %}
                     <tr>
                         <td style="padding-top: 20px; border-top: 1px solid #e1e1e1;">
                             <p style="margin: 0; font-size: 13px; color: #6c757d;">
-                                <strong>Questions?</strong> Contact:
-                                {% if object.x_contact_person %}{{ object.x_contact_person }}{% endif %}
-                                {% if object.x_contact_phone %} at {{ object.x_contact_phone }}{% endif %}
+                                <strong>Questions?</strong> Contact: {{ object.x_contact_person or 'Our Team' }}{{ ' at ' + object.x_contact_phone if object.x_contact_phone else '' }}
                             </p>
                         </td>
                     </tr>
-                    {% endif %}
                     
                     <!-- Footer -->
                     <tr>
@@ -151,7 +140,7 @@
 ]]>
         </field>
         <field name="lang">{{ object.vendor_id.lang }}</field>
-        <field name="auto_delete" eval="True"/>
+        <field name="auto_delete" eval="False"/>
     </record>
 
 </odoo>
