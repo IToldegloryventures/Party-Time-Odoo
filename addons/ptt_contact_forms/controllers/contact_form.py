@@ -2,9 +2,11 @@
 """
 Public Contact Form Controller
 Creates CRM leads from form submissions without requiring login.
-Replicates partytimetexas.com/contact-us form fields and styling.
 
-Reference: https://www.odoo.com/documentation/19.0/developer/howtos/website_themes/theming.html
+Brand: Black #040303, Gold #D4BF91, Red #A4031F, Gray #B2B4B3
+Font: Open Sans
+
+Use ?embed=1 for WordPress iframe integration (hides header/footer)
 """
 import logging
 from odoo import http
@@ -22,12 +24,16 @@ class ContactFormController(http.Controller):
         values = {
             'success': kw.get('success', False),
             'error': kw.get('error', False),
+            'embed': kw.get('embed', False),  # For WordPress iframe
         }
         return request.render("ptt_contact_forms.contact_us_page", values)
 
     @http.route('/contact-us/submit', type='http', auth='public', website=True, methods=['POST'], csrf=True)
     def contact_us_submit(self, **kw):
         """Handle contact form submission - creates CRM lead."""
+        embed = kw.get('embed', '')
+        embed_param = '?embed=1' if embed else ''
+        
         try:
             # Validate required fields
             required_fields = {
@@ -48,8 +54,8 @@ class ContactFormController(http.Controller):
                     missing.append(label)
             
             if missing:
-                error_msg = f"Please fill in required fields: {', '.join(missing)}"
-                return request.redirect(f'/contact-us?error={error_msg}')
+                error_msg = f"Please fill in: {', '.join(missing)}"
+                return request.redirect(f'/contact-us{embed_param}&error={error_msg}' if embed_param else f'/contact-us?error={error_msg}')
             
             # Get the Intake stage
             intake_stage = request.env['crm.stage'].sudo().search([
@@ -84,7 +90,7 @@ class ContactFormController(http.Controller):
             # Special requests
             special_requests = kw.get('special_requests', '').strip()
             if special_requests:
-                description_parts.append(f"**Special Requests/Details:**")
+                description_parts.append("**Special Requests/Details:**")
                 description_parts.append(special_requests)
                 description_parts.append("")
             
@@ -177,13 +183,17 @@ class ContactFormController(http.Controller):
             _logger.info("Created CRM lead #%s from contact form: %s", lead.id, lead_name)
             
             # Redirect to thank you page
-            return request.redirect('/contact-us/thank-you')
+            return request.redirect(f'/contact-us/thank-you{embed_param}')
             
         except Exception as e:
             _logger.error("Error creating lead from contact form: %s", str(e))
-            return request.redirect('/contact-us?error=An error occurred. Please try again or call us at (214) 340-8000.')
+            error_url = f'/contact-us{embed_param}&error=An error occurred. Please try again or call us at (214) 340-8000.' if embed_param else '/contact-us?error=An error occurred. Please try again or call us at (214) 340-8000.'
+            return request.redirect(error_url)
 
     @http.route('/contact-us/thank-you', type='http', auth='public', website=True)
     def contact_us_thank_you(self, **kw):
         """Render thank you page after successful submission."""
-        return request.render("ptt_contact_forms.contact_us_thank_you", {})
+        values = {
+            'embed': kw.get('embed', False),
+        }
+        return request.render("ptt_contact_forms.contact_us_thank_you", values)
