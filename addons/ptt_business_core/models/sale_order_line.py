@@ -52,13 +52,27 @@ class SaleOrderLine(models.Model):
                 continue
             
             # Get purchase price (cost) - from sale_margin module
-            # purchase_price is a computed field that should already be calculated
+            # purchase_price is a computed field with precompute=True, so it should be available
             # It's computed based on: product_id, company_id, currency_id, product_uom_id
-            # Ensure it's computed if not set
-            if not line.purchase_price and hasattr(line, '_compute_purchase_price'):
-                line._compute_purchase_price()
+            # Access purchase_price - it may require base.group_user permission
+            # If purchase_price is not available, try to get standard_price directly
+            if hasattr(line, 'purchase_price'):
+                cost = line.purchase_price or 0.0
+            else:
+                # Fallback: get cost directly from product if purchase_price not available
+                if line.product_id:
+                    # Convert product standard_price to line currency and UoM
+                    product_cost = line.product_id.uom_id._compute_price(
+                        line.product_id.standard_price,
+                        line.product_uom_id,
+                    )
+                    cost = line._convert_to_sol_currency(
+                        product_cost,
+                        line.product_id.cost_currency_id
+                    ) if hasattr(line, '_convert_to_sol_currency') else product_cost
+                else:
+                    cost = 0.0
             
-            cost = line.purchase_price or 0.0
             target_margin = line.x_target_margin or 0.0
             
             # Only calculate if both cost and margin are provided
