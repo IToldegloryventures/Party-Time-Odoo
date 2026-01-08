@@ -16,7 +16,6 @@ class SaleOrderLine(models.Model):
     # === TARGET MARGIN FIELD ===
     x_target_margin = fields.Float(
         string="Target Margin",
-        widget="percentage",
         digits=(16, 4),
         help="Target margin percentage. Enter as decimal (50% = 0.50). "
              "This is for reference - see 'Target Margin Price' below for recommended price.",

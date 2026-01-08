@@ -87,14 +87,14 @@
         <field name="arch" type="xml">
             <!-- Add Cost, Target Margin, and Target Margin Price fields in order line LIST view (after purchase_price from sale_margin) -->
             <xpath expr="//field[@name='order_line']//list//field[@name='purchase_price']" position="after">
-                <field name="x_target_margin" optional="show"/>
+                <field name="x_target_margin" widget="percentage" optional="show"/>
                 <field name="x_target_margin_price" string="Target Price" widget="monetary"
                        options="{'currency_field': 'currency_id'}" 
                        optional="show"/>
             </xpath>
             <!-- Add Target Margin and Target Margin Price fields in order line FORM view (after purchase_price from sale_margin) -->
             <xpath expr="//field[@name='order_line']//form//field[@name='purchase_price']" position="after">
-                <field name="x_target_margin"/>
+                <field name="x_target_margin" widget="percentage"/>
                 <field name="x_target_margin_price" widget="monetary" 
                        options="{'currency_field': 'currency_id'}"/>
             </xpath>
