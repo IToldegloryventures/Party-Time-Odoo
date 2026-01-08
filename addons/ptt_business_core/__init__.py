@@ -108,5 +108,61 @@ def pre_init_hook(cr):
         _logger.warning(f"PTT Business Core: Error cleaning fields on project.project: {e}")
     
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
+    
+    # === CLEANUP 4: Delete unwanted CRM stages ===
+    # Delete duplicate/unwanted stages that should not exist
+    unwanted_stage_names = ['Qualified', 'Quote Sent', 'Approval', 'Execution']
+    try:
+        for stage_name in unwanted_stage_names:
+            cr.execute("""
+                DELETE FROM crm_stage 
+                WHERE name = %s
+                AND id NOT IN (
+                    SELECT res_id FROM ir_model_data 
+                    WHERE model = 'crm.stage' 
+                    AND module = 'crm'
+                )
+                RETURNING id
+            """, (stage_name,))
+            deleted_ids = cr.fetchall()
+            if deleted_ids:
+                _logger.info(f"PTT Business Core: Deleted unwanted CRM stage: {stage_name} (IDs: {[d[0] for d in deleted_ids]})")
+                
+                # Also delete any ir_model_data references for these deleted stages
+                for stage_id_tuple in deleted_ids:
+                    stage_id = stage_id_tuple[0]
+                    cr.execute("""
+                        DELETE FROM ir_model_data 
+                        WHERE model = 'crm.stage' 
+                        AND res_id = %s
+                    """, (stage_id,))
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning unwanted CRM stages: {e}")
+    
+    # Also delete "New" stage if it exists separately from the default (should be renamed to "Intake")
+    try:
+        cr.execute("""
+            DELETE FROM crm_stage 
+            WHERE name = 'New'
+            AND id NOT IN (
+                SELECT res_id FROM ir_model_data 
+                WHERE model = 'crm.stage' 
+                AND module = 'crm'
+                AND name = 'stage_lead1'
+            )
+            RETURNING id
+        """)
+        deleted_ids = cr.fetchall()
+        if deleted_ids:
+            _logger.info(f"PTT Business Core: Deleted duplicate 'New' stage(s) (IDs: {[d[0] for d in deleted_ids]})")
+            for stage_id_tuple in deleted_ids:
+                stage_id = stage_id_tuple[0]
+                cr.execute("""
+                    DELETE FROM ir_model_data 
+                    WHERE model = 'crm.stage' 
+                    AND res_id = %s
+                """, (stage_id,))
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning 'New' stage: {e}")
 
 
