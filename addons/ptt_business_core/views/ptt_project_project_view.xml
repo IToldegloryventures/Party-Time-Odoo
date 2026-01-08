@@ -64,18 +64,12 @@
                         </div>
                     </div>
                     
-                    <!-- Row 3: Contract Status, Retainer Status -->
+                    <!-- Row 3: Contract Status -->
                     <div class="row">
                         <div class="col-md-4">
                             <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Contract Status:</div>
                             <div>
                                 <field name="x_contract_status" readonly="1"/>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Retainer Status:</div>
-                            <div>
-                                <field name="x_retainer_status" readonly="1"/>
                             </div>
                         </div>
                     </div>

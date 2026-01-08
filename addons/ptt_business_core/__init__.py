@@ -107,6 +107,39 @@ def pre_init_hook(cr):
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error cleaning fields on project.project: {e}")
     
+    # === CLEANUP 3b: Remove views that reference x_plan2_id ===
+    # Studio creates views that reference fields - we need to clean these too
+    try:
+        # Find and update views that reference x_plan2_id for project.project
+        cr.execute("""
+            SELECT id, arch_db FROM ir_ui_view 
+            WHERE model = 'project.project' 
+            AND arch_db LIKE '%x_plan2_id%'
+        """)
+        views_to_fix = cr.fetchall()
+        
+        for view_id, arch_db in views_to_fix:
+            _logger.info(f"PTT Business Core: Found view {view_id} referencing x_plan2_id, removing reference")
+            # Remove the field reference from the view by replacing it with a comment
+            # This is a simple approach - remove lines containing x_plan2_id
+            if arch_db:
+                import re
+                # Remove field elements referencing x_plan2_id
+                new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*/>', '', arch_db)
+                new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                # Also remove any label or other elements referencing it
+                new_arch = re.sub(r'<[^>]*x_plan2_id[^>]*/?>', '', new_arch)
+                
+                if new_arch != arch_db:
+                    cr.execute("""
+                        UPDATE ir_ui_view SET arch_db = %s WHERE id = %s
+                    """, (new_arch, view_id))
+                    _logger.info(f"PTT Business Core: Cleaned x_plan2_id from view {view_id}")
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning views referencing x_plan2_id: {e}")
+        import traceback
+        _logger.error(traceback.format_exc())
+    
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
     
     # === CLEANUP 4: DELETE unwanted CRM stages (don't fold, actually delete them) ===

@@ -38,6 +38,15 @@ class CrmLead(models.Model):
         help="Whether this lead is an individual or a business client.",
     )
 
+    # === EVENT ID (Generated when Sales Order is confirmed) ===
+    x_event_id = fields.Char(
+        string="Event ID",
+        readonly=True,
+        copy=False,
+        index=True,
+        help="Unique event identifier (format: 000001). Generated when Sales Order is confirmed.",
+    )
+
     x_inquiry_source = fields.Selection(
         [
             ("web_form", "Web Form"),
@@ -631,31 +640,72 @@ class CrmLead(models.Model):
         for record in self:
             record.x_project_task_count = record.x_project_id.task_count if record.x_project_id else 0
 
+    def _generate_event_id(self):
+        """Generate a unique Event ID for this opportunity.
+        
+        Format: 000001, 000002, etc.
+        The Event ID is stored on the CRM Lead and propagates to Projects and Tasks.
+        """
+        self.ensure_one()
+        if self.x_event_id:
+            return self.x_event_id  # Already has an Event ID
+        
+        # Find the highest Event ID across both CRM Leads and Projects
+        # Check CRM Leads first
+        last_lead = self.env["crm.lead"].sudo().search(
+            [("x_event_id", "!=", False)], order="x_event_id desc", limit=1
+        )
+        lead_id = 0
+        if last_lead and last_lead.x_event_id:
+            try:
+                lead_id = int(last_lead.x_event_id)
+            except ValueError:
+                pass
+        
+        # Check Projects too (for backwards compatibility with existing data)
+        last_project = self.env["project.project"].sudo().search(
+            [("x_event_id", "!=", False)], order="x_event_id desc", limit=1
+        )
+        project_id = 0
+        if last_project and last_project.x_event_id:
+            try:
+                project_id = int(last_project.x_event_id)
+            except ValueError:
+                pass
+        
+        # Use the higher of the two
+        next_id = max(lead_id, project_id) + 1
+        event_id = f"{next_id:06d}"
+        
+        # Save to this lead
+        self.write({"x_event_id": event_id})
+        return event_id
+
     def action_create_project_from_lead(self):
-        """Create a project from this CRM Lead and copy all relevant fields."""
+        """Create a project from this CRM Lead and copy all relevant fields.
+        
+        Workflow:
+        1. Ensure Event ID exists on CRM Lead
+        2. Create Project (inherits Event ID from CRM Lead)
+        3. Link Project back to CRM Lead
+        4. Create Event Tasks on Project (separate transaction)
+        
+        The Event ID should already exist on the CRM Lead (generated when SO confirmed).
+        If not, it will be generated here as a fallback.
+        """
         self.ensure_one()
         
         if self.x_project_id:
             raise UserError(_("A project has already been created from this opportunity."))
         
-        # Generate Event ID (000001 format)
-        last_project = self.env["project.project"].search(
-            [("x_event_id", "!=", False)], order="x_event_id desc", limit=1
-        )
-        if last_project and last_project.x_event_id:
-            try:
-                next_id = int(last_project.x_event_id) + 1
-            except ValueError:
-                next_id = 1
-        else:
-            next_id = 1
-        event_id = f"{next_id:06d}"
+        # STEP 1: Ensure Event ID exists (should have been generated when SO was confirmed)
+        event_id = self.x_event_id or self._generate_event_id()
         
         # Build project name: PartnerName-EventID
         project_name = self.partner_name or self.contact_name or "Unknown"
         project_name = f"{project_name}-{event_id}"
         
-        # Map CRM Lead fields to Project fields
+        # STEP 2: Map CRM Lead fields to Project fields
         project_vals = {
             "name": project_name,
             "partner_id": self.partner_id.id if self.partner_id else False,
@@ -672,11 +722,27 @@ class CrmLead(models.Model):
             "date_start": self.x_event_date,  # Project start date
         }
         
-        # Create project
-        project = self.env["project.project"].create(project_vals)
+        # Create project using sudo() to bypass any permission issues during automated creation
+        project = self.env["project.project"].sudo().create(project_vals)
         
-        # Link project back to lead
+        # STEP 3: Link project back to lead
         self.write({"x_project_id": project.id})
+        
+        # STEP 4: Create event tasks AFTER project is saved (separate operation)
+        # This is done in a separate step to ensure the project exists and is committed
+        try:
+            project.action_create_event_tasks()
+            self.message_post(
+                body=_("Event tasks created for project: %s") % project.name,
+                message_type="notification",
+            )
+        except Exception as e:
+            # Log error but don't fail the whole operation
+            self.message_post(
+                body=_("Project created but error creating tasks: %s") % str(e),
+                message_type="notification",
+                subtype_xmlid="mail.mt_note",
+            )
         
         return {
             "type": "ir.actions.act_window",

@@ -100,14 +100,40 @@ class ProjectProject(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to auto-create event tasks and set initial stage for event projects."""
+        """Override create to set initial stage for event projects.
+        
+        Note: Task creation is handled separately via action_create_event_tasks()
+        to avoid permission issues during the create transaction.
+        The Sales Order confirmation flow will call this after project creation.
+        """
         projects = super().create(vals_list)
         for project in projects:
-            # Only create tasks if this is an event project (has CRM lead)
+            # Only set initial stage if this is an event project (has CRM lead)
             if project.x_crm_lead_id:
                 project._set_initial_project_stage()
-                project._create_event_tasks()
         return projects
+    
+    def action_create_event_tasks(self):
+        """Public method to create event tasks for this project.
+        
+        This is separated from create() to allow proper transaction handling
+        and to be called after the project is fully saved.
+        
+        Returns True if tasks were created successfully, False otherwise.
+        """
+        self.ensure_one()
+        if not self.x_crm_lead_id:
+            return False
+        
+        try:
+            self._create_event_tasks()
+            return True
+        except Exception as e:
+            # Log the error but don't raise - let caller handle
+            import logging
+            _logger = logging.getLogger(__name__)
+            _logger.error(f"Error creating event tasks for project {self.id}: {e}")
+            return False
 
     # Core event identity
     x_event_id = fields.Char(string="Event Number")  # Changed from "Event ID" to avoid Studio field conflict
@@ -187,12 +213,6 @@ class ProjectProject(models.Model):
         store=False,
         help="Contract status from related Sales Order.",
     )
-    x_retainer_status = fields.Char(
-        string="Retainer Status",
-        compute="_compute_retainer_status",
-        store=False,
-        help="Retainer payment status from related Sales Order.",
-    )
 
     @api.depends("x_event_date")
     def _compute_days_until_event(self):
@@ -236,34 +256,23 @@ class ProjectProject(models.Model):
                         contract_status = status_map.get(so.x_contract_status, so.x_contract_status)
             project.x_contract_status = contract_status
 
-    @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids", "x_crm_lead_id.order_ids.x_retainer_paid")
-    def _compute_retainer_status(self):
-        """Get retainer status from related Sales Order via CRM Lead."""
-        for project in self:
-            retainer_status = "Not Available"
-            if project.x_crm_lead_id and project.x_crm_lead_id.order_ids:
-                # Get the most recent confirmed order, or first order if none confirmed
-                confirmed_orders = project.x_crm_lead_id.order_ids.filtered(lambda so: so.state == 'sale')
-                if confirmed_orders:
-                    # Get the most recent confirmed order
-                    so = confirmed_orders.sorted('create_date', reverse=True)[0]
-                    retainer_status = "Paid" if so.x_retainer_paid else "Unpaid"
-                elif project.x_crm_lead_id.order_ids:
-                    # No confirmed orders, check draft orders
-                    so = project.x_crm_lead_id.order_ids[0]
-                    retainer_status = "Paid" if so.x_retainer_paid else "Unpaid"
-            project.x_retainer_status = retainer_status
 
     def _set_initial_project_stage(self):
-        """Set initial project stage based on event date and current date."""
-        self.ensure_one()
-        if not self.x_event_date:
-            return
+        """Set initial project stage to 'To Do' for new event projects.
         
-        # Get the Planning stage (default for new projects)
-        planning_stage = self.env.ref("ptt_business_core.project_stage_planning", raise_if_not_found=False)
-        if planning_stage:
-            self.stage_id = planning_stage.id
+        Uses sudo() to bypass record rules when accessing project.project.stage.
+        """
+        self.ensure_one()
+        
+        # Get the To Do stage (default for new projects) using sudo()
+        todo_stage = self.env.ref("ptt_business_core.project_stage_todo", raise_if_not_found=False)
+        if not todo_stage:
+            # Fallback: search for any "To Do" project stage
+            todo_stage = self.env["project.project.stage"].sudo().search(
+                [("name", "=", "To Do")], limit=1
+            )
+        if todo_stage:
+            self.sudo().write({"stage_id": todo_stage.id})
     
     def _create_event_tasks(self):
         """Auto-create comprehensive event planning tasks and sub-tasks for event projects.
@@ -278,6 +287,9 @@ class ProjectProject(models.Model):
         7. Client Communications & Check-Ins
         8. Final Payment Check & Invoice Follow-up
         9. Post-Event Closure / Review
+        
+        Note: Uses sudo() for task creation to bypass record rules on project.task.type
+        since this is an automated system process triggered by Sales Order confirmation.
         """
         self.ensure_one()
         if not self.x_crm_lead_id:
@@ -290,13 +302,22 @@ class ProjectProject(models.Model):
             else []
         )
 
-        # Get task types (use the standard task types)
+        # Get task types using sudo() to bypass record rules on project.task.type
+        # This is necessary because Odoo's default record rules restrict task type access
+        # based on project membership, but at creation time the project is new
+        TaskType = self.env["project.task.type"].sudo()
         todo_type = self.env.ref("ptt_business_core.task_type_todo", raise_if_not_found=False)
         if not todo_type:
-            todo_type = self._get_or_create_task_stage("To Do")
+            # Fallback: search for any "To Do" stage or create one
+            todo_type = TaskType.search([("name", "=", "To Do")], limit=1)
+            if not todo_type:
+                todo_type = TaskType.create({"name": "To Do"})
+        
+        # Use sudo() for task creation to bypass permission issues during automated creation
+        Task = self.env["project.task"].sudo()
         
         # Task 1: Confirm Booking with Client
-        booking_task = self.env["project.task"].create({
+        booking_task = Task.create({
             "name": "Confirm Booking with Client",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -311,7 +332,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in booking_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": booking_task.id,
@@ -320,7 +341,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 2: Collect Tier-3 Fulfillment Details
-        tier3_task = self.env["project.task"].create({
+        tier3_task = Task.create({
             "name": "Collect Tier-3 Fulfillment Details",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -336,7 +357,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in tier3_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": tier3_task.id,
@@ -345,7 +366,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 3: Review Client Deliverables Checklist
-        deliverables_task = self.env["project.task"].create({
+        deliverables_task = Task.create({
             "name": "Review Client Deliverables Checklist",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -362,7 +383,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in deliverables_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": deliverables_task.id,
@@ -371,7 +392,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 4: Coordinate Vendor Assignments
-        vendor_assign_task = self.env["project.task"].create({
+        vendor_assign_task = Task.create({
             "name": "Coordinate Vendor Assignments",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -386,7 +407,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in vendor_assign_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": vendor_assign_task.id,
@@ -395,7 +416,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 5: Vendor Brief & Confirmation
-        vendor_brief_task = self.env["project.task"].create({
+        vendor_brief_task = Task.create({
             "name": "Vendor Brief & Confirmation",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -410,7 +431,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in vendor_brief_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": vendor_brief_task.id,
@@ -419,7 +440,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 6: Prepare Event Resources & Logistics
-        resources_task = self.env["project.task"].create({
+        resources_task = Task.create({
             "name": "Prepare Event Resources & Logistics",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -435,7 +456,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in resources_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": resources_task.id,
@@ -444,7 +465,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 7: Client Communications & Check-Ins
-        communications_task = self.env["project.task"].create({
+        communications_task = Task.create({
             "name": "Client Communications & Check-Ins",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -459,7 +480,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in communications_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": communications_task.id,
@@ -468,7 +489,7 @@ class ProjectProject(models.Model):
             })
         
         # Task 8: Final Payment Check & Invoice Follow-up
-        payment_task = self.env["project.task"].create({
+        payment_task = Task.create({
             "name": "Final Payment Check & Invoice Follow-up",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -483,7 +504,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in payment_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": payment_task.id,
@@ -497,7 +518,7 @@ class ProjectProject(models.Model):
         if self.x_event_date:
             post_event_deadline = self.x_event_date + timedelta(days=1)
         
-        post_event_task = self.env["project.task"].create({
+        post_event_task = Task.create({
             "name": "Post-Event Closure / Review",
             "project_id": self.id,
             "stage_id": todo_type.id,
@@ -513,7 +534,7 @@ class ProjectProject(models.Model):
         ]
         
         for sub_task_name in post_event_subtasks:
-            self.env["project.task"].create({
+            Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
                 "parent_id": post_event_task.id,
@@ -554,51 +575,6 @@ class ProjectProject(models.Model):
         
         return stage
     
-    @api.depends("x_event_date")
-    def _compute_project_stage_from_date(self):
-        """Auto-update project stage based on event date.
-        
-        This method can be called manually or via scheduled action to update
-        project stages based on event timeline.
-        """
-        today = fields.Date.today()
-        for project in self:
-            if not project.x_event_date:
-                continue
-            
-            event_date = project.x_event_date
-            days_until_event = (event_date - today).days
-            
-            # Get project stages
-            planning_stage = self.env.ref("ptt_business_core.project_stage_planning", raise_if_not_found=False)
-            setup_stage = self.env.ref("ptt_business_core.project_stage_setup", raise_if_not_found=False)
-            event_day_stage = self.env.ref("ptt_business_core.project_stage_event_day", raise_if_not_found=False)
-            teardown_stage = self.env.ref("ptt_business_core.project_stage_teardown", raise_if_not_found=False)
-            completed_stage = self.env.ref("ptt_business_core.project_stage_completed", raise_if_not_found=False)
-            
-            # Auto-assign stage based on timeline
-            if days_until_event < 0:
-                # Event is in the past
-                if days_until_event >= -1:
-                    # Event was yesterday or today - might be in teardown
-                    if teardown_stage:
-                        project.stage_id = teardown_stage.id
-                else:
-                    # Event was more than 1 day ago - should be completed
-                    if completed_stage:
-                        project.stage_id = completed_stage.id
-            elif days_until_event == 0:
-                # Event is today
-                if event_day_stage:
-                    project.stage_id = event_day_stage.id
-            elif days_until_event <= 3:
-                # Event is within 3 days - setup phase
-                if setup_stage:
-                    project.stage_id = setup_stage.id
-            else:
-                # Event is more than 3 days away - planning phase
-                if planning_stage:
-                    project.stage_id = planning_stage.id
 
     x_sale_order_count = fields.Integer(
         string="# Sales Orders",

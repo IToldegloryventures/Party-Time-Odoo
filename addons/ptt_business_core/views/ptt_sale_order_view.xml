@@ -2,6 +2,10 @@
 <odoo>
     <!--
         PTT Sale Order Form View Extension
+        
+        Note: Quote approval handled via CRM Approval stage
+        Note: Retainer/payment handled by Finance team
+        
         Per Odoo 19 Sales docs: https://www.odoo.com/documentation/19.0/applications/sales/sales/sales_quotations.html
     -->
     
@@ -11,26 +15,12 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             
-            <!-- Add approval status info after state field -->
-            <xpath expr="//field[@name='state']" position="after">
-                <field name="x_is_approved" widget="boolean_toggle" readonly="1"
-                       invisible="state not in ('draft', 'sent')"/>
-            </xpath>
-            
-            <!-- Add PTT Contract & Payment section before order lines -->
+            <!-- Add PTT Contract Status section before order lines -->
             <xpath expr="//field[@name='order_line']" position="before">
-                <group string="PTT Quote Approval &amp; Contract Status" col="4">
-                    <group>
-                        <field name="x_retainer_amount" widget="monetary"/>
-                        <field name="x_is_approved" readonly="1"/>
-                        <field name="x_approved_by" readonly="1" invisible="not x_is_approved"/>
-                        <field name="x_approved_date" readonly="1" invisible="not x_is_approved"/>
-                    </group>
+                <group string="Contract Status" col="4">
                     <group>
                         <field name="x_contract_status"/>
                         <field name="x_contract_signed_date" readonly="1" invisible="x_contract_status != 'signed'"/>
-                        <field name="x_retainer_paid"/>
-                        <field name="x_retainer_paid_date" invisible="not x_retainer_paid"/>
                     </group>
                 </group>
             </xpath>
@@ -43,7 +33,7 @@
                 <attribute name="invisible">invoice_status != 'no' or state != 'sale' or invoice_count &gt; 0</attribute>
             </xpath>
             
-            <!-- Add Contract and Retainer action buttons in button_box -->
+            <!-- Add Contract Signed action button in button_box -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_mark_contract_signed" 
                         type="object"
@@ -52,27 +42,8 @@
                         invisible="x_contract_status == 'signed' or state != 'sale'">
                     <span class="o_stat_text">Mark Contract Signed</span>
                 </button>
-                <button name="action_mark_retainer_paid" 
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-dollar"
-                        invisible="x_retainer_paid or state != 'sale'">
-                    <span class="o_stat_text">Mark Retainer Paid</span>
-                </button>
             </xpath>
             
-        </field>
-    </record>
-    
-    <!-- Sale Order Tree View - Add approval status column -->
-    <record id="view_sale_order_tree_ptt" model="ir.ui.view">
-        <field name="name">sale.order.tree.ptt</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_quotation_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='state']" position="before">
-                <field name="x_is_approved" string="Approved" widget="boolean"/>
-            </xpath>
         </field>
     </record>
     
