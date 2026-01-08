@@ -109,60 +109,78 @@ def pre_init_hook(cr):
     
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
     
-    # === CLEANUP 4: Delete unwanted CRM stages ===
-    # Delete duplicate/unwanted stages that should not exist
-    unwanted_stage_names = ['Qualified', 'Quote Sent', 'Approval', 'Execution']
+    # === CLEANUP 4: DELETE unwanted CRM stages (don't fold, actually delete them) ===
+    # Delete all unwanted duplicate stages completely
+    unwanted_stage_names = ['Qualified', 'Quote Sent', 'Approval', 'Execution', 'New', 'Proposition']
     try:
+        # First, get IDs of stages to delete (but keep the default Odoo stages we're renaming)
         for stage_name in unwanted_stage_names:
+            # Get all stages with this name
             cr.execute("""
-                DELETE FROM crm_stage 
-                WHERE name = %s
-                AND id NOT IN (
-                    SELECT res_id FROM ir_model_data 
-                    WHERE model = 'crm.stage' 
-                    AND module = 'crm'
-                )
-                RETURNING id
+                SELECT id FROM crm_stage WHERE name = %s
             """, (stage_name,))
-            deleted_ids = cr.fetchall()
-            if deleted_ids:
-                _logger.info(f"PTT Business Core: Deleted unwanted CRM stage: {stage_name} (IDs: {[d[0] for d in deleted_ids]})")
+            stage_ids = [row[0] for row in cr.fetchall()]
+            
+            if not stage_ids:
+                continue
                 
-                # Also delete any ir_model_data references for these deleted stages
-                for stage_id_tuple in deleted_ids:
-                    stage_id = stage_id_tuple[0]
-                    cr.execute("""
-                        DELETE FROM ir_model_data 
-                        WHERE model = 'crm.stage' 
-                        AND res_id = %s
-                    """, (stage_id,))
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning unwanted CRM stages: {e}")
-    
-    # Also delete "New" stage if it exists separately from the default (should be renamed to "Intake")
-    try:
-        cr.execute("""
-            DELETE FROM crm_stage 
-            WHERE name = 'New'
-            AND id NOT IN (
+            # Get default Odoo stage IDs that we're renaming (don't delete these)
+            cr.execute("""
                 SELECT res_id FROM ir_model_data 
                 WHERE model = 'crm.stage' 
                 AND module = 'crm'
-                AND name = 'stage_lead1'
-            )
-            RETURNING id
-        """)
-        deleted_ids = cr.fetchall()
-        if deleted_ids:
-            _logger.info(f"PTT Business Core: Deleted duplicate 'New' stage(s) (IDs: {[d[0] for d in deleted_ids]})")
-            for stage_id_tuple in deleted_ids:
-                stage_id = stage_id_tuple[0]
+                AND name IN ('stage_lead1', 'stage_lead2', 'stage_lead3', 'stage_lead4')
+            """)
+            default_stage_ids = [row[0] for row in cr.fetchall()]
+            
+            # Delete stages that are NOT the default Odoo stages
+            stages_to_delete = [sid for sid in stage_ids if sid not in default_stage_ids]
+            
+            if stages_to_delete:
+                # Move any leads/opportunities in these stages to "Intake" stage first
+                # Find or create "Intake" stage
+                cr.execute("""
+                    SELECT id FROM crm_stage 
+                    WHERE name = 'Intake' 
+                    ORDER BY id LIMIT 1
+                """)
+                intake_stage = cr.fetchone()
+                if not intake_stage:
+                    # If Intake doesn't exist, use the first default stage
+                    cr.execute("""
+                        SELECT res_id FROM ir_model_data 
+                        WHERE model = 'crm.stage' 
+                        AND module = 'crm'
+                        AND name = 'stage_lead1'
+                    """)
+                    intake_stage = cr.fetchone()
+                
+                if intake_stage:
+                    intake_stage_id = intake_stage[0]
+                    # Move leads from deleted stages to Intake
+                    cr.execute("""
+                        UPDATE crm_lead 
+                        SET stage_id = %s 
+                        WHERE stage_id = ANY(%s)
+                    """, (intake_stage_id, stages_to_delete))
+                
+                # Delete ir_model_data references first
                 cr.execute("""
                     DELETE FROM ir_model_data 
                     WHERE model = 'crm.stage' 
-                    AND res_id = %s
-                """, (stage_id,))
+                    AND res_id = ANY(%s)
+                """, (stages_to_delete,))
+                
+                # Now delete the stages themselves
+                cr.execute("""
+                    DELETE FROM crm_stage 
+                    WHERE id = ANY(%s)
+                """, (stages_to_delete,))
+                
+                _logger.info(f"PTT Business Core: Deleted {len(stages_to_delete)} unwanted CRM stage(s): {stage_name} (IDs: {stages_to_delete})")
     except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning 'New' stage: {e}")
+        _logger.warning(f"PTT Business Core: Error cleaning unwanted CRM stages: {e}")
+        import traceback
+        _logger.error(traceback.format_exc())
 
 
