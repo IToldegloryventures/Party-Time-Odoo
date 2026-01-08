@@ -5,6 +5,84 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
+            <!-- Add Project Header/Banner with key event information -->
+            <xpath expr="//sheet" position="before">
+                <div class="oe_title_header" style="background-color: #f8f9fa; padding: 20px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #dee2e6;">
+                    <!-- Event ID & Name Header -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h2 style="margin: 0; font-weight: bold;">
+                                <field name="x_event_id" readonly="1" style="display: inline; margin-right: 10px;"/>
+                                <field name="x_event_name" readonly="1" style="display: inline;"/>
+                            </h2>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 1: Event Date/Time, Type, Client -->
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <label string="Event Date &amp; Time:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="x_event_date" readonly="1" style="display: inline-block; margin-right: 10px;"/>
+                                <field name="x_event_time" readonly="1" style="display: inline-block;"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label string="Event Type:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="x_event_type" readonly="1"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label string="Client Name:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="partner_id" readonly="1" widget="many2one"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 2: Sales Rep, Project Stage, Days Until Event -->
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <label string="Sales Rep:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="x_crm_lead_id" readonly="1" invisible="not x_crm_lead_id">
+                                    <field name="user_id" readonly="1" widget="many2one"/>
+                                </field>
+                                <span invisible="x_crm_lead_id">Not Assigned</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label string="Project Stage:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="stage_id" readonly="1" widget="many2one"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label string="Days Until Event:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="x_days_until_event" readonly="1" widget="integer"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 3: Contract Status, Retainer Status -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label string="Contract Status:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="x_contract_status" readonly="1"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label string="Retainer Status:" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="x_retainer_status" readonly="1"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
             <!-- Add smart buttons for navigation -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_crm_lead" type="object"

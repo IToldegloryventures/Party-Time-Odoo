@@ -165,6 +165,86 @@ class ProjectProject(models.Model):
     x_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
     x_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
 
+    # === PROJECT HEADER COMPUTED FIELDS ===
+    x_days_until_event = fields.Integer(
+        string="Days Until Event",
+        compute="_compute_days_until_event",
+        store=False,
+        help="Number of days until the event date. Negative if event has passed.",
+    )
+    x_contract_status = fields.Char(
+        string="Contract Status",
+        compute="_compute_contract_status",
+        store=False,
+        help="Contract status from related Sales Order.",
+    )
+    x_retainer_status = fields.Char(
+        string="Retainer Status",
+        compute="_compute_retainer_status",
+        store=False,
+        help="Retainer payment status from related Sales Order.",
+    )
+
+    @api.depends("x_event_date")
+    def _compute_days_until_event(self):
+        """Calculate days until event date."""
+        today = fields.Date.today()
+        for project in self:
+            if project.x_event_date:
+                delta = project.x_event_date - today
+                project.x_days_until_event = delta.days
+            else:
+                project.x_days_until_event = 0
+
+    @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids", "x_crm_lead_id.order_ids.x_contract_status")
+    def _compute_contract_status(self):
+        """Get contract status from related Sales Order via CRM Lead."""
+        for project in self:
+            contract_status = "Not Available"
+            if project.x_crm_lead_id and project.x_crm_lead_id.order_ids:
+                # Get the most recent confirmed order, or first order if none confirmed
+                confirmed_orders = project.x_crm_lead_id.order_ids.filtered(lambda so: so.state == 'sale')
+                if confirmed_orders:
+                    # Get the most recent confirmed order
+                    so = confirmed_orders.sorted('create_date', reverse=True)[0]
+                    if so.x_contract_status:
+                        # Map to readable status
+                        status_map = {
+                            "not_sent": "Not Sent",
+                            "sent": "Sent for Signature",
+                            "signed": "Signed",
+                        }
+                        contract_status = status_map.get(so.x_contract_status, so.x_contract_status)
+                elif project.x_crm_lead_id.order_ids:
+                    # No confirmed orders, check draft orders
+                    so = project.x_crm_lead_id.order_ids[0]
+                    if so.x_contract_status:
+                        status_map = {
+                            "not_sent": "Not Sent",
+                            "sent": "Sent for Signature",
+                            "signed": "Signed",
+                        }
+                        contract_status = status_map.get(so.x_contract_status, so.x_contract_status)
+            project.x_contract_status = contract_status
+
+    @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids", "x_crm_lead_id.order_ids.x_retainer_paid")
+    def _compute_retainer_status(self):
+        """Get retainer status from related Sales Order via CRM Lead."""
+        for project in self:
+            retainer_status = "Not Available"
+            if project.x_crm_lead_id and project.x_crm_lead_id.order_ids:
+                # Get the most recent confirmed order, or first order if none confirmed
+                confirmed_orders = project.x_crm_lead_id.order_ids.filtered(lambda so: so.state == 'sale')
+                if confirmed_orders:
+                    # Get the most recent confirmed order
+                    so = confirmed_orders.sorted('create_date', reverse=True)[0]
+                    retainer_status = "Paid" if so.x_retainer_paid else "Unpaid"
+                elif project.x_crm_lead_id.order_ids:
+                    # No confirmed orders, check draft orders
+                    so = project.x_crm_lead_id.order_ids[0]
+                    retainer_status = "Paid" if so.x_retainer_paid else "Unpaid"
+            project.x_retainer_status = retainer_status
+
     def _set_initial_project_stage(self):
         """Set initial project stage based on event date and current date."""
         self.ensure_one()
