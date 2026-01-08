@@ -2,33 +2,17 @@
 <odoo noupdate="1">
     <!-- 
         Party Time Texas CRM Pipeline Stages
-        Workflow: Intake → Qualification → Proposal Sent → Contract Sent → Booked → Closed/Won → Lost
         
-        Note: Execution happens in the Project phase, not CRM. "Booked" means the
-        lead is won - contract signed, retainer paid, and project created.
-        "Closed/Won" is the final won stage after project completion.
+        Note: Default Odoo stages (Intake, Qualification, Proposal Sent, Closed/Won) are renamed
+        in fold_default_crm_stages.xml (which should be renamed to rename_default_crm_stages.xml).
+        
+        This file only contains the additional stages we need:
+        - Contract Sent (sequence 4)
+        - Booked (sequence 5)
+        - Lost (sequence 7)
+        
+        Full workflow: Intake → Qualification → Proposal Sent → Contract Sent → Booked → Closed/Won → Lost
     -->
-    
-    <!-- Stage 1: Intake (New leads coming in) -->
-    <record id="ptt_crm_stage_intake" model="crm.stage">
-        <field name="name">Intake</field>
-        <field name="sequence">1</field>
-        <field name="is_won">False</field>
-    </record>
-    
-    <!-- Stage 2: Qualification (Lead contacted and qualified) -->
-    <record id="ptt_crm_stage_qualification" model="crm.stage">
-        <field name="name">Qualification</field>
-        <field name="sequence">2</field>
-        <field name="is_won">False</field>
-    </record>
-    
-    <!-- Stage 3: Proposal Sent (Quote/proposal sent to client) -->
-    <record id="ptt_crm_stage_proposal_sent" model="crm.stage">
-        <field name="name">Proposal Sent</field>
-        <field name="sequence">3</field>
-        <field name="is_won">False</field>
-    </record>
     
     <!-- Stage 4: Contract Sent (Contract sent, awaiting signature) -->
     <record id="ptt_crm_stage_contract_sent" model="crm.stage">
@@ -41,13 +25,6 @@
     <record id="ptt_crm_stage_booked" model="crm.stage">
         <field name="name">Booked</field>
         <field name="sequence">5</field>
-        <field name="is_won">True</field>
-    </record>
-    
-    <!-- Stage 6: Closed/Won (Final won stage after project completion) -->
-    <record id="ptt_crm_stage_closed_won" model="crm.stage">
-        <field name="name">Closed/Won</field>
-        <field name="sequence">6</field>
         <field name="is_won">True</field>
     </record>
     

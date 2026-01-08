@@ -12,8 +12,8 @@
         "security/ir.model.access.csv",
         # Data files
         "data/cleanup_orphaned_fields.xml",
-        "data/crm_stages.xml",
-        "data/fold_default_crm_stages.xml",  # Fold default Odoo CRM stages (New, Proposition, Won)
+        "data/rename_default_crm_stages.xml",  # Rename default Odoo CRM stages (New→Intake, Qualified→Qualification, Proposition→Proposal Sent, Won→Closed/Won)
+        "data/crm_stages.xml",  # Additional stages: Contract Sent, Booked, Lost
         "data/crm_tags.xml",
         "data/crm_lost_reasons.xml",
         "data/mail_activity_type.xml",
