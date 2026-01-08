@@ -7,13 +7,10 @@
         Following Odoo 19 portal patterns per official documentation.
     -->
 
-    <!-- Add "My Assignments" to portal home using portal_vendor_category -->
+    <!-- Add "My Assignments" to portal home -->
     <template id="portal_my_home_vendor_assignments" name="Portal My Home: Vendor Assignments"
               inherit_id="portal.portal_my_home" priority="40" customize_show="True">
-        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
-            <t t-set="portal_vendor_category_enable" t-value="True"/>
-        </xpath>
-        <div id="portal_vendor_category" position="inside">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <!-- Use standard portal_docs_entry template for consistency -->
             <t t-call="portal.portal_docs_entry">
                 <t t-set="icon" t-value="'/ptt_business_core/static/src/img/assignments.svg'"/>
@@ -22,7 +19,7 @@
                 <t t-set="url" t-value="'/my/vendor-assignments'"/>
                 <t t-set="placeholder_count" t-value="'vendor_assignment_count'"/>
             </t>
-        </div>
+        </xpath>
     </template>
 
     <!-- Breadcrumb entries for vendor assignments -->
