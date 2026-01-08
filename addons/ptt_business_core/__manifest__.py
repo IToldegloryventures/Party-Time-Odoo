@@ -5,7 +5,7 @@
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic"],
+    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic", "portal", "purchase"],
     "data": [
         # Security (load in correct order per Odoo guidelines)
         # 1. Groups XML - must load first as they may be referenced by other security files
@@ -13,6 +13,7 @@
         # 2. Access rights CSV - references models that must exist
         "security/ir.model.access.csv",
         # 3. Record rules XML - references models from CSV and groups from groups XML
+        "security/ptt_project_vendor_assignment_security.xml",
         "security/ptt_vendor_document_security.xml",
         # Legacy security file (kept for backward compatibility, content moved to ptt_business_core_groups.xml)
         "security/ptt_security.xml",
