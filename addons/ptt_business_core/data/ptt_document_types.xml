@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Certificate of Insurance -->
+        <record id="ptt_document_type_coi" model="ptt.document.type">
+            <field name="name">Certificate of Insurance</field>
+            <field name="code">coi</field>
+            <field name="description">Certificate of Insurance (COI) showing general liability coverage</field>
+            <field name="required">True</field>
+            <field name="has_expiry">True</field>
+            <field name="expiry_warning_days">30</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- W-9 Tax Form -->
+        <record id="ptt_document_type_w9" model="ptt.document.type">
+            <field name="name">W-9 Tax Form</field>
+            <field name="code">w9</field>
+            <field name="description">W-9 Form for tax reporting purposes</field>
+            <field name="required">True</field>
+            <field name="has_expiry">False</field>
+            <field name="expiry_warning_days">0</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Background Check -->
+        <record id="ptt_document_type_background_check" model="ptt.document.type">
+            <field name="name">Background Check</field>
+            <field name="code">background_check</field>
+            <field name="description">Criminal background check (required for school events)</field>
+            <field name="required">False</field>
+            <field name="has_expiry">True</field>
+            <field name="expiry_warning_days">365</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- Health Permit -->
+        <record id="ptt_document_type_health_permit" model="ptt.document.type">
+            <field name="name">Health Permit</field>
+            <field name="code">health_permit</field>
+            <field name="description">Health department permit (required for catering services)</field>
+            <field name="required">False</field>
+            <field name="has_expiry">True</field>
+            <field name="expiry_warning_days">30</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- Driver's License -->
+        <record id="ptt_document_type_drivers_license" model="ptt.document.type">
+            <field name="name">Driver's License</field>
+            <field name="code">drivers_license</field>
+            <field name="description">Valid driver's license (required for transportation services)</field>
+            <field name="required">False</field>
+            <field name="has_expiry">True</field>
+            <field name="expiry_warning_days">60</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- Vehicle Insurance -->
+        <record id="ptt_document_type_vehicle_insurance" model="ptt.document.type">
+            <field name="name">Vehicle Insurance</field>
+            <field name="code">vehicle_insurance</field>
+            <field name="description">Vehicle insurance policy (required for transportation services)</field>
+            <field name="required">False</field>
+            <field name="has_expiry">True</field>
+            <field name="expiry_warning_days">30</field>
+            <field name="sequence">60</field>
+        </record>
+    </data>
+</odoo>

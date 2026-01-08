@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- No School Events -->
+        <record id="ptt_vendor_restriction_no_school" model="ptt.vendor.restriction">
+            <field name="name">No School Events</field>
+            <field name="code">no_school</field>
+            <field name="description">This vendor cannot work at school events (requires background check)</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- No Bar/Bat Mitzvahs -->
+        <record id="ptt_vendor_restriction_no_barmitzvah" model="ptt.vendor.restriction">
+            <field name="name">No Bar/Bat Mitzvahs</field>
+            <field name="code">no_barmitzvah</field>
+            <field name="description">This vendor does not have cultural knowledge for Bar/Bat Mitzvah events</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- No Indian Weddings -->
+        <record id="ptt_vendor_restriction_no_indian_wedding" model="ptt.vendor.restriction">
+            <field name="name">No Indian Weddings</field>
+            <field name="code">no_indian_wedding</field>
+            <field name="description">This vendor does not have cultural knowledge for Indian wedding ceremonies</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- No Outdoor Events -->
+        <record id="ptt_vendor_restriction_no_outdoor" model="ptt.vendor.restriction">
+            <field name="name">No Outdoor Events</field>
+            <field name="code">no_outdoor</field>
+            <field name="description">This vendor has equipment limitations and cannot work outdoor events</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- No Large Events -->
+        <record id="ptt_vendor_restriction_no_large_events" model="ptt.vendor.restriction">
+            <field name="name">No Events Over 200 Guests</field>
+            <field name="code">no_large_events</field>
+            <field name="description">This vendor cannot accommodate events with more than 200 guests</field>
+            <field name="sequence">50</field>
+        </record>
+    </data>
+</odoo>

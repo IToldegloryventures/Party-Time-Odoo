@@ -27,4 +27,37 @@
         <field name="active">True</field>
     </record>
 
+    <!-- Document Expiry: 30-Day Warning -->
+    <record id="ir_cron_document_expiry_30day_warning" model="ir.cron">
+        <field name="name">PTT: Vendor Document 30-Day Expiry Warning</field>
+        <field name="model_id" ref="ptt_business_core.model_ptt_vendor_document"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_document_expiry_30day()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Document Expiry: 7-Day Warning -->
+    <record id="ir_cron_document_expiry_7day_warning" model="ir.cron">
+        <field name="name">PTT: Vendor Document 7-Day Expiry Warning</field>
+        <field name="model_id" ref="ptt_business_core.model_ptt_vendor_document"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_document_expiry_7day()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Document Expiry: Expired Handler -->
+    <record id="ir_cron_document_expiry_handler" model="ir.cron">
+        <field name="name">PTT: Vendor Document Expired Handler</field>
+        <field name="model_id" ref="ptt_business_core.model_ptt_vendor_document"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_document_expired()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
 </odoo>

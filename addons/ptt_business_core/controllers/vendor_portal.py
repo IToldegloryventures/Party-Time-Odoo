@@ -341,3 +341,137 @@ class VendorPortal(CustomerPortal):
             )
 
         return request.redirect(f"/my/vendor-assignments/{assignment_id}")
+
+    # === DOCUMENT LIST VIEW ===
+    @http.route(
+        ["/my/vendor-documents", "/my/vendor-documents/page/<int:page>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_vendor_documents(self, page=1, **kw):
+        """Display list of vendor documents for the current portal user."""
+        VendorDocument = request.env["ptt.vendor.document"]
+        partner = request.env.user.partner_id
+
+        domain = [("vendor_id", "=", partner.id)]
+
+        document_count = VendorDocument.search_count(domain)
+
+        pager = portal_pager(
+            url="/my/vendor-documents",
+            total=document_count,
+            page=page,
+            step=10,
+        )
+
+        documents = VendorDocument.search(
+            domain,
+            order="document_type_id, validity desc",
+            limit=10,
+            offset=pager["offset"],
+        )
+
+        # Get document types for upload form
+        document_types = request.env["ptt.document.type"].sudo().search([
+            ("active", "=", True)
+        ], order="sequence, name")
+
+        values = self._prepare_portal_layout_values()
+        values.update({
+            "documents": documents,
+            "document_types": document_types,
+            "page_name": "vendor_documents",
+            "pager": pager,
+            "default_url": "/my/vendor-documents",
+            "message": kw.get("message"),
+            "error": kw.get("error"),
+        })
+
+        return request.render("ptt_business_core.portal_vendor_document_list", values)
+
+    # === DOCUMENT UPLOAD ===
+    @http.route(
+        ["/my/vendor-documents/upload"],
+        type="http",
+        auth="user",
+        website=True,
+        methods=["POST"],
+    )
+    def portal_vendor_document_upload(self, **kw):
+        """Upload a new vendor document."""
+        partner = request.env.user.partner_id
+        vendor = partner if partner.x_is_vendor else False
+
+        if not vendor:
+            return request.redirect("/my/vendor-documents?error=Not a vendor")
+
+        uploaded_file = kw.get("attachment")
+        document_type_id = kw.get("document_type_id")
+        validity = kw.get("validity", "").strip()
+
+        if not uploaded_file or not document_type_id:
+            return request.redirect("/my/vendor-documents?error=Missing file or document type")
+
+        # Security: Validate file extension
+        filename = uploaded_file.filename
+        file_ext = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        if file_ext not in ALLOWED_EXTENSIONS:
+            return request.redirect(
+                "/my/vendor-documents?error=File type not allowed. Please upload PDF, DOC, XLS, or image files."
+            )
+
+        # Read and validate file size
+        file_content = uploaded_file.read()
+        if len(file_content) > MAX_FILE_SIZE:
+            return request.redirect(
+                "/my/vendor-documents?error=File too large. Maximum size is 10 MB."
+            )
+
+        # Parse validity date
+        validity_date = False
+        if validity:
+            try:
+                validity_date = fields.Date.from_string(validity)
+            except Exception:
+                pass
+
+        # Create document
+        doc_vals = {
+            "vendor_id": vendor.id,
+            "document_type_id": int(document_type_id),
+            "attached_document": base64.b64encode(file_content).decode("utf-8"),
+            "document_filename": filename,
+            "validity": validity_date,
+            "upload_date": fields.Datetime.now(),
+        }
+
+        request.env["ptt.vendor.document"].sudo().create(doc_vals)
+
+        return request.redirect("/my/vendor-documents?message=Document uploaded successfully")
+
+    # === DOCUMENT DOWNLOAD ===
+    @http.route(
+        ["/my/vendor-documents/<int:document_id>/download"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_vendor_document_download(self, document_id, **kw):
+        """Download a vendor document."""
+        partner = request.env.user.partner_id
+
+        document = request.env["ptt.vendor.document"].sudo().browse(document_id)
+
+        if document.vendor_id.id != partner.id:
+            return request.redirect("/my/vendor-documents?error=Access denied")
+
+        if not document.attached_document:
+            return request.redirect("/my/vendor-documents?error=Document not found")
+
+        filename = document.document_filename or f"document_{document_id}"
+
+        # Use standard Odoo web/content route for file download
+        return request.redirect(
+            f"/web/content/ptt.vendor.document/{document_id}/attached_document/{filename}?download=true"
+        )

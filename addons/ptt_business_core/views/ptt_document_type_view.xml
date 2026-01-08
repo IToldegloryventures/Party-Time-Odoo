@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ptt_document_type_tree" model="ir.ui.view">
+        <field name="name">ptt.document.type.tree</field>
+        <field name="model">ptt.document.type</field>
+        <field name="arch" type="xml">
+            <tree string="Document Types">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="required" widget="boolean_toggle"/>
+                <field name="has_expiry" widget="boolean_toggle"/>
+                <field name="expiry_warning_days"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ptt_document_type_form" model="ir.ui.view">
+        <field name="name">ptt.document.type.form</field>
+        <field name="model">ptt.document.type</field>
+        <field name="arch" type="xml">
+            <form string="Document Type">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="required" widget="boolean_toggle"/>
+                            <field name="has_expiry" widget="boolean_toggle"/>
+                            <field name="expiry_warning_days"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ptt_document_type" model="ir.actions.act_window">
+        <field name="name">Document Types</field>
+        <field name="res_model">ptt.document.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first document type!
+            </p>
+            <p>
+                Document types define what documents vendors must provide (COI, W9, etc.)
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu moved to Vendor Management menu -->
+</odoo>

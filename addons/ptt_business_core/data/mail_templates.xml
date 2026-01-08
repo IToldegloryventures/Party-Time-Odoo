@@ -11,7 +11,7 @@
         <!-- Vendor Assignment Notification Email -->
         <record id="mail_template_vendor_assignment" model="mail.template">
             <field name="name">Vendor Portal: New Assignment Notification</field>
-            <field name="model_id" ref="model_ptt_project_vendor_assignment"/>
+            <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
             <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
             <field name="email_to">{{ object.vendor_id.email }}</field>
             <field name="subject">New Assignment: {{ object.x_service_type_display or object.service_type }} for {{ object.x_event_name or object.project_id.name }}</field>

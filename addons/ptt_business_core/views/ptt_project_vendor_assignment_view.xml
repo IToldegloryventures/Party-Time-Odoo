@@ -30,6 +30,11 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="%(action_report_vendor_work_order)d" 
+                            string="Download Work Order" 
+                            type="action" 
+                            class="oe_highlight"
+                            icon="fa-file-pdf-o"/>
                     <field name="x_status" widget="statusbar" statusbar_visible="pending,accepted,confirmed,completed"/>
                 </header>
                 <sheet>

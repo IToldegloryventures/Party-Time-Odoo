@@ -5,11 +5,16 @@
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic", "portal"],
+    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic", "portal", "purchase"],
     "data": [
-        # Security (load groups first, then access rules)
-        "security/ptt_security.xml",
+        # Security (load in correct order per Odoo guidelines)
+        # 1. Groups XML - must load first as they may be referenced by other security files
+        "security/ptt_business_core_groups.xml",
+        # 2. Access rights CSV - references models that must exist
         "security/ir.model.access.csv",
+        # 3. Record rules XML - references models from CSV and groups from groups XML
+        "security/ptt_project_vendor_assignment_security.xml",
+        "security/ptt_vendor_document_security.xml",
         # Data files
         "data/cleanup_orphaned_fields.xml",
         # CRM stages managed directly in database via SQL - XML files removed to prevent conflicts
@@ -23,8 +28,11 @@
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
         "data/mail_templates.xml",
+        "data/ptt_document_types.xml",
+        "data/ptt_vendor_restrictions.xml",
         # Portal Templates
         "templates/vendor_portal_templates.xml",
+        "templates/vendor_intake_templates.xml",
         # Views
         "views/ptt_crm_vendor_estimate_view.xml",
         "views/ptt_project_vendor_assignment_view.xml",
@@ -33,6 +41,14 @@
         "views/ptt_project_project_view.xml",
         "views/ptt_project_task_view.xml",
         "views/ptt_sale_order_view.xml",
+        "views/ptt_document_type_view.xml",
+        "views/ptt_vendor_restriction_view.xml",
+        "views/ptt_vendor_service_view.xml",
+        "views/ptt_vendor_document_view.xml",
+        "views/ptt_vendor_menu.xml",
+        "views/ptt_vendor_management_menu.xml",
+        # Reports
+        "report/vendor_work_order_report.xml",
     ],
     # Demo data disabled - was causing test failures on Odoo.sh
     # "demo": [

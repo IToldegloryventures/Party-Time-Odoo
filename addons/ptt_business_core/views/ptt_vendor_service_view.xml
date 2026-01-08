@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ptt_vendor_service_tree" model="ir.ui.view">
+        <field name="name">ptt.vendor.service.tree</field>
+        <field name="model">ptt.vendor.service</field>
+        <field name="arch" type="xml">
+            <tree string="Vendor Services">
+                <field name="vendor_id"/>
+                <field name="service_type"/>
+                <field name="price_essential"/>
+                <field name="price_classic"/>
+                <field name="price_premier"/>
+                <field name="price_byname"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ptt_vendor_service_form" model="ir.ui.view">
+        <field name="name">ptt.vendor.service.form</field>
+        <field name="model">ptt.vendor.service</field>
+        <field name="arch" type="xml">
+            <form string="Vendor Service Pricing">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="vendor_id" options="{'no_create': True}"/>
+                            <field name="service_type"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group string="Pricing Tiers">
+                        <group>
+                            <field name="price_essential"/>
+                            <field name="price_classic"/>
+                        </group>
+                        <group>
+                            <field name="price_premier"/>
+                            <field name="price_byname"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="restriction_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <field name="notes" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ptt_vendor_service" model="ir.actions.act_window">
+        <field name="name">Vendor Services</field>
+        <field name="res_model">ptt.vendor.service</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'default_vendor_id': active_id if active_model == 'res.partner' else False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first vendor service pricing!
+            </p>
+            <p>
+                Define pricing tiers (Essential/Classic/Premier) for each service type per vendor
+            </p>
+        </field>
+    </record>
+</odoo>

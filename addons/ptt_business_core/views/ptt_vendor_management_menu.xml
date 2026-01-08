@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Vendor Management Consolidated Menu
+        ===================================
+        Similar to DIP Contractor Management - provides ONE centralized place
+        for all vendor operations management.
+    -->
+
+    <!-- Root Menu: Vendor Management -->
+    <menuitem id="menu_ptt_vendor_management_root"
+              name="Vendor Management"
+              web_icon="ptt_business_core,static/src/img/assignments.svg"
+              sequence="15"/>
+
+    <!-- Main Section: Vendors -->
+    <menuitem id="menu_ptt_vendor_management_vendors"
+              name="Vendors"
+              parent="menu_ptt_vendor_management_root"
+              sequence="10"/>
+
+    <!-- Vendors List -->
+    <menuitem id="menu_ptt_vendor_management_vendors_list"
+              name="All Vendors"
+              parent="menu_ptt_vendor_management_vendors"
+              action="action_ptt_vendors"
+              sequence="10"/>
+
+    <!-- Vendor Applications (Pending Review) -->
+    <record id="action_ptt_vendor_applications" model="ir.actions.act_window">
+        <field name="name">Vendor Applications</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('x_is_vendor', '=', True), ('x_vendor_status', 'in', ['new', 'pending_review'])]</field>
+        <field name="context">{'default_x_is_vendor': True, 'default_x_vendor_status': 'pending_review', 'search_default_pending_review': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No pending vendor applications
+            </p>
+            <p>
+                Vendor applications submitted via the "Work with Us" form appear here for review.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_ptt_vendor_management_applications"
+              name="Applications (Pending Review)"
+              parent="menu_ptt_vendor_management_vendors"
+              action="action_ptt_vendor_applications"
+              sequence="20"/>
+
+    <!-- Vendor Services & Pricing -->
+    <menuitem id="menu_ptt_vendor_management_services"
+              name="Services &amp; Pricing"
+              parent="menu_ptt_vendor_management_root"
+              sequence="20"/>
+
+    <menuitem id="menu_ptt_vendor_management_services_list"
+              name="All Services"
+              parent="menu_ptt_vendor_management_services"
+              action="action_ptt_vendor_service"
+              sequence="10"/>
+
+    <!-- Vendor Documents & Compliance -->
+    <menuitem id="menu_ptt_vendor_management_compliance"
+              name="Compliance &amp; Documents"
+              parent="menu_ptt_vendor_management_root"
+              sequence="30"/>
+
+    <menuitem id="menu_ptt_vendor_management_documents"
+              name="All Documents"
+              parent="menu_ptt_vendor_management_compliance"
+              action="action_ptt_vendor_document"
+              sequence="10"/>
+
+    <menuitem id="menu_ptt_vendor_management_document_types"
+              name="Document Types"
+              parent="menu_ptt_vendor_management_compliance"
+              action="action_ptt_document_type"
+              sequence="20"/>
+
+    <!-- Vendor Restrictions -->
+    <menuitem id="menu_ptt_vendor_management_restrictions"
+              name="Restrictions"
+              parent="menu_ptt_vendor_management_compliance"
+              action="action_ptt_vendor_restriction"
+              sequence="30"/>
+
+    <!-- Vendor Assignments -->
+    <menuitem id="menu_ptt_vendor_management_assignments"
+              name="Assignments"
+              parent="menu_ptt_vendor_management_root"
+              action="action_ptt_project_vendor_assignment"
+              sequence="40"/>
+
+    <!-- Configuration Section -->
+    <menuitem id="menu_ptt_vendor_management_config"
+              name="Configuration"
+              parent="menu_ptt_vendor_management_root"
+              sequence="90"/>
+
+    <menuitem id="menu_ptt_vendor_management_config_doc_types"
+              name="Document Types"
+              parent="menu_ptt_vendor_management_config"
+              action="action_ptt_document_type"
+              sequence="10"/>
+
+    <menuitem id="menu_ptt_vendor_management_config_restrictions"
+              name="Event Restrictions"
+              parent="menu_ptt_vendor_management_config"
+              action="action_ptt_vendor_restriction"
+              sequence="20"/>
+
+</odoo>

@@ -89,6 +89,7 @@ class SaleOrder(models.Model):
         When SO is confirmed (customer accepts):
         1. Mark contract as signed with timestamp
         2. Move CRM to 'Booked' stage
+        3. Auto-create vendor assignments from CRM estimates (if project exists)
         
         Note: Project creation is handled MANUALLY in Odoo, not automatically here.
         """
@@ -112,8 +113,68 @@ class SaleOrder(models.Model):
                         "Booked",
                         _("CRM stage updated to Booked: Customer accepted contract.")
                     )
+                    
+                    # Auto-create vendor assignments from CRM estimates
+                    self._create_vendor_assignments_from_estimates(order)
         
         return res
+    
+    def _create_vendor_assignments_from_estimates(self, order):
+        """Create vendor assignments from CRM estimates when SO is confirmed.
+        
+        This creates vendor assignments on the project (if it exists) based on
+        the vendor estimates from the CRM opportunity.
+        """
+        if not order.opportunity_id:
+            return
+        
+        # Find project linked to this opportunity
+        project = self.env["project.project"].search([
+            ("x_crm_lead_id", "=", order.opportunity_id.id)
+        ], limit=1)
+        
+        if not project:
+            # Project not created yet - assignments will be created when project is created
+            return
+        
+        # Get vendor estimates from CRM opportunity
+        estimates = order.opportunity_id.x_vendor_estimate_ids
+        
+        if not estimates:
+            return
+        
+        # Create vendor assignments for each estimate
+        VendorAssignment = self.env["ptt.project.vendor.assignment"]
+        
+        for estimate in estimates:
+            # Check if assignment already exists
+            existing = VendorAssignment.search([
+                ("project_id", "=", project.id),
+                ("service_type", "=", estimate.service_type),
+            ], limit=1)
+            
+            if existing:
+                continue  # Skip if already exists
+            
+            # Create assignment
+            assignment_vals = {
+                "project_id": project.id,
+                "service_type": estimate.service_type,
+                "estimated_cost": estimate.estimated_cost,
+                "x_status": "pending",
+            }
+            
+            # Link to vendor if specified
+            if estimate.vendor_id:
+                assignment_vals["vendor_id"] = estimate.vendor_id.id
+            
+            VendorAssignment.create(assignment_vals)
+        
+        if estimates:
+            project.message_post(
+                body=_("Vendor assignments created from CRM estimates."),
+                message_type="notification",
+            )
 
     # === NAVIGATION ACTIONS ===
     

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ptt_vendor_restriction_tree" model="ir.ui.view">
+        <field name="name">ptt.vendor.restriction.tree</field>
+        <field name="model">ptt.vendor.restriction</field>
+        <field name="arch" type="xml">
+            <tree string="Vendor Restrictions">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ptt_vendor_restriction_form" model="ir.ui.view">
+        <field name="name">ptt.vendor.restriction.form</field>
+        <field name="model">ptt.vendor.restriction</field>
+        <field name="arch" type="xml">
+            <form string="Vendor Restriction">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ptt_vendor_restriction" model="ir.actions.act_window">
+        <field name="name">Vendor Restrictions</field>
+        <field name="res_model">ptt.vendor.restriction</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first vendor restriction!
+            </p>
+            <p>
+                Restrictions define event types that vendors cannot service (e.g., no schools, no bar mitzvahs)
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu moved to Vendor Management menu -->
+</odoo>

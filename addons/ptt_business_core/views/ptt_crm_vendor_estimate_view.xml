@@ -6,6 +6,8 @@
         <field name="arch" type="xml">
             <list>
                 <field name="service_type"/>
+                <field name="vendor_id"/>
+                <field name="pricing_tier"/>
                 <field name="x_vendor_name"/>
                 <field name="estimated_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
             </list>
@@ -19,10 +21,16 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="crm_lead_id" invisible="1"/>
-                        <field name="service_type"/>
-                        <field name="x_vendor_name"/>
-                        <field name="estimated_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <group>
+                            <field name="crm_lead_id" invisible="1"/>
+                            <field name="service_type"/>
+                            <field name="vendor_id" options="{'no_create': True}"/>
+                            <field name="pricing_tier"/>
+                        </group>
+                        <group>
+                            <field name="x_vendor_name"/>
+                            <field name="estimated_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

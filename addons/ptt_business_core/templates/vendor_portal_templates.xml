@@ -458,4 +458,141 @@
         </t>
     </template>
 
+    <!-- Add "My Documents" to portal home -->
+    <template id="portal_my_home_vendor_documents" name="Portal My Home: Vendor Documents"
+              inherit_id="portal.portal_my_home" priority="41" customize_show="True">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_documents_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_documents_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/web/static/img/folder.svg'"/>
+                <t t-set="title">My Documents</t>
+                <t t-set="text">View and upload vendor documents</t>
+                <t t-set="url" t-value="'/my/vendor-documents'"/>
+            </t>
+        </div>
+    </template>
+
+    <!-- Vendor Document List View -->
+    <template id="portal_vendor_document_list" name="Vendor Documents">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Documents</t>
+            </t>
+
+            <div class="container">
+                <t t-if="message">
+                    <div class="alert alert-success" role="alert">
+                        <t t-out="message"/>
+                    </div>
+                </t>
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <t t-out="error"/>
+                    </div>
+                </t>
+
+                <!-- Upload Form -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Upload New Document</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="/my/vendor-documents/upload" enctype="multipart/form-data">
+                            <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label>Document Type *</label>
+                                            <select name="document_type_id" class="form-control" required="required">
+                                                <option value="">Select Document Type</option>
+                                                <t t-foreach="document_types" t-as="doc_type">
+                                                    <option t-att-value="doc_type.id">
+                                                        <t t-out="doc_type.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label>File *</label>
+                                        <input type="file" name="attachment" class="form-control" required="required"
+                                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label>Expiry Date (if applicable)</label>
+                                        <input type="date" name="validity" class="form-control"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-upload"></i> Upload Document
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Documents List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">My Documents</h5>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="documents">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Document Type</th>
+                                            <th>Filename</th>
+                                            <th>Expiry Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="documents" t-as="doc">
+                                            <tr>
+                                                <td><t t-out="doc.document_type_id.name"/></td>
+                                                <td><t t-out="doc.document_filename or 'N/A'"/></td>
+                                                <td>
+                                                    <t t-if="doc.validity">
+                                                        <span t-field="doc.validity"/>
+                                                    </t>
+                                                    <t t-else="">N/A</t>
+                                                </td>
+                                                <td>
+                                                    <span t-attf-class="badge badge-#{doc.status == 'valid' and 'success' or doc.status == 'expiring_soon' and 'warning' or doc.status == 'expired' and 'danger' or 'secondary'}">
+                                                        <t t-out="doc.status"/>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <t t-if="doc.attached_document">
+                                                        <a t-att-href="'/my/vendor-documents/' + str(doc.id) + '/download'"
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            <i class="fa fa-download"></i> Download
+                                                        </a>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <t t-call="portal.portal_pager"/>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted">No documents uploaded yet.</p>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>

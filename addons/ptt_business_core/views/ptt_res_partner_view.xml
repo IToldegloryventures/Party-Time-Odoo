@@ -11,20 +11,191 @@
                 <field name="x_is_vendor" widget="boolean_toggle" nolabel="1"/>
             </xpath>
             
-            <!-- Add Vendor Info tab (only visible when checkbox is checked) -->
+            <!-- Add Vendor Action Buttons in Header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_vendor_approve" string="Approve"
+                        type="object" class="oe_highlight"
+                        invisible="not x_is_vendor or x_vendor_status not in ['new', 'pending_review']"/>
+                <button name="action_vendor_deny" string="Deny"
+                        type="object"
+                        invisible="not x_is_vendor or x_vendor_status not in ['new', 'pending_review']"/>
+                <button name="action_vendor_deactivate" string="Deactivate"
+                        type="object"
+                        invisible="not x_is_vendor or x_vendor_status not in ['active']"/>
+                <button name="action_vendor_reactivate" string="Reactivate"
+                        type="object"
+                        invisible="not x_is_vendor or x_vendor_status != 'inactive'"/>
+                <button name="action_vendor_grant_portal_access" string="Grant Portal Access"
+                        type="object"
+                        invisible="not x_is_vendor or portal_user_id != False"/>
+            </xpath>
+            
+            <!-- Add Vendor Status Bar -->
+            <xpath expr="//header" position="inside">
+                <field name="x_vendor_status" widget="statusbar"
+                       statusbar_visible="new,pending_review,active"
+                       invisible="not x_is_vendor"
+                       options="{'clickable': True}"/>
+            </xpath>
+            
+            <!-- Add Stat Buttons for Vendors -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_vendor_assignments" type="object"
+                        class="oe_stat_button" icon="fa-tasks"
+                        invisible="not x_is_vendor">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="vendor_assignment_count" widget="integer"/>
+                        </span>
+                        <span class="o_stat_text">Assignments</span>
+                    </div>
+                </button>
+                <button name="action_view_vendor_documents" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not x_is_vendor">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="vendor_document_count" widget="integer"/>
+                        </span>
+                        <span class="o_stat_text">Documents</span>
+                    </div>
+                </button>
+                <button name="action_view_vendor_services" type="object"
+                        class="oe_stat_button" icon="fa-list"
+                        invisible="not x_is_vendor">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="vendor_service_count" widget="integer"/>
+                        </span>
+                        <span class="o_stat_text">Services</span>
+                    </div>
+                </button>
+            </xpath>
+            
+            <!-- Add Vendor Info tabs (only visible when checkbox is checked) -->
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="Vendor Info" invisible="not x_is_vendor">
                     <group>
                         <group string="Vendor Details">
+                            <field name="x_vendor_status" widget="statusbar" statusbar_visible="new,pending_review,active"/>
+                            <field name="x_vendor_tier"/>
                             <field name="x_vendor_service_types"/>
                             <field name="x_vendor_rating"/>
                             <field name="x_vendor_preferred"/>
+                            <field name="x_vendor_can_work" widget="boolean_toggle"/>
                         </group>
-                        <group string="Notes">
-                            <field name="x_vendor_notes" widget="text" nolabel="1"/>
+                        <group string="Status &amp; Compliance">
+                            <field name="x_vendor_document_status" widget="badge"
+                                   decoration-success="x_vendor_document_status == 'ok'"
+                                   decoration-warning="x_vendor_document_status == 'warning'"
+                                   decoration-danger="x_vendor_document_status in ('expired', 'missing')"/>
+                            <field name="portal_user_id" options="{'no_create': True}"/>
                         </group>
                     </group>
+                    <group>
+                        <field name="x_vendor_restriction_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="x_vendor_notes" widget="text" nolabel="1"/>
+                    </group>
                 </page>
+                
+                <page string="Services &amp; Pricing" invisible="not x_is_vendor">
+                    <field name="x_vendor_service_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="service_type"/>
+                            <field name="price_essential"/>
+                            <field name="price_classic"/>
+                            <field name="price_premier"/>
+                            <field name="price_byname"/>
+                            <field name="restriction_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page string="Documents" invisible="not x_is_vendor">
+                    <field name="x_vendor_document_ids" nolabel="1">
+                        <tree>
+                            <field name="document_type_id"/>
+                            <field name="validity"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'valid'"
+                                   decoration-warning="status == 'expiring_soon'"
+                                   decoration-danger="status == 'expired'"/>
+                            <field name="upload_date"/>
+                            <field name="attached_document" filename="document_filename" widget="binary"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vendor Kanban View -->
+    <record id="view_partner_kanban_vendor" model="ir.ui.view">
+        <field name="name">res.partner.kanban.vendor</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="x_vendor_status" class="o_kanban_small_column">
+                <field name="x_vendor_status"/>
+                <field name="x_vendor_tier"/>
+                <field name="x_vendor_document_status"/>
+                <field name="x_vendor_service_types"/>
+                <field name="name"/>
+                <field name="x_is_vendor"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click" t-attf-class="oe_kanban_color_#{kanban_getcolor(record.x_vendor_status.raw_value)}">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_record_top_right">
+                                        <field name="x_vendor_tier" widget="badge"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <field name="x_vendor_service_types"/>
+                                    </div>
+                                    <div>
+                                        <field name="x_vendor_document_status" widget="badge"
+                                               decoration-success="x_vendor_document_status == 'ok'"
+                                               decoration-warning="x_vendor_document_status == 'warning'"
+                                               decoration-danger="x_vendor_document_status in ('expired', 'missing')"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vendor List View Enhancement -->
+    <record id="view_partner_list_vendor" model="ir.ui.view">
+        <field name="name">res.partner.list.vendor</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display_name']" position="after">
+                <field name="x_is_vendor" column_invisible="1"/>
+                <field name="x_vendor_status" widget="badge" 
+                       decoration-success="x_vendor_status == 'active'"
+                       decoration-warning="x_vendor_status == 'pending_review'"
+                       decoration-danger="x_vendor_status == 'denied'"
+                       optional="show" invisible="not x_is_vendor"/>
+                <field name="x_vendor_tier" optional="show" invisible="not x_is_vendor"/>
+                <field name="x_vendor_document_status" widget="badge"
+                       decoration-success="x_vendor_document_status == 'ok'"
+                       decoration-warning="x_vendor_document_status == 'warning'"
+                       decoration-danger="x_vendor_document_status in ('expired', 'missing')"
+                       optional="show" invisible="not x_is_vendor"/>
+                <field name="x_vendor_can_work" widget="boolean_toggle" optional="show" invisible="not x_is_vendor"/>
             </xpath>
         </field>
     </record>

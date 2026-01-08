@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vendor Action (used by Vendor Management menu) -->
+    <record id="action_ptt_vendors" model="ir.actions.act_window">
+        <field name="name">Vendors</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('x_is_vendor', '=', True)]</field>
+        <field name="context">{'default_x_is_vendor': True, 'search_default_x_is_vendor': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first vendor!
+            </p>
+            <p>
+                Vendors are service providers who work with Party Time Texas.
+                They can submit applications via the "Work with Us" form.
+            </p>
+        </field>
+    </record>
+
+    <!-- Keep legacy menu under Contacts for backward compatibility -->
+    <!-- Main Vendor Management menu is in ptt_vendor_management_menu.xml -->
+</odoo>
+

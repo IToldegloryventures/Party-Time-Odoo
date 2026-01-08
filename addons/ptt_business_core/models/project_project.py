@@ -1,5 +1,6 @@
-from odoo import models, fields, api
 from datetime import datetime, timedelta
+
+from odoo import api, fields, models
 
 
 class ProjectProject(models.Model):
