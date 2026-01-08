@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="ptt_operational_dashboard.PersonalTodo">
-        <div class="ptt-section">
+        <div class="ptt-section ptt-personal-todo">
             <div class="ptt-section-header">
                 <h2><i class="fa fa-check-square-o"/> Personal To-Do</h2>
+                <span t-if="state.loading" class="text-muted small">
+                    <i class="fa fa-spinner fa-spin me-1"/> Saving...
+                </span>
             </div>
             
             <div class="ptt-card">
                 <div class="ptt-todo-list">
-                    <t t-if="allTodos.length === 0">
+                    <t t-if="allTodos.length === 0 and !state.loading">
                         <div class="ptt-empty-state small">
                             <i class="fa fa-list-ul"/>
                             <p>No personal to-do items</p>
+                            <small class="text-muted">Add quick reminders and tasks below</small>
                         </div>
                     </t>
                     <t t-else="">
                         <t t-foreach="allTodos" t-as="todo" t-key="todo.id">
-                            <div class="ptt-todo-item">
+                            <div t-att-class="'ptt-todo-item' + (String(todo.id).startsWith('temp_') ? ' ptt-todo-pending' : '')">
                                 <div 
                                     class="ptt-todo-checkbox"
                                     t-on-click="() => this.onToggleTodo(todo)"
-                                    title="Mark as done">
-                                    <i class="fa fa-check" style="display: none;"/>
+                                    t-att-title="String(todo.id).startsWith('temp_') ? 'Saving...' : 'Mark as done'">
+                                    <i t-if="String(todo.id).startsWith('temp_')" class="fa fa-spinner fa-spin"/>
+                                    <i t-else="" class="fa fa-check" style="display: none;"/>
                                 </div>
                                 <div class="ptt-todo-name">
                                     <t t-esc="todo.name"/>
@@ -33,6 +38,7 @@
                                 <button 
                                     class="ptt-todo-delete"
                                     t-on-click="(ev) => this.onDeleteTodo(ev, todo)"
+                                    t-att-disabled="String(todo.id).startsWith('temp_')"
                                     title="Delete">
                                     <i class="fa fa-trash-o"/>
                                 </button>
@@ -52,8 +58,13 @@
                         <button 
                             t-on-click="onAddTodo"
                             t-att-disabled="state.loading || !state.newTodoName.trim()">
-                            <i class="fa fa-plus me-1"/>
-                            Add
+                            <t t-if="state.loading">
+                                <i class="fa fa-spinner fa-spin"/>
+                            </t>
+                            <t t-else="">
+                                <i class="fa fa-plus me-1"/>
+                                Add
+                            </t>
                         </button>
                     </div>
                 </div>

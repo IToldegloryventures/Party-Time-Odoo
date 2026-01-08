@@ -618,6 +618,23 @@ $status-completed: #6C757D;
             &:hover .ptt-todo-delete {
                 opacity: 1;
             }
+            
+            // Pending state for items being saved
+            &.ptt-todo-pending {
+                background: linear-gradient(90deg, $ptt-light 0%, rgba($ptt-red, 0.05) 50%, $ptt-light 100%);
+                background-size: 200% 100%;
+                animation: ptt-shimmer 1.5s ease-in-out infinite;
+                
+                .ptt-todo-checkbox {
+                    border-color: $ptt-red;
+                    color: $ptt-red;
+                }
+            }
+        }
+        
+        @keyframes ptt-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
         .ptt-todo-add {

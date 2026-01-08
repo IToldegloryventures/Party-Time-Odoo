@@ -17,21 +17,28 @@ export class PersonalTodo extends Component {
     };
 
     setup() {
-        this.homeService = useService("ptt_home");
+        this.orm = useService("orm");
+        this.notification = useService("notification");
         this.state = useState({
             newTodoName: "",
             loading: false,
+            localTodos: [],  // Local state for immediate UI feedback
         });
     }
 
     get allTodos() {
         const todos = this.props.todos || {};
-        return [
+        // Combine with any locally added todos for immediate feedback
+        const serverTodos = [
             ...(todos.overdue || []),
             ...(todos.today || []),
             ...(todos.upcoming || []),
             ...(todos.unscheduled || []),
         ];
+        // Add local todos that aren't yet from server
+        const serverIds = new Set(serverTodos.map(t => t.id));
+        const localOnly = this.state.localTodos.filter(t => !serverIds.has(t.id));
+        return [...localOnly, ...serverTodos];
     }
 
     formatDate(dateStr) {
@@ -41,10 +48,14 @@ export class PersonalTodo extends Component {
     }
 
     async onToggleTodo(todo) {
+        if (this.state.loading) return;
         this.state.loading = true;
         try {
-            await this.homeService.togglePersonalTodo(todo.id);
-            this.props.onRefresh();
+            await this.orm.call("ptt.personal.todo", "action_toggle_done", [[todo.id]]);
+            await this.props.onRefresh();
+        } catch (e) {
+            console.error("Failed to toggle todo:", e);
+            this.notification.add("Failed to update to-do", { type: "warning" });
         } finally {
             this.state.loading = false;
         }
@@ -52,10 +63,16 @@ export class PersonalTodo extends Component {
 
     async onDeleteTodo(ev, todo) {
         ev.stopPropagation();
+        if (this.state.loading) return;
         this.state.loading = true;
         try {
-            await this.homeService.deletePersonalTodo(todo.id);
-            this.props.onRefresh();
+            await this.orm.unlink("ptt.personal.todo", [todo.id]);
+            // Remove from local state immediately
+            this.state.localTodos = this.state.localTodos.filter(t => t.id !== todo.id);
+            await this.props.onRefresh();
+        } catch (e) {
+            console.error("Failed to delete todo:", e);
+            this.notification.add("Failed to delete to-do", { type: "warning" });
         } finally {
             this.state.loading = false;
         }
@@ -63,13 +80,36 @@ export class PersonalTodo extends Component {
 
     async onAddTodo() {
         const name = this.state.newTodoName.trim();
-        if (!name) return;
+        if (!name || this.state.loading) return;
         
         this.state.loading = true;
+        const tempId = `temp_${Date.now()}`;
+        
+        // Add to local state immediately for UI feedback
+        this.state.localTodos.push({
+            id: tempId,
+            name: name,
+            due_date: false,
+            priority: "1",
+        });
+        this.state.newTodoName = "";
+        
         try {
-            await this.homeService.createPersonalTodo(name);
-            this.state.newTodoName = "";
-            this.props.onRefresh();
+            const ids = await this.orm.create("ptt.personal.todo", [{ name, priority: "1" }]);
+            // Replace temp ID with real ID
+            const todoIndex = this.state.localTodos.findIndex(t => t.id === tempId);
+            if (todoIndex !== -1) {
+                this.state.localTodos[todoIndex].id = ids[0];
+            }
+            this.notification.add(`To-do "${name}" added!`, { type: "success" });
+            // Refresh in background without blocking UI
+            this.props.onRefresh().catch(() => {});
+        } catch (e) {
+            console.error("Failed to create todo:", e);
+            // Remove the temp item on failure
+            this.state.localTodos = this.state.localTodos.filter(t => t.id !== tempId);
+            this.state.newTodoName = name;  // Restore the input
+            this.notification.add("Failed to create to-do. Please try again.", { type: "danger" });
         } finally {
             this.state.loading = false;
         }

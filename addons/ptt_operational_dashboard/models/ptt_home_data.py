@@ -24,10 +24,10 @@ class PttHomeData(models.AbstractModel):
 
     @api.model
     def get_my_work_tasks(self):
-        """Get EVENT tasks assigned to current user, categorized by due date.
+        """Get PROJECT tasks assigned to current user, categorized by due date.
         
-        Only returns tasks from projects that are linked to CRM leads (event projects).
-        These are event planning tasks like vendor coordination, client follow-up, etc.
+        Returns tasks from ANY project - event projects, templates, internal projects.
+        These are structured work tasks that belong to a project workflow.
         
         Categories: today, overdue, upcoming, unscheduled
         """
@@ -35,21 +35,13 @@ class PttHomeData(models.AbstractModel):
         today = fields.Date.context_today(self)
         
         Task = self.env["project.task"]
-        Project = self.env["project.project"]
         
-        # First, get all projects linked to CRM leads (event projects)
-        if "x_crm_lead_id" in Project._fields:
-            event_project_ids = Project.search([
-                ("x_crm_lead_id", "!=", False)
-            ]).ids
-        else:
-            event_project_ids = []
-        
-        # Get tasks from event projects assigned to user
+        # Get ALL tasks from projects assigned to user (not just event projects)
+        # This includes event tasks, template tasks, and any other project work
         domain = [
             ("user_ids", "in", [user.id]),
             ("stage_id.fold", "=", False),  # Not in folded/done stages
-            ("project_id", "in", event_project_ids),  # Only from event projects
+            ("project_id", "!=", False),  # Must have a project (structured work)
         ]
         tasks = Task.search(domain, order="date_deadline asc, priority desc, id")
         
@@ -113,40 +105,26 @@ class PttHomeData(models.AbstractModel):
     def get_assigned_tasks(self):
         """Get ONE-OFF/MISC tasks assigned to current user.
         
-        Only returns tasks that are NOT from event projects (not linked to CRM leads).
-        These are standalone tasks, internal tasks, or tasks from non-event projects.
+        Returns tasks that have NO project assigned - truly standalone tasks,
+        internal to-dos, or ad-hoc items that don't belong to any project workflow.
+        
+        Tasks from ANY project (including templates) are considered "work" tasks
+        and should appear in the My Work section instead.
         """
         user = self.env.user
         today = fields.Date.context_today(self)
         
         Task = self.env["project.task"]
-        Project = self.env["project.project"]
         
-        # Get projects that ARE linked to CRM leads (event projects) to EXCLUDE them
-        event_project_ids = []
-        if "x_crm_lead_id" in Project._fields:
-            event_projects = Project.search([("x_crm_lead_id", "!=", False)])
-            event_project_ids = event_projects.ids
+        # Build domain: tasks assigned to user, not done, with NO project
+        # This shows truly miscellaneous tasks - personal reminders, ad-hoc items
+        domain = [
+            ("user_ids", "in", [user.id]),
+            ("stage_id.fold", "=", False),
+            ("project_id", "=", False),  # Only tasks with no project
+        ]
         
-        # Build domain: tasks assigned to user, not done, NOT from event projects
-        # Using proper Odoo domain syntax with '|' at the start
-        if event_project_ids:
-            # Tasks with no project OR tasks from non-event projects
-            domain = [
-                ("user_ids", "in", [user.id]),
-                ("stage_id.fold", "=", False),
-                "|",
-                ("project_id", "=", False),
-                ("project_id", "not in", event_project_ids),
-            ]
-        else:
-            # No event projects exist, show all tasks
-            domain = [
-                ("user_ids", "in", [user.id]),
-                ("stage_id.fold", "=", False),
-            ]
-        
-        tasks = Task.search(domain, order="date_deadline asc, project_id, id")
+        tasks = Task.search(domain, order="date_deadline asc, id")
         
         result = []
         for task in tasks:
