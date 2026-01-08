@@ -19,7 +19,12 @@
             <xpath expr="//field[@name='order_line']" position="before">
                 <group string="Contract Status" col="4">
                     <group>
-                        <field name="x_contract_status"/>
+                        <field name="x_contract_status" readonly="1" widget="badge" 
+                               decoration-info="x_contract_status == 'sent'"
+                               decoration-success="x_contract_status == 'signed'"
+                               decoration-muted="x_contract_status == 'not_sent'"/>
+                    </group>
+                    <group>
                         <field name="x_contract_signed_date" readonly="1" invisible="x_contract_status != 'signed'"/>
                     </group>
                 </group>
@@ -33,25 +38,8 @@
                 <attribute name="invisible">invoice_status != 'no' or state != 'sale' or invoice_count &gt; 0</attribute>
             </xpath>
             
-            <!-- Add Contract workflow buttons in button_box -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <!-- Send Contract button - visible when SO confirmed but contract not yet sent -->
-                <button name="action_send_contract" 
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-paper-plane"
-                        invisible="x_contract_status != 'not_sent' or state != 'sale'">
-                    <span class="o_stat_text">Send Contract</span>
-                </button>
-                <!-- Mark Contract Signed button - visible when contract sent but not yet signed -->
-                <button name="action_mark_contract_signed" 
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-file-signature"
-                        invisible="x_contract_status != 'sent' or state != 'sale'">
-                    <span class="o_stat_text">Mark Signed</span>
-                </button>
-            </xpath>
+            <!-- Contract status is now automatic based on SO state - no manual buttons needed -->
+            <!-- Status shown in the Contract Status section above order lines -->
             
         </field>
     </record>

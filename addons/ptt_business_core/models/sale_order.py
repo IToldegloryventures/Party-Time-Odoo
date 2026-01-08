@@ -6,29 +6,47 @@ class SaleOrder(models.Model):
     
     CRM Stage Workflow:
     1. Quote/Proposal Sent → CRM moves to "Proposal Sent"
-    2. Contract Sent → CRM moves to "Contract Sent"
-    3. Contract Signed → Event Project Created + CRM moves to "Booked"
+    2. Customer Accepts (SO Confirmed) = Contract Signed → Project Created + CRM moves to "Booked"
+    
+    The Sales Order IS the contract - when customer accepts/confirms, that's the signature.
     
     Per Odoo 19 Sales docs: https://www.odoo.com/documentation/19.0/applications/sales/sales.html
     """
     _inherit = "sale.order"
 
-    # === CONTRACT STATUS ===
+    # === CONTRACT STATUS (auto-updated based on SO state) ===
     x_contract_status = fields.Selection(
         [
             ("not_sent", "Not Sent"),
-            ("sent", "Sent for Signature"),
-            ("signed", "Signed"),
+            ("sent", "Sent to Customer"),
+            ("signed", "Signed/Accepted"),
         ],
         string="Contract Status",
-        default="not_sent",
+        compute="_compute_contract_status",
+        store=True,
         tracking=True,
-        help="Track contract signature status.",
+        help="Contract status based on Sales Order state. Sent = Quote sent, Signed = SO confirmed (customer accepted).",
     )
     x_contract_signed_date = fields.Datetime(
         string="Contract Signed Date",
         readonly=True,
     )
+
+    @api.depends("state")
+    def _compute_contract_status(self):
+        """Auto-compute contract status based on SO state.
+        
+        - Draft → Not Sent
+        - Sent → Sent to Customer  
+        - Sale (confirmed) → Signed/Accepted
+        """
+        for order in self:
+            if order.state == 'sale':
+                order.x_contract_status = 'signed'
+            elif order.state == 'sent':
+                order.x_contract_status = 'sent'
+            else:
+                order.x_contract_status = 'not_sent'
 
     # === CRM STAGE AUTOMATION ===
     
@@ -53,146 +71,81 @@ class SaleOrder(models.Model):
                         )
 
     def action_quotation_sent(self):
-        """Override: When quote/proposal is sent, update CRM to 'Proposal Sent'."""
+        """Override: When quote/proposal is sent, update CRM to 'Proposal Sent'.
+        
+        This is triggered when user clicks "Send by Email" on the quotation.
+        The quote IS the contract/proposal being sent to customer.
+        """
         res = super().action_quotation_sent()
         self._update_crm_stage(
             "Proposal Sent",
-            _("CRM stage updated: Proposal/Quote sent to client.")
+            _("CRM stage updated: Quote/Contract sent to customer for review.")
         )
-        return res
-
-    def action_send_contract(self):
-        """Send contract to client for signature.
-        
-        Updates contract status to 'sent' and moves CRM to 'Contract Sent' stage.
-        """
-        for order in self:
-            order.write({"x_contract_status": "sent"})
-            order.message_post(
-                body=_("Contract sent for signature."),
-                message_type="notification",
-            )
-        
-        self._update_crm_stage(
-            "Contract Sent",
-            _("CRM stage updated: Contract sent for signature.")
-        )
-        return True
-
-    def action_mark_contract_signed(self):
-        """Mark contract as signed - triggers project creation and CRM to 'Booked'.
-        
-        This is the KEY action that:
-        1. Marks the contract as signed
-        2. Confirms the Sales Order (if not already confirmed)
-        3. Generates the Event ID on CRM Lead
-        4. Creates the Event Project
-        5. Moves CRM to 'Booked' stage
-        """
-        for order in self:
-            # Mark contract as signed
-            order.write({
-                "x_contract_status": "signed",
-                "x_contract_signed_date": fields.Datetime.now(),
-            })
-            order.message_post(
-                body=_("Contract signed by client."),
-                message_type="notification",
-            )
-            
-            # Confirm the SO if not already confirmed
-            if order.state in ('draft', 'sent'):
-                order.action_confirm()
-            
-            # Now create the project (if linked to opportunity)
-            if order.opportunity_id:
-                lead = order.opportunity_id
-                
-                # Generate Event ID if not already set
-                if not lead.x_event_id:
-                    try:
-                        lead._generate_event_id()
-                        lead.message_post(
-                            body=_("Event ID generated: %s") % lead.x_event_id,
-                            message_type="notification",
-                        )
-                    except Exception as e:
-                        lead.message_post(
-                            body=_("Error generating Event ID: %s") % str(e),
-                            message_type="notification",
-                            subtype_xmlid="mail.mt_note",
-                        )
-                
-                # Create project if it doesn't exist yet
-                if not lead.x_project_id:
-                    try:
-                        lead.action_create_project_from_lead()
-                        lead.message_post(
-                            body=_("Event Project created: Contract signed."),
-                            message_type="notification",
-                        )
-                    except Exception as e:
-                        lead.message_post(
-                            body=_("Error creating project: %s") % str(e),
-                            message_type="notification",
-                            subtype_xmlid="mail.mt_note",
-                        )
-        
-        # Move CRM to Booked
-        self._update_crm_stage(
-            "Booked",
-            _("CRM stage updated to Booked: Contract signed.")
-        )
-        return True
-
-    def write(self, vals):
-        """Override write to handle contract status changes.
-        
-        Automatically updates CRM stage when x_contract_status changes.
-        """
-        res = super().write(vals)
-        
-        # Handle contract status changes
-        if "x_contract_status" in vals:
-            new_status = vals["x_contract_status"]
-            
-            if new_status == "sent":
-                # Contract sent → CRM to "Contract Sent"
-                self._update_crm_stage(
-                    "Contract Sent",
-                    _("CRM stage updated: Contract sent for signature.")
-                )
-            elif new_status == "signed":
-                # Contract signed → handled by action_mark_contract_signed
-                # But if someone sets it directly via write, still update CRM
-                for order in self:
-                    if order.opportunity_id:
-                        lead = order.opportunity_id
-                        
-                        # Generate Event ID and create project if needed
-                        if not lead.x_event_id:
-                            try:
-                                lead._generate_event_id()
-                            except Exception:
-                                pass
-                        
-                        if not lead.x_project_id and lead.x_event_id:
-                            try:
-                                lead.action_create_project_from_lead()
-                            except Exception:
-                                pass
-                
-                self._update_crm_stage(
-                    "Booked",
-                    _("CRM stage updated to Booked: Contract signed.")
-                )
-        
         return res
 
     def action_confirm(self):
-        """Override SO confirmation - standard behavior only.
+        """Override SO confirmation - Customer accepted = Contract signed.
         
-        Note: Project creation is NOT triggered here anymore.
-        Project creation happens when contract is SIGNED (action_mark_contract_signed).
+        When SO is confirmed (customer accepts):
+        1. Mark contract as signed with timestamp
+        2. Generate Event ID on CRM Lead
+        3. Create Event Project with tasks
+        4. Move CRM to 'Booked' stage
+        
+        This is the KEY trigger for project creation.
         """
-        return super().action_confirm()
+        res = super().action_confirm()
+        
+        for order in self:
+            # Only process if order is now confirmed (state='sale')
+            if order.state == 'sale':
+                # Record the contract signed date
+                if not order.x_contract_signed_date:
+                    order.write({"x_contract_signed_date": fields.Datetime.now()})
+                
+                order.message_post(
+                    body=_("Contract accepted by customer."),
+                    message_type="notification",
+                )
+                
+                # Process CRM opportunity if linked
+                if order.opportunity_id:
+                    lead = order.opportunity_id
+                    
+                    # STEP 1: Generate Event ID on CRM Lead
+                    if not lead.x_event_id:
+                        try:
+                            lead._generate_event_id()
+                            lead.message_post(
+                                body=_("Event ID generated: %s") % lead.x_event_id,
+                                message_type="notification",
+                            )
+                        except Exception as e:
+                            lead.message_post(
+                                body=_("Error generating Event ID: %s") % str(e),
+                                message_type="notification",
+                                subtype_xmlid="mail.mt_note",
+                            )
+                    
+                    # STEP 2: Create Event Project if it doesn't exist
+                    if not lead.x_project_id:
+                        try:
+                            lead.action_create_project_from_lead()
+                            lead.message_post(
+                                body=_("Event Project created: Contract accepted."),
+                                message_type="notification",
+                            )
+                        except Exception as e:
+                            lead.message_post(
+                                body=_("Error creating project: %s") % str(e),
+                                message_type="notification",
+                                subtype_xmlid="mail.mt_note",
+                            )
+                    
+                    # STEP 3: Move CRM to Booked stage
+                    self._update_crm_stage(
+                        "Booked",
+                        _("CRM stage updated to Booked: Customer accepted contract.")
+                    )
+        
+        return res
