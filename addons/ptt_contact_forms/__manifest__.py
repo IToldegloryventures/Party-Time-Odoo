@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "PTT Contact Forms",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "summary": "Public contact forms that create CRM leads - embeddable in external websites",
     "description": """
         Party Time Texas - Public Contact Forms
@@ -24,7 +24,7 @@
     "category": "Website",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["web", "portal", "crm"],
+    "depends": ["web", "portal", "crm", "ptt_business_core"],
     "data": [
         "templates/contact_form.xml",
     ],
