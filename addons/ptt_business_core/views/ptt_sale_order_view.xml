@@ -38,8 +38,17 @@
                 <attribute name="invisible">invoice_status != 'no' or state != 'sale' or invoice_count &gt; 0</attribute>
             </xpath>
             
-            <!-- Contract status is now automatic based on SO state - no manual buttons needed -->
-            <!-- Status shown in the Contract Status section above order lines -->
+            <!-- Navigation buttons to CRM and Project -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Back to CRM Opportunity button -->
+                <button name="action_view_opportunity" type="object"
+                    class="oe_stat_button" icon="fa-bullhorn"
+                    invisible="not opportunity_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">CRM Opportunity</span>
+                    </div>
+                </button>
+            </xpath>
             
         </field>
     </record>

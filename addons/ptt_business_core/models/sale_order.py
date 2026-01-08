@@ -114,3 +114,19 @@ class SaleOrder(models.Model):
                     )
         
         return res
+
+    # === NAVIGATION ACTIONS ===
+    
+    def action_view_opportunity(self):
+        """Navigate to the linked CRM Opportunity."""
+        self.ensure_one()
+        if not self.opportunity_id:
+            return False
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("CRM Opportunity"),
+            "res_model": "crm.lead",
+            "res_id": self.opportunity_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
