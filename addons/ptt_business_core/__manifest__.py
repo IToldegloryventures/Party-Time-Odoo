@@ -13,6 +13,7 @@
         # Data files
         "data/cleanup_orphaned_fields.xml",
         "data/crm_stages.xml",
+        "data/fold_default_crm_stages.xml",  # Fold default Odoo CRM stages (New, Proposition, Won)
         "data/crm_tags.xml",
         "data/crm_lost_reasons.xml",
         "data/mail_activity_type.xml",

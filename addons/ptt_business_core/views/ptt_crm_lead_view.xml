@@ -5,8 +5,31 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
-            <!-- Add invoice payment tracker and project buttons -->
+            <!-- Add Sales Order, Invoice, and Project buttons - ensure they're visible and clear -->
             <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Sales Orders button - show even if count is 0, but only for opportunities -->
+                <button name="action_view_sale_quotation" type="object"
+                    class="oe_stat_button" icon="fa-pencil-square-o"
+                    invisible="type == 'lead'">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Quotations</span>
+                        <span class="o_stat_value">
+                            <field name="quotation_count" widget="integer"/>
+                        </span>
+                    </div>
+                </button>
+                <button name="action_view_sale_order" type="object"
+                    class="oe_stat_button" icon="fa-usd"
+                    invisible="type == 'lead' or sale_order_count == 0">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="sale_amount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                        </span>
+                        <span class="o_stat_text">Sales Orders</span>
+                        <field name="sale_order_count" invisible="1"/>
+                    </div>
+                </button>
+                <!-- Invoices button -->
                 <button name="action_view_invoices" type="object"
                     class="oe_stat_button" icon="fa-file-text-o"
                     invisible="x_invoice_count == 0 or type == 'lead'">
@@ -19,6 +42,7 @@
                         </span>
                     </div>
                 </button>
+                <!-- Project buttons -->
                 <button name="action_view_project" type="object"
                     class="oe_stat_button" icon="fa-tasks"
                     invisible="not x_project_id">

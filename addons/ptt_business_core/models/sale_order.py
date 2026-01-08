@@ -102,6 +102,41 @@ class SaleOrder(models.Model):
             ))
         return super().action_send_quotation()
 
+    def action_confirm(self):
+        """Override to create project when Sales Order is confirmed."""
+        res = super().action_confirm()
+        
+        for order in self:
+            # Only process if order is now confirmed (state='sale')
+            if order.state == 'sale' and order.opportunity_id:
+                # Auto-create project if it doesn't exist yet
+                if not order.opportunity_id.x_project_id:
+                    try:
+                        order.opportunity_id.action_create_project_from_lead()
+                        order.opportunity_id.message_post(
+                            body=_("Project automatically created: Sales Order confirmed."),
+                            message_type="notification",
+                        )
+                        # Move CRM to Booked stage
+                        booked_stage = self.env["crm.stage"].search(
+                            [("name", "=", "Booked")], limit=1
+                        )
+                        if booked_stage and order.opportunity_id.stage_id != booked_stage:
+                            order.opportunity_id.stage_id = booked_stage.id
+                            order.opportunity_id.message_post(
+                                body=_("Automatically moved to Booked: Sales Order confirmed."),
+                                message_type="notification",
+                            )
+                    except Exception as e:
+                        # Log error but don't break the confirmation process
+                        order.opportunity_id.message_post(
+                            body=_("Error creating project: %s") % str(e),
+                            message_type="notification",
+                            subtype_xmlid="mail.mt_note",
+                        )
+        
+        return res
+
     def action_mark_contract_signed(self):
         """Mark contract as signed and check if we should advance CRM stage."""
         self.ensure_one()
@@ -123,7 +158,11 @@ class SaleOrder(models.Model):
         return True
 
     def _check_booking_complete(self):
-        """Check if contract signed AND retainer paid, then advance CRM to Booked."""
+        """Check if contract signed AND retainer paid, then advance CRM to Booked stage.
+        
+        Note: Project is now created when Sales Order is confirmed (in action_confirm),
+        so this method only handles moving to Booked stage when contract is signed and retainer paid.
+        """
         self.ensure_one()
         if self.x_contract_status == "signed" and self.x_retainer_paid:
             # Find linked CRM lead via opportunity_id (standard Odoo field)

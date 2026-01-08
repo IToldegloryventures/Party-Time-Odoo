@@ -2,13 +2,11 @@
 <odoo noupdate="1">
     <!-- 
         Party Time Texas CRM Pipeline Stages
-        Workflow: Intake → Qualified → Quote Sent → Contract Sent → Booked (Won)
+        Workflow: Intake → Qualification → Proposal Sent → Contract Sent → Booked → Closed/Won → Lost
         
         Note: Execution happens in the Project phase, not CRM. "Booked" means the
         lead is won - contract signed, retainer paid, and project created.
-        
-        Note: "Qualified" stage exists (from operational dashboard), so "Qualification"
-        is not created here to avoid duplicates.
+        "Closed/Won" is the final won stage after project completion.
     -->
     
     <!-- Stage 1: Intake (New leads coming in) -->
@@ -18,11 +16,16 @@
         <field name="is_won">False</field>
     </record>
     
-    <!-- Note: "Qualified" stage (sequence 2) exists from operational dashboard, not defined here -->
+    <!-- Stage 2: Qualification (Lead contacted and qualified) -->
+    <record id="ptt_crm_stage_qualification" model="crm.stage">
+        <field name="name">Qualification</field>
+        <field name="sequence">2</field>
+        <field name="is_won">False</field>
+    </record>
     
-    <!-- Stage 3: Quote Sent (Quote/proposal sent to client) -->
-    <record id="ptt_crm_stage_quote_sent" model="crm.stage">
-        <field name="name">Quote Sent</field>
+    <!-- Stage 3: Proposal Sent (Quote/proposal sent to client) -->
+    <record id="ptt_crm_stage_proposal_sent" model="crm.stage">
+        <field name="name">Proposal Sent</field>
         <field name="sequence">3</field>
         <field name="is_won">False</field>
     </record>
@@ -39,6 +42,21 @@
         <field name="name">Booked</field>
         <field name="sequence">5</field>
         <field name="is_won">True</field>
+    </record>
+    
+    <!-- Stage 6: Closed/Won (Final won stage after project completion) -->
+    <record id="ptt_crm_stage_closed_won" model="crm.stage">
+        <field name="name">Closed/Won</field>
+        <field name="sequence">6</field>
+        <field name="is_won">True</field>
+    </record>
+    
+    <!-- Stage 7: Lost (Opportunity was lost) -->
+    <record id="ptt_crm_stage_lost" model="crm.stage">
+        <field name="name">Lost</field>
+        <field name="sequence">7</field>
+        <field name="is_won">False</field>
+        <field name="fold">True</field>
     </record>
     
 </odoo>
