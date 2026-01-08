@@ -20,7 +20,6 @@ from odoo import http, _
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError, UserError
-from odoo.tools.expression import AND
 
 # Allowed file extensions for uploads (security)
 ALLOWED_EXTENSIONS = {
@@ -86,10 +85,7 @@ class VendorPortal(CustomerPortal):
             filterby = "all"
 
         # Build domain - vendor_id filter is enforced by record rules, but we add it explicitly too
-        domain = AND([
-            [("vendor_id", "=", partner.id)],
-            searchbar_filters[filterby]["domain"],
-        ])
+        domain = [("vendor_id", "=", partner.id)] + searchbar_filters[filterby]["domain"]
 
         # Get total count for pager
         assignment_count = VendorAssignment.search_count(domain)
