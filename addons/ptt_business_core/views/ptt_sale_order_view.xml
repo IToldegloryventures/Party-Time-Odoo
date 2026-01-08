@@ -35,6 +35,14 @@
                 </group>
             </xpath>
             
+            <!-- Hide Create Invoice button when invoices already exist -->
+            <xpath expr="//button[@id='create_invoice']" position="attributes">
+                <attribute name="invisible">invoice_status != 'to invoice' or invoice_count &gt; 0</attribute>
+            </xpath>
+            <xpath expr="//button[@id='create_invoice_percentage']" position="attributes">
+                <attribute name="invisible">invoice_status != 'no' or state != 'sale' or invoice_count &gt; 0</attribute>
+            </xpath>
+            
             <!-- Add Contract and Retainer action buttons in button_box -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_mark_contract_signed" 
