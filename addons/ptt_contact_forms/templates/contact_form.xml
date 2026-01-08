@@ -14,6 +14,12 @@
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             
+            <!-- Explicitly load CSS (fixes Odoo 19 asset loading) -->
+            <t t-set="head">
+                <link rel="stylesheet" type="text/css" href="/ptt_contact_forms/static/src/css/contact_form.css"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap"/>
+            </t>
+            
             <div t-attf-class="ptt-contact-page #{embed and 'embed-mode' or ''}">
                 
                 <!-- Header (hidden in embed mode via CSS) -->
@@ -277,6 +283,12 @@
         <t t-call="portal.frontend_layout">
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
+            
+            <!-- Explicitly load CSS (fixes Odoo 19 asset loading) -->
+            <t t-set="head">
+                <link rel="stylesheet" type="text/css" href="/ptt_contact_forms/static/src/css/contact_form.css"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap"/>
+            </t>
             
             <div t-attf-class="ptt-contact-page ptt-thank-you #{embed and 'embed-mode' or ''}">
                 
