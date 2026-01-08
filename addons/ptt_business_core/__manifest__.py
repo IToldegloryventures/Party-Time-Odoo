@@ -1,16 +1,15 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.1.5.3",
+    "version": "19.0.1.5.0",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["web", "website", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic", "portal"],
+    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic", "portal"],
     "data": [
-        # Security - CSV must load BEFORE XML record rules that reference model_* IDs
-        # The CSV creates the model_* external IDs that ptt_security.xml needs
-        "security/ir.model.access.csv",
+        # Security (load groups first, then access rules)
         "security/ptt_security.xml",
+        "security/ir.model.access.csv",
         # Data files
         "data/cleanup_orphaned_fields.xml",
         # CRM stages managed directly in database via SQL - XML files removed to prevent conflicts
