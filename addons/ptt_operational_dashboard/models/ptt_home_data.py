@@ -486,9 +486,11 @@ class PttHomeData(models.AbstractModel):
         leads = Lead.search(domain, order="x_event_date asc", limit=20)
         
         # PTT CRM Stage Colors
+        # Official stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         stage_colors = {
             "Intake": "#17A2B8",              # Teal/Cyan - New inquiries
             "Qualification": "#007BFF",        # Blue - Qualification in progress
+            "Approval": "#FFC107",             # Yellow - Awaiting internal approval
             "Proposal Sent": "#6F42C1",        # Purple - Proposal sent to client
             "Contract Sent": "#FF9800",        # Orange - Contract sent, awaiting signature
             "Booked": "#28A745",               # Green - Confirmed bookings (won)
@@ -600,10 +602,11 @@ class PttHomeData(models.AbstractModel):
         
         # PTT CRM Stage Colors
         # These are the official PTT pipeline stages
-        # Stages: Intake, Qualification, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
+        # Stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         stage_colors = {
             "Intake": "#17A2B8",              # Teal/Cyan - New inquiries
             "Qualification": "#007BFF",        # Blue - Qualification in progress
+            "Approval": "#FFC107",             # Yellow - Awaiting internal approval
             "Proposal Sent": "#6F42C1",        # Purple - Proposal sent to client
             "Contract Sent": "#FF9800",        # Orange - Contract sent, awaiting signature
             "Booked": "#28A745",               # Green - Confirmed bookings (won)
@@ -732,14 +735,16 @@ class PttHomeData(models.AbstractModel):
         This ensures consistency even if database stages differ.
         """
         # Official PTT stages in pipeline order
+        # Stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         ptt_stages = [
             {"name": "Intake", "sequence": 1},
             {"name": "Qualification", "sequence": 2},
-            {"name": "Proposal Sent", "sequence": 3},
-            {"name": "Contract Sent", "sequence": 4},
-            {"name": "Booked", "sequence": 5},
-            {"name": "Closed/Won", "sequence": 6},
-            {"name": "Lost", "sequence": 7},
+            {"name": "Approval", "sequence": 3},
+            {"name": "Proposal Sent", "sequence": 4},
+            {"name": "Contract Sent", "sequence": 5},
+            {"name": "Booked", "sequence": 6},
+            {"name": "Closed/Won", "sequence": 7},
+            {"name": "Lost", "sequence": 8},
         ]
         
         # Try to get actual stage IDs from database for filtering
