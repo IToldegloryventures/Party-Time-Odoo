@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="0">
+    <!-- 
+        Cleanup unwanted CRM stages that should not exist.
+        This removes/folds stages that are duplicates or not part of our workflow.
+        
+        Stages to delete/fold:
+        - "Qualified" (we use "Qualification" instead)
+        - "Quote Sent" (we use "Proposal Sent" instead)
+        - "Approval" (not in our workflow)
+        - "Execution" (not in our workflow, execution happens in projects)
+        - "New" (we rename it to "Intake", but if it still exists, fold it)
+    -->
+    
+    <!-- Delete unwanted stages by name (they will be deleted on module update) -->
+    <!-- Note: We can't directly delete via XML, so we'll fold them and mark for manual cleanup -->
+    
+    <!-- Fold/Delete "Qualified" if it exists (we use "Qualification" instead) -->
+    <record id="cleanup_qualified" model="crm.stage" forcecreate="0">
+        <field name="name">Qualified</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+    <!-- Fold/Delete "Quote Sent" if it exists (we use "Proposal Sent" instead) -->
+    <record id="cleanup_quote_sent" model="crm.stage" forcecreate="0">
+        <field name="name">Quote Sent</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+    <!-- Fold/Delete "Approval" if it exists (not in our workflow) -->
+    <record id="cleanup_approval" model="crm.stage" forcecreate="0">
+        <field name="name">Approval</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+    <!-- Fold/Delete "Execution" if it exists (not in our workflow) -->
+    <record id="cleanup_execution" model="crm.stage" forcecreate="0">
+        <field name="name">Execution</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+    <!-- Fold "New" if it still exists separately (should be renamed to Intake) -->
+    <record id="cleanup_new" model="crm.stage" forcecreate="0">
+        <field name="name">New</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+</odoo>

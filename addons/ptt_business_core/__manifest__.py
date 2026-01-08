@@ -13,6 +13,7 @@
         # Data files
         "data/cleanup_orphaned_fields.xml",
         "data/rename_default_crm_stages.xml",  # Rename default Odoo CRM stages (New→Intake, Qualified→Qualification, Proposition→Proposal Sent, Won→Closed/Won)
+        "data/cleanup_unwanted_crm_stages.xml",  # Fold/delete unwanted duplicate stages (Qualified, Quote Sent, Approval, Execution)
         "data/crm_stages.xml",  # Additional stages: Contract Sent, Booked, Lost
         "data/crm_tags.xml",
         "data/crm_lost_reasons.xml",
