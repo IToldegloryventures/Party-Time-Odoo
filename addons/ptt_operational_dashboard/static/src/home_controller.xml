@@ -37,22 +37,12 @@
                     <!-- HOME TAB - Clean Grid Layout -->
                     <t t-if="state.activeTab === 'home'">
                         <div class="ptt-dashboard-grid">
-                            <!-- Row 1: Dashboard Tasks Section (full width) -->
-                            <div class="ptt-grid-item ptt-grid-full">
-                                <DashboardTasksSection tasks="dashboardTasks"/>
-                            </div>
-                            
-                            <!-- Row 2: Task Leaderboard (full width) -->
-                            <div class="ptt-grid-item ptt-grid-full">
-                                <TaskLeaderboard leaderboard="taskLeaderboard"/>
-                            </div>
-                            
-                            <!-- Row 3: Event Tasks (full width) -->
+                            <!-- Row 1: Event Tasks (full width) -->
                             <div class="ptt-grid-item ptt-grid-full">
                                 <MyWorkSection tasks="myWorkTasks"/>
                             </div>
                             
-                            <!-- Row 4: Other Tasks | Personal To-Do | Assigned Comments -->
+                            <!-- Row 2: Other Tasks | Personal To-Do | Assigned Comments -->
                             <div class="ptt-grid-item">
                                 <AssignedTasks tasks="assignedTasks" onRefresh.bind="loadHomeData"/>
                             </div>
@@ -67,7 +57,7 @@
                                 <AssignedComments comments="assignedComments"/>
                             </div>
                             
-                            <!-- Row 5: Agenda Calendar (full width at bottom) -->
+                            <!-- Row 3: Agenda Calendar (full width at bottom) -->
                             <div class="ptt-grid-item ptt-grid-full">
                                 <AgendaCalendar events="agendaEvents"/>
                             </div>

@@ -49,6 +49,106 @@
             </t>
             
             <t t-elif="state.data">
+                <!-- SALES LEADERBOARD - FIRST SECTION -->
+                <div class="ptt-sales-leaderboard mb-4">
+                    <div class="ptt-section-header mb-3">
+                        <h2><i class="fa fa-trophy" style="color: #F59E0B;"/> Sales Performance Leaderboard</h2>
+                    </div>
+                    
+                    <div class="ptt-card" style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #E5E7EB; overflow: hidden;">
+                        <t t-if="!state.data.reps || state.data.reps.length === 0">
+                            <div class="ptt-empty-state" style="padding: 2rem;">
+                                <i class="fa fa-users" style="font-size: 2.5rem; color: #9CA3AF;"/>
+                                <p style="color: #6B7280; margin-top: 1rem;">No sales data for this period</p>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" style="background: white;">
+                                    <thead style="background: #F9FAFB;">
+                                        <tr>
+                                            <th style="width: 60px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Rank</th>
+                                            <th style="font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Sales Rep</th>
+                                            <th class="text-end" style="font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Revenue</th>
+                                            <th class="text-center" style="width: 80px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Deals Won</th>
+                                            <th class="text-center" style="width: 80px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Lost</th>
+                                            <th class="text-center" style="width: 100px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Conversion</th>
+                                            <th style="min-width: 180px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Target Progress</th>
+                                            <th class="text-center" style="width: 70px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.data.reps" t-as="rep" t-key="rep.id">
+                                            <tr t-on-click="() => this.onRepClick(rep)" style="cursor: pointer; background: white;">
+                                                <td style="padding: 1rem; vertical-align: middle;">
+                                                    <span t-att-class="'badge ' + (rep_index === 0 ? 'bg-warning text-dark' : rep_index === 1 ? 'bg-secondary' : rep_index === 2 ? 'bg-danger' : 'bg-light text-dark border')" 
+                                                          style="font-size: 0.875rem; padding: 0.5rem 0.7rem; font-weight: 700; min-width: 36px;">
+                                                        <t t-if="rep_index === 0">
+                                                            <i class="fa fa-trophy me-1"/>
+                                                        </t>
+                                                        <t t-esc="rep_index + 1"/>
+                                                    </span>
+                                                </td>
+                                                <td style="padding: 1rem; vertical-align: middle;">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="ptt-user-avatar me-3">
+                                                            <span class="badge" t-att-style="'background: ' + (rep.color || '#6366F1') + '; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);'">
+                                                                <t t-esc="rep.initials"/>
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <strong style="font-size: 0.95rem; color: #1F2937;"><t t-esc="rep.name"/></strong>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-end" style="padding: 1rem; vertical-align: middle;">
+                                                    <span style="font-size: 1.1rem; font-weight: 700; color: #059669;">
+                                                        <t t-esc="formatCurrency(rep.booked_amount)"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <span class="badge bg-success" style="font-size: 0.9rem; padding: 0.4rem 0.6rem; font-weight: 600;">
+                                                        <t t-esc="rep.booked_count"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <span t-att-class="'badge ' + (rep.lost_count > 0 ? 'bg-danger' : 'bg-secondary')" style="font-size: 0.9rem; padding: 0.4rem 0.6rem; font-weight: 600;">
+                                                        <t t-esc="rep.lost_count || 0"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <span t-att-class="'badge ' + (rep.conversion_rate >= 50 ? 'bg-success' : rep.conversion_rate >= 30 ? 'bg-warning text-dark' : 'bg-danger')" style="font-size: 0.9rem; padding: 0.4rem 0.6rem; font-weight: 600;">
+                                                        <t t-esc="rep.conversion_rate"/>%
+                                                    </span>
+                                                </td>
+                                                <td style="padding: 1rem; vertical-align: middle;">
+                                                    <div class="progress" style="height: 24px; border-radius: 12px; overflow: hidden; background: #E5E7EB; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                                                        <div 
+                                                            t-att-class="'progress-bar ' + (rep.revenue_vs_target_pct >= 100 ? 'bg-success' : rep.revenue_vs_target_pct >= 75 ? 'bg-info' : rep.revenue_vs_target_pct >= 50 ? 'bg-warning' : 'bg-danger')"
+                                                            t-att-style="'width: ' + Math.min(rep.revenue_vs_target_pct || 0, 100) + '%'"
+                                                            role="progressbar"
+                                                            style="display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem;">
+                                                            <t t-esc="(rep.revenue_vs_target_pct || 0).toFixed(0)"/>%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <button class="btn btn-sm btn-outline-primary" 
+                                                            t-on-click.stop="() => this.onRepClick(rep)"
+                                                            title="View Sales Rep's Deals"
+                                                            style="border-radius: 8px; padding: 0.35rem 0.6rem;">
+                                                        <i class="fa fa-external-link"/>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+                
                 <!-- Company Total Section -->
                 <div class="ptt-section-header mb-3">
                     <h2><i class="fa fa-building"/> Company Total</h2>
@@ -129,64 +229,6 @@
                     </div>
                 </div>
                 
-                <!-- All Users Section -->
-                <div class="ptt-section-header mb-3 mt-4">
-                    <h2><i class="fa fa-users"/> All Users Performance</h2>
-                </div>
-                
-                <div class="ptt-rep-grid">
-                    <t t-foreach="state.data.reps" t-as="rep" t-key="rep.id">
-                        <div class="ptt-rep-card" t-on-click="() => this.onRepClick(rep)">
-                            <div class="ptt-rep-header">
-                                <div class="ptt-rep-avatar" t-att-style="'background-color: ' + (rep.color || '#6366F1')">
-                                    <t t-esc="rep.initials"/>
-                                </div>
-                                <div class="ptt-rep-name" t-esc="rep.name"/>
-                            </div>
-                            <div class="ptt-rep-stats">
-                                <div class="ptt-rep-stat">
-                                    <span class="label">Revenue</span>
-                                    <span class="value" t-esc="formatCurrency(rep.booked_amount)"/>
-                                    <span class="label small" t-if="rep.target_amount > 0">
-                                        Target: <t t-esc="formatCurrency(rep.target_amount)"/>
-                                    </span>
-                                </div>
-                                <div class="ptt-rep-stat">
-                                    <span class="label">Won</span>
-                                    <span class="value text-success" t-esc="rep.booked_count"/>
-                                </div>
-                                <div class="ptt-rep-stat">
-                                    <span class="label">Lost</span>
-                                    <span class="value text-danger" t-esc="rep.lost_count || 0"/>
-                                </div>
-                                <div class="ptt-rep-stat">
-                                    <span class="label">Conversion</span>
-                                    <span class="value" t-esc="rep.conversion_rate + '%'"/>
-                                </div>
-                            </div>
-                            <div class="ptt-rep-progress">
-                                <div class="progress" style="height: 8px; margin-bottom: 0.5rem;">
-                                    <div class="progress-bar" 
-                                        t-att-style="'width: ' + Math.min((rep.revenue_vs_target_pct || 0), 100) + '%'"
-                                        t-att-class="rep.revenue_vs_target_pct >= 100 ? 'bg-success' : rep.revenue_vs_target_pct >= 75 ? 'bg-warning' : 'bg-danger'"/>
-                                </div>
-                                <small class="text-muted">
-                                    <t t-esc="rep.revenue_vs_target_pct || 0"/>% of target
-                                </small>
-                            </div>
-                        </div>
-                    </t>
-                </div>
-                
-                <!-- Empty state for reps -->
-                <t t-if="!state.data.reps || state.data.reps.length === 0">
-                    <div class="ptt-card">
-                        <div class="ptt-empty-state">
-                            <i class="fa fa-users"/>
-                            <p>No sales data for this period</p>
-                        </div>
-                    </div>
-                </t>
             </t>
         </div>
     </t>

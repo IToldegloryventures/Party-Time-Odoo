@@ -237,35 +237,58 @@
                     <h2><i class="fa fa-users"/> All Users Performance</h2>
                 </div>
                 
-                <div class="ptt-rep-grid" t-if="state.data.users">
-                    <t t-foreach="state.data.users" t-as="user" t-key="user.id">
-                        <div class="ptt-rep-card">
-                            <div class="ptt-rep-header">
-                                <div class="ptt-rep-avatar" style="background-color: #6366F1;">
-                                    <t t-esc="user.initials"/>
-                                </div>
-                                <div class="ptt-rep-name" t-esc="user.name"/>
-                            </div>
-                            <div class="ptt-rep-stats">
-                                <div class="ptt-rep-stat" t-if="user.task_total_assigned !== undefined">
-                                    <span class="label">Tasks Assigned</span>
-                                    <span class="value" t-esc="user.task_total_assigned"/>
-                                </div>
-                                <div class="ptt-rep-stat" t-if="user.task_overdue !== undefined">
-                                    <span class="label">Overdue</span>
-                                    <span class="value text-danger" t-esc="user.task_overdue"/>
-                                </div>
-                                <div class="ptt-rep-stat" t-if="user.task_completed !== undefined">
-                                    <span class="label">Completed</span>
-                                    <span class="value text-success" t-esc="user.task_completed"/>
-                                </div>
-                                <div class="ptt-rep-stat" t-if="user.messages_sent !== undefined">
-                                    <span class="label">Messages</span>
-                                    <span class="value" t-esc="user.messages_sent"/>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
+                <div class="ptt-card" style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #E5E7EB; overflow: hidden;" t-if="state.data.users">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" style="background: white;">
+                            <thead style="background: #F9FAFB;">
+                                <tr>
+                                    <th style="font-weight: 600; font-size: 0.85rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">User</th>
+                                    <th class="text-center" style="font-weight: 600; font-size: 0.85rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Tasks Assigned</th>
+                                    <th class="text-center" style="font-weight: 600; font-size: 0.85rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Overdue</th>
+                                    <th class="text-center" style="font-weight: 600; font-size: 0.85rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Completed</th>
+                                    <th class="text-center" style="font-weight: 600; font-size: 0.85rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Messages</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.users" t-as="user" t-key="user.id">
+                                    <tr style="background: white;">
+                                        <td style="padding: 1rem; vertical-align: middle;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <span class="badge" style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);">
+                                                        <t t-esc="user.initials"/>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <strong style="font-size: 1rem; color: #1F2937;"><t t-esc="user.name"/></strong>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                            <span class="badge bg-info" style="font-size: 0.95rem; padding: 0.5rem 0.75rem; font-weight: 600;">
+                                                <t t-esc="user.task_total_assigned || 0"/>
+                                            </span>
+                                        </td>
+                                        <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                            <span t-att-class="'badge ' + (user.task_overdue > 0 ? 'bg-danger' : 'bg-secondary')" style="font-size: 0.95rem; padding: 0.5rem 0.75rem; font-weight: 600;">
+                                                <t t-esc="user.task_overdue || 0"/>
+                                            </span>
+                                        </td>
+                                        <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                            <span class="badge bg-success" style="font-size: 0.95rem; padding: 0.5rem 0.75rem; font-weight: 600;">
+                                                <t t-esc="user.task_completed || 0"/>
+                                            </span>
+                                        </td>
+                                        <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                            <span class="badge bg-primary" style="font-size: 0.95rem; padding: 0.5rem 0.75rem; font-weight: 600;">
+                                                <t t-esc="user.messages_sent || 0"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </t>
         </div>

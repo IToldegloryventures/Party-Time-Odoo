@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="ptt_operational_dashboard.EventCalendarFull">
-        <div class="ptt-full-calendar d-flex">
+        <div class="ptt-full-calendar d-flex" style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #E5E7EB;">
             <!-- Main Calendar Section -->
-            <div class="ptt-calendar-main flex-grow-1">
+            <div class="ptt-calendar-main flex-grow-1" style="background: white;">
                 <!-- Calendar Header -->
-                <div class="ptt-calendar-header d-flex justify-content-between align-items-center p-3 bg-white border-bottom">
+                <div class="ptt-calendar-header d-flex justify-content-between align-items-center p-3 border-bottom" style="background: #F9FAFB;">
                     <div class="d-flex align-items-center gap-3">
                         <h4 class="mb-0 fw-bold" style="color: #1F2937; font-size: 1.5rem;">
                             <t t-esc="currentMonthYear"/>
@@ -94,21 +94,20 @@
                 
                 <!-- Calendar Grid -->
                 <t t-else="">
-                    <div class="ptt-calendar-grid">
+                    <div class="ptt-calendar-grid" style="background: white;">
                         <!-- Week Day Headers -->
                         <t t-foreach="weekDays" t-as="day" t-key="day">
-                            <div class="ptt-calendar-day-header text-center fw-semibold py-2 bg-light border-bottom" t-esc="day"/>
+                            <div class="ptt-calendar-day-header text-center fw-semibold py-2 border-bottom" style="background: #F9FAFB; color: #6B7280;" t-esc="day"/>
                         </t>
                         
                         <!-- Calendar Days -->
                         <t t-foreach="calendarDays" t-as="day" t-key="day.dateStr">
                             <div 
                                 t-att-class="'ptt-calendar-day border position-relative' + 
-                                    (!day.isCurrentMonth ? ' bg-light text-muted' : ' bg-white') + 
                                     (day.isToday ? ' ptt-today' : '') +
                                     (day.isSelected ? ' ptt-selected' : '')"
-                                t-on-click="() => this.onDayClick(day)"
-                                style="cursor: pointer; min-height: 100px;">
+                                t-att-style="'cursor: pointer; min-height: 100px; background: ' + (!day.isCurrentMonth ? '#F9FAFB' : 'white') + ';' + (!day.isCurrentMonth ? ' color: #9CA3AF;' : '')"
+                                t-on-click="() => this.onDayClick(day)">
                                 <div class="ptt-day-number p-1">
                                     <span t-att-class="day.isToday ? 'badge bg-primary rounded-circle' : ''">
                                         <t t-esc="day.day"/>
@@ -138,7 +137,7 @@
                     </div>
                     
                     <!-- Stage Legend / Filters -->
-                    <div class="ptt-calendar-legend d-flex flex-wrap align-items-center gap-3 p-3 bg-white border-top">
+                    <div class="ptt-calendar-legend d-flex flex-wrap align-items-center gap-3 p-3 border-top" style="background: #F9FAFB;">
                         <span class="fw-semibold me-2" style="color: #4B5563;">Filter by Stage:</span>
                         <t t-foreach="state.stages" t-as="stage" t-key="stage.id">
                             <div class="form-check form-check-inline mb-0">
@@ -160,8 +159,8 @@
             </div>
             
             <!-- Day Panel (Right Sidebar) -->
-            <div class="ptt-day-panel bg-white border-start" style="width: 320px; min-width: 320px;">
-                <div class="p-3 border-bottom bg-light">
+            <div class="ptt-day-panel border-start" style="width: 320px; min-width: 320px; background: white;">
+                <div class="p-3 border-bottom" style="background: #F9FAFB;">
                     <h5 class="mb-0 fw-bold">
                         <t t-if="state.selectedDate">
                             <t t-esc="selectedDateDisplay"/>

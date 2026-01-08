@@ -88,10 +88,9 @@ class SaleOrder(models.Model):
         
         When SO is confirmed (customer accepts):
         1. Mark contract as signed with timestamp
-        2. Create Event Project with tasks (uses Event ID from CRM if set)
-        3. Move CRM to 'Booked' stage
+        2. Move CRM to 'Booked' stage
         
-        Note: Event ID should be manually entered on the CRM Lead before confirmation.
+        Note: Project creation is handled MANUALLY in Odoo, not automatically here.
         """
         res = super().action_confirm()
         
@@ -107,26 +106,8 @@ class SaleOrder(models.Model):
                     message_type="notification",
                 )
                 
-                # Process CRM opportunity if linked
+                # Move CRM to Booked stage (if linked to opportunity)
                 if order.opportunity_id:
-                    lead = order.opportunity_id
-                    
-                    # Create Event Project if it doesn't exist
-                    if not lead.x_project_id:
-                        try:
-                            lead.action_create_project_from_lead()
-                            lead.message_post(
-                                body=_("Event Project created: Contract accepted."),
-                                message_type="notification",
-                            )
-                        except Exception as e:
-                            lead.message_post(
-                                body=_("Error creating project: %s") % str(e),
-                                message_type="notification",
-                                subtype_xmlid="mail.mt_note",
-                            )
-                    
-                    # Move CRM to Booked stage
                     self._update_crm_stage(
                         "Booked",
                         _("CRM stage updated to Booked: Customer accepted contract.")

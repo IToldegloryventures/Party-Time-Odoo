@@ -15,8 +15,6 @@ import { EventCalendarFull } from "./components/event_calendar_full";
 import { SalesDashboard } from "./components/sales_dashboard";
 import { OperationsDashboard } from "./components/operations_dashboard";
 import { CommunicationDashboard } from "./components/communication_dashboard";
-import { DashboardTasksSection } from "./components/dashboard_tasks_section";
-import { TaskLeaderboard } from "./components/task_leaderboard";
 
 /**
  * HomeController
@@ -37,8 +35,6 @@ export class HomeController extends Component {
         SalesDashboard,
         OperationsDashboard,
         CommunicationDashboard,
-        DashboardTasksSection,
-        TaskLeaderboard,
     };
 
     setup() {
@@ -50,15 +46,11 @@ export class HomeController extends Component {
             loading: true,
             refreshing: false,
             homeData: null,
-            dashboardTasks: null,
-            taskLeaderboard: null,
             error: null,
         });
         
         onWillStart(async () => {
             await this.loadHomeData();
-            await this.loadDashboardTasks();
-            await this.loadTaskLeaderboard();
         });
     }
 
@@ -75,28 +67,10 @@ export class HomeController extends Component {
         }
     }
 
-    async loadDashboardTasks() {
-        try {
-            this.state.dashboardTasks = await this.homeService.getDashboardTasks();
-        } catch (error) {
-            console.error("Error loading dashboard tasks:", error);
-        }
-    }
-
-    async loadTaskLeaderboard() {
-        try {
-            this.state.taskLeaderboard = await this.homeService.getTaskLeaderboard();
-        } catch (error) {
-            console.error("Error loading task leaderboard:", error);
-        }
-    }
-
     async onRefresh() {
         this.state.refreshing = true;
         this.homeService.invalidateCache();
         await this.loadHomeData();
-        await this.loadDashboardTasks();
-        await this.loadTaskLeaderboard();
         this.state.refreshing = false;
     }
 
@@ -138,21 +112,6 @@ export class HomeController extends Component {
 
     get agendaEvents() {
         return this.state.homeData?.agenda_events || [];
-    }
-
-    get dashboardTasks() {
-        return this.state.dashboardTasks || {
-            assigned_tasks: [],
-            unassigned_tasks: [],
-            due_today: [],
-            overdue: [],
-            no_due_date: [],
-            all_combined: [],
-        };
-    }
-
-    get taskLeaderboard() {
-        return this.state.taskLeaderboard || [];
     }
 
     openCommissionReports() {

@@ -795,12 +795,12 @@ $status-completed: #6C757D;
         }
     }
     
-    // Full Calendar (DJ Event Planner Style)
+    // Full Calendar - Light Theme Design
     .ptt-full-calendar {
         background: white;
         border-radius: 16px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 1px solid #E5E7EB;
         height: calc(100vh - 120px);
         overflow: hidden;
         
@@ -809,11 +809,13 @@ $status-completed: #6C757D;
             flex-direction: column;
             height: 100%;
             overflow: hidden;
+            background: white;
         }
         
         .ptt-calendar-header {
             flex-shrink: 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            border-bottom: 1px solid #E5E7EB;
+            background: #F9FAFB;
         }
         
         .ptt-calendar-grid {
@@ -827,8 +829,11 @@ $status-completed: #6C757D;
             .ptt-calendar-day-header {
                 background: #F9FAFB;
                 font-weight: 600;
-                color: #4B5563;
+                color: #6B7280;
                 padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
             
             .ptt-calendar-day {
@@ -848,13 +853,19 @@ $status-completed: #6C757D;
                     
                     .ptt-day-number .badge {
                         background: $ptt-red !important;
+                        color: white !important;
                     }
                 }
                 
                 &.ptt-selected {
-                    background: #E0F2FE !important;
-                    box-shadow: inset 0 0 0 3px #0EA5E9;
+                    background: #DBEAFE !important;
+                    box-shadow: inset 0 0 0 3px #3B82F6;
                     z-index: 2;
+                }
+                
+                .ptt-day-number {
+                    color: #374151;
+                    font-weight: 500;
                 }
                 
                 .ptt-day-event {
@@ -865,7 +876,7 @@ $status-completed: #6C757D;
                     border-radius: 4px;
                     
                     &:hover {
-                        filter: brightness(1.15);
+                        filter: brightness(1.1);
                         transform: translateX(2px);
                         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
                     }
@@ -875,6 +886,7 @@ $status-completed: #6C757D;
         
         .ptt-calendar-legend {
             flex-shrink: 0;
+            background: #F9FAFB;
             
             .ptt-legend-dot {
                 width: 10px;
@@ -884,26 +896,33 @@ $status-completed: #6C757D;
             }
         }
         
-        // Day Panel (Right Sidebar)
+        // Day Panel (Right Sidebar) - Light Theme
         .ptt-day-panel {
             display: flex;
             flex-direction: column;
             height: 100%;
             overflow: hidden;
+            background: white;
             
             .ptt-day-panel-content {
                 flex-grow: 1;
                 overflow-y: auto;
+                background: white;
             }
             
             .ptt-panel-event {
                 transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 border-radius: 12px;
                 margin-bottom: 0.75rem;
+                background: white;
                 
                 &:hover {
                     transform: translateX(6px);
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+                }
+                
+                .card-body {
+                    background: white;
                 }
             }
         }
@@ -917,7 +936,7 @@ $status-completed: #6C757D;
                 width: 100% !important;
                 min-width: 100% !important;
                 border-left: none !important;
-                border-top: 1px solid $ptt-border;
+                border-top: 1px solid #E5E7EB;
                 max-height: 300px;
             }
         }
@@ -941,8 +960,10 @@ $status-completed: #6C757D;
         }
     }
     
-    // Sales Dashboard
+    // Sales Dashboard - Light Theme
     .ptt-sales-dashboard {
+        background: #F9FAFB;
+        
         .ptt-kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -959,33 +980,17 @@ $status-completed: #6C757D;
             background: white;
             border-radius: 16px;
             padding: 1.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             
-            &::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 4px;
-                background: linear-gradient(90deg, transparent, currentColor, transparent);
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            
             &:hover {
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
                 transform: translateY(-4px);
-                border-color: rgba(0, 0, 0, 0.1);
-                
-                &::before {
-                    opacity: 0.3;
-                }
+                border-color: #D1D5DB;
             }
             
             .ptt-kpi-icon {
@@ -1011,7 +1016,7 @@ $status-completed: #6C757D;
             .ptt-kpi-value {
                 font-size: 2.25rem;
                 font-weight: 700;
-                color: $ptt-dark;
+                color: #1F2937;
                 margin-bottom: 0.5rem;
                 line-height: 1.2;
                 letter-spacing: -0.5px;
@@ -1041,10 +1046,6 @@ $status-completed: #6C757D;
                 padding: 2rem;
                 grid-column: span 1;
                 
-                @media (min-width: 1200px) {
-                    grid-column: span 1;
-                }
-                
                 .ptt-kpi-icon {
                     width: 72px;
                     height: 72px;
@@ -1053,7 +1054,7 @@ $status-completed: #6C757D;
                 }
                 
                 .ptt-kpi-value {
-                    font-size: 3rem;
+                    font-size: 2.5rem;
                     margin-bottom: 0.75rem;
                 }
                 
@@ -1074,8 +1075,8 @@ $status-completed: #6C757D;
             background: white;
             padding: 1.25rem;
             border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             margin-bottom: 2rem;
             
             .btn-group {
@@ -1110,7 +1111,7 @@ $status-completed: #6C757D;
             }
         }
         
-        // Sales Rep Grid
+        // Sales Rep Grid - Deprecated, using leaderboard table now
         .ptt-rep-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1125,15 +1126,15 @@ $status-completed: #6C757D;
             background: white;
             border-radius: 16px;
             padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             
             &:hover {
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
                 transform: translateY(-4px);
-                border-color: rgba(0, 0, 0, 0.1);
+                border-color: #D1D5DB;
             }
             
             .ptt-rep-header {
@@ -1164,7 +1165,7 @@ $status-completed: #6C757D;
             .ptt-rep-name {
                 font-weight: 600;
                 font-size: 1.15rem;
-                color: $ptt-dark;
+                color: #1F2937;
             }
             
             .ptt-rep-stats {
@@ -1178,8 +1179,8 @@ $status-completed: #6C757D;
                     
                     .label {
                         display: block;
-                        font-size: 0.75rem;
-                        color: #9CA3AF;
+                        font-size: 0.8rem;
+                        color: #6B7280;
                         margin-bottom: 0.25rem;
                     }
                     
@@ -1187,7 +1188,7 @@ $status-completed: #6C757D;
                         display: block;
                         font-weight: 600;
                         font-size: 1rem;
-                        color: $ptt-dark;
+                        color: #1F2937;
                     }
                 }
             }
@@ -1195,13 +1196,16 @@ $status-completed: #6C757D;
             .ptt-rep-progress {
                 .progress {
                     margin-bottom: 0.5rem;
+                    background: #E5E7EB;
                 }
             }
         }
     }
     
-    // Operations Dashboard
+    // Operations Dashboard - Light Theme
     .ptt-operations-dashboard {
+        background: #F9FAFB;
+        
         .ptt-kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1218,15 +1222,15 @@ $status-completed: #6C757D;
             background: white;
             border-radius: 16px;
             padding: 1.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             
             &:hover {
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
                 transform: translateY(-4px);
-                border-color: rgba(0, 0, 0, 0.1);
+                border-color: #D1D5DB;
             }
             
             .ptt-kpi-icon {
@@ -1248,7 +1252,7 @@ $status-completed: #6C757D;
             .ptt-kpi-value {
                 font-size: 2.25rem;
                 font-weight: 700;
-                color: $ptt-dark;
+                color: #1F2937;
                 margin-bottom: 0.5rem;
                 line-height: 1.2;
             }
@@ -1272,11 +1276,40 @@ $status-completed: #6C757D;
             background: white;
             padding: 1.25rem;
             border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
             margin-bottom: 2rem;
             
             .btn-group {
+                display: inline-flex;
+                background: #F3F4F6;
+                border-radius: 10px;
+                padding: 4px;
+                gap: 4px;
+                
+                .btn {
+                    border: none;
+                    border-radius: 8px;
+                    padding: 0.5rem 1rem;
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                    transition: all 0.2s ease;
+                    background: transparent;
+                    color: #6B7280;
+                    
+                    &:hover:not(.active) {
+                        background: rgba(255, 255, 255, 0.8);
+                        color: #374151;
+                    }
+                    
+                    &.active {
+                        background: white;
+                        color: $ptt-red;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        font-weight: 600;
+                    }
+                }
+                
                 @media (max-width: 768px) {
                     flex-wrap: wrap;
                     width: 100%;
@@ -1288,39 +1321,121 @@ $status-completed: #6C757D;
                 }
             }
         }
+        
+        // Operations users table
+        .ptt-rep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .ptt-rep-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            
+            .ptt-rep-header {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .ptt-rep-avatar {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+            
+            .ptt-rep-name {
+                font-weight: 600;
+                font-size: 1.15rem;
+                color: #1F2937;
+            }
+            
+            .ptt-rep-stats {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+                
+                .ptt-rep-stat {
+                    flex: 1;
+                    text-align: center;
+                    min-width: 70px;
+                    
+                    .label {
+                        display: block;
+                        font-size: 0.8rem;
+                        color: #6B7280;
+                        margin-bottom: 0.25rem;
+                    }
+                    
+                    .value {
+                        display: block;
+                        font-weight: 600;
+                        font-size: 1rem;
+                        color: #1F2937;
+                    }
+                }
+            }
+        }
     }
     
-    // Task Leaderboard - Modern table design
-    .ptt-task-leaderboard {
+    // Sales Leaderboard - Modern clean design with light theme
+    .ptt-sales-leaderboard {
+        .ptt-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #E5E7EB;
+        }
+        
         .table {
             margin-bottom: 0;
+            background: white;
             
             thead {
                 background: #F9FAFB;
                 
                 th {
                     font-weight: 600;
-                    font-size: 0.875rem;
-                    color: #4B5563;
+                    font-size: 0.8rem;
+                    color: #6B7280;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                     padding: 1rem;
                     border-bottom: 2px solid #E5E7EB;
+                    white-space: nowrap;
                 }
             }
             
             tbody {
                 tr {
                     transition: all 0.2s ease;
+                    background: white;
                     
                     &:hover {
                         background: #F9FAFB;
-                        transform: scale(1.01);
                     }
                     
                     td {
                         padding: 1rem;
                         vertical-align: middle;
+                        color: #374151;
+                        font-size: 0.95rem;
                     }
                 }
             }
@@ -1328,20 +1443,24 @@ $status-completed: #6C757D;
         
         .ptt-user-avatar {
             .badge {
-                width: 40px;
-                height: 40px;
+                width: 44px;
+                height: 44px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-weight: 700;
-                font-size: 0.9rem;
+                font-size: 0.95rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             }
         }
         
         .progress {
-            border-radius: 10px;
+            height: 24px;
+            border-radius: 12px;
             overflow: hidden;
+            background: #E5E7EB;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
             
             .progress-bar {
                 font-weight: 600;

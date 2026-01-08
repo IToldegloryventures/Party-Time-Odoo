@@ -98,41 +98,29 @@ class ProjectProject(models.Model):
             else:
                 project.x_actual_margin_percent = 0.0
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Override create to set initial stage for event projects.
-        
-        Note: Task creation is handled separately via action_create_event_tasks()
-        to avoid permission issues during the create transaction.
-        The Sales Order confirmation flow will call this after project creation.
-        """
-        projects = super().create(vals_list)
-        for project in projects:
-            # Only set initial stage if this is an event project (has CRM lead)
-            if project.x_crm_lead_id:
-                project._set_initial_project_stage()
-        return projects
+    # NOTE: Project creation is handled manually in Odoo.
+    # No automatic project creation or task creation from code.
+    # The action_create_event_tasks() method below can be called manually via button if needed.
     
     def action_create_event_tasks(self):
-        """Public method to create event tasks for this project.
+        """Button action to create event tasks for this project.
         
-        This is separated from create() to allow proper transaction handling
-        and to be called after the project is fully saved.
-        
+        This can be called manually from a button on the project form.
         Returns True if tasks were created successfully, False otherwise.
         """
         self.ensure_one()
-        if not self.x_crm_lead_id:
-            return False
-        
         try:
             self._create_event_tasks()
+            self.message_post(
+                body="Event tasks created successfully.",
+                message_type="notification",
+            )
             return True
         except Exception as e:
-            # Log the error but don't raise - let caller handle
-            import logging
-            _logger = logging.getLogger(__name__)
-            _logger.error(f"Error creating event tasks for project {self.id}: {e}")
+            self.message_post(
+                body=f"Error creating event tasks: {e}",
+                message_type="notification",
+            )
             return False
 
     # Core event identity
