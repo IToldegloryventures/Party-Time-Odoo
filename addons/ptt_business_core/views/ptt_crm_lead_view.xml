@@ -42,18 +42,19 @@
                         </span>
                     </div>
                 </button>
-                <!-- Project buttons -->
+                <!-- Project buttons - show if project exists (via x_project_id or confirmed Sales Order) -->
                 <button name="action_view_project" type="object"
                     class="oe_stat_button" icon="fa-tasks"
-                    invisible="not x_project_id">
+                    invisible="not x_has_project or type == 'lead'">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Project</span>
-                        <field name="x_project_id" class="o_stat_value" readonly="1"/>
+                        <field name="x_project_id" class="o_stat_value" readonly="1" invisible="not x_project_id"/>
+                        <span class="o_stat_value" invisible="x_project_id">Created</span>
                     </div>
                 </button>
                 <button name="action_view_project_tasks" type="object"
                     class="oe_stat_button" icon="fa-check-square-o"
-                    invisible="not x_project_id">
+                    invisible="not x_has_project or type == 'lead'">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Project Tasks</span>
                         <span class="o_stat_value">

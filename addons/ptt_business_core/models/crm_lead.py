@@ -585,11 +585,43 @@ class CrmLead(models.Model):
         compute="_compute_project_count",
         help="Counter for the project linked to this lead",
     )
+    
+    x_has_project = fields.Boolean(
+        string="Has Project",
+        compute="_compute_project_count",
+        help="True if this lead has a linked project (via x_project_id or confirmed Sales Order)",
+    )
 
-    @api.depends("x_project_id")
+    @api.depends("x_project_id", "order_ids", "order_ids.state", "order_ids.project_ids")
     def _compute_project_count(self):
         for record in self:
-            record.project_count = 1 if record.x_project_id else 0
+            # Check direct project link
+            if record.x_project_id:
+                record.project_count = 1
+                record.x_has_project = True
+            else:
+                # Check if any confirmed Sales Order has a project
+                confirmed_orders = record.order_ids.filtered(lambda so: so.state == 'sale')
+                if confirmed_orders:
+                    # Check if any confirmed SO has a project linked via project_ids or project_id
+                    projects_from_so = confirmed_orders.mapped('project_ids').filtered(lambda p: p)
+                    # Also check projects linked via x_crm_lead_id
+                    projects_from_crm = self.env['project.project'].search([
+                        ('x_crm_lead_id', '=', record.id)
+                    ])
+                    all_projects = (projects_from_so | projects_from_crm)
+                    if all_projects:
+                        record.project_count = len(all_projects)
+                        record.x_has_project = True
+                        # Set x_project_id to the first project if not already set
+                        if not record.x_project_id:
+                            record.x_project_id = all_projects[0].id
+                    else:
+                        record.project_count = 0
+                        record.x_has_project = False
+                else:
+                    record.project_count = 0
+                    record.x_has_project = False
 
     x_project_task_count = fields.Integer(
         string="# Project Tasks",
@@ -661,13 +693,33 @@ class CrmLead(models.Model):
     def action_view_project(self):
         """Open the related project."""
         self.ensure_one()
-        if not self.x_project_id:
-            return False
+        # First try direct link
+        if self.x_project_id:
+            project = self.x_project_id
+        else:
+            # Try to find project via confirmed Sales Orders
+            confirmed_orders = self.order_ids.filtered(lambda so: so.state == 'sale')
+            if confirmed_orders:
+                # Check projects linked via sale_order project_ids
+                projects_from_so = confirmed_orders.mapped('project_ids').filtered(lambda p: p)
+                # Also check projects linked via x_crm_lead_id
+                projects_from_crm = self.env['project.project'].search([
+                    ('x_crm_lead_id', '=', self.id)
+                ], limit=1)
+                project = projects_from_so[0] if projects_from_so else projects_from_crm
+                if project:
+                    # Link it back to this lead for future reference
+                    self.write({'x_project_id': project.id})
+                else:
+                    return False
+            else:
+                return False
+        
         return {
             "type": "ir.actions.act_window",
             "name": _("Project"),
             "res_model": "project.project",
-            "res_id": self.x_project_id.id,
+            "res_id": project.id,
             "view_mode": "form",
             "target": "current",
         }
