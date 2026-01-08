@@ -32,7 +32,13 @@ class SaleOrderLine(models.Model):
              "This is for REFERENCE ONLY - Unit Price is not automatically updated.",
     )
 
-    @api.depends('x_target_margin', 'purchase_price', 'product_id', 'currency_id')
+    @api.onchange('x_target_margin', 'purchase_price', 'product_id')
+    def _onchange_target_margin(self):
+        """Trigger recalculation when target margin or cost changes."""
+        # Trigger the compute method
+        self._compute_target_margin_price()
+
+    @api.depends('x_target_margin', 'purchase_price', 'product_id', 'currency_id', 'product_uom_id', 'company_id')
     def _compute_target_margin_price(self):
         """Calculate recommended price based on Target Margin and Cost.
         
@@ -46,13 +52,25 @@ class SaleOrderLine(models.Model):
                 continue
             
             # Get purchase price (cost) - from sale_margin module
+            # purchase_price is a computed field that should already be calculated
+            # It's computed based on: product_id, company_id, currency_id, product_uom_id
+            # Ensure it's computed if not set
+            if not line.purchase_price and hasattr(line, '_compute_purchase_price'):
+                line._compute_purchase_price()
+            
             cost = line.purchase_price or 0.0
             target_margin = line.x_target_margin or 0.0
             
             # Only calculate if both cost and margin are provided
+            # Note: target_margin is stored as decimal (0.30 = 30%) due to percentage widget
+            # Percentage widget stores: 30% input = 0.30 in database, displays as "30%"
             if cost > 0 and target_margin > 0 and target_margin < 1:
                 # Formula: Price = Cost / (1 - Margin)
                 # Example: $100 cost, 50% margin (0.50) = 100 / (1 - 0.50) = 100 / 0.50 = $200
-                line.x_target_margin_price = cost / (1 - target_margin)
+                # Example: $100 cost, 30% margin (0.30) = 100 / (1 - 0.30) = 100 / 0.70 = $142.86
+                try:
+                    line.x_target_margin_price = cost / (1 - target_margin)
+                except ZeroDivisionError:
+                    line.x_target_margin_price = 0.0
             else:
                 line.x_target_margin_price = 0.0
