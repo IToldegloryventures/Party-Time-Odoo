@@ -120,7 +120,7 @@ class ContactFormController(http.Controller):
                 'Not Sure': 'combination',
             }
             
-            # Prepare lead values
+            # Prepare CORE lead values (standard Odoo fields - always work)
             lead_vals = {
                 'name': lead_name,
                 'contact_name': contact_name,
@@ -129,58 +129,74 @@ class ContactFormController(http.Controller):
                 'phone': kw.get('phone', '').strip(),
                 'description': '\n'.join(description_parts),
                 'type': 'opportunity',
-                'x_inquiry_source': 'web_form',
-                'x_lead_type': lead_type,
             }
             
             # Set stage if found
             if intake_stage:
                 lead_vals['stage_id'] = intake_stage.id
             
-            # Event details
-            event_type_form = kw.get('event_type', '').strip()
-            mapped_event_type = event_type_mapping.get(event_type_form)
-            if mapped_event_type:
-                lead_vals['x_event_type'] = mapped_event_type
+            _logger.info("Creating CRM lead with core values: %s", lead_vals)
             
-            # Store original event type in event name if it's "Other"
-            if event_type_form == 'Other Event':
-                lead_vals['x_event_name'] = 'Other Event - See Notes'
-            
-            # Event date
-            event_date = kw.get('event_date', '').strip()
-            if event_date:
-                lead_vals['x_event_date'] = event_date
-            
-            # Event time
-            event_time = kw.get('event_time', '').strip()
-            if event_time:
-                lead_vals['x_event_time'] = event_time
-            
-            # Guest count
-            guest_count = kw.get('guest_count', '').strip()
-            if guest_count and guest_count.isdigit():
-                lead_vals['x_estimated_guest_count'] = int(guest_count)
-            
-            # Venue/Location
-            event_location = kw.get('event_location', '').strip()
-            if event_location:
-                lead_vals['x_venue_name'] = event_location
-            
-            # Budget
-            budget = kw.get('budget', '').strip()
-            if budget:
-                lead_vals['x_budget_range'] = budget
-            
-            # Indoor/Outdoor
-            indoor_outdoor = kw.get('indoor_outdoor', '').strip()
-            mapped_location = indoor_outdoor_mapping.get(indoor_outdoor)
-            if mapped_location:
-                lead_vals['x_event_location_type'] = mapped_location
-            
-            # Create the lead
+            # Create the lead FIRST with core fields
             lead = request.env['crm.lead'].sudo().create(lead_vals)
             _logger.info("Created CRM lead #%s from contact form: %s", lead.id, lead_name)
+            
+            # NOW update with custom PTT fields (these may not exist if ptt_business_core not installed)
+            try:
+                custom_vals = {}
+                
+                # Basic PTT fields
+                custom_vals['x_inquiry_source'] = 'web_form'
+                custom_vals['x_lead_type'] = lead_type
+                
+                # Event details
+                event_type_form = kw.get('event_type', '').strip()
+                mapped_event_type = event_type_mapping.get(event_type_form)
+                if mapped_event_type:
+                    custom_vals['x_event_type'] = mapped_event_type
+                
+                # Store original event type in event name if it's "Other"
+                if event_type_form == 'Other Event':
+                    custom_vals['x_event_name'] = 'Other Event - See Notes'
+                
+                # Event date
+                event_date = kw.get('event_date', '').strip()
+                if event_date:
+                    custom_vals['x_event_date'] = event_date
+                
+                # Event time
+                event_time = kw.get('event_time', '').strip()
+                if event_time:
+                    custom_vals['x_event_time'] = event_time
+                
+                # Guest count
+                guest_count = kw.get('guest_count', '').strip()
+                if guest_count and guest_count.isdigit():
+                    custom_vals['x_estimated_guest_count'] = int(guest_count)
+                
+                # Venue/Location
+                event_location = kw.get('event_location', '').strip()
+                if event_location:
+                    custom_vals['x_venue_name'] = event_location
+                
+                # Budget
+                budget = kw.get('budget', '').strip()
+                if budget:
+                    custom_vals['x_budget_range'] = budget
+                
+                # Indoor/Outdoor
+                indoor_outdoor = kw.get('indoor_outdoor', '').strip()
+                mapped_location = indoor_outdoor_mapping.get(indoor_outdoor)
+                if mapped_location:
+                    custom_vals['x_event_location_type'] = mapped_location
+                
+                # Update the lead with custom fields
+                if custom_vals:
+                    lead.sudo().write(custom_vals)
+                    _logger.info("Updated CRM lead #%s with PTT custom fields", lead.id)
+                    
+            except Exception as custom_err:
+                _logger.warning("Could not set custom PTT fields on lead #%s: %s", lead.id, str(custom_err))
             
             # Redirect to thank you page
             return request.redirect(f'/contact-us/thank-you{embed_param}')
