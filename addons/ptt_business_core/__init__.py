@@ -64,6 +64,49 @@ def post_init_hook(env):
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error deleting x_plan2_id field: {e}")
     
+    # === CLEANUP: Remove duplicate project stages ===
+    try:
+        _logger.info("PTT Business Core: Checking for duplicate project stages")
+        ProjectStage = env['project.project.stage'].sudo()
+        
+        # Find all stage names and check for duplicates
+        all_stages = ProjectStage.search([], order='name, sequence, id')
+        seen_names = {}
+        stages_to_delete = []
+        
+        for stage in all_stages:
+            name = stage.name
+            if name in seen_names:
+                # This is a duplicate - mark for deletion (keep the first one)
+                stages_to_delete.append(stage)
+                _logger.info(f"PTT Business Core: Found duplicate project stage: {name} (ID: {stage.id})")
+            else:
+                seen_names[name] = stage.id
+        
+        if stages_to_delete:
+            # First, reassign any projects using these stages to the original stage
+            Project = env['project.project'].sudo()
+            for dup_stage in stages_to_delete:
+                original_stage_id = seen_names.get(dup_stage.name)
+                if original_stage_id:
+                    # Find projects using the duplicate stage and move them
+                    projects_to_update = Project.search([('stage_id', '=', dup_stage.id)])
+                    if projects_to_update:
+                        projects_to_update.write({'stage_id': original_stage_id})
+                        _logger.info(f"PTT Business Core: Moved {len(projects_to_update)} projects from duplicate stage {dup_stage.id} to {original_stage_id}")
+            
+            # Now delete the duplicate stages
+            for stage in stages_to_delete:
+                try:
+                    stage.unlink()
+                    _logger.info(f"PTT Business Core: Deleted duplicate project stage ID: {stage.id}")
+                except Exception as e:
+                    _logger.warning(f"PTT Business Core: Could not delete stage {stage.id}: {e}")
+            
+            _logger.info(f"PTT Business Core: Cleaned up {len(stages_to_delete)} duplicate project stages")
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning duplicate project stages: {e}")
+    
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
 
 

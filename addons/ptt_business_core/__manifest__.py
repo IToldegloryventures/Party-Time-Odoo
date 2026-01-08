@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.1.4.2",
+    "version": "19.0.1.4.3",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -18,7 +18,8 @@
         "data/crm_lost_reasons.xml",
         "data/mail_activity_type.xml",
         "data/task_types.xml",
-        "data/project_stages.xml",
+        # Project stages removed - use Odoo defaults to avoid duplicates
+        # "data/project_stages.xml",
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
         # Views
