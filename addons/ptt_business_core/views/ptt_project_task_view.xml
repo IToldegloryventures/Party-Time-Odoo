@@ -4,6 +4,10 @@
         PTT Project Task Form View Extension
         Adds project/event context banner at top of task form
         Per Odoo 19 Guidelines: https://www.odoo.com/documentation/19.0/developer/tutorials/server_framework_101.html
+        
+        NOTE: Only form view extension is included. List/Kanban/Search extensions
+        were removed due to Odoo 19 view ID changes. Can be added later once
+        correct view IDs are verified.
     -->
     
     <record id="view_task_form_ptt" model="ir.ui.view">
@@ -99,61 +103,6 @@
                     <field name="x_is_event_task" invisible="1"/>
                     <field name="x_project_crm_lead_id" invisible="1"/>
                 </div>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- Task List View - Add Event Context Columns -->
-    <record id="view_task_tree_ptt" model="ir.ui.view">
-        <field name="name">project.task.tree.ptt</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_tree"/>
-        <field name="arch" type="xml">
-            <!-- Add Event ID column after project_id -->
-            <xpath expr="//field[@name='project_id']" position="after">
-                <field name="x_project_event_id" string="Event ID" optional="show"/>
-                <field name="x_project_event_date" string="Event Date" optional="show"/>
-                <field name="x_project_client_name" string="Client" optional="hide"/>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- Task Kanban View - Add Event Fields for data access -->
-    <record id="view_task_kanban_ptt" model="ir.ui.view">
-        <field name="name">project.task.kanban.ptt</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_kanban"/>
-        <field name="arch" type="xml">
-            <!-- Add event fields to kanban (before templates for data access) -->
-            <xpath expr="//kanban/field[@name='stage_id']" position="after">
-                <field name="x_project_event_id"/>
-                <field name="x_project_event_date"/>
-                <field name="x_days_until_event"/>
-                <field name="x_is_event_task"/>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- Task Search View - Add Event Filters -->
-    <!-- Inheriting from view_task_search_form_project_fsm_base which has my_tasks filter -->
-    <record id="view_task_search_ptt" model="ir.ui.view">
-        <field name="name">project.task.search.ptt</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_search_form_project_fsm_base"/>
-        <field name="arch" type="xml">
-            <!-- Add filter for event tasks after my_tasks -->
-            <xpath expr="//filter[@name='my_tasks']" position="after">
-                <separator/>
-                <filter string="Event Tasks" name="event_tasks" domain="[('x_is_event_task', '=', True)]"/>
-                <!-- Use Odoo 19 date filter syntax: 'today +Xd' -->
-                <filter string="This Week's Events" name="this_week_events" 
-                        domain="[('x_project_event_date', '&gt;=', 'today'), ('x_project_event_date', '&lt;', 'today +8d')]"/>
-                <filter string="Next 30 Days" name="next_30_days"
-                        domain="[('x_project_event_date', '&gt;=', 'today'), ('x_project_event_date', '&lt;', 'today +31d')]"/>
-            </xpath>
-            <!-- Add group by Event Date after project groupby -->
-            <xpath expr="//filter[@name='project']" position="after">
-                <filter string="Event Date" name="group_by_event_date" context="{'group_by': 'x_project_event_date'}"/>
             </xpath>
         </field>
     </record>
