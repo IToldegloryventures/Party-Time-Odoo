@@ -30,6 +30,7 @@ class SaleOrder(models.Model):
     x_contract_signed_date = fields.Datetime(
         string="Contract Signed Date",
         readonly=True,
+        copy=False,
     )
 
     @api.depends("state")

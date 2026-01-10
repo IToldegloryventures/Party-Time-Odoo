@@ -53,7 +53,7 @@ const dashboardStatisticsService = {
                     let widget = await orm.searchRead(
                         'ptt.dashboard.widget',
                         [],
-                        ['total_leads', 'total_quotes', 'total_events_week', 'total_outstanding', 'vendor_compliance_issues', 'event_profit_margin'],
+                        ['total_leads', 'total_quotes', 'total_events_week', 'total_outstanding', 'vendor_compliance_issues'],
                         { limit: 1 }
                     );
                     
@@ -63,7 +63,7 @@ const dashboardStatisticsService = {
                         widget = await orm.searchRead(
                             'ptt.dashboard.widget',
                             [['id', '=', widgetId]],
-                            ['total_leads', 'total_quotes', 'total_events_week', 'total_outstanding', 'vendor_compliance_issues', 'event_profit_margin'],
+                            ['total_leads', 'total_quotes', 'total_events_week', 'total_outstanding', 'vendor_compliance_issues'],
                             { limit: 1 }
                         );
                     }

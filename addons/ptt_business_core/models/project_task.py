@@ -85,6 +85,7 @@ class ProjectTask(models.Model):
     x_days_until_event = fields.Integer(
         string="Days Until Event",
         compute="_compute_days_until_event",
+        store=True,
         help="Number of days until the event date.",
     )
     

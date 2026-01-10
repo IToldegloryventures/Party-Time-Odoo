@@ -1,5 +1,6 @@
 import logging
 import re
+import traceback
 from . import models
 
 _logger = logging.getLogger(__name__)
@@ -229,7 +230,6 @@ def pre_init_hook(cr):
             # Remove the field reference from the view by replacing it with a comment
             # This is a simple approach - remove lines containing x_plan2_id
             if arch_db:
-                import re
                 # Remove field elements referencing x_plan2_id
                 new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*/>', '', arch_db)
                 new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
@@ -243,7 +243,6 @@ def pre_init_hook(cr):
                     _logger.info(f"PTT Business Core: Cleaned x_plan2_id from view {view_id}")
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error cleaning views referencing x_plan2_id: {e}")
-        import traceback
         _logger.error(traceback.format_exc())
     
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
@@ -321,7 +320,6 @@ def pre_init_hook(cr):
                 _logger.info(f"PTT Business Core: Deleted {len(stages_to_delete)} unwanted CRM stage(s): {stage_name} (IDs: {stages_to_delete})")
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error cleaning unwanted CRM stages: {e}")
-        import traceback
         _logger.error(traceback.format_exc())
 
 

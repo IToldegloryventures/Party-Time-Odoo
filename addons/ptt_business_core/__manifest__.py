@@ -5,7 +5,7 @@
     "category": "Customizations",
     "author": "Party Time Texas",
     "license": "LGPL-3",
-    "depends": ["web", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "sale_margin", "account", "analytic", "portal", "purchase"],
+    "depends": ["web", "mail", "contacts", "crm", "project", "sale", "sale_crm", "sale_project", "account", "analytic", "portal", "purchase"],
     "data": [
         # Security (load in correct order per Odoo guidelines)
         # 1. Groups XML - must load first as they may be referenced by other security files
@@ -30,7 +30,6 @@
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
         # Views
-        "views/ptt_crm_vendor_estimate_view.xml",
         "views/ptt_project_vendor_assignment_view.xml",
         "views/ptt_res_partner_view.xml",
         "views/ptt_crm_lead_view.xml",

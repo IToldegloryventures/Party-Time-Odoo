@@ -2,6 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_ptt_personal_todo_user,ptt.personal.todo.user,model_ptt_personal_todo,base.group_user,1,1,1,1
 access_ptt_dashboard_widget_user,ptt.dashboard.widget.user,model_ptt_dashboard_widget,base.group_user,1,0,0,0
 access_ptt_sales_rep_user,ptt.sales.rep.user,model_ptt_sales_rep,base.group_user,1,0,0,0
-access_ptt_sales_commission_user,ptt.sales.commission.user,model_ptt_sales_commission,base.group_user,1,0,0,0
-access_ptt_sales_commission_coo,ptt.sales.commission.coo,model_ptt_sales_commission,ptt_operational_dashboard.group_ptt_coo,1,1,1,1
 access_ptt_dashboard_config_admin,ptt.dashboard.config.admin,model_ptt_dashboard_config,base.group_system,1,1,1,1

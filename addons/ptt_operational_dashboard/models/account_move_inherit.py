@@ -21,11 +21,6 @@ class AccountMove(models.Model):
             if 'invoice_user_id' in vals and self.move_type == 'out_invoice':
                 self._trigger_sales_rep_kpi_update()
         
-        # Trigger CRM Lead Actual Margin recalculation when vendor bills change
-        # (vendor bills affect margin calculation via analytic_distribution)
-        if self.move_type in ['in_invoice', 'in_refund'] and 'state' in vals and vals['state'] == 'posted':
-            self._trigger_crm_lead_margin_update()
-        
         return result
     
     @api.model_create_multi
@@ -39,9 +34,6 @@ class AccountMove(models.Model):
         for record in records:
             if record.move_type == 'out_invoice' and record.invoice_user_id:
                 self._trigger_sales_rep_kpi_update(record.invoice_user_id.id)
-            # Trigger CRM Lead Actual Margin recalculation when vendor bills are posted
-            if record.move_type in ['in_invoice', 'in_refund'] and record.state == 'posted':
-                record._trigger_crm_lead_margin_update()
         
         return records
     
@@ -58,56 +50,4 @@ class AccountMove(models.Model):
             sales_rep = self.env['ptt.sales.rep'].search([('user_id', '=', user_id)], limit=1)
             if sales_rep:
                 sales_rep.write({'last_kpi_update': datetime.now()})
-    
-    def _trigger_crm_lead_margin_update(self):
-        """Trigger CRM Lead Actual Margin recalculation when vendor bills change.
-        
-        This finds CRM Leads linked to vendor bills via:
-        Vendor Bill → Analytic Account → Project → Sale Order → CRM Lead
-        """
-        # Only process vendor bills (in_invoice or in_refund)
-        if self.move_type not in ['in_invoice', 'in_refund']:
-            return
-        
-        # Get analytic account IDs from bill lines using distribution_analytic_account_ids
-        # (computed field from analytic.mixin that extracts account IDs from JSON)
-        analytic_account_ids = []
-        for line in self.line_ids:
-            if hasattr(line, 'distribution_analytic_account_ids') and line.distribution_analytic_account_ids:
-                analytic_account_ids.extend(line.distribution_analytic_account_ids.ids)
-        
-        # Remove duplicates
-        analytic_account_ids = list(set(analytic_account_ids))
-        
-        if not analytic_account_ids:
-            return
-        
-        # Find projects linked to these analytic accounts
-        projects = self.env['project.project'].search([
-            ('account_id', 'in', analytic_account_ids)
-        ])
-        
-        if not projects:
-            return
-        
-        # Find sale orders linked to these projects
-        sale_orders = self.env['sale.order'].search([
-            ('project_id', 'in', projects.ids)
-        ])
-        
-        if not sale_orders:
-            return
-        
-        # Find CRM Leads linked to these sale orders
-        # Note: order_ids field comes from sale_crm module
-        Lead = self.env["crm.lead"]
-        if "order_ids" not in Lead._fields:
-            return
-        crm_leads = Lead.search([("order_ids", "in", sale_orders.ids)])
-        
-        if crm_leads:
-            # Trigger recalculation by marking dependency fields as modified
-            # This will cause Odoo to recompute the stored computed fields
-            # Official Odoo 19 pattern: use .modified() to trigger recomputation
-            crm_leads.modified(['order_ids'])
 

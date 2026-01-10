@@ -5,17 +5,6 @@ from datetime import datetime, timedelta
 class ProjectProject(models.Model):
     _inherit = "project.project"
 
-    # === COMPATIBILITY FIELD ===
-    # This field is a placeholder for orphaned Studio/Analytic view references.
-    # A view in the database references x_plan2_id but the field doesn't exist.
-    # Adding this dummy field prevents "field is undefined" errors.
-    # TODO: Remove this once the orphaned view is cleaned from the database.
-    x_plan2_id = fields.Many2one(
-        "account.analytic.account",
-        string="Legacy Plan Reference",
-        help="Compatibility field - not used. Exists to prevent view errors from orphaned Studio customizations.",
-    )
-
     # Link back to source CRM Lead
     x_crm_lead_id = fields.Many2one(
         "crm.lead",
@@ -34,80 +23,13 @@ class ProjectProject(models.Model):
         help="Sales representative from the source CRM opportunity.",
     )
 
-    # === VENDOR ASSIGNMENTS (ACTUAL) ===
+    # === VENDOR ASSIGNMENTS ===
     x_vendor_assignment_ids = fields.One2many(
         "ptt.project.vendor.assignment",
         "project_id",
         string="Vendor Assignments",
-        help="Actual vendor assignments and costs for this project.",
+        help="Vendor assignments for this project.",
     )
-    x_actual_total_vendor_costs = fields.Monetary(
-        string="Total Actual Vendor Costs",
-        compute="_compute_vendor_totals",
-        currency_field="currency_id",
-        store=True,
-        help="Sum of all actual vendor costs.",
-    )
-    # Estimated values from CRM (read-only for reference)
-    x_estimated_total_vendor_costs = fields.Monetary(
-        string="Estimated Vendor Costs (from CRM)",
-        related="x_crm_lead_id.x_estimated_total_vendor_costs",
-        currency_field="currency_id",
-        readonly=True,
-        help="Original estimated vendor costs from CRM opportunity.",
-    )
-    x_estimated_client_total = fields.Monetary(
-        string="Estimated Client Total (from CRM)",
-        related="x_crm_lead_id.x_estimated_client_total",
-        currency_field="currency_id",
-        readonly=True,
-        help="Original estimated client total from CRM opportunity.",
-    )
-    x_estimated_margin = fields.Monetary(
-        string="Estimated Margin (from CRM)",
-        related="x_crm_lead_id.x_estimated_margin",
-        currency_field="currency_id",
-        readonly=True,
-        help="Original estimated margin from CRM opportunity.",
-    )
-    x_estimated_margin_percent = fields.Float(
-        string="Estimated Margin % (from CRM)",
-        related="x_crm_lead_id.x_estimated_margin_percent",
-        readonly=True,
-        digits=(16, 2),
-        help="Original estimated margin percentage from CRM opportunity.",
-    )
-    # Actual values
-    x_actual_client_total = fields.Monetary(
-        string="Actual Client Total",
-        currency_field="currency_id",
-        help="Total amount client actually pays.",
-    )
-    x_actual_margin = fields.Monetary(
-        string="Actual Margin",
-        compute="_compute_vendor_totals",
-        currency_field="currency_id",
-        store=True,
-        help="Actual margin = Client Total - Vendor Costs.",
-    )
-    x_actual_margin_percent = fields.Float(
-        string="Actual Margin %",
-        compute="_compute_vendor_totals",
-        store=True,
-        help="Actual margin percentage.",
-    )
-
-    @api.depends("x_vendor_assignment_ids.actual_cost", "x_actual_client_total")
-    def _compute_vendor_totals(self):
-        """Compute actual vendor costs, margin, and margin percentage."""
-        for project in self:
-            total_vendor_costs = sum(project.x_vendor_assignment_ids.mapped("actual_cost"))
-            project.x_actual_total_vendor_costs = total_vendor_costs
-            project.x_actual_margin = project.x_actual_client_total - total_vendor_costs
-            if project.x_actual_client_total > 0:
-                project.x_actual_margin_percent = (project.x_actual_margin / project.x_actual_client_total) * 100
-            else:
-                project.x_actual_margin_percent = 0.0
 
     # NOTE: Project creation is handled manually in Odoo.
     # No automatic project creation or task creation from code.
@@ -135,7 +57,7 @@ class ProjectProject(models.Model):
             return False
 
     # Core event identity
-    x_event_id = fields.Char(string="Event Number")  # Changed from "Event ID" to avoid Studio field conflict
+    x_event_id = fields.Char(string="Event Number")
     x_event_type = fields.Selection(
         [
             # Corporate Events
@@ -177,11 +99,11 @@ class ProjectProject(models.Model):
             ("themed_masquerade", "Themed - Masquerade Balls"),
             ("themed_cigar_whiskey", "Themed - Cigar & Whiskey Nights"),
         ],
-        string="Event Category",  # Changed from "Event Type" to avoid Studio field conflict
+        string="Event Category",
         help="Copied from the related opportunity / lead.",
     )
     x_event_name = fields.Char(string="Event Name")
-    x_event_date = fields.Date(string="Scheduled Date")  # Changed from "Event Date" to avoid Studio field conflict
+    x_event_date = fields.Date(string="Scheduled Date", index=True)
     x_event_time = fields.Char(string="Event Time")
     x_guest_count = fields.Integer(string="Guest Count")
     x_venue_name = fields.Char(string="Venue")
@@ -230,13 +152,10 @@ class ProjectProject(models.Model):
         for project in self:
             contract_status = "Not Available"
             if project.x_crm_lead_id and project.x_crm_lead_id.order_ids:
-                # Get the most recent confirmed order, or first order if none confirmed
                 confirmed_orders = project.x_crm_lead_id.order_ids.filtered(lambda so: so.state == 'sale')
                 if confirmed_orders:
-                    # Get the most recent confirmed order
                     so = confirmed_orders.sorted('create_date', reverse=True)[0]
                     if so.x_contract_status:
-                        # Map to readable status
                         status_map = {
                             "not_sent": "Not Sent",
                             "sent": "Sent for Signature",
@@ -244,7 +163,6 @@ class ProjectProject(models.Model):
                         }
                         contract_status = status_map.get(so.x_contract_status, so.x_contract_status)
                 elif project.x_crm_lead_id.order_ids:
-                    # No confirmed orders, check draft orders
                     so = project.x_crm_lead_id.order_ids[0]
                     if so.x_contract_status:
                         status_map = {
@@ -263,10 +181,8 @@ class ProjectProject(models.Model):
         """
         self.ensure_one()
         
-        # Get the To Do stage (default for new projects) using sudo()
         todo_stage = self.env.ref("ptt_business_core.project_stage_todo", raise_if_not_found=False)
         if not todo_stage:
-            # Fallback: search for any "To Do" project stage
             todo_stage = self.env["project.project.stage"].sudo().search(
                 [("name", "=", "To Do")], limit=1
             )
@@ -294,25 +210,19 @@ class ProjectProject(models.Model):
         if not self.x_crm_lead_id:
             return  # Only for event projects
 
-        # Get assigned users from CRM Lead's salesperson
         assigned_users = (
             [(6, 0, [self.x_crm_lead_id.user_id.id])]
             if self.x_crm_lead_id.user_id
             else []
         )
 
-        # Get task types using sudo() to bypass record rules on project.task.type
-        # This is necessary because Odoo's default record rules restrict task type access
-        # based on project membership, but at creation time the project is new
         TaskType = self.env["project.task.type"].sudo()
         todo_type = self.env.ref("ptt_business_core.task_type_todo", raise_if_not_found=False)
         if not todo_type:
-            # Fallback: search for any "To Do" stage or create one
             todo_type = TaskType.search([("name", "=", "To Do")], limit=1)
             if not todo_type:
                 todo_type = TaskType.create({"name": "To Do"})
         
-        # Use sudo() for task creation to bypass permission issues during automated creation
         Task = self.env["project.task"].sudo()
         
         # Task 1: Confirm Booking with Client
@@ -512,7 +422,6 @@ class ProjectProject(models.Model):
             })
         
         # Task 9: Post-Event Closure / Review
-        # Set deadline to day after event if event date exists
         post_event_deadline = None
         if self.x_event_date:
             post_event_deadline = self.x_event_date + timedelta(days=1)
@@ -546,29 +455,24 @@ class ProjectProject(models.Model):
         
         This is a fallback method if the XML-defined task types are not found.
         """
-        # Search for existing stage linked to this project
         stage = self.env["project.task.type"].search([
             ("name", "=", stage_name),
             ("project_ids", "in", [self.id]),
         ], limit=1)
         
         if not stage:
-            # Search for any stage with this name (might exist globally)
             stage = self.env["project.task.type"].search([
                 ("name", "=", stage_name),
             ], limit=1)
             
             if not stage:
-                # Create new stage if it doesn't exist
                 stage = self.env["project.task.type"].create({
                     "name": stage_name,
                     "project_ids": [(4, self.id)],
                 })
             else:
-                # Link existing stage to this project
                 stage.write({"project_ids": [(4, self.id)]})
         else:
-            # Ensure project is linked (in case it wasn't)
             if self.id not in stage.project_ids.ids:
                 stage.write({"project_ids": [(4, self.id)]})
         
@@ -644,20 +548,17 @@ class ProjectProject(models.Model):
         today = fields.Date.today()
         target_date = today + timedelta(days=10)
         
-        # Find projects with events 10 days out
         projects = self.search([
             ("x_event_date", "=", target_date),
-            ("x_crm_lead_id", "!=", False),  # Only event projects
+            ("x_crm_lead_id", "!=", False),
         ])
         
-        # Get the 10-day confirmation activity type
         activity_type = self.env.ref(
             "ptt_business_core.activity_type_10day_confirmation", 
             raise_if_not_found=False
         )
         
         for project in projects:
-            # Check if activity already exists
             existing = self.env["mail.activity"].search([
                 ("res_model", "=", "project.project"),
                 ("res_id", "=", project.id),
@@ -683,20 +584,17 @@ class ProjectProject(models.Model):
         today = fields.Date.today()
         target_date = today + timedelta(days=3)
         
-        # Find projects with events 3 days out
         projects = self.search([
             ("x_event_date", "=", target_date),
-            ("x_crm_lead_id", "!=", False),  # Only event projects
+            ("x_crm_lead_id", "!=", False),
         ])
         
-        # Get the 3-day vendor reminder activity type
         activity_type = self.env.ref(
             "ptt_business_core.activity_type_3day_vendor_reminder", 
             raise_if_not_found=False
         )
         
         for project in projects:
-            # Check if activity already exists
             existing = self.env["mail.activity"].search([
                 ("res_model", "=", "project.project"),
                 ("res_id", "=", project.id),

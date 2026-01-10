@@ -1,5 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ptt_crm_vendor_estimate,PTT CRM Vendor Estimate User Access,model_ptt_crm_vendor_estimate,base.group_user,1,1,1,1
 access_ptt_project_vendor_assignment,PTT Vendor Assignment User Access,model_ptt_project_vendor_assignment,base.group_user,1,1,1,1
 access_ptt_project_vendor_assignment_portal,PTT Vendor Assignment Portal Access,model_ptt_project_vendor_assignment,base.group_portal,1,0,0,0
 access_ptt_vendor_restriction_user,PTT Vendor Restriction User,model_ptt_vendor_restriction,base.group_user,1,0,0,0

@@ -35,11 +35,6 @@ class PttDashboardWidget(models.Model):
         store=True
     )
     vendor_compliance_issues = fields.Integer(compute="_compute_overview_kpis", store=True)
-    event_profit_margin = fields.Float(
-        compute="_compute_overview_kpis",
-        string="Event Profit Margin %",
-        store=True
-    )
     currency_id = fields.Many2one(
         "res.currency",
         default=lambda self: self.env.company.currency_id,
@@ -92,62 +87,6 @@ class PttDashboardWidget(models.Model):
             
             # TODO: Implement vendor compliance logic
             rec.vendor_compliance_issues = 0
-            
-            # Calculate Event Profit Margin using HYBRID approach:
-            # REVENUE: From confirmed Sale Orders (signed contracts) - this is the actual contract amount
-            # COSTS: From vendor bills/invoices linked to projects (via analytic_distribution) or project fields
-            # Formula: ((Revenue - Costs) / Revenue) * 100
-            
-            # REVENUE: Sum of confirmed Sale Orders (signed contracts)
-            confirmed_orders = self.env["sale.order"].search([("state", "=", "sale")])
-            total_revenue = sum(confirmed_orders.mapped("amount_total"))
-            
-            # COSTS: Vendor bills/invoices linked to projects from those sale orders
-            total_costs = 0.0
-            
-            # Get all projects linked to confirmed sale orders
-            projects = confirmed_orders.mapped("project_id").filtered(lambda p: p)
-            projects_with_accounts = projects.filtered(lambda p: p.account_id)
-            projects_without_accounts = projects - projects_with_accounts
-            
-            # PRIMARY: Calculate costs from accounting data (vendor bills) for projects with analytic accounts
-            if projects_with_accounts:
-                analytic_account_ids = projects_with_accounts.mapped("account_id").ids
-                
-                # Costs: Vendor bills linked to projects via analytic_distribution
-                MoveLine = self.env["account.move.line"]
-                domain = [
-                    ("move_id.move_type", "in", ["in_invoice", "in_refund"]),
-                    ("move_id.state", "=", "posted"),  # Only posted bills
-                ]
-                # Prefer the computed helper field when available (analytic.mixin), fallback otherwise.
-                if "distribution_analytic_account_ids" in MoveLine._fields:
-                    domain.append(("distribution_analytic_account_ids", "in", analytic_account_ids))
-                else:
-                    domain.append(("analytic_distribution", "in", analytic_account_ids))
-                vendor_bill_lines = MoveLine.search(domain)
-                
-                # Get unique vendor bills and sum their totals (avoid double-counting)
-                vendor_bills = vendor_bill_lines.mapped("move_id")
-                for bill in vendor_bills:
-                    if bill.move_type == "in_invoice":
-                        total_costs += bill.amount_total
-                    elif bill.move_type == "in_refund":
-                        total_costs -= bill.amount_total
-            
-            # FALLBACK: Use project fields for projects without analytic accounts
-            if projects_without_accounts:
-                if "x_actual_total_vendor_costs" in Project._fields:
-                    fallback_costs = sum(projects_without_accounts.mapped("x_actual_total_vendor_costs"))
-                else:
-                    fallback_costs = 0.0
-                total_costs += fallback_costs
-            
-            # Calculate profit margin percentage
-            if total_revenue > 0:
-                rec.event_profit_margin = ((total_revenue - total_costs) / total_revenue) * 100
-            else:
-                rec.event_profit_margin = 0.0
     
     # Quick action methods
     def action_new_lead(self):
@@ -395,12 +334,6 @@ class PttDashboardWidget(models.Model):
             month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
         else:
             month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-        context = {}
-        if "x_actual_total_vendor_costs" in Project._fields:
-            context.update({
-                "pivot_measures": ["x_actual_total_vendor_costs"],
-                "pivot_column_groupby": ["x_event_date:month"],
-            })
         return {
             "type": "ir.actions.act_window",
             "name": "Events - Current Month",
@@ -411,7 +344,6 @@ class PttDashboardWidget(models.Model):
                 ("x_event_date", ">=", month_start.strftime("%Y-%m-%d")),
                 ("x_event_date", "<=", month_end.strftime("%Y-%m-%d"))
             ],
-            "context": context,
         }
     
     def action_view_events_previous_month(self):
@@ -427,12 +359,6 @@ class PttDashboardWidget(models.Model):
         else:
             prev_month_start = today.replace(month=today.month - 1, day=1)
             prev_month_end = today.replace(day=1) - timedelta(days=1)
-        context = {}
-        if "x_actual_total_vendor_costs" in Project._fields:
-            context.update({
-                "pivot_measures": ["x_actual_total_vendor_costs"],
-                "pivot_column_groupby": ["x_event_date:month"],
-            })
         return {
             "type": "ir.actions.act_window",
             "name": "Events - Previous Month",
@@ -443,44 +369,6 @@ class PttDashboardWidget(models.Model):
                 ("x_event_date", ">=", prev_month_start.strftime("%Y-%m-%d")),
                 ("x_event_date", "<=", prev_month_end.strftime("%Y-%m-%d"))
             ],
-            "context": context,
-        }
-    
-    def action_view_commissions(self):
-        """Open commissions list/pivot view where users can use standard Odoo export or pivot Excel export."""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Sales Commission Reports",
-            "res_model": "ptt.sales.commission",
-            "view_mode": "list,pivot,form",
-            "target": "current",
-        }
-    
-    def action_view_commissions_current_month(self):
-        """Open commissions pivot view filtered to current month - can export as Excel."""
-        self.ensure_one()
-        today = fields.Date.context_today(self)
-        month_start = today.replace(day=1)
-        if today.month == 12:
-            month_end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
-        else:
-            month_end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Commissions - Current Month",
-            "res_model": "ptt.sales.commission",
-            "view_mode": "pivot,list,form",
-            "target": "current",
-            "domain": [
-                ("report_month", ">=", month_start.strftime("%Y-%m-%d")),
-                ("report_month", "<=", month_end.strftime("%Y-%m-%d"))
-            ],
-            "context": {
-                "pivot_measures": ["total_revenue", "total_margin", "commission_amount"],
-                "pivot_column_groupby": ["report_month:month"],
-                "pivot_row_groupby": ["sales_rep_id"],
-            }
         }
     
     def action_view_outstanding(self):
@@ -525,30 +413,4 @@ class PttDashboardWidget(models.Model):
             }
         }
     
-    def action_view_commissions_previous_month(self):
-        """Open commissions pivot view filtered to previous month - can export as Excel."""
-        self.ensure_one()
-        today = fields.Date.context_today(self)
-        if today.month == 1:
-            prev_month_start = today.replace(year=today.year - 1, month=12, day=1)
-            prev_month_end = today.replace(day=1) - timedelta(days=1)
-        else:
-            prev_month_start = today.replace(month=today.month - 1, day=1)
-            prev_month_end = today.replace(day=1) - timedelta(days=1)
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Commissions - Previous Month",
-            "res_model": "ptt.sales.commission",
-            "view_mode": "pivot,list,form",
-            "target": "current",
-            "domain": [
-                ("report_month", ">=", prev_month_start.strftime("%Y-%m-%d")),
-                ("report_month", "<=", prev_month_end.strftime("%Y-%m-%d"))
-            ],
-            "context": {
-                "pivot_measures": ["total_revenue", "total_margin", "commission_amount"],
-                "pivot_column_groupby": ["report_month:month"],
-                "pivot_row_groupby": ["sales_rep_id"],
-            }
-        }
 

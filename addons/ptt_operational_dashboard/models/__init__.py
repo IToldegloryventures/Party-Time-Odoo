@@ -11,7 +11,6 @@ from . import ptt_dashboard_config
 # Existing dashboard models
 from . import ptt_dashboard_widget
 from . import ptt_sales_rep
-from . import ptt_sales_commission
 
 # Model inheritance
 from . import account_move_inherit

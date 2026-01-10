@@ -11,7 +11,6 @@
         Features:
         - Home: Agenda, My Work, Assigned Tasks, Personal To-Dos, Comments
         - Sales Dashboard: KPIs with click-through to native views
-        - Commission Dashboard: Sales rep performance tracking
         - Event Calendar: Full calendar with status-based coloring
         
         Every item is clickable and opens the native Odoo form view.
@@ -51,7 +50,6 @@
         # Views & Actions (load before menus)
         "views/ptt_personal_todo_views.xml",
         "views/ptt_sales_rep_views.xml",
-        "views/ptt_sales_commission_views.xml",
         "views/ptt_home_views.xml",
         "views/ptt_dashboard_views.xml",
         "views/ptt_dashboard_config_views.xml",
