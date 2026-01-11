@@ -116,8 +116,7 @@
         <field name="domain">[('supplier_rank', '>', 0), ('is_company', '=', True)]</field>
         <field name="context">{
             'default_supplier_rank': 1,
-            'default_is_company': True,
-            'search_default_compliant': 0
+            'default_is_company': True
         }</field>
         <field name="search_view_id" ref="view_ptt_vendor_search"/>
         <field name="help" type="html">
