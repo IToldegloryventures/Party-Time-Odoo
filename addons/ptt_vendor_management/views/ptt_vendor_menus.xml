@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Vendor Management - Main Menu
+        Purpose: Root menu for the standalone Vendor Management app
+    -->
+
+    <!-- Root Menu - Vendor Management App -->
+    <menuitem id="menu_ptt_vendor_management_root"
+        name="Vendor Management"
+        sequence="5"/>
+
+    <!-- Vendors List Menu -->
+    <menuitem id="menu_ptt_vendors_list"
+        name="Vendors"
+        parent="menu_ptt_vendor_management_root"
+        action="action_ptt_vendor_list"
+        sequence="10"/>
+
+    <!-- Configuration Submenu -->
+    <menuitem id="menu_ptt_vendor_config_root"
+        name="Configuration"
+        parent="menu_ptt_vendor_management_root"
+        sequence="100"/>
+
+    <!-- Configuration Items -->
+    <menuitem id="menu_ptt_vendor_document_config"
+        name="Vendor Documents"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_vendor_document"
+        sequence="5"/>
+
+    <menuitem id="menu_ptt_document_type_config"
+        name="Document Types"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_document_type"
+        sequence="10"/>
+
+    <menuitem id="menu_ptt_vendor_service_tag_config"
+        name="Service Tags"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_vendor_service_tag"
+        sequence="20"/>
+
+</odoo>

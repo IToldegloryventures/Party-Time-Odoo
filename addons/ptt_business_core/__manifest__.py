@@ -14,7 +14,6 @@
         "security/ir.model.access.csv",
         # 3. Record rules XML - references models from CSV and groups from groups XML
         "security/ptt_project_vendor_assignment_security.xml",
-        "security/ptt_vendor_document_security.xml",
         # Legacy security file (kept for backward compatibility, content moved to ptt_business_core_groups.xml)
         "security/ptt_security.xml",
         # Data files
@@ -29,23 +28,11 @@
         # "data/project_stages.xml",
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
-        # Views - Vendor configuration views FIRST (actions needed by other views)
-        "views/ptt_document_type_view.xml",
-        "views/ptt_vendor_document_view.xml",
-        "views/ptt_vendor_service_tag_view.xml",
-        # Views - Main views (may reference vendor actions above)
+        # Views
         "views/ptt_project_vendor_assignment_view.xml",
-        "views/ptt_res_partner_view.xml",
         "views/ptt_crm_lead_view.xml",
         "views/ptt_project_project_view.xml",
         "views/ptt_project_task_view.xml",
-        # Vendor Views
-        "views/ptt_vendor_list_view.xml",
-        # Vendor Configuration Menus (load after actions are defined)
-        "views/ptt_vendor_config_menus.xml",
-        # Vendor Configuration Seed Data (load after views)
-        "data/ptt_document_type_data.xml",
-        "data/ptt_vendor_service_tag_data.xml",
     ],
     # Demo data disabled - was causing test failures on Odoo.sh
     # "demo": [

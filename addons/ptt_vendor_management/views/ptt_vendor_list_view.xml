@@ -154,11 +154,6 @@
         <field name="act_window_id" ref="action_ptt_vendor_list"/>
     </record>
 
-    <!-- Root Menu for Vendors (under Contacts app) -->
-    <menuitem id="menu_ptt_vendors_root"
-        name="Vendors"
-        parent="contacts.menu_contacts"
-        action="action_ptt_vendor_list"
-        sequence="5"/>
+    <!-- Menu item is in ptt_vendor_menus.xml -->
 
 </odoo>
