@@ -11,7 +11,7 @@
         <field name="model">res.partner</field>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <tree string="Vendors" 
+            <list string="Vendors" 
                   decoration-success="x_vendor_compliance_status == 'compliant'"
                   decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
                   decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')">
@@ -32,7 +32,7 @@
                        decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"
                        optional="show"/>
                 <field name="x_vendor_document_count" string="Docs" optional="hide"/>
-            </tree>
+            </list>
         </field>
     </record>
 
