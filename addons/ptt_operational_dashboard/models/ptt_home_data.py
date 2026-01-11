@@ -483,7 +483,7 @@ class PttHomeData(models.AbstractModel):
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
             color = stage_colors.get(stage_name, default_color)
-            event_name = lead.x_event_name or lead.name or "Untitled Event"
+            event_name = getattr(lead, 'x_event_name', None) or lead.name or "Untitled Event"
 
             project = lead.x_project_id if hasattr(lead, "x_project_id") else False
             if project:
@@ -600,7 +600,7 @@ class PttHomeData(models.AbstractModel):
             color = stage_colors.get(stage_name, default_color)
             
             # Get event display name
-            event_name = lead.x_event_name or lead.name or "Untitled Event"
+            event_name = getattr(lead, 'x_event_name', None) or lead.name or "Untitled Event"
             
             # Get assignee info
             assignee_name = lead.user_id.name if lead.user_id else "Unassigned"
@@ -783,7 +783,7 @@ class PttHomeData(models.AbstractModel):
         seen_project_ids = set()
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
-            event_name = lead.x_event_name or lead.name or "Untitled Event"
+            event_name = getattr(lead, 'x_event_name', None) or lead.name or "Untitled Event"
 
             project = lead.x_project_id if hasattr(lead, "x_project_id") else False
             if project:

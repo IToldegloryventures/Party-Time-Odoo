@@ -93,4 +93,37 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Update Notes Tab to Show Two-Column Layout (Customer vs Internal Notes)
+         Uses Odoo's standard <group> elements for proper form view rendering per:
+         https://www.odoo.com/documentation/19.0/developer/reference/user_interface/view_architectures.html#form
+    -->
+    <record id="view_crm_lead_form_notes_tab_ptt" model="ir.ui.view">
+        <field name="name">crm.lead.form.notes.tab.ptt</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='internal_notes']" position="replace">
+                <page string="Notes" name="internal_notes">
+                    <group col="2">
+                        <group string="Customer Submission Notes">
+                            <field name="x_customer_submission_notes" 
+                                   widget="html" 
+                                   readonly="1"
+                                   nolabel="1"
+                                   placeholder="Customer notes will appear here after form submission"/>
+                        </group>
+                        <group string="Internal Staff Notes">
+                            <field name="description" 
+                                   widget="html" 
+                                   nolabel="1"
+                                   placeholder="Add internal notes..."
+                                   options="{'collaborative': true}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>

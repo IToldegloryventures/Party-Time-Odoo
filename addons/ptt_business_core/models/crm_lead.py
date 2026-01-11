@@ -140,6 +140,13 @@ class CrmLead(models.Model):
         string="CFO Preferred Contact Method",
     )
 
+    # === CUSTOMER SUBMISSION NOTES ===
+    x_customer_submission_notes = fields.Html(
+        string="Customer Submission Notes",
+        help="Auto-populated from contact form submission. Contains customer-selected services and form data as text/information only. Read-only for display.",
+        sanitize=False,  # Allow HTML formatting from controller
+    )
+
     # === ACTION METHODS ===
 
     def action_view_sale_orders(self):
