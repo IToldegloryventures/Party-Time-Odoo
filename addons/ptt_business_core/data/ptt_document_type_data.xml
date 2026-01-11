@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Document Type Seed Data
+        These are the standard document types vendors must provide.
+        
+        NOTE: "Required" means if missing, vendor shows as non-compliant.
+        It does NOT block vendors from being added or uploaded.
+    -->
+
+    <record id="document_type_w9" model="ptt.document.type">
+        <field name="name">W-9</field>
+        <field name="code">w9</field>
+        <field name="description">IRS W-9 Tax Form - Request for Taxpayer Identification Number and Certification</field>
+        <field name="required">True</field>
+        <field name="has_expiry">True</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="document_type_coi" model="ptt.document.type">
+        <field name="name">COI</field>
+        <field name="code">coi</field>
+        <field name="description">Certificate of Insurance - Proof of liability insurance coverage</field>
+        <field name="required">True</field>
+        <field name="has_expiry">True</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="document_type_ach" model="ptt.document.type">
+        <field name="name">ACH</field>
+        <field name="code">ach</field>
+        <field name="description">ACH Authorization Form - For direct deposit payments</field>
+        <field name="required">True</field>
+        <field name="has_expiry">True</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="document_type_dwc" model="ptt.document.type">
+        <field name="name">DWC Form</field>
+        <field name="code">dwc</field>
+        <field name="description">Texas Department of Insurance Division of Workers' Compensation Form</field>
+        <field name="required">True</field>
+        <field name="has_expiry">True</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="document_type_pricesheet" model="ptt.document.type">
+        <field name="name">Price Sheet</field>
+        <field name="code">pricesheet</field>
+        <field name="description">Vendor's pricing sheet for services offered</field>
+        <field name="required">True</field>
+        <field name="has_expiry">True</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="document_type_contract" model="ptt.document.type">
+        <field name="name">Contract</field>
+        <field name="code">contract</field>
+        <field name="description">Signed vendor contract/agreement</field>
+        <field name="required">True</field>
+        <field name="has_expiry">True</field>
+        <field name="sequence">60</field>
+    </record>
+
+</odoo>

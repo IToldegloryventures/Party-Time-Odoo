@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Vendor Configuration Menus
+        Purpose: Menu structure for vendor management configuration
+        Location: Under Contacts app → Configuration
+    -->
+
+    <!-- Configuration Root Menu (under Contacts) -->
+    <menuitem id="menu_ptt_vendor_config_root"
+        name="Vendor Configuration"
+        parent="contacts.menu_contacts"
+        sequence="100"
+        groups="base.group_system"/>
+
+    <!-- Document Types Menu -->
+    <menuitem id="menu_ptt_document_type"
+        name="Document Types"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_document_type"
+        sequence="10"/>
+
+    <!-- Service Tags Menu -->
+    <menuitem id="menu_ptt_vendor_service_tag"
+        name="Service Tags"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_vendor_service_tag"
+        sequence="20"/>
+
+</odoo>

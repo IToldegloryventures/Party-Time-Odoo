@@ -113,19 +113,19 @@ class CrmLead(models.Model):
     )
 
     # === SERVICES REQUESTED (CHECKBOXES) ===
-    x_service_dj = fields.Boolean(string="DJ/MC Services")
+    x_service_dj = fields.Boolean(string="DJ & MC Services")
     x_service_photovideo = fields.Boolean(string="Photo/Video")
     x_service_live_entertainment = fields.Boolean(string="Live Entertainment")
     x_service_lighting = fields.Boolean(string="Lighting/AV")
     x_service_decor = fields.Boolean(string="Decor/Thematic Design")
     x_service_venue_sourcing = fields.Boolean(string="Venue Sourcing")
-    x_service_catering = fields.Boolean(string="Catering")
+    x_service_catering = fields.Boolean(string="Catering & Bartender Services")
     x_service_transportation = fields.Boolean(string="Transportation")
-    x_service_rentals = fields.Boolean(string="Rentals (General)")
-    x_service_photobooth = fields.Boolean(string="Photo Booth Rentals")
-    x_service_caricature = fields.Boolean(string="Caricature Artists")
+    x_service_rentals = fields.Boolean(string="Rentals (Other)")
+    x_service_photobooth = fields.Boolean(string="Photo Booth")
+    x_service_caricature = fields.Boolean(string="Caricature Artist")
     x_service_casino = fields.Boolean(string="Casino Services")
-    x_service_staffing = fields.Boolean(string="Staffing (hosts, bartenders, security)")
+    x_service_staffing = fields.Boolean(string="Staffing")
 
     # === CFO/FINANCE CONTACT (for corporate clients) ===
     x_cfo_name = fields.Char(string="CFO/Finance Contact Name")

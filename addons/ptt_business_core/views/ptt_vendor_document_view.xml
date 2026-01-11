@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Vendor Document Views
+        Purpose: Manage vendor documents (COI, W-9, ACH, etc.) with expiry tracking
+    -->
+
+    <!-- Vendor Document Tree View -->
+    <record id="view_ptt_vendor_document_tree" model="ir.ui.view">
+        <field name="name">ptt.vendor.document.tree</field>
+        <field name="model">ptt.vendor.document</field>
+        <field name="arch" type="xml">
+            <list string="Vendor Documents" 
+                  decoration-danger="status == 'expired'"
+                  decoration-warning="status == 'expiring_soon'"
+                  decoration-success="status == 'valid'">
+                <field name="vendor_id"/>
+                <field name="document_type_id"/>
+                <field name="document_filename"/>
+                <field name="validity"/>
+                <field name="status" widget="badge" 
+                       decoration-success="status == 'valid'"
+                       decoration-warning="status == 'expiring_soon'"
+                       decoration-danger="status == 'expired'"
+                       decoration-muted="status == 'not_applicable'"/>
+                <field name="upload_date"/>
+                <field name="uploaded_by"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vendor Document Form View -->
+    <record id="view_ptt_vendor_document_form" model="ir.ui.view">
+        <field name="name">ptt.vendor.document.form</field>
+        <field name="model">ptt.vendor.document</field>
+        <field name="arch" type="xml">
+            <form string="Vendor Document">
+                <sheet>
+                    <group>
+                        <group string="Document Information">
+                            <field name="vendor_id" options="{'no_create': True}" 
+                                   domain="[('supplier_rank', '>', 0)]"/>
+                            <field name="document_type_id" options="{'no_create': True}"/>
+                            <field name="validity"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'valid'"
+                                   decoration-warning="status == 'expiring_soon'"
+                                   decoration-danger="status == 'expired'"
+                                   decoration-muted="status == 'not_applicable'"/>
+                        </group>
+                        <group string="File">
+                            <field name="attached_document" filename="document_filename"/>
+                            <field name="document_filename" invisible="1"/>
+                            <field name="upload_date" readonly="1"/>
+                            <field name="uploaded_by" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" placeholder="Additional notes about this document..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vendor Document Search View -->
+    <record id="view_ptt_vendor_document_search" model="ir.ui.view">
+        <field name="name">ptt.vendor.document.search</field>
+        <field name="model">ptt.vendor.document</field>
+        <field name="arch" type="xml">
+            <search string="Vendor Documents">
+                <field name="vendor_id"/>
+                <field name="document_type_id"/>
+                <separator/>
+                <filter name="filter_valid" string="Valid" domain="[('status', '=', 'valid')]"/>
+                <filter name="filter_expiring" string="Expiring Soon" domain="[('status', '=', 'expiring_soon')]"/>
+                <filter name="filter_expired" string="Expired" domain="[('status', '=', 'expired')]"/>
+                <separator/>
+                <filter name="filter_required" string="Required Documents" 
+                        domain="[('document_type_id.required', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter name="group_type" string="Document Type" context="{'group_by': 'document_type_id'}"/>
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vendor Document Action -->
+    <record id="action_ptt_vendor_document" model="ir.actions.act_window">
+        <field name="name">Vendor Documents</field>
+        <field name="res_model">ptt.vendor.document</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_required': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No vendor documents found
+            </p>
+            <p>
+                Upload documents from vendor contact forms or create new entries here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu for Vendor Documents (under Contacts → Vendor Configuration) -->
+    <menuitem id="menu_ptt_vendor_document"
+        name="Vendor Documents"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_vendor_document"
+        sequence="5"/>
+
+</odoo>

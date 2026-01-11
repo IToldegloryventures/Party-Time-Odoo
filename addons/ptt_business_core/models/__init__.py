@@ -10,5 +10,6 @@ from . import ptt_document_type
 from . import ptt_vendor_document
 from . import ptt_vendor_restriction
 from . import ptt_vendor_service
+from . import ptt_vendor_service_tag
 
 

@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.2.0.0",
+    "version": "19.0.2.1.0",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -35,6 +35,16 @@
         "views/ptt_crm_lead_view.xml",
         "views/ptt_project_project_view.xml",
         "views/ptt_project_task_view.xml",
+        # Vendor Views
+        "views/ptt_vendor_list_view.xml",
+        # Vendor Configuration Views
+        "views/ptt_document_type_view.xml",
+        "views/ptt_vendor_document_view.xml",
+        "views/ptt_vendor_service_tag_view.xml",
+        "views/ptt_vendor_config_menus.xml",
+        # Vendor Configuration Seed Data (load after views)
+        "data/ptt_document_type_data.xml",
+        "data/ptt_vendor_service_tag_data.xml",
     ],
     # Demo data disabled - was causing test failures on Odoo.sh
     # "demo": [
