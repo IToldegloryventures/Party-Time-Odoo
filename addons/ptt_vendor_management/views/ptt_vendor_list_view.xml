@@ -103,9 +103,6 @@
                 <filter string="Silver Tier" name="tier_silver" domain="[('x_vendor_tier', '=', 'silver')]"/>
                 <filter string="Bronze Tier" name="tier_bronze" domain="[('x_vendor_tier', '=', 'bronze')]"/>
                 <filter string="No Tier Set" name="tier_none" domain="[('x_vendor_tier', '=', False)]"/>
-                <filter string="Compliant" name="compliant" domain="[('x_vendor_compliance_status', '=', 'compliant')]"/>
-                <filter string="Expiring Soon" name="expiring" domain="[('x_vendor_compliance_status', '=', 'expiring_soon')]"/>
-                <filter string="Expired Docs" name="expired" domain="[('x_vendor_compliance_status', '=', 'expired')]"/>
                 <filter string="Missing Docs" name="missing" domain="[('x_vendor_compliance_status', '=', 'missing_required')]"/>
             </search>
         </field>
