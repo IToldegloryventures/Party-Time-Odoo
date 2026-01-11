@@ -99,21 +99,15 @@
                 <field name="x_vendor_service_tag_ids" string="Service"/>
                 <field name="city"/>
                 <field name="state_id"/>
-                <separator/>
-                <!-- Tier Filters -->
                 <filter string="Gold Tier" name="tier_gold" domain="[('x_vendor_tier', '=', 'gold')]"/>
                 <filter string="Silver Tier" name="tier_silver" domain="[('x_vendor_tier', '=', 'silver')]"/>
                 <filter string="Bronze Tier" name="tier_bronze" domain="[('x_vendor_tier', '=', 'bronze')]"/>
                 <filter string="No Tier Set" name="tier_none" domain="[('x_vendor_tier', '=', False)]"/>
-                <separator/>
-                <!-- Compliance Filters -->
                 <filter string="Compliant" name="compliant" domain="[('x_vendor_compliance_status', '=', 'compliant')]"/>
                 <filter string="Expiring Soon" name="expiring" domain="[('x_vendor_compliance_status', '=', 'expiring_soon')]"/>
                 <filter string="Expired Docs" name="expired" domain="[('x_vendor_compliance_status', '=', 'expired')]"/>
                 <filter string="Missing Docs" name="missing" domain="[('x_vendor_compliance_status', '=', 'missing_required')]"/>
-                <separator/>
-                <!-- Group By -->
-                <group string="Group By">
+                <group expand="0" string="Group By">
                     <filter string="Tier" name="group_tier" context="{'group_by': 'x_vendor_tier'}"/>
                     <filter string="Compliance" name="group_compliance" context="{'group_by': 'x_vendor_compliance_status'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state_id'}"/>
