@@ -26,15 +26,6 @@
         <field name="arch" type="xml">
             <form string="Vendor Service Tag">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="%(action_ptt_vendor_service_tag_vendors)d" 
-                                type="action" 
-                                class="oe_stat_button" 
-                                icon="fa-users"
-                                context="{'search_default_x_vendor_service_tag_ids': active_id}">
-                            <field name="vendor_count" widget="statinfo" string="Vendors"/>
-                        </button>
-                    </div>
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <div class="oe_title">
                         <label for="name"/>
@@ -90,15 +81,6 @@
                 Use these tags to filter and search vendors when assigning them to events.
             </p>
         </field>
-    </record>
-
-    <!-- Action to view vendors with this service tag -->
-    <record id="action_ptt_vendor_service_tag_vendors" model="ir.actions.act_window">
-        <field name="name">Vendors</field>
-        <field name="res_model">res.partner</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[('supplier_rank', '>', 0)]</field>
-        <field name="context">{'default_supplier_rank': 1}</field>
     </record>
 
 </odoo>
