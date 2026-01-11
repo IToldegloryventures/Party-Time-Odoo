@@ -281,3 +281,254 @@ class ContactFormController(http.Controller):
             'embed': kw.get('embed', False),
         }
         return request.render("ptt_contact_forms.contact_us_thank_you", values)
+
+    # =========================================================================
+    # WORDPRESS WEBHOOK API ENDPOINT
+    # =========================================================================
+    # Use this endpoint to receive form submissions from WordPress
+    # URL: https://your-odoo-domain.com/api/contact-form
+    # Method: POST
+    # Content-Type: application/json
+    # =========================================================================
+    
+    @http.route('/api/contact-form', type='json', auth='public', methods=['POST'], csrf=False, cors='*')
+    def api_contact_form(self, **kw):
+        """
+        WordPress Webhook API endpoint for contact form submissions.
+        
+        Accepts JSON POST requests and creates CRM leads.
+        Returns JSON response with success/error status.
+        
+        Expected JSON payload (field names match WordPress form):
+        {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "phone": "214-555-1234",
+            "event_type": "Corporate Event",
+            "event_location": "Dallas Convention Center",
+            "event_date": "2026-03-15",
+            "guest_count": "150",
+            "event_time": "6:00 PM - 11:00 PM",
+            "budget": "$5,000 - $10,000",
+            "indoor_outdoor": "Indoors",
+            "services": ["DJ (Music + MC)", "Photography", "Lighting/Light Show"],
+            "other_services": "Custom lighting design",
+            "special_requests": "Need wheelchair accessible setup"
+        }
+        """
+        try:
+            # Get JSON data from request
+            data = request.jsonrequest or kw
+            
+            _logger.info("WordPress webhook received: %s", data)
+            
+            # Validate required fields
+            required_fields = ['name', 'email', 'phone']
+            missing = [f for f in required_fields if not data.get(f)]
+            
+            if missing:
+                return {
+                    'success': False,
+                    'error': f"Missing required fields: {', '.join(missing)}",
+                    'lead_id': None
+                }
+            
+            # Extract form data
+            contact_name = data.get('name', '').strip()
+            email = data.get('email', '').strip()
+            phone = data.get('phone', '').strip()
+            company_name = data.get('company', '').strip()
+            event_type_form = data.get('event_type', '').strip()
+            event_location = data.get('event_location', '').strip()
+            event_date = data.get('event_date', '').strip()
+            guest_count = data.get('guest_count', '').strip()
+            event_time = data.get('event_time', '').strip()
+            budget = data.get('budget', '').strip()
+            indoor_outdoor = data.get('indoor_outdoor', '').strip()
+            services = data.get('services', [])
+            other_services = data.get('other_services', '').strip()
+            special_requests = data.get('special_requests', '').strip()
+            
+            # Ensure services is a list
+            if isinstance(services, str):
+                services = [s.strip() for s in services.split(',') if s.strip()]
+            
+            # Get the Intake stage
+            intake_stage = request.env['crm.stage'].sudo().search([
+                ('name', 'ilike', 'Intake')
+            ], limit=1)
+            
+            # Build lead name
+            lead_name = f"Website Inquiry - {company_name or contact_name}"
+            
+            # Build description
+            description_parts = []
+            if services:
+                description_parts.append("**Services of Interest:**")
+                for service in services:
+                    description_parts.append(f"• {service}")
+                description_parts.append("")
+            
+            if other_services:
+                description_parts.append(f"**Other Services:** {other_services}")
+                description_parts.append("")
+            
+            if special_requests:
+                description_parts.append("**Special Requests/Details:**")
+                description_parts.append(special_requests)
+                description_parts.append("")
+            
+            description_parts.append("---")
+            description_parts.append("*Submitted via WordPress Contact Form*")
+            
+            # Event type mapping
+            event_type_mapping = {
+                'Anniversary': 'private_reunion',
+                'Bar/Bat Mitzvah': 'private_barmitzvah',
+                'Birthday (Child)': 'private_birthday',
+                'Birthday (Teen)': 'private_birthday',
+                'Birthday (Adult)': 'private_birthday',
+                'Civic Event': 'community_cities_schools',
+                'Corporate Event': 'corporate_conference',
+                'Fund Raiser': 'charity_banquet',
+                'Holiday Party': 'corporate_holiday',
+                'School Function': 'community_cities_schools',
+                'Wedding/Reception': 'private_wedding',
+                'Other Event': False,
+            }
+            
+            indoor_outdoor_mapping = {
+                'Indoors': 'indoor',
+                'Outdoors': 'outdoor',
+                'Not Sure': 'combination',
+                'Both': 'combination',
+            }
+            
+            # Create lead with core fields
+            lead_vals = {
+                'name': lead_name,
+                'contact_name': contact_name,
+                'partner_name': company_name or False,
+                'email_from': email,
+                'phone': phone,
+                'description': '\n'.join(description_parts),
+                'type': 'opportunity',
+            }
+            
+            if intake_stage:
+                lead_vals['stage_id'] = intake_stage.id
+            
+            lead = request.env['crm.lead'].sudo().create(lead_vals)
+            _logger.info("Created CRM lead #%s from WordPress webhook: %s", lead.id, lead_name)
+            
+            # Set UTM source
+            try:
+                website_source = request.env['utm.source'].sudo().search([
+                    ('name', '=', 'WordPress Contact Form')
+                ], limit=1)
+                if not website_source:
+                    website_source = request.env['utm.source'].sudo().create({
+                        'name': 'WordPress Contact Form'
+                    })
+                if website_source:
+                    lead.sudo().write({'source_id': website_source.id})
+            except Exception:
+                pass
+            
+            # Update with custom PTT fields
+            try:
+                custom_vals = {}
+                
+                mapped_event_type = event_type_mapping.get(event_type_form)
+                if mapped_event_type:
+                    custom_vals['x_event_type'] = mapped_event_type
+                
+                if event_date:
+                    custom_vals['x_event_date'] = event_date
+                
+                if event_time:
+                    custom_vals['x_event_time'] = event_time
+                
+                if guest_count:
+                    try:
+                        custom_vals['x_estimated_guest_count'] = int(re.sub(r'[^\d]', '', guest_count))
+                    except (ValueError, TypeError):
+                        pass
+                
+                if event_location:
+                    custom_vals['x_venue_name'] = event_location
+                
+                if budget:
+                    budget_match = re.search(r'[\d,]+', budget.replace(',', ''))
+                    if budget_match:
+                        try:
+                            budget_num = float(budget_match.group().replace(',', ''))
+                            lead.sudo().write({'expected_revenue': budget_num})
+                        except (ValueError, TypeError):
+                            pass
+                
+                mapped_location = indoor_outdoor_mapping.get(indoor_outdoor)
+                if mapped_location:
+                    custom_vals['x_event_location_type'] = mapped_location
+                
+                # Build customer submission notes HTML
+                safe_event_type = html.escape(event_type_form) if event_type_form else 'Not specified'
+                safe_event_date = html.escape(event_date) if event_date else 'Not specified'
+                safe_event_time = html.escape(event_time) if event_time else 'Not specified'
+                safe_event_location = html.escape(event_location) if event_location else 'Not specified'
+                safe_guest_count = html.escape(guest_count) if guest_count else 'Not specified'
+                safe_budget = html.escape(budget) if budget else 'Not specified'
+                safe_indoor_outdoor = html.escape(indoor_outdoor) if indoor_outdoor else 'Not specified'
+                safe_special_requests = html.escape(special_requests) if special_requests else ''
+                
+                services_html = ''
+                if services:
+                    services_html = '<ul>' + ''.join([f'<li>{html.escape(str(s))}</li>' for s in services]) + '</ul>'
+                else:
+                    services_html = '<p><em>None selected</em></p>'
+                
+                submission_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                customer_notes_html = f"""
+<div class="ptt-customer-notes">
+    <h3>WordPress Form Submission</h3>
+    <p><strong>Submitted:</strong> {submission_time}</p>
+    
+    <h4>Event Information</h4>
+    <ul>
+        <li><strong>Event Type:</strong> {safe_event_type}</li>
+        <li><strong>Event Date:</strong> {safe_event_date}</li>
+        <li><strong>Event Time:</strong> {safe_event_time}</li>
+        <li><strong>Location:</strong> {safe_event_location}</li>
+        <li><strong>Guest Count:</strong> {safe_guest_count}</li>
+        <li><strong>Budget:</strong> {safe_budget}</li>
+        <li><strong>Setting:</strong> {safe_indoor_outdoor}</li>
+    </ul>
+    
+    <h4>Services of Interest</h4>
+    {services_html}
+    
+    {f'<h4>Special Requests</h4><p>{safe_special_requests}</p>' if safe_special_requests else ''}
+</div>
+"""
+                custom_vals['x_customer_submission_notes'] = customer_notes_html.strip()
+                
+                if custom_vals:
+                    lead.sudo().write(custom_vals)
+                    
+            except Exception as custom_err:
+                _logger.warning("Could not set custom PTT fields on lead #%s: %s", lead.id, str(custom_err))
+            
+            return {
+                'success': True,
+                'message': 'Lead created successfully',
+                'lead_id': lead.id,
+                'lead_name': lead.name
+            }
+            
+        except Exception as e:
+            _logger.error("WordPress webhook error: %s", str(e))
+            return {
+                'success': False,
+                'error': str(e),
+                'lead_id': None
+            }
