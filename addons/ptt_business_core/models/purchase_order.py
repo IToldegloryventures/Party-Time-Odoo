@@ -12,7 +12,7 @@ class PurchaseOrder(models.Model):
         
         Returns: (is_valid, error_message)
         """
-        if not vendor or not vendor.x_is_vendor:
+        if not vendor or vendor.supplier_rank == 0:
             return True, None
         
         # Get required document types

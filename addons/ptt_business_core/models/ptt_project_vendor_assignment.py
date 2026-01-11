@@ -37,9 +37,9 @@ class PttProjectVendorAssignment(models.Model):
     vendor_id = fields.Many2one(
         "res.partner",
         string="Vendor",
-        domain="[('x_is_vendor', '=', True)]",
+        domain="[('supplier_rank', '>', 0)]",
         ondelete="set null",
-        help="Actual vendor assigned for this service",
+        help="Actual vendor assigned for this service. Uses standard Odoo supplier_rank field.",
     )
     actual_cost = fields.Monetary(
         string="Actual Cost",

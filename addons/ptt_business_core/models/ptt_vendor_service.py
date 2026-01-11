@@ -13,7 +13,7 @@ class PttVendorService(models.Model):
         string="Vendor",
         required=True,
         ondelete="cascade",
-        domain="[('x_is_vendor', '=', True)]",
+        domain="[('supplier_rank', '>', 0)]",
         index=True,
     )
     

@@ -12,6 +12,14 @@ class ResPartner(models.Model):
     """
     _inherit = "res.partner"
 
+    # === VENDOR DOCUMENT RELATION ===
+    x_vendor_document_ids = fields.One2many(
+        "ptt.vendor.document",
+        "vendor_id",
+        string="Vendor Documents",
+        help="Documents uploaded by or for this vendor",
+    )
+
     # === VENDOR FIELDS (Custom PTT) ===
     x_vendor_service_types = fields.Selection(
         [
