@@ -79,7 +79,7 @@
                 <filter name="filter_required" string="Required Documents" 
                         domain="[('document_type_id.required', '=', True)]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group string="Group By">
                     <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
                     <filter name="group_type" string="Document Type" context="{'group_by': 'document_type_id'}"/>
                     <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>

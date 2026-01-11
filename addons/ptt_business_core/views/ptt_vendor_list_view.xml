@@ -113,7 +113,7 @@
                 <filter string="Missing Docs" name="missing" domain="[('x_vendor_compliance_status', '=', 'missing_required')]"/>
                 <separator/>
                 <!-- Group By -->
-                <group expand="1" string="Group By">
+                <group string="Group By">
                     <filter string="Tier" name="group_tier" context="{'group_by': 'x_vendor_tier'}"/>
                     <filter string="Compliance" name="group_compliance" context="{'group_by': 'x_vendor_compliance_status'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state_id'}"/>
