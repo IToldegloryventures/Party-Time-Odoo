@@ -1,7 +1,6 @@
 /**
  * PTT CRM Lead Notes Tab Styling
- * Makes the Customer Submission Notes and Internal Staff Notes
- * sections much taller for easier viewing without scrolling.
+ * Clean, modern design with clear visual separation
  */
 
 /* ============================================
@@ -11,28 +10,26 @@
 /* For WebKit browsers (Chrome, Safari, Edge) */
 .o_crm_form_view {
     .o_notebook_content {
-        /* Scrollbar for HTML fields */
         .o_field_html,
         .o_readonly,
         .odoo-editor-editable,
         .note-editable,
         .overflow-auto {
             &::-webkit-scrollbar {
-                width: 8px;
-                height: 8px;
+                width: 6px;
+                height: 6px;
             }
             
             &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 4px;
+                background: transparent;
             }
             
             &::-webkit-scrollbar-thumb {
-                background: rgba(135, 90, 175, 0.4);
-                border-radius: 4px;
+                background: rgba(135, 90, 175, 0.3);
+                border-radius: 3px;
                 
                 &:hover {
-                    background: rgba(135, 90, 175, 0.6);
+                    background: rgba(135, 90, 175, 0.5);
                 }
             }
         }
@@ -47,111 +44,153 @@
     .note-editable,
     .overflow-auto {
         scrollbar-width: thin;
-        scrollbar-color: rgba(135, 90, 175, 0.4) rgba(255, 255, 255, 0.05);
+        scrollbar-color: rgba(135, 90, 175, 0.3) transparent;
     }
 }
 
-/* Target the Notes tab HTML fields - make them significantly taller */
-.o_crm_form_view .o_notebook_content .tab-pane {
-    /* Notes tab page - ensure it has enough height */
-    .o_inner_group {
-        /* Each column group in the Notes tab */
-        .o_field_widget.o_field_html {
-            /* HTML widget fields (customer notes and internal notes) */
-            min-height: 400px !important;
-            
-            .odoo-editor-editable,
-            .o_readonly {
-                min-height: 380px !important;
-                max-height: none !important;
-                overflow-y: auto;
-            }
-            
-            /* The editor container */
-            .note-editing-area,
-            .note-editable {
-                min-height: 380px !important;
-            }
-        }
-    }
-}
+/* ============================================
+   Notes Tab - Card-Style Visual Separation
+   ============================================ */
 
-/* Specific targeting for the internal_notes page */
+/* Notes tab container */
 .o_notebook_content [name="internal_notes"] {
-    .o_group {
-        /* Two-column layout groups */
+    padding: 16px 8px;
+    
+    /* Main two-column group */
+    > .o_group {
+        gap: 24px;
+        
+        /* Each inner group (Customer Notes / Internal Notes) */
         > tbody > tr > td {
-            vertical-align: top;
+            padding: 0 12px;
             
             .o_inner_group {
-                height: 100%;
+                /* Card-style container */
+                background: rgba(30, 30, 40, 0.4);
+                border: 1px solid rgba(135, 90, 175, 0.3);
+                border-radius: 12px;
+                padding: 0;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                transition: border-color 0.2s ease;
                 
-                /* The group content area */
-                > tbody {
-                    height: 100%;
+                &:hover {
+                    border-color: rgba(135, 90, 175, 0.5);
+                }
+                
+                /* Group header/title */
+                .o_horizontal_separator {
+                    background: linear-gradient(135deg, rgba(135, 90, 175, 0.2) 0%, rgba(100, 70, 150, 0.1) 100%);
+                    margin: 0;
+                    padding: 14px 18px;
+                    font-weight: 600;
+                    font-size: 0.95em;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    color: rgba(255, 255, 255, 0.9);
+                    border-bottom: 1px solid rgba(135, 90, 175, 0.2);
+                }
+                
+                /* Field container */
+                > tbody > tr > td {
+                    padding: 16px 18px;
                     
-                    > tr {
-                        height: 100%;
+                    .o_field_html {
+                        min-height: 400px;
                         
-                        > td {
-                            height: 100%;
+                        /* Readonly content (Customer Notes) */
+                        .o_readonly {
+                            min-height: 380px;
+                            padding: 12px;
+                            background: rgba(255, 255, 255, 0.02);
+                            border-radius: 6px;
+                            line-height: 1.6;
+                        }
+                        
+                        /* Editable content (Internal Notes) */
+                        .odoo-editor-editable,
+                        .note-editable {
+                            min-height: 380px;
+                            padding: 12px;
+                            background: rgba(255, 255, 255, 0.03);
+                            border-radius: 6px;
+                            border: 1px solid rgba(255, 255, 255, 0.1);
                             
-                            .o_field_html {
-                                height: 450px !important;
-                                min-height: 450px !important;
-                                
-                                /* For readonly HTML content */
-                                .o_readonly {
-                                    height: 100% !important;
-                                    min-height: 420px !important;
-                                    overflow-y: auto;
-                                    padding: 10px;
-                                    background: rgba(255, 255, 255, 0.02);
-                                    border-radius: 4px;
-                                }
-                                
-                                /* For editable HTML content */
-                                .odoo-editor-editable {
-                                    height: 100% !important;
-                                    min-height: 420px !important;
-                                }
+                            &:focus {
+                                border-color: rgba(135, 90, 175, 0.5);
+                                outline: none;
+                                box-shadow: 0 0 0 3px rgba(135, 90, 175, 0.1);
                             }
                         }
                     }
                 }
             }
         }
+        
+        /* First column - Customer Notes (readonly, slightly different style) */
+        > tbody > tr > td:first-child {
+            .o_inner_group {
+                border-color: rgba(100, 150, 200, 0.3);
+                
+                &:hover {
+                    border-color: rgba(100, 150, 200, 0.5);
+                }
+                
+                .o_horizontal_separator {
+                    background: linear-gradient(135deg, rgba(100, 150, 200, 0.2) 0%, rgba(80, 130, 180, 0.1) 100%);
+                    border-bottom-color: rgba(100, 150, 200, 0.2);
+                }
+            }
+        }
+        
+        /* Second column - Internal Notes (editable, purple theme) */
+        > tbody > tr > td:last-child {
+            .o_inner_group {
+                border-color: rgba(135, 90, 175, 0.3);
+                
+                &:hover {
+                    border-color: rgba(135, 90, 175, 0.5);
+                }
+            }
+        }
     }
 }
 
-/* Alternative selector using field names directly */
+/* ============================================
+   Ensure proper height for notebook content
+   ============================================ */
+
+.o_notebook_content {
+    .tab-pane.active {
+        min-height: 480px;
+    }
+}
+
+/* Field-specific minimum heights */
 .o_field_widget[name="x_customer_submission_notes"],
 .o_field_widget[name="description"] {
-    min-height: 450px !important;
+    min-height: 400px;
     
     .o_readonly,
     .odoo-editor-editable,
     .note-editable {
-        min-height: 420px !important;
-        max-height: none !important;
+        min-height: 380px;
+        max-height: none;
     }
 }
 
-/* Ensure the notebook content area allows for full height */
-.o_notebook_content {
-    .tab-pane.active {
-        min-height: 500px;
-    }
-}
+/* ============================================
+   Responsive adjustments
+   ============================================ */
 
-/* Group headers styling for better visual separation */
-.o_notebook_content [name="internal_notes"] {
-    .o_horizontal_separator {
-        font-weight: 600;
-        font-size: 1.1em;
-        color: var(--o-brand-primary);
-        border-bottom: 2px solid var(--o-brand-primary);
-        padding-bottom: 8px;
-        margin-bottom: 12px;
+@media (max-width: 992px) {
+    .o_notebook_content [name="internal_notes"] {
+        > .o_group > tbody > tr > td {
+            padding: 8px 4px;
+            
+            .o_inner_group {
+                margin-bottom: 16px;
+            }
+        }
     }
 }
