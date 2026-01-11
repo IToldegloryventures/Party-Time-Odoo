@@ -278,7 +278,46 @@ def pre_init_hook(cr):
         _logger.warning(f"PTT Business Core: Error cleaning x_days_until_event: {e}")
         _logger.error(traceback.format_exc())
     
-    # === CLEANUP 5: Remove x_target_margin field from sale.order.line ===
+    # === CLEANUP 5: Force update PTT sale order view to remove old field references ===
+    # The view in the database may still have old x_target_margin references
+    try:
+        # Find the PTT sale order view by xmlid and clean it
+        cr.execute("""
+            SELECT v.id, v.arch_db 
+            FROM ir_ui_view v
+            JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
+            WHERE d.module = 'ptt_business_core' 
+            AND d.name = 'view_sale_order_form_ptt'
+        """)
+        result = cr.fetchone()
+        if result:
+            view_id, arch_db = result
+            _logger.info(f"PTT Business Core: Found PTT sale order view ID {view_id}, checking for cleanup")
+            if arch_db and ('x_target_margin' in str(arch_db) or 'purchase_price' in str(arch_db)):
+                # Delete the view - it will be recreated from the XML file
+                cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
+                cr.execute("DELETE FROM ir_model_data WHERE module = 'ptt_business_core' AND name = 'view_sale_order_form_ptt'")
+                _logger.info(f"PTT Business Core: Deleted old sale order view {view_id} with invalid field references")
+        
+        # Also check for any view_sale_order_form_line_ptt view that might exist
+        cr.execute("""
+            SELECT v.id 
+            FROM ir_ui_view v
+            JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
+            WHERE d.module = 'ptt_business_core' 
+            AND d.name = 'view_sale_order_form_line_ptt'
+        """)
+        result = cr.fetchone()
+        if result:
+            view_id = result[0]
+            cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
+            cr.execute("DELETE FROM ir_model_data WHERE module = 'ptt_business_core' AND name = 'view_sale_order_form_line_ptt'")
+            _logger.info(f"PTT Business Core: Deleted old sale order line view {view_id}")
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning sale order views: {e}")
+        _logger.error(traceback.format_exc())
+    
+    # === CLEANUP 7: Remove x_target_margin field from sale.order.line ===
     # This field was removed but may still be referenced in database views
     try:
         # Delete field definition
@@ -326,7 +365,7 @@ def pre_init_hook(cr):
     
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
     
-    # === CLEANUP 5: DELETE unwanted CRM stages (don't fold, actually delete them) ===
+    # === CLEANUP 8: DELETE unwanted CRM stages (don't fold, actually delete them) ===
     # Delete all unwanted duplicate stages completely
     # ONLY keep: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
     wanted_stage_names = ['Intake', 'Qualification', 'Approval', 'Proposal Sent', 'Contract Sent', 'Booked', 'Closed/Won', 'Lost']
