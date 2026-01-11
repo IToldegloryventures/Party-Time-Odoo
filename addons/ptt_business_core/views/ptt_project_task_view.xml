@@ -87,14 +87,11 @@
                             </div>
                         </div>
                         
-                        <!-- Days Until Event -->
+                        <!-- Sales Rep -->
                         <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 4px;">
-                            <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Days Until Event</div>
-                            <div style="font-size: 1.5em; font-weight: bold;">
-                                <field name="x_days_until_event" readonly="1"/>
-                            </div>
-                            <div style="font-size: 0.9em; opacity: 0.9;">
-                                Rep: <field name="x_project_sales_rep_id" readonly="1" widget="many2one" options="{'no_open': True}"/>
+                            <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Sales Rep</div>
+                            <div style="font-size: 1.2em; font-weight: bold;">
+                                <field name="x_project_sales_rep_id" readonly="1" widget="many2one" options="{'no_open': True}"/>
                             </div>
                         </div>
                     </div>

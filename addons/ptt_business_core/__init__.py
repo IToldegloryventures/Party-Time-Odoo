@@ -245,7 +245,40 @@ def pre_init_hook(cr):
         _logger.warning(f"PTT Business Core: Error cleaning views referencing x_plan2_id: {e}")
         _logger.error(traceback.format_exc())
     
-    # === CLEANUP 4: Remove x_target_margin field from sale.order.line ===
+    # === CLEANUP 4: Remove x_days_until_event field from project.project and project.task ===
+    try:
+        for model in ['project.project', 'project.task']:
+            cr.execute("""
+                SELECT id FROM ir_model_fields 
+                WHERE name = 'x_days_until_event' AND model = %s
+            """, (model,))
+            result = cr.fetchone()
+            if result:
+                field_id = result[0]
+                _logger.info(f"PTT Business Core: Removing x_days_until_event field from {model}")
+                cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
+                cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
+        
+        # Clean views referencing this field
+        cr.execute("""
+            SELECT id, arch_db FROM ir_ui_view 
+            WHERE arch_db::text LIKE '%x_days_until_event%'
+        """)
+        views_to_fix = cr.fetchall()
+        for view_id, arch_db in views_to_fix:
+            if arch_db:
+                new_arch = re.sub(r'<field[^>]*name=["\']x_days_until_event["\'][^>]*/>', '', str(arch_db))
+                new_arch = re.sub(r'<field[^>]*name=["\']x_days_until_event["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                # Remove containing divs that might be empty now
+                new_arch = re.sub(r'<div[^>]*>[\s]*</div>', '', new_arch)
+                if str(new_arch) != str(arch_db):
+                    cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
+                    _logger.info(f"PTT Business Core: Cleaned x_days_until_event from view {view_id}")
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning x_days_until_event: {e}")
+        _logger.error(traceback.format_exc())
+    
+    # === CLEANUP 5: Remove x_target_margin field from sale.order.line ===
     # This field was removed but may still be referenced in database views
     try:
         # Delete field definition

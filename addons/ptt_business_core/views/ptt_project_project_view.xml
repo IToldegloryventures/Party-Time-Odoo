@@ -56,12 +56,6 @@
                                 <field name="stage_id" readonly="1" widget="many2one"/>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Days Until Event:</div>
-                            <div>
-                                <field name="x_days_until_event" readonly="1" widget="integer"/>
-                            </div>
-                        </div>
                     </div>
                     
                     <!-- Row 3: Contract Status -->

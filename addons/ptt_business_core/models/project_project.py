@@ -122,29 +122,12 @@ class ProjectProject(models.Model):
     x_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
 
     # === PROJECT HEADER COMPUTED FIELDS ===
-    x_days_until_event = fields.Integer(
-        string="Days Until Event",
-        compute="_compute_days_until_event",
-        store=False,
-        help="Number of days until the event date. Negative if event has passed.",
-    )
     x_contract_status = fields.Char(
         string="Contract Status",
         compute="_compute_contract_status",
         store=False,
         help="Contract status from related Sales Order.",
     )
-
-    @api.depends("x_event_date")
-    def _compute_days_until_event(self):
-        """Calculate days until event date."""
-        today = fields.Date.today()
-        for project in self:
-            if project.x_event_date:
-                delta = project.x_event_date - today
-                project.x_days_until_event = delta.days
-            else:
-                project.x_days_until_event = 0
 
     @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids", "x_crm_lead_id.order_ids.x_contract_status")
     def _compute_contract_status(self):

@@ -82,29 +82,11 @@ class ProjectTask(models.Model):
 
     # === COMPUTED FIELDS ===
     
-    x_days_until_event = fields.Integer(
-        string="Days Until Event",
-        compute="_compute_days_until_event",
-        store=True,
-        help="Number of days until the event date.",
-    )
-    
     x_is_event_task = fields.Boolean(
         string="Is Event Task",
         compute="_compute_is_event_task",
         help="True if this task is part of an event project (has CRM lead).",
     )
-
-    @api.depends("project_id.x_event_date")
-    def _compute_days_until_event(self):
-        """Compute days remaining until the event date."""
-        today = date.today()
-        for task in self:
-            if task.project_id and task.project_id.x_event_date:
-                delta = task.project_id.x_event_date - today
-                task.x_days_until_event = delta.days
-            else:
-                task.x_days_until_event = 0
 
     @api.depends("project_id.x_crm_lead_id")
     def _compute_is_event_task(self):
