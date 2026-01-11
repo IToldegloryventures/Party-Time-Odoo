@@ -4,6 +4,53 @@
  * sections much taller for easier viewing without scrolling.
  */
 
+/* ============================================
+   Custom Scrollbar Styling - Modern & Sleek
+   ============================================ */
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+.o_crm_form_view {
+    .o_notebook_content {
+        /* Scrollbar for HTML fields */
+        .o_field_html,
+        .o_readonly,
+        .odoo-editor-editable,
+        .note-editable,
+        .overflow-auto {
+            &::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            
+            &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 4px;
+            }
+            
+            &::-webkit-scrollbar-thumb {
+                background: rgba(135, 90, 175, 0.4);
+                border-radius: 4px;
+                
+                &:hover {
+                    background: rgba(135, 90, 175, 0.6);
+                }
+            }
+        }
+    }
+}
+
+/* Firefox scrollbar */
+.o_crm_form_view .o_notebook_content {
+    .o_field_html,
+    .o_readonly,
+    .odoo-editor-editable,
+    .note-editable,
+    .overflow-auto {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(135, 90, 175, 0.4) rgba(255, 255, 255, 0.05);
+    }
+}
+
 /* Target the Notes tab HTML fields - make them significantly taller */
 .o_crm_form_view .o_notebook_content .tab-pane {
     /* Notes tab page - ensure it has enough height */
