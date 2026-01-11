@@ -1,0 +1,110 @@
+/**
+ * PTT CRM Lead Notes Tab Styling
+ * Makes the Customer Submission Notes and Internal Staff Notes
+ * sections much taller for easier viewing without scrolling.
+ */
+
+/* Target the Notes tab HTML fields - make them significantly taller */
+.o_crm_form_view .o_notebook_content .tab-pane {
+    /* Notes tab page - ensure it has enough height */
+    .o_inner_group {
+        /* Each column group in the Notes tab */
+        .o_field_widget.o_field_html {
+            /* HTML widget fields (customer notes and internal notes) */
+            min-height: 400px !important;
+            
+            .odoo-editor-editable,
+            .o_readonly {
+                min-height: 380px !important;
+                max-height: none !important;
+                overflow-y: auto;
+            }
+            
+            /* The editor container */
+            .note-editing-area,
+            .note-editable {
+                min-height: 380px !important;
+            }
+        }
+    }
+}
+
+/* Specific targeting for the internal_notes page */
+.o_notebook_content [name="internal_notes"] {
+    .o_group {
+        /* Two-column layout groups */
+        > tbody > tr > td {
+            vertical-align: top;
+            
+            .o_inner_group {
+                height: 100%;
+                
+                /* The group content area */
+                > tbody {
+                    height: 100%;
+                    
+                    > tr {
+                        height: 100%;
+                        
+                        > td {
+                            height: 100%;
+                            
+                            .o_field_html {
+                                height: 450px !important;
+                                min-height: 450px !important;
+                                
+                                /* For readonly HTML content */
+                                .o_readonly {
+                                    height: 100% !important;
+                                    min-height: 420px !important;
+                                    overflow-y: auto;
+                                    padding: 10px;
+                                    background: rgba(255, 255, 255, 0.02);
+                                    border-radius: 4px;
+                                }
+                                
+                                /* For editable HTML content */
+                                .odoo-editor-editable {
+                                    height: 100% !important;
+                                    min-height: 420px !important;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Alternative selector using field names directly */
+.o_field_widget[name="x_customer_submission_notes"],
+.o_field_widget[name="description"] {
+    min-height: 450px !important;
+    
+    .o_readonly,
+    .odoo-editor-editable,
+    .note-editable {
+        min-height: 420px !important;
+        max-height: none !important;
+    }
+}
+
+/* Ensure the notebook content area allows for full height */
+.o_notebook_content {
+    .tab-pane.active {
+        min-height: 500px;
+    }
+}
+
+/* Group headers styling for better visual separation */
+.o_notebook_content [name="internal_notes"] {
+    .o_horizontal_separator {
+        font-weight: 600;
+        font-size: 1.1em;
+        color: var(--o-brand-primary);
+        border-bottom: 2px solid var(--o-brand-primary);
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+    }
+}
