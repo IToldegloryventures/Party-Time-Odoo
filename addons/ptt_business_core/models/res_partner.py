@@ -49,7 +49,7 @@ class ResPartner(models.Model):
     )
     
     x_vendor_document_count = fields.Integer(
-        string="Document Count",
+        string="Vendor Docs",
         compute="_compute_vendor_compliance",
     )
     

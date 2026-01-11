@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.2.1.0",
+    "version": "19.0.2.1.1",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -29,7 +29,11 @@
         # "data/project_stages.xml",
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
-        # Views
+        # Views - Vendor configuration views FIRST (actions needed by other views)
+        "views/ptt_document_type_view.xml",
+        "views/ptt_vendor_document_view.xml",
+        "views/ptt_vendor_service_tag_view.xml",
+        # Views - Main views (may reference vendor actions above)
         "views/ptt_project_vendor_assignment_view.xml",
         "views/ptt_res_partner_view.xml",
         "views/ptt_crm_lead_view.xml",
@@ -37,10 +41,7 @@
         "views/ptt_project_task_view.xml",
         # Vendor Views
         "views/ptt_vendor_list_view.xml",
-        # Vendor Configuration Views
-        "views/ptt_document_type_view.xml",
-        "views/ptt_vendor_document_view.xml",
-        "views/ptt_vendor_service_tag_view.xml",
+        # Vendor Configuration Menus (load after actions are defined)
         "views/ptt_vendor_config_menus.xml",
         # Vendor Configuration Seed Data (load after views)
         "data/ptt_document_type_data.xml",
