@@ -68,7 +68,7 @@
         <field name="name">ptt.vendor.document.search</field>
         <field name="model">ptt.vendor.document</field>
         <field name="arch" type="xml">
-            <search string="Vendor Documents">
+            <search>
                 <field name="vendor_id"/>
                 <field name="document_type_id"/>
                 <filter name="filter_valid" string="Valid" domain="[('status', '=', 'valid')]"/>
@@ -76,11 +76,6 @@
                 <filter name="filter_expired" string="Expired" domain="[('status', '=', 'expired')]"/>
                 <filter name="filter_required" string="Required Documents" 
                         domain="[('document_type_id.required', '=', True)]"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
-                    <filter name="group_type" string="Document Type" context="{'group_by': 'document_type_id'}"/>
-                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
-                </group>
             </search>
         </field>
     </record>

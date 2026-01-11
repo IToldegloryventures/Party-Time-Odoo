@@ -61,16 +61,12 @@
         <field name="name">ptt.document.type.search</field>
         <field name="model">ptt.document.type</field>
         <field name="arch" type="xml">
-            <search string="Document Types">
+            <search>
                 <field name="name"/>
                 <field name="code"/>
                 <filter name="filter_required" string="Required" domain="[('required', '=', True)]"/>
                 <filter name="filter_has_expiry" string="Has Expiry" domain="[('has_expiry', '=', True)]"/>
                 <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_required" string="Required" context="{'group_by': 'required'}"/>
-                    <filter name="group_has_expiry" string="Has Expiry" context="{'group_by': 'has_expiry'}"/>
-                </group>
             </search>
         </field>
     </record>

@@ -65,14 +65,11 @@
         <field name="name">ptt.vendor.service.tag.search</field>
         <field name="model">ptt.vendor.service.tag</field>
         <field name="arch" type="xml">
-            <search string="Search Service Tags">
+            <search>
                 <field name="name"/>
                 <field name="code"/>
                 <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Active Status" name="group_active" context="{'group_by': 'active'}"/>
-                </group>
             </search>
         </field>
     </record>

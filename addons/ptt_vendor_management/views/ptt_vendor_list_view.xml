@@ -93,7 +93,7 @@
         <field name="model">res.partner</field>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <search string="Search Vendors">
+            <search>
                 <field name="name" string="Vendor" 
                        filter_domain="['|', '|', ('name', 'ilike', self), ('email', 'ilike', self), ('phone', 'ilike', self)]"/>
                 <field name="x_vendor_service_tag_ids" string="Service"/>
@@ -107,12 +107,6 @@
                 <filter string="Expiring Soon" name="expiring" domain="[('x_vendor_compliance_status', '=', 'expiring_soon')]"/>
                 <filter string="Expired Docs" name="expired" domain="[('x_vendor_compliance_status', '=', 'expired')]"/>
                 <filter string="Missing Docs" name="missing" domain="[('x_vendor_compliance_status', '=', 'missing_required')]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Tier" name="group_tier" context="{'group_by': 'x_vendor_tier'}"/>
-                    <filter string="Compliance" name="group_compliance" context="{'group_by': 'x_vendor_compliance_status'}"/>
-                    <filter string="State" name="group_state" context="{'group_by': 'state_id'}"/>
-                    <filter string="City" name="group_city" context="{'group_by': 'city'}"/>
-                </group>
             </search>
         </field>
     </record>
