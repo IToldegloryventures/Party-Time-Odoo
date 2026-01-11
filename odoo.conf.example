@@ -1,0 +1,28 @@
+[options]
+# Addons path - custom modules first, then Odoo core modules
+# If you have Enterprise access, add: addons,enterprise,odoo/addons
+addons_path = addons,odoo/addons
+
+# Database configuration
+db_host = localhost
+db_port = 5432
+db_user = odoo
+db_password = YOUR_POSTGRES_PASSWORD_HERE
+db_name = ptt_dev
+
+# Admin password for database management
+admin_passwd = admin
+
+# Logging
+logfile = odoo.log
+
+# Development mode
+dev_mode = True
+
+# Additional options (uncomment if needed)
+# workers = 0  # Set to 0 for development, increase for production
+# xmlrpc_port = 8069
+# xmlrpc_interface = 127.0.0.1
+
+# Filestore path (if you want to specify it explicitly)
+# data_dir = /path/to/filestore

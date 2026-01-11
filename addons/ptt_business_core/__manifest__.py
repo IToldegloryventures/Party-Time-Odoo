@@ -35,7 +35,6 @@
         "views/ptt_crm_lead_view.xml",
         "views/ptt_project_project_view.xml",
         "views/ptt_project_task_view.xml",
-        "views/ptt_sale_order_view.xml",
     ],
     # Demo data disabled - was causing test failures on Odoo.sh
     # "demo": [
