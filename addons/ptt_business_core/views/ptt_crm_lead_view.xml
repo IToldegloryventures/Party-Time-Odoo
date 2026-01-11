@@ -1,78 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--
+        PTT CRM Lead Form View Extension
+        
+        NOTE: Use standard Odoo fields:
+        - user_id = Sales Rep
+        - source_id = Lead Source (instead of x_inquiry_source)
+        - expected_revenue = Budget (instead of x_budget_range)
+        - name = Event/Opportunity Name (instead of x_event_name)
+        - Activities = Follow-ups (instead of x_followup_email_sent, x_proposal_sent, x_next_contact_date)
+        - Stages = Status tracking (instead of custom booleans)
+    -->
     <record id="view_crm_lead_form_ptt" model="ir.ui.view">
         <field name="name">crm.lead.form.ptt</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
-            <!-- Add Sales Order, Invoice, and Project buttons - ensure they're visible and clear -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <!-- Sales Orders button - show even if count is 0, but only for opportunities -->
-                <button name="action_view_sale_quotation" type="object"
-                    class="oe_stat_button" icon="fa-pencil-square-o"
-                    invisible="type == 'lead'">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Quotations</span>
-                        <span class="o_stat_value">
-                            <field name="quotation_count" widget="integer"/>
-                        </span>
-                    </div>
-                </button>
-                <button name="action_view_sale_order" type="object"
-                    class="oe_stat_button" icon="fa-usd"
-                    invisible="type == 'lead' or sale_order_count == 0">
-                    <div class="o_stat_info">
-                        <span class="o_stat_value">
-                            <field name="sale_amount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                        </span>
-                        <span class="o_stat_text">Sales Orders</span>
-                        <field name="sale_order_count" invisible="1"/>
-                    </div>
-                </button>
-                <!-- Invoices button -->
-                <button name="action_view_invoices" type="object"
-                    class="oe_stat_button" icon="fa-file-text-o"
-                    invisible="x_invoice_count == 0 or type == 'lead'">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Invoices</span>
-                        <span class="o_stat_value"><field name="x_invoice_count" widget="integer"/></span>
-                        <span class="o_stat_text">
-                            Balance: <field name="x_invoice_remaining" widget="monetary" 
-                                            options="{'currency_field': 'company_currency'}"/>
-                        </span>
-                    </div>
-                </button>
-                <!-- Project buttons - show if project exists (via x_project_id or confirmed Sales Order) -->
-                <button name="action_view_project" type="object"
-                    class="oe_stat_button" icon="fa-tasks"
-                    invisible="not x_has_project or type == 'lead'">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Project</span>
-                        <field name="x_project_id" class="o_stat_value" readonly="1" invisible="not x_project_id"/>
-                        <span class="o_stat_value" invisible="x_project_id">Created</span>
-                    </div>
-                </button>
-                <button name="action_view_project_tasks" type="object"
-                    class="oe_stat_button" icon="fa-check-square-o"
-                    invisible="not x_has_project or type == 'lead'">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Project Tasks</span>
-                        <span class="o_stat_value">
-                            <field name="x_project_task_count" widget="integer"/>
-                        </span>
-                    </div>
-                </button>
-            </xpath>
+            <!-- Add PTT Lead Intake tab -->
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
                 <page name="lead_intake" string="Lead Intake">
-                    <!-- Lead Contact Information - Using Standard Odoo Fields -->
-                    <group string="PTT Additional Contact Information">
+                    <!-- Additional Contact Information -->
+                    <group string="Additional Contact Information">
                         <group>
-                            <field name="x_inquiry_source"/>
-                            <field name="x_referral_source" invisible="x_inquiry_source != 'referral'"/>
                             <field name="x_date_of_call"/>
-                            <field name="x_lead_type"/>
                             <field name="x_preferred_contact_method"/>
+                            <field name="x_referral_source"/>
                         </group>
                         <group string="2nd POC (Signing Authority)">
                             <field name="x_second_poc_name"/>
@@ -81,13 +33,10 @@
                         </group>
                     </group>
 
-                    <!-- Event ID - Links CRM, SO, Project, Tasks -->
+                    <!-- Event ID -->
                     <group string="Event Identification">
                         <group>
                             <field name="x_event_id" placeholder="Enter Event ID (e.g., 000001)"/>
-                        </group>
-                        <group>
-                            <field name="x_project_id" readonly="1"/>
                         </group>
                     </group>
 
@@ -96,7 +45,6 @@
                         <group>
                             <field name="x_event_type"/>
                             <field name="x_event_specific_goal"/>
-                            <field name="x_event_name"/>
                             <field name="x_event_date"/>
                             <field name="x_event_time"/>
                         </group>
@@ -130,41 +78,15 @@
                         </group>
                     </group>
 
-                    <!-- Budget & Financial -->
-                    <group string="Budget &amp; Financial Information">
-                        <group>
-                            <field name="x_budget_range"/>
-                            <field name="x_services_already_booked"/>
-                        </group>
+                    <!-- CFO/Finance Contact (for corporate clients) -->
+                    <group string="CFO/Finance Contact">
                         <group>
                             <field name="x_cfo_name"/>
                             <field name="x_cfo_phone"/>
+                        </group>
+                        <group>
                             <field name="x_cfo_email"/>
                             <field name="x_cfo_contact_method"/>
-                        </group>
-                    </group>
-                    <!-- Invoice Payment Tracking (Read-only display) -->
-                    <group string="Invoice Payment Status" invisible="x_invoice_count == 0">
-                        <group>
-                            <field name="x_invoice_payment_status" widget="badge" 
-                                   decoration-success="x_invoice_payment_status == 'paid'"
-                                   decoration-warning="x_invoice_payment_status == 'partial'"
-                                   decoration-danger="x_invoice_payment_status in ('overdue', 'not_paid')"/>
-                            <field name="x_invoice_total" widget="monetary" 
-                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
-                            <field name="x_invoice_paid" widget="monetary" 
-                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
-                            <field name="x_invoice_remaining" widget="monetary" 
-                                   options="{'currency_field': 'company_currency'}" readonly="1"/>
-                        </group>
-                    </group>
-
-                    <!-- Follow-up Information -->
-                    <group string="Follow-up Information">
-                        <group>
-                            <field name="x_followup_email_sent"/>
-                            <field name="x_proposal_sent"/>
-                            <field name="x_next_contact_date"/>
                         </group>
                     </group>
                 </page>

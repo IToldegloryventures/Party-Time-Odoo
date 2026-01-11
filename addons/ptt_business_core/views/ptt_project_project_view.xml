@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--
+        PTT Project Form View Extension
+        
+        NOTE: Use standard Odoo fields:
+        - user_id = Project Manager / Sales Rep
+        - partner_id = Client
+        - name = Project/Event Name
+        - sale_order_id = Related Sale Order (from sale_project)
+    -->
     <record id="view_project_form_ptt" model="ir.ui.view">
         <field name="name">project.project.form.ptt</field>
         <field name="model">project.project</field>
@@ -8,12 +17,11 @@
             <!-- Add Project Header/Banner with key event information -->
             <xpath expr="//sheet" position="before">
                 <div class="oe_title_header" style="background-color: #f8f9fa; padding: 20px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #dee2e6;">
-                    <!-- Event ID & Name Header -->
+                    <!-- Event ID Header -->
                     <div class="row mb-3">
                         <div class="col-12">
                             <h2 style="margin: 0; font-weight: bold;">
-                                <field name="x_event_id" readonly="1" style="display: inline; margin-right: 10px;"/>
-                                <field name="x_event_name" readonly="1" style="display: inline;"/>
+                                Event: <field name="x_event_id" readonly="1" style="display: inline; margin-right: 10px;"/>
                             </h2>
                         </div>
                     </div>
@@ -34,20 +42,19 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Client Name:</div>
+                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Client:</div>
                             <div>
                                 <field name="partner_id" readonly="1" widget="many2one"/>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Row 2: Sales Rep, Project Stage, Days Until Event -->
-                    <div class="row mb-2">
+                    <!-- Row 2: Project Manager, Stage -->
+                    <div class="row">
                         <div class="col-md-4">
-                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Sales Rep:</div>
+                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Project Manager:</div>
                             <div>
-                                <field name="x_sales_rep_id" readonly="1" widget="many2one" invisible="not x_sales_rep_id"/>
-                                <span invisible="x_sales_rep_id">Not Assigned</span>
+                                <field name="user_id" readonly="1" widget="many2one"/>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -57,55 +64,16 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Row 3: Contract Status -->
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Contract Status:</div>
-                            <div>
-                                <field name="x_contract_status" readonly="1"/>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </xpath>
-            <!-- Add smart buttons for navigation -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_crm_lead" type="object"
-                    class="oe_stat_button" icon="fa-bullhorn"
-                    invisible="not x_crm_lead_id">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Source Opportunity</span>
-                        <field name="x_crm_lead_id" class="o_stat_value" readonly="1"/>
-                    </div>
-                </button>
-                <button name="action_view_sale_orders" type="object"
-                    class="oe_stat_button" icon="fa-usd"
-                    invisible="x_sale_order_count == 0 or not x_crm_lead_id">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Sales Orders</span>
-                        <span class="o_stat_value">
-                            <field name="x_sale_order_count" widget="integer"/>
-                        </span>
-                    </div>
-                </button>
-                <button name="action_view_tasks" type="object"
-                    class="oe_stat_button" icon="fa-tasks">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Tasks</span>
-                        <span class="o_stat_value">
-                            <field name="task_count" widget="integer"/>
-                        </span>
-                    </div>
-                </button>
-            </xpath>
+            
+            <!-- Add PTT Event Details tab -->
             <xpath expr="//sheet/notebook" position="inside">
                 <page name="ptt_event_details" string="PTT Event Details">
                     <!-- Event Overview -->
                     <group string="Event Overview">
                         <group>
                             <field name="x_event_id"/>
-                            <field name="x_event_name"/>
                             <field name="x_event_type"/>
                             <field name="x_event_date"/>
                         </group>
@@ -115,12 +83,7 @@
                             <field name="x_venue_name"/>
                         </group>
                     </group>
-                    <!-- Sales Team -->
-                    <group string="Sales Team (for Commission Tracking)">
-                        <group>
-                            <field name="user_id" readonly="1"/>
-                        </group>
-                    </group>
+                    
                     <!-- Event Schedule -->
                     <group string="Event Schedule">
                         <group>
@@ -133,6 +96,7 @@
                             <field name="x_teardown_deadline"/>
                         </group>
                     </group>
+                    
                     <!-- Event Details -->
                     <group string="Event Details">
                         <group>
@@ -146,34 +110,34 @@
                     </group>
                 </page>
             </xpath>
-                <!-- Create Vendor Assignment tab -->
-                <xpath expr="//page[@name='ptt_event_details']" position="after">
-                    <page name="vendor_assignment" string="Vendor Assignment">
-                        <!-- Vendor Assignments -->
-                        <group string="Vendor Assignments">
-                            <field name="x_vendor_assignment_ids" nolabel="1">
-                                <list>
-                                    <field name="service_type"/>
-                                    <field name="vendor_id"/>
-                                    <field name="actual_cost" widget="monetary" 
-                                           options="{'currency_field': 'currency_id'}"/>
-                                    <field name="notes"/>
-                                </list>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field name="service_type"/>
-                                            <field name="vendor_id"/>
-                                            <field name="actual_cost" widget="monetary" 
-                                                   options="{'currency_field': 'currency_id'}"/>
-                                            <field name="notes" widget="text"/>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </group>
-                    </page>
-                </xpath>
+            
+            <!-- Create Vendor Assignment tab -->
+            <xpath expr="//page[@name='ptt_event_details']" position="after">
+                <page name="vendor_assignment" string="Vendor Assignment">
+                    <group string="Vendor Assignments">
+                        <field name="x_vendor_assignment_ids" nolabel="1">
+                            <list>
+                                <field name="service_type"/>
+                                <field name="vendor_id"/>
+                                <field name="actual_cost" widget="monetary" 
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="notes"/>
+                            </list>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="service_type"/>
+                                        <field name="vendor_id"/>
+                                        <field name="actual_cost" widget="monetary" 
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="notes" widget="text"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 </odoo>

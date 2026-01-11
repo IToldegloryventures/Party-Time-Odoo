@@ -2,15 +2,17 @@ from odoo import models, fields
 
 
 class ResPartner(models.Model):
+    """Extend res.partner for PTT vendor management.
+    
+    NOTE: Use standard Odoo fields where possible:
+    - supplier_rank > 0 = Is a Vendor (standard - use instead of x_is_vendor)
+    - comment = Internal Notes (standard - use instead of x_vendor_notes)
+    
+    Custom PTT fields are for vendor-specific data only.
+    """
     _inherit = "res.partner"
 
-    # === VENDOR FIELDS ===
-    x_is_vendor = fields.Boolean(
-        string="Vendor",
-        help="Mark this contact as a vendor / service provider.",
-    )
-    
-    # Vendor Detail Fields
+    # === VENDOR FIELDS (Custom PTT) ===
     x_vendor_service_types = fields.Selection(
         [
             ("dj", "DJ/MC Services"),
@@ -30,7 +32,7 @@ class ResPartner(models.Model):
             ("other", "Other"),
         ],
         string="Service Type",
-        help="Primary service type this vendor provides",
+        help="Primary service type this vendor provides. Note: Use supplier_rank > 0 to identify vendors.",
     )
     x_vendor_rating = fields.Selection(
         [
@@ -43,12 +45,7 @@ class ResPartner(models.Model):
         string="Rating",
         help="Vendor performance rating",
     )
-    x_vendor_notes = fields.Text(
-        string="Vendor Notes",
-        help="Additional notes about this vendor",
-    )
     x_vendor_preferred = fields.Boolean(
         string="Preferred Vendor",
         help="Mark as preferred vendor for priority assignment",
     )
-

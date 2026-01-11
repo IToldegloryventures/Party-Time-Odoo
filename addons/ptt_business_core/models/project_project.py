@@ -1,63 +1,35 @@
 from odoo import models, fields, api
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 class ProjectProject(models.Model):
+    """Extend project.project for PTT event management.
+    
+    NOTE: Use standard Odoo fields where possible:
+    - user_id = Project Manager / Sales Rep (standard)
+    - partner_id = Client (standard)
+    - name = Project/Event Name (standard)
+    - sale_order_id = Related Sale Order (from sale_project)
+    
+    Custom PTT fields are for event-specific data only.
+    """
     _inherit = "project.project"
 
-    # Link back to source CRM Lead
-    x_crm_lead_id = fields.Many2one(
-        "crm.lead",
-        string="Source Opportunity",
-        help="The CRM opportunity this project was created from.",
-        index=True,
-        ondelete="set null",
-    )
-    
-    # Related field for Sales Rep from CRM (for display in project header)
-    x_sales_rep_id = fields.Many2one(
-        "res.users",
-        string="Sales Rep",
-        related="x_crm_lead_id.user_id",
-        readonly=True,
-        help="Sales representative from the source CRM opportunity.",
-    )
-
-    # === VENDOR ASSIGNMENTS ===
+    # === VENDOR ASSIGNMENTS (Custom PTT Feature) ===
     x_vendor_assignment_ids = fields.One2many(
         "ptt.project.vendor.assignment",
         "project_id",
         string="Vendor Assignments",
-        help="Vendor assignments for this project.",
+        help="Vendor assignments for this project/event.",
     )
 
-    # NOTE: Project creation is handled manually in Odoo.
-    # No automatic project creation or task creation from code.
-    # The action_create_event_tasks() method below can be called manually via button if needed.
-    
-    def action_create_event_tasks(self):
-        """Button action to create event tasks for this project.
-        
-        This can be called manually from a button on the project form.
-        Returns True if tasks were created successfully, False otherwise.
-        """
-        self.ensure_one()
-        try:
-            self._create_event_tasks()
-            self.message_post(
-                body="Event tasks created successfully.",
-                message_type="notification",
-            )
-            return True
-        except Exception as e:
-            self.message_post(
-                body=f"Error creating event tasks: {e}",
-                message_type="notification",
-            )
-            return False
-
-    # Core event identity
-    x_event_id = fields.Char(string="Event Number")
+    # === EVENT IDENTITY ===
+    x_event_id = fields.Char(
+        string="Event Number",
+        copy=False,
+        index=True,
+        help="Unique event identifier for tracking.",
+    )
     x_event_type = fields.Selection(
         [
             # Corporate Events
@@ -100,82 +72,56 @@ class ProjectProject(models.Model):
             ("themed_cigar_whiskey", "Themed - Cigar & Whiskey Nights"),
         ],
         string="Event Category",
-        help="Copied from the related opportunity / lead.",
+        help="Type of event for categorization and reporting.",
     )
-    x_event_name = fields.Char(string="Event Name")
-    x_event_date = fields.Date(string="Scheduled Date", index=True)
+
+    # === EVENT SCHEDULE ===
+    x_event_date = fields.Date(
+        string="Event Date",
+        index=True,
+        help="Scheduled event date.",
+    )
     x_event_time = fields.Char(string="Event Time")
     x_guest_count = fields.Integer(string="Guest Count")
     x_venue_name = fields.Char(string="Venue")
-
-    # Schedule
     x_setup_start_time = fields.Char(string="Setup Start Time")
     x_event_start_time = fields.Char(string="Event Start Time")
     x_event_end_time = fields.Char(string="Event End Time")
     x_total_hours = fields.Float(string="Total Hours")
     x_teardown_deadline = fields.Char(string="Tear-Down Deadline")
 
-    # Event details
+    # === EVENT DETAILS ===
     x_theme_dress_code = fields.Text(string="Theme, Dress Code, or Style Preference")
     x_special_requirements_desc = fields.Text(string="Special Requirements")
     x_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
     x_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
 
-    # === PROJECT HEADER COMPUTED FIELDS ===
-    x_contract_status = fields.Char(
-        string="Contract Status",
-        compute="_compute_contract_status",
-        store=False,
-        help="Contract status from related Sales Order.",
-    )
-
-    @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids", "x_crm_lead_id.order_ids.x_contract_status")
-    def _compute_contract_status(self):
-        """Get contract status from related Sales Order via CRM Lead."""
-        for project in self:
-            contract_status = "Not Available"
-            if project.x_crm_lead_id and project.x_crm_lead_id.order_ids:
-                confirmed_orders = project.x_crm_lead_id.order_ids.filtered(lambda so: so.state == 'sale')
-                if confirmed_orders:
-                    so = confirmed_orders.sorted('create_date', reverse=True)[0]
-                    if so.x_contract_status:
-                        status_map = {
-                            "not_sent": "Not Sent",
-                            "sent": "Sent for Signature",
-                            "signed": "Signed",
-                        }
-                        contract_status = status_map.get(so.x_contract_status, so.x_contract_status)
-                elif project.x_crm_lead_id.order_ids:
-                    so = project.x_crm_lead_id.order_ids[0]
-                    if so.x_contract_status:
-                        status_map = {
-                            "not_sent": "Not Sent",
-                            "sent": "Sent for Signature",
-                            "signed": "Signed",
-                        }
-                        contract_status = status_map.get(so.x_contract_status, so.x_contract_status)
-            project.x_contract_status = contract_status
-
-
-    def _set_initial_project_stage(self):
-        """Set initial project stage to 'To Do' for new event projects.
+    # === TASK CREATION ===
+    
+    def action_create_event_tasks(self):
+        """Button action to create event tasks for this project.
         
-        Uses sudo() to bypass record rules when accessing project.project.stage.
+        Returns True if tasks were created successfully, False otherwise.
         """
         self.ensure_one()
-        
-        todo_stage = self.env.ref("ptt_business_core.project_stage_todo", raise_if_not_found=False)
-        if not todo_stage:
-            todo_stage = self.env["project.project.stage"].sudo().search(
-                [("name", "=", "To Do")], limit=1
+        try:
+            self._create_event_tasks()
+            self.message_post(
+                body="Event tasks created successfully.",
+                message_type="notification",
             )
-        if todo_stage:
-            self.sudo().write({"stage_id": todo_stage.id})
-    
+            return True
+        except Exception as e:
+            self.message_post(
+                body=f"Error creating event tasks: {e}",
+                message_type="notification",
+            )
+            return False
+
     def _create_event_tasks(self):
-        """Auto-create comprehensive event planning tasks and sub-tasks for event projects.
+        """Auto-create comprehensive event planning tasks for event projects.
         
-        Creates 9 standard event tasks that apply to all events:
+        Creates 9 standard event tasks:
         1. Confirm Booking with Client
         2. Collect Tier-3 Fulfillment Details
         3. Review Client Deliverables Checklist
@@ -185,17 +131,12 @@ class ProjectProject(models.Model):
         7. Client Communications & Check-Ins
         8. Final Payment Check & Invoice Follow-up
         9. Post-Event Closure / Review
-        
-        Note: Uses sudo() for task creation to bypass record rules on project.task.type
-        since this is an automated system process triggered by Sales Order confirmation.
         """
         self.ensure_one()
-        if not self.x_crm_lead_id:
-            return  # Only for event projects
 
         assigned_users = (
-            [(6, 0, [self.x_crm_lead_id.user_id.id])]
-            if self.x_crm_lead_id.user_id
+            [(6, 0, [self.user_id.id])]
+            if self.user_id
             else []
         )
 
@@ -217,13 +158,11 @@ class ProjectProject(models.Model):
             "description": "Verify contract signed and retainer received",
         })
         
-        booking_subtasks = [
+        for sub_task_name in [
             "Verify Retainer has been paid. Verify remaining balance owed.",
             "Send confirmation email stating contract signed + retainer received",
             "Reiterate event date, venue, time, and agreed services",
-        ]
-        
-        for sub_task_name in booking_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -241,14 +180,12 @@ class ProjectProject(models.Model):
             "description": "Gather venue access info, rider/equipment specifications, vendor needs, and logistics",
         })
         
-        tier3_subtasks = [
+        for sub_task_name in [
             "Venue access info (load-in times, restrictions, contacts)",
             "Rider / Equipment Setup specifications",
             "Vendor needs, power, staging, logistics",
             "Special requests (e.g. backup, transportation)",
-        ]
-        
-        for sub_task_name in tier3_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -266,15 +203,13 @@ class ProjectProject(models.Model):
             "description": "Review and confirm all client-provided deliverables",
         })
         
-        deliverables_subtasks = [
+        for sub_task_name in [
             "Song selections (first dance, special requests)",
             "Timeline (ceremony, reception, breaks)",
             "Venue logistics (floor plan, layout)",
             "Contact point on event day",
             "Guest count confirmation",
-        ]
-        
-        for sub_task_name in deliverables_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -289,16 +224,14 @@ class ProjectProject(models.Model):
             "project_id": self.id,
             "stage_id": todo_type.id,
             "user_ids": assigned_users,
-            "description": "Assign internal vendors to event and provide task lists",
+            "description": "Assign vendors to event and provide task lists",
         })
         
-        vendor_assign_subtasks = [
-            "Assign internal vendor(s) to event",
+        for sub_task_name in [
+            "Assign vendor(s) to event",
             "Provide vendors with relevant task list, rider info, schedule",
             "Confirm vendors' availability, rates, and contracts",
-        ]
-        
-        for sub_task_name in vendor_assign_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -316,13 +249,11 @@ class ProjectProject(models.Model):
             "description": "Confirm vendor requirements and acceptance",
         })
         
-        vendor_brief_subtasks = [
+        for sub_task_name in [
             "Confirm vendor requirements for equipment, load-in, contact person",
             "Confirm required documents (COI, contract, tax info)",
             "Confirm vendor acceptance",
-        ]
-        
-        for sub_task_name in vendor_brief_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -340,14 +271,12 @@ class ProjectProject(models.Model):
             "description": "Prepare inventory, transport, and backup resources",
         })
         
-        resources_subtasks = [
+        for sub_task_name in [
             "Inventory / equipment prep",
             "Transport / loading plan",
             "Backup gear / redundancy checks",
             "Power & staging setup plan",
-        ]
-        
-        for sub_task_name in resources_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -365,13 +294,11 @@ class ProjectProject(models.Model):
             "description": "Execute appropriate check-ins and confirm logistics",
         })
         
-        communications_subtasks = [
+        for sub_task_name in [
             "Execute appropriate check-ins",
             "Confirm all logistics 1-2 weeks prior",
             "Issue reminders for outstanding client tasks (song lists, special requests)",
-        ]
-        
-        for sub_task_name in communications_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -389,13 +316,11 @@ class ProjectProject(models.Model):
             "description": "Review invoice balance and confirm full payment status",
         })
         
-        payment_subtasks = [
+        for sub_task_name in [
             "Review invoice balance and confirm full payment status",
             "Flag and follow up on unpaid balances",
-            "Update system status to \"Final Payment Received\"",
-        ]
-        
-        for sub_task_name in payment_subtasks:
+            "Update system status to Final Payment Received",
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -418,13 +343,11 @@ class ProjectProject(models.Model):
             "description": "Confirm event completion and gather feedback",
         })
         
-        post_event_subtasks = [
+        for sub_task_name in [
             "Confirm event ended as scheduled",
             "Gather client feedback / survey link",
             "Document lessons learned or special notes for future events",
-        ]
-        
-        for sub_task_name in post_event_subtasks:
+        ]:
             Task.create({
                 "name": sub_task_name,
                 "project_id": self.id,
@@ -433,107 +356,19 @@ class ProjectProject(models.Model):
                 "user_ids": assigned_users,
             })
 
-    def _get_or_create_task_stage(self, stage_name):
-        """Get or create a task stage for the project.
-        
-        This is a fallback method if the XML-defined task types are not found.
-        """
-        stage = self.env["project.task.type"].search([
-            ("name", "=", stage_name),
-            ("project_ids", "in", [self.id]),
-        ], limit=1)
-        
-        if not stage:
-            stage = self.env["project.task.type"].search([
-                ("name", "=", stage_name),
-            ], limit=1)
-            
-            if not stage:
-                stage = self.env["project.task.type"].create({
-                    "name": stage_name,
-                    "project_ids": [(4, self.id)],
-                })
-            else:
-                stage.write({"project_ids": [(4, self.id)]})
-        else:
-            if self.id not in stage.project_ids.ids:
-                stage.write({"project_ids": [(4, self.id)]})
-        
-        return stage
-    
-
-    x_sale_order_count = fields.Integer(
-        string="# Sales Orders",
-        compute="_compute_sale_order_count",
-        help="Number of Sales Orders from the source CRM opportunity",
-    )
-    
-    @api.depends("x_crm_lead_id", "x_crm_lead_id.order_ids")
-    def _compute_sale_order_count(self):
-        for project in self:
-            if project.x_crm_lead_id:
-                project.x_sale_order_count = len(project.x_crm_lead_id.order_ids)
-            else:
-                project.x_sale_order_count = 0
-    
-    def action_view_crm_lead(self):
-        """Open the source CRM opportunity."""
-        self.ensure_one()
-        if not self.x_crm_lead_id:
-            return False
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Source Opportunity",
-            "res_model": "crm.lead",
-            "res_id": self.x_crm_lead_id.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-    
-    def action_view_sale_orders(self):
-        """Open Sales Orders from the source CRM opportunity."""
-        self.ensure_one()
-        if not self.x_crm_lead_id or not self.x_crm_lead_id.order_ids:
-            return False
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Sales Orders",
-            "res_model": "sale.order",
-            "view_mode": "tree,form",
-            "domain": [("id", "in", self.x_crm_lead_id.order_ids.ids)],
-            "target": "current",
-        }
-
-    def action_view_tasks(self):
-        """Open project tasks."""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Project Tasks",
-            "res_model": "project.task",
-            "view_mode": "list,form,kanban",
-            "domain": [("project_id", "=", self.id)],
-            "context": {
-                "default_project_id": self.id,
-                "search_default_project_id": self.id,
-            },
-        }
-
     # === SCHEDULED ACTIONS (CRON) ===
     
     @api.model
     def _cron_10day_event_reminder(self):
         """Create 10-day reminder activities for upcoming events.
         
-        Runs daily. Finds event projects with x_event_date exactly 10 days from today
-        and creates reminder activities for the project manager.
+        Runs daily. Finds event projects with x_event_date exactly 10 days from today.
         """
         today = fields.Date.today()
         target_date = today + timedelta(days=10)
         
         projects = self.search([
             ("x_event_date", "=", target_date),
-            ("x_crm_lead_id", "!=", False),
         ])
         
         activity_type = self.env.ref(
@@ -561,15 +396,13 @@ class ProjectProject(models.Model):
     def _cron_3day_vendor_reminder(self):
         """Create 3-day vendor reminder activities for upcoming events.
         
-        Runs daily. Finds event projects with x_event_date exactly 3 days from today
-        and creates reminder activities for vendor follow-up.
+        Runs daily. Finds event projects with x_event_date exactly 3 days from today.
         """
         today = fields.Date.today()
         target_date = today + timedelta(days=3)
         
         projects = self.search([
             ("x_event_date", "=", target_date),
-            ("x_crm_lead_id", "!=", False),
         ])
         
         activity_type = self.env.ref(

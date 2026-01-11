@@ -8,105 +8,44 @@ _logger = logging.getLogger(__name__)
 
 def post_init_hook(env):
     """
-    Post-init hook: Clean up Studio customizations that cause Owl errors.
-    
-    This runs AFTER the module is installed with full ORM/env access.
-    In Odoo 19, post_init_hook receives 'env' (Environment).
-    
-    Specifically fixes: "project.project"."x_plan2_id" field is undefined
+    Post-init hook: Clean up orphaned database objects.
+    Runs AFTER the module is installed with full ORM/env access.
     """
     _logger.info("PTT Business Core: Running post_init_hook cleanup")
     
-    # === CLEANUP: Delete views referencing x_plan2_id ===
+    # Clean up any orphaned views referencing deleted fields
     try:
-        # Find all views that reference x_plan2_id
-        views_to_delete = env['ir.ui.view'].sudo().search([
-            ('arch_db', 'ilike', 'x_plan2_id')
-        ])
+        deleted_fields = [
+            'x_plan2_id', 'x_days_until_event', 'x_target_margin', 'x_target_margin_price',
+            'x_contract_status', 'x_contract_signed_date', 'x_crm_lead_id', 'x_sales_rep_id',
+            'x_event_name', 'x_sale_order_count', 'x_lead_type', 'x_inquiry_source',
+            'x_followup_email_sent', 'x_proposal_sent', 'x_next_contact_date', 'x_budget_range',
+            'x_services_already_booked', 'x_project_id', 'x_invoice_count', 'x_invoice_total',
+            'x_invoice_paid', 'x_invoice_remaining', 'x_invoice_payment_status', 'x_is_vendor',
+            'x_vendor_notes', 'x_has_project', 'x_project_task_count', 'company_currency',
+            'x_project_event_id', 'x_project_event_name', 'x_project_event_date', 'x_project_event_time',
+            'x_project_event_type', 'x_project_venue', 'x_project_client_name', 'x_project_guest_count',
+            'x_project_crm_lead_id', 'x_project_sales_rep_id', 'x_is_event_task',
+        ]
         
-        if views_to_delete:
-            _logger.info(f"PTT Business Core: Found {len(views_to_delete)} views referencing x_plan2_id")
-            for view in views_to_delete:
-                _logger.info(f"PTT Business Core: Processing view {view.id} ({view.name})")
+        for field_name in deleted_fields:
+            views_to_fix = env['ir.ui.view'].sudo().search([
+                ('arch_db', 'ilike', field_name)
+            ])
+            for view in views_to_fix:
                 try:
-                    # Try to clean the view by removing x_plan2_id references
                     if view.arch_db:
                         new_arch = view.arch_db
-                        # Remove field elements
-                        new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                        # Remove label elements
-                        new_arch = re.sub(r'<label[^>]*for=["\']x_plan2_id["\'][^/>]*/?>', '', new_arch)
-                        # Remove any other elements with x_plan2_id
-                        new_arch = re.sub(r'<[^>]*x_plan2_id[^>]*/?>', '', new_arch)
-                        
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
                         if new_arch != view.arch_db:
                             view.sudo().write({'arch_db': new_arch})
-                            _logger.info(f"PTT Business Core: Cleaned view {view.id}")
-                        
-                        # If it's a Studio customization, delete it entirely
-                        if 'studio' in (view.name or '').lower() or view.key and 'studio' in view.key:
-                            view.sudo().unlink()
-                            _logger.info(f"PTT Business Core: Deleted Studio view {view.id}")
+                            _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view.id}")
                 except Exception as e:
                     _logger.warning(f"PTT Business Core: Error cleaning view {view.id}: {e}")
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error in post_init_hook: {e}")
-    
-    # === CLEANUP: Delete the x_plan2_id field definition if it exists ===
-    try:
-        field_to_delete = env['ir.model.fields'].sudo().search([
-            ('name', '=', 'x_plan2_id'),
-            ('model', '=', 'project.project')
-        ])
-        if field_to_delete:
-            _logger.info(f"PTT Business Core: Deleting x_plan2_id field definition")
-            field_to_delete.sudo().unlink()
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error deleting x_plan2_id field: {e}")
-    
-    # === CLEANUP: Remove duplicate project stages ===
-    try:
-        _logger.info("PTT Business Core: Checking for duplicate project stages")
-        ProjectStage = env['project.project.stage'].sudo()
-        
-        # Find all stage names and check for duplicates
-        all_stages = ProjectStage.search([], order='name, sequence, id')
-        seen_names = {}
-        stages_to_delete = []
-        
-        for stage in all_stages:
-            name = stage.name
-            if name in seen_names:
-                # This is a duplicate - mark for deletion (keep the first one)
-                stages_to_delete.append(stage)
-                _logger.info(f"PTT Business Core: Found duplicate project stage: {name} (ID: {stage.id})")
-            else:
-                seen_names[name] = stage.id
-        
-        if stages_to_delete:
-            # First, reassign any projects using these stages to the original stage
-            Project = env['project.project'].sudo()
-            for dup_stage in stages_to_delete:
-                original_stage_id = seen_names.get(dup_stage.name)
-                if original_stage_id:
-                    # Find projects using the duplicate stage and move them
-                    projects_to_update = Project.search([('stage_id', '=', dup_stage.id)])
-                    if projects_to_update:
-                        projects_to_update.write({'stage_id': original_stage_id})
-                        _logger.info(f"PTT Business Core: Moved {len(projects_to_update)} projects from duplicate stage {dup_stage.id} to {original_stage_id}")
-            
-            # Now delete the duplicate stages
-            for stage in stages_to_delete:
-                try:
-                    stage.unlink()
-                    _logger.info(f"PTT Business Core: Deleted duplicate project stage ID: {stage.id}")
-                except Exception as e:
-                    _logger.warning(f"PTT Business Core: Could not delete stage {stage.id}: {e}")
-            
-            _logger.info(f"PTT Business Core: Cleaned up {len(stages_to_delete)} duplicate project stages")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning duplicate project stages: {e}")
     
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
 
@@ -114,330 +53,130 @@ def post_init_hook(env):
 def pre_init_hook(cr):
     """
     Pre-init cleanup: Remove orphaned/conflicting field metadata before module upgrade.
-    This runs BEFORE the module upgrade to prevent errors during upgrade.
+    Runs BEFORE the module upgrade to prevent errors during upgrade.
     
     NOTE: In Odoo 19, pre_init_hook receives 'cr' (database cursor), not 'env'.
-    We must use raw SQL or create environment manually.
-    
-    Cleans up:
-    1. Orphaned x_secondary_salesperson_id fields
-    2. Conflicting Odoo Studio fields that have same labels as our custom fields:
-       - x_studio_event_type, x_studio_event_date, x_studio_inquiry_source on crm.lead
-       - x_plan2_id on project.project (conflicts with x_event_id label)
     """
     _logger.info("PTT Business Core: Running pre_init_hook cleanup")
     
-    # === CLEANUP 1: Orphaned x_secondary_salesperson_id fields ===
-    try:
-        cr.execute("""
-            DELETE FROM ir_model_fields 
-            WHERE name = 'x_secondary_salesperson_id' 
-            AND model IN ('project.project', 'crm.lead')
-            RETURNING id
-        """)
-        deleted_ids = cr.fetchall()
-        if deleted_ids:
-            _logger.info(f"PTT Business Core: Deleted {len(deleted_ids)} orphaned x_secondary_salesperson_id field(s)")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning x_secondary_salesperson_id: {e}")
+    # === COMPREHENSIVE FIELD CLEANUP ===
+    # All fields that were removed from the codebase
+    fields_to_remove = {
+        'sale.order': ['x_contract_status', 'x_contract_signed_date'],
+        'sale.order.line': ['x_target_margin', 'x_target_margin_price'],
+        'project.project': [
+            'x_crm_lead_id', 'x_sales_rep_id', 'x_event_name', 'x_contract_status',
+            'x_sale_order_count', 'x_plan2_id', 'x_days_until_event',
+        ],
+        'project.task': [
+            'x_project_event_id', 'x_project_event_name', 'x_project_event_date',
+            'x_project_event_time', 'x_project_event_type', 'x_project_venue',
+            'x_project_client_name', 'x_project_guest_count', 'x_project_crm_lead_id',
+            'x_project_sales_rep_id', 'x_is_event_task', 'x_days_until_event',
+        ],
+        'crm.lead': [
+            'x_lead_type', 'x_inquiry_source', 'x_event_name', 'x_followup_email_sent',
+            'x_proposal_sent', 'x_next_contact_date', 'x_budget_range', 'x_services_already_booked',
+            'x_project_id', 'x_invoice_count', 'x_invoice_total', 'x_invoice_paid',
+            'x_invoice_remaining', 'x_invoice_payment_status', 'x_has_project',
+            'x_project_task_count', 'company_currency',
+        ],
+        'res.partner': ['x_is_vendor', 'x_vendor_notes'],
+    }
     
-    # === CLEANUP 2: Conflicting Odoo Studio fields on crm.lead ===
-    # These Studio fields have same labels as our custom fields, causing registry load failure
-    studio_fields_crm = [
-        'x_studio_event_type',      # conflicts with x_event_type (label: Event Type)
-        'x_studio_event_date',      # conflicts with x_event_date (label: Event Date)
-        'x_studio_inquiry_source',  # conflicts with x_inquiry_source (label: Inquiry Source)
-        'x_studio_boolean_field_297_1jckjk5dc',  # duplicate checkbox
-        'x_studio_boolean_field_1vp_1jckie6sq',  # duplicate checkbox
-        'x_studio_end_time_1',      # duplicate End Time
-        'x_studio_end_time',        # duplicate End Time
+    for model, field_names in fields_to_remove.items():
+        for field_name in field_names:
+            try:
+                cr.execute("""
+                    SELECT id FROM ir_model_fields 
+                    WHERE name = %s AND model = %s
+                """, (field_name, model))
+                result = cr.fetchone()
+                if result:
+                    field_id = result[0]
+                    _logger.info(f"PTT Business Core: Removing field {field_name} from {model}")
+                    cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
+                    cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
+            except Exception as e:
+                _logger.warning(f"PTT Business Core: Error removing {field_name} from {model}: {e}")
+    
+    # === CLEANUP VIEWS REFERENCING DELETED FIELDS ===
+    all_deleted_fields = []
+    for field_list in fields_to_remove.values():
+        all_deleted_fields.extend(field_list)
+    
+    for field_name in all_deleted_fields:
+        try:
+            cr.execute("""
+                SELECT id, arch_db FROM ir_ui_view 
+                WHERE arch_db::text LIKE %s
+            """, (f'%{field_name}%',))
+            views_to_fix = cr.fetchall()
+            for view_id, arch_db in views_to_fix:
+                if arch_db:
+                    new_arch = str(arch_db)
+                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                    new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                    new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                    new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                    if new_arch != str(arch_db):
+                        cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
+                        _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view_id}")
+        except Exception as e:
+            _logger.warning(f"PTT Business Core: Error cleaning views for {field_name}: {e}")
+    
+    # === DELETE PTT VIEWS THAT MAY HAVE STALE REFERENCES ===
+    ptt_view_names = [
+        ('ptt_business_core', 'view_sale_order_form_ptt'),
+        ('ptt_business_core', 'view_sale_order_form_line_ptt'),
+        ('ptt_business_core', 'view_crm_lead_form_ptt'),
+        ('ptt_business_core', 'view_project_form_ptt'),
+        ('ptt_business_core', 'view_task_form_ptt'),
+        ('ptt_business_core', 'view_partner_form_ptt'),
     ]
     
-    try:
-        for field_name in studio_fields_crm:
-            # First check if the field exists
+    for module, view_name in ptt_view_names:
+        try:
             cr.execute("""
-                SELECT id FROM ir_model_fields 
-                WHERE name = %s AND model = 'crm.lead'
-            """, (field_name,))
+                SELECT v.id FROM ir_ui_view v
+                JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
+                WHERE d.module = %s AND d.name = %s
+            """, (module, view_name))
             result = cr.fetchone()
-            
             if result:
-                field_id = result[0]
-                _logger.info(f"PTT Business Core: Removing conflicting Studio field {field_name} from crm.lead")
-                
-                # Delete any ir.model.data references first
-                cr.execute("""
-                    DELETE FROM ir_model_data 
-                    WHERE model = 'ir.model.fields' AND res_id = %s
-                """, (field_id,))
-                
-                # Delete the field definition
-                cr.execute("""
-                    DELETE FROM ir_model_fields WHERE id = %s
-                """, (field_id,))
-                
-                _logger.info(f"PTT Business Core: Successfully removed {field_name}")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning Studio fields on crm.lead: {e}")
+                view_id = result[0]
+                cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
+                cr.execute("DELETE FROM ir_model_data WHERE module = %s AND name = %s", (module, view_name))
+                _logger.info(f"PTT Business Core: Deleted stale view {module}.{view_name}")
+        except Exception as e:
+            _logger.warning(f"PTT Business Core: Error deleting view {module}.{view_name}: {e}")
     
-    # === CLEANUP 3: Conflicting fields on project.project ===
-    # x_plan2_id has same label as x_event_id (label: Event ID)
-    studio_fields_project = [
-        'x_plan2_id',  # conflicts with x_event_id (label: Event ID)
+    # === CLEANUP STUDIO FIELDS ===
+    studio_fields = [
+        ('crm.lead', 'x_studio_event_type'),
+        ('crm.lead', 'x_studio_event_date'),
+        ('crm.lead', 'x_studio_inquiry_source'),
+        ('crm.lead', 'x_studio_boolean_field_297_1jckjk5dc'),
+        ('crm.lead', 'x_studio_boolean_field_1vp_1jckie6sq'),
+        ('crm.lead', 'x_studio_end_time_1'),
+        ('crm.lead', 'x_studio_end_time'),
+        ('project.project', 'x_plan2_id'),
     ]
     
-    try:
-        for field_name in studio_fields_project:
+    for model, field_name in studio_fields:
+        try:
             cr.execute("""
                 SELECT id FROM ir_model_fields 
-                WHERE name = %s AND model = 'project.project'
-            """, (field_name,))
-            result = cr.fetchone()
-            
-            if result:
-                field_id = result[0]
-                _logger.info(f"PTT Business Core: Removing conflicting field {field_name} from project.project")
-                
-                # Delete any ir.model.data references first
-                cr.execute("""
-                    DELETE FROM ir_model_data 
-                    WHERE model = 'ir.model.fields' AND res_id = %s
-                """, (field_id,))
-                
-                # Delete the field definition
-                cr.execute("""
-                    DELETE FROM ir_model_fields WHERE id = %s
-                """, (field_id,))
-                
-                _logger.info(f"PTT Business Core: Successfully removed {field_name}")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning fields on project.project: {e}")
-    
-    # === CLEANUP 3b: Remove views that reference x_plan2_id ===
-    # Studio creates views that reference fields - we need to clean these too
-    try:
-        # Find and update views that reference x_plan2_id for project.project
-        cr.execute("""
-            SELECT id, arch_db FROM ir_ui_view 
-            WHERE model = 'project.project' 
-            AND arch_db LIKE '%x_plan2_id%'
-        """)
-        views_to_fix = cr.fetchall()
-        
-        for view_id, arch_db in views_to_fix:
-            _logger.info(f"PTT Business Core: Found view {view_id} referencing x_plan2_id, removing reference")
-            # Remove the field reference from the view by replacing it with a comment
-            # This is a simple approach - remove lines containing x_plan2_id
-            if arch_db:
-                # Remove field elements referencing x_plan2_id
-                new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*/>', '', arch_db)
-                new_arch = re.sub(r'<field[^>]*name=["\']x_plan2_id["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                # Also remove any label or other elements referencing it
-                new_arch = re.sub(r'<[^>]*x_plan2_id[^>]*/?>', '', new_arch)
-                
-                if new_arch != arch_db:
-                    cr.execute("""
-                        UPDATE ir_ui_view SET arch_db = %s WHERE id = %s
-                    """, (new_arch, view_id))
-                    _logger.info(f"PTT Business Core: Cleaned x_plan2_id from view {view_id}")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning views referencing x_plan2_id: {e}")
-        _logger.error(traceback.format_exc())
-    
-    # === CLEANUP 4: Remove x_days_until_event field from project.project and project.task ===
-    try:
-        for model in ['project.project', 'project.task']:
-            cr.execute("""
-                SELECT id FROM ir_model_fields 
-                WHERE name = 'x_days_until_event' AND model = %s
-            """, (model,))
+                WHERE name = %s AND model = %s
+            """, (field_name, model))
             result = cr.fetchone()
             if result:
                 field_id = result[0]
-                _logger.info(f"PTT Business Core: Removing x_days_until_event field from {model}")
+                _logger.info(f"PTT Business Core: Removing Studio field {field_name} from {model}")
                 cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
                 cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-        
-        # Clean views referencing this field
-        cr.execute("""
-            SELECT id, arch_db FROM ir_ui_view 
-            WHERE arch_db::text LIKE '%x_days_until_event%'
-        """)
-        views_to_fix = cr.fetchall()
-        for view_id, arch_db in views_to_fix:
-            if arch_db:
-                new_arch = re.sub(r'<field[^>]*name=["\']x_days_until_event["\'][^>]*/>', '', str(arch_db))
-                new_arch = re.sub(r'<field[^>]*name=["\']x_days_until_event["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                # Remove containing divs that might be empty now
-                new_arch = re.sub(r'<div[^>]*>[\s]*</div>', '', new_arch)
-                if str(new_arch) != str(arch_db):
-                    cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
-                    _logger.info(f"PTT Business Core: Cleaned x_days_until_event from view {view_id}")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning x_days_until_event: {e}")
-        _logger.error(traceback.format_exc())
-    
-    # === CLEANUP 5: Force update PTT sale order view to remove old field references ===
-    # The view in the database may still have old x_target_margin references
-    try:
-        # Find the PTT sale order view by xmlid and clean it
-        cr.execute("""
-            SELECT v.id, v.arch_db 
-            FROM ir_ui_view v
-            JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
-            WHERE d.module = 'ptt_business_core' 
-            AND d.name = 'view_sale_order_form_ptt'
-        """)
-        result = cr.fetchone()
-        if result:
-            view_id, arch_db = result
-            _logger.info(f"PTT Business Core: Found PTT sale order view ID {view_id}, checking for cleanup")
-            if arch_db and ('x_target_margin' in str(arch_db) or 'purchase_price' in str(arch_db)):
-                # Delete the view - it will be recreated from the XML file
-                cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
-                cr.execute("DELETE FROM ir_model_data WHERE module = 'ptt_business_core' AND name = 'view_sale_order_form_ptt'")
-                _logger.info(f"PTT Business Core: Deleted old sale order view {view_id} with invalid field references")
-        
-        # Also check for any view_sale_order_form_line_ptt view that might exist
-        cr.execute("""
-            SELECT v.id 
-            FROM ir_ui_view v
-            JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
-            WHERE d.module = 'ptt_business_core' 
-            AND d.name = 'view_sale_order_form_line_ptt'
-        """)
-        result = cr.fetchone()
-        if result:
-            view_id = result[0]
-            cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
-            cr.execute("DELETE FROM ir_model_data WHERE module = 'ptt_business_core' AND name = 'view_sale_order_form_line_ptt'")
-            _logger.info(f"PTT Business Core: Deleted old sale order line view {view_id}")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning sale order views: {e}")
-        _logger.error(traceback.format_exc())
-    
-    # === CLEANUP 7: Remove x_target_margin field from sale.order.line ===
-    # This field was removed but may still be referenced in database views
-    try:
-        # Delete field definition
-        cr.execute("""
-            SELECT id FROM ir_model_fields 
-            WHERE name = 'x_target_margin' AND model = 'sale.order.line'
-        """)
-        result = cr.fetchone()
-        if result:
-            field_id = result[0]
-            _logger.info(f"PTT Business Core: Removing x_target_margin field from sale.order.line")
-            cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
-            cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-        
-        # Also remove x_target_margin_price if it exists
-        cr.execute("""
-            SELECT id FROM ir_model_fields 
-            WHERE name = 'x_target_margin_price' AND model = 'sale.order.line'
-        """)
-        result = cr.fetchone()
-        if result:
-            field_id = result[0]
-            _logger.info(f"PTT Business Core: Removing x_target_margin_price field from sale.order.line")
-            cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
-            cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-        
-        # Clean views referencing these fields
-        cr.execute("""
-            SELECT id, arch_db FROM ir_ui_view 
-            WHERE arch_db::text LIKE '%x_target_margin%'
-        """)
-        views_to_fix = cr.fetchall()
-        for view_id, arch_db in views_to_fix:
-            if arch_db:
-                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin["\'][^>]*/>', '', str(arch_db))
-                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin_price["\'][^>]*/>', '', new_arch)
-                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin_price["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                if str(new_arch) != str(arch_db):
-                    cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
-                    _logger.info(f"PTT Business Core: Cleaned x_target_margin from view {view_id}")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning x_target_margin: {e}")
-        _logger.error(traceback.format_exc())
+        except Exception as e:
+            _logger.warning(f"PTT Business Core: Error removing Studio field {field_name}: {e}")
     
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
-    
-    # === CLEANUP 8: DELETE unwanted CRM stages (don't fold, actually delete them) ===
-    # Delete all unwanted duplicate stages completely
-    # ONLY keep: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
-    wanted_stage_names = ['Intake', 'Qualification', 'Approval', 'Proposal Sent', 'Contract Sent', 'Booked', 'Closed/Won', 'Lost']
-    unwanted_stage_names = ['Qualified', 'Quote Sent', 'Execution', 'New', 'Proposition']
-    try:
-        # First, get IDs of stages to delete (but keep the default Odoo stages we're renaming)
-        for stage_name in unwanted_stage_names:
-            # Get all stages with this name
-            cr.execute("""
-                SELECT id FROM crm_stage WHERE name = %s
-            """, (stage_name,))
-            stage_ids = [row[0] for row in cr.fetchall()]
-            
-            if not stage_ids:
-                continue
-                
-            # Get default Odoo stage IDs that we're renaming (don't delete these)
-            cr.execute("""
-                SELECT res_id FROM ir_model_data 
-                WHERE model = 'crm.stage' 
-                AND module = 'crm'
-                AND name IN ('stage_lead1', 'stage_lead2', 'stage_lead3', 'stage_lead4')
-            """)
-            default_stage_ids = [row[0] for row in cr.fetchall()]
-            
-            # Delete stages that are NOT the default Odoo stages
-            stages_to_delete = [sid for sid in stage_ids if sid not in default_stage_ids]
-            
-            if stages_to_delete:
-                # Move any leads/opportunities in these stages to "Intake" stage first
-                # Find or create "Intake" stage
-                cr.execute("""
-                    SELECT id FROM crm_stage 
-                    WHERE name = 'Intake' 
-                    ORDER BY id LIMIT 1
-                """)
-                intake_stage = cr.fetchone()
-                if not intake_stage:
-                    # If Intake doesn't exist, use the first default stage
-                    cr.execute("""
-                        SELECT res_id FROM ir_model_data 
-                        WHERE model = 'crm.stage' 
-                        AND module = 'crm'
-                        AND name = 'stage_lead1'
-                    """)
-                    intake_stage = cr.fetchone()
-                
-                if intake_stage:
-                    intake_stage_id = intake_stage[0]
-                    # Move leads from deleted stages to Intake
-                    cr.execute("""
-                        UPDATE crm_lead 
-                        SET stage_id = %s 
-                        WHERE stage_id = ANY(%s)
-                    """, (intake_stage_id, stages_to_delete))
-                
-                # Delete ir_model_data references first
-                cr.execute("""
-                    DELETE FROM ir_model_data 
-                    WHERE model = 'crm.stage' 
-                    AND res_id = ANY(%s)
-                """, (stages_to_delete,))
-                
-                # Now delete the stages themselves
-                cr.execute("""
-                    DELETE FROM crm_stage 
-                    WHERE id = ANY(%s)
-                """, (stages_to_delete,))
-                
-                _logger.info(f"PTT Business Core: Deleted {len(stages_to_delete)} unwanted CRM stage(s): {stage_name} (IDs: {stages_to_delete})")
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error cleaning unwanted CRM stages: {e}")
-        _logger.error(traceback.format_exc())
-
-

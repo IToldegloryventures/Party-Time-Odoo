@@ -1,53 +1,19 @@
-from odoo import models, fields, api, _
+from odoo import models, api, _
 
 
 class SaleOrder(models.Model):
-    """Extend Sale Order with PTT contract tracking and CRM stage automation.
+    """Extend Sale Order with PTT CRM stage automation.
     
     CRM Stage Workflow:
     1. Quote/Proposal Sent → CRM moves to "Proposal Sent"
-    2. Customer Accepts (SO Confirmed) = Contract Signed → Project Created + CRM moves to "Booked"
+    2. Customer Accepts (SO Confirmed) → CRM moves to "Booked"
     
-    The Sales Order IS the contract - when customer accepts/confirms, that's the signature.
+    NOTE: Contract status = Use standard 'state' field (draft/sent/sale)
+    NOTE: Contract signed date = Use standard 'date_order' when state='sale'
     
     Per Odoo 19 Sales docs: https://www.odoo.com/documentation/19.0/applications/sales/sales.html
     """
     _inherit = "sale.order"
-
-    # === CONTRACT STATUS (auto-updated based on SO state) ===
-    x_contract_status = fields.Selection(
-        [
-            ("not_sent", "Not Sent"),
-            ("sent", "Sent to Customer"),
-            ("signed", "Signed/Accepted"),
-        ],
-        string="Contract Status",
-        compute="_compute_contract_status",
-        store=True,
-        tracking=True,
-        help="Contract status based on Sales Order state. Sent = Quote sent, Signed = SO confirmed (customer accepted).",
-    )
-    x_contract_signed_date = fields.Datetime(
-        string="Contract Signed Date",
-        readonly=True,
-        copy=False,
-    )
-
-    @api.depends("state")
-    def _compute_contract_status(self):
-        """Auto-compute contract status based on SO state.
-        
-        - Draft → Not Sent
-        - Sent → Sent to Customer  
-        - Sale (confirmed) → Signed/Accepted
-        """
-        for order in self:
-            if order.state == 'sale':
-                order.x_contract_status = 'signed'
-            elif order.state == 'sent':
-                order.x_contract_status = 'sent'
-            else:
-                order.x_contract_status = 'not_sent'
 
     # === CRM STAGE AUTOMATION ===
     
@@ -75,35 +41,28 @@ class SaleOrder(models.Model):
         """Override: When quote/proposal is sent, update CRM to 'Proposal Sent'.
         
         This is triggered when user clicks "Send by Email" on the quotation.
-        The quote IS the contract/proposal being sent to customer.
         """
         res = super().action_quotation_sent()
         self._update_crm_stage(
             "Proposal Sent",
-            _("CRM stage updated: Quote/Contract sent to customer for review.")
+            _("CRM stage updated: Quote sent to customer for review.")
         )
         return res
 
     def action_confirm(self):
-        """Override SO confirmation - Customer accepted = Contract signed.
+        """Override SO confirmation to update CRM stage.
         
         When SO is confirmed (customer accepts):
-        1. Mark contract as signed with timestamp
-        2. Move CRM to 'Booked' stage
+        - Move CRM to 'Booked' stage
         
-        Note: Project creation is handled MANUALLY in Odoo, not automatically here.
+        Note: Use standard 'date_order' for confirmation timestamp.
         """
         res = super().action_confirm()
         
         for order in self:
-            # Only process if order is now confirmed (state='sale')
             if order.state == 'sale':
-                # Record the contract signed date
-                if not order.x_contract_signed_date:
-                    order.write({"x_contract_signed_date": fields.Datetime.now()})
-                
                 order.message_post(
-                    body=_("Contract accepted by customer."),
+                    body=_("Order confirmed by customer."),
                     message_type="notification",
                 )
                 
@@ -111,23 +70,7 @@ class SaleOrder(models.Model):
                 if order.opportunity_id:
                     self._update_crm_stage(
                         "Booked",
-                        _("CRM stage updated to Booked: Customer accepted contract.")
+                        _("CRM stage updated to Booked: Customer confirmed order.")
                     )
         
         return res
-
-    # === NAVIGATION ACTIONS ===
-    
-    def action_view_opportunity(self):
-        """Navigate to the linked CRM Opportunity."""
-        self.ensure_one()
-        if not self.opportunity_id:
-            return False
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("CRM Opportunity"),
-            "res_model": "crm.lead",
-            "res_id": self.opportunity_id.id,
-            "view_mode": "form",
-            "target": "current",
-        }

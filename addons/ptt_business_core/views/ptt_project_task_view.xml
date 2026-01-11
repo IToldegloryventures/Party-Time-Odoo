@@ -2,12 +2,14 @@
 <odoo>
     <!--
         PTT Project Task Form View Extension
-        Adds project/event context banner at top of task form
-        Per Odoo 19 Guidelines: https://www.odoo.com/documentation/19.0/developer/tutorials/server_framework_101.html
         
-        NOTE: Only form view extension is included. List/Kanban/Search extensions
-        were removed due to Odoo 19 view ID changes. Can be added later once
-        correct view IDs are verified.
+        NOTE: Access event context via task.project_id:
+        - task.project_id.x_event_date
+        - task.project_id.x_venue_name
+        - task.project_id.partner_id (client)
+        - task.project_id.user_id (project manager)
+        
+        No redundant related fields needed on task.
     -->
     
     <record id="view_task_form_ptt" model="ir.ui.view">
@@ -15,93 +17,16 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <!-- Add Event Context Banner before sheet (only for event tasks) -->
-            <xpath expr="//sheet" position="before">
-                <div class="oe_title_header" 
-                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"
-                     invisible="not x_is_event_task">
-                    <!-- Header Row: Event ID and Name -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div style="font-size: 1.3em; font-weight: bold;">
-                            <span style="opacity: 0.9;">Event:</span>
-                            <field name="x_project_event_id" readonly="1" style="display: inline; margin-left: 8px;"/>
-                            <span style="margin: 0 8px;">-</span>
-                            <field name="x_project_event_name" readonly="1" style="display: inline;"/>
-                        </div>
-                        <div>
-                            <!-- Quick Navigation Buttons -->
-                            <button name="action_view_project" type="object" 
-                                    class="btn btn-light btn-sm" 
-                                    style="margin-right: 5px;"
-                                    title="View Full Project">
-                                <i class="fa fa-folder-open"/> Project
-                            </button>
-                            <button name="action_view_crm_lead" type="object" 
-                                    class="btn btn-light btn-sm"
-                                    style="margin-right: 5px;"
-                                    invisible="not x_project_crm_lead_id"
-                                    title="View CRM Lead">
-                                <i class="fa fa-bullhorn"/> CRM
-                            </button>
-                            <button name="action_view_sale_order" type="object" 
-                                    class="btn btn-light btn-sm"
-                                    invisible="not x_project_crm_lead_id"
-                                    title="View Sales Order">
-                                <i class="fa fa-usd"/> Sales Order
-                            </button>
-                        </div>
+            <!-- Add navigation button to project -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_project" type="object"
+                    class="oe_stat_button" icon="fa-folder-open"
+                    invisible="not project_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Project</span>
                     </div>
-                    
-                    <!-- Event Details Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
-                        <!-- Event Date & Time -->
-                        <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 4px;">
-                            <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Event Date</div>
-                            <div style="font-size: 1.1em; font-weight: 600;">
-                                <field name="x_project_event_date" readonly="1"/>
-                            </div>
-                            <div style="font-size: 0.9em; opacity: 0.9;">
-                                <field name="x_project_event_time" readonly="1"/>
-                            </div>
-                        </div>
-                        
-                        <!-- Client -->
-                        <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 4px;">
-                            <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Client</div>
-                            <div style="font-size: 1.1em; font-weight: 600;">
-                                <field name="x_project_client_name" readonly="1"/>
-                            </div>
-                            <div style="font-size: 0.9em; opacity: 0.9;">
-                                <field name="x_project_guest_count" readonly="1"/> guests
-                            </div>
-                        </div>
-                        
-                        <!-- Venue -->
-                        <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 4px;">
-                            <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Venue</div>
-                            <div style="font-size: 1.1em; font-weight: 600;">
-                                <field name="x_project_venue" readonly="1"/>
-                            </div>
-                            <div style="font-size: 0.9em; opacity: 0.9;">
-                                <field name="x_project_event_type" readonly="1"/>
-                            </div>
-                        </div>
-                        
-                        <!-- Sales Rep -->
-                        <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 4px;">
-                            <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Sales Rep</div>
-                            <div style="font-size: 1.2em; font-weight: bold;">
-                                <field name="x_project_sales_rep_id" readonly="1" widget="many2one" options="{'no_open': True}"/>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Hidden fields needed for visibility conditions -->
-                    <field name="x_is_event_task" invisible="1"/>
-                    <field name="x_project_crm_lead_id" invisible="1"/>
-                </div>
+                </button>
             </xpath>
         </field>
     </record>
-    
 </odoo>

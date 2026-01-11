@@ -3,16 +3,25 @@ from odoo.exceptions import UserError
 
 
 class CrmLead(models.Model):
+    """Extend CRM Lead for PTT event management.
+    
+    NOTE: Use standard Odoo fields where possible:
+    - user_id = Sales Rep (standard)
+    - contact_name = Contact Name (standard)
+    - partner_name = Company Name (standard)
+    - phone = Phone Number (standard)
+    - email_from = Email Address (standard)
+    - description = Additional Notes (standard)
+    - source_id = Lead Source (standard - use instead of x_inquiry_source)
+    - expected_revenue = Budget (standard - use instead of x_budget_range)
+    - name = Opportunity Name / Event Name (standard)
+    
+    Use Activities for follow-ups instead of custom boolean fields.
+    Use Stages for tracking proposal/contract status.
+    """
     _inherit = "crm.lead"
 
-    # === TIER 1: LEAD CONTACT INFORMATION ===
-    # NOTE: user_id = Sales Rep (standard Odoo field - use that, not x_sales_rep_id)
-    # NOTE: contact_name = First/Last Name (standard Odoo field)
-    # NOTE: partner_name = Company Name (standard Odoo field)
-    # NOTE: phone = Phone Number (standard Odoo field)
-    # NOTE: email_from = Email Address (standard Odoo field)
-    # NOTE: description = Additional Notes (standard Odoo field - use that)
-    
+    # === TIER 1: ADDITIONAL CONTACT INFORMATION ===
     x_date_of_call = fields.Date(
         string="Date of Call",
         help="Date of the initial inquiry call.",
@@ -29,15 +38,6 @@ class CrmLead(models.Model):
     x_second_poc_phone = fields.Char(string="2nd POC Phone")
     x_second_poc_email = fields.Char(string="2nd POC Email")
 
-    x_lead_type = fields.Selection(
-        [
-            ("individual", "Individual"),
-            ("business", "Business"),
-        ],
-        string="Lead Type",
-        help="Whether this lead is an individual or a business client.",
-    )
-
     # === EVENT ID (Manual Entry - Links CRM, SO, Project, Tasks) ===
     x_event_id = fields.Char(
         string="Event ID",
@@ -47,27 +47,12 @@ class CrmLead(models.Model):
         help="Unique event identifier. Enter manually to link this opportunity with its Project and Tasks.",
     )
 
-    x_inquiry_source = fields.Selection(
-        [
-            ("web_form", "Web Form"),
-            ("phone", "Phone Call"),
-            ("email", "Email"),
-            ("referral", "Referral"),
-            ("walk_in", "Walk-In"),
-            ("social_media", "Social Media"),
-        ],
-        string="Lead Source",
-        default="phone",
-        tracking=True,
-        help="How did this lead find us?",
-    )
-
     x_referral_source = fields.Char(
         string="Referral Details",
-        help="If referral, who referred this client?",
+        help="If referral, who referred this client? (Use source_id for lead source type)",
     )
 
-    # === TIER 1: EVENT OVERVIEW ===
+    # === EVENT OVERVIEW ===
     x_event_type = fields.Selection(
         [
             # Corporate Events
@@ -111,13 +96,12 @@ class CrmLead(models.Model):
         ],
         string="Event Category",
     )
-    x_event_name = fields.Char(string="Event Name (if known)")
     x_event_specific_goal = fields.Char(string="Specific Goal")
-    x_event_date = fields.Date(string="Scheduled Date", index=True)
+    x_event_date = fields.Date(string="Event Date", index=True)
     x_event_time = fields.Char(string="Event Time")
     x_total_hours = fields.Float(string="Total Hours")
     x_estimated_guest_count = fields.Integer(string="Estimated Guest Count")
-    x_venue_booked = fields.Boolean(string="Event Venue (if booked)")
+    x_venue_booked = fields.Boolean(string="Venue Booked?")
     x_venue_name = fields.Char(string="Venue")
     x_event_location_type = fields.Selection(
         [
@@ -128,7 +112,7 @@ class CrmLead(models.Model):
         string="Event Location",
     )
 
-    # === TIER 2: SERVICES REQUESTED (CHECKBOXES ONLY) ===
+    # === SERVICES REQUESTED (CHECKBOXES) ===
     x_service_dj = fields.Boolean(string="DJ/MC Services")
     x_service_photovideo = fields.Boolean(string="Photo/Video")
     x_service_live_entertainment = fields.Boolean(string="Live Entertainment")
@@ -141,18 +125,9 @@ class CrmLead(models.Model):
     x_service_photobooth = fields.Boolean(string="Photo Booth Rentals")
     x_service_caricature = fields.Boolean(string="Caricature Artists")
     x_service_casino = fields.Boolean(string="Casino Services")
-    x_service_staffing = fields.Boolean(
-        string="Staffing (hosts, bartenders, security)"
-    )
+    x_service_staffing = fields.Boolean(string="Staffing (hosts, bartenders, security)")
 
-    # === FOLLOW-UP INFORMATION ===
-    x_followup_email_sent = fields.Boolean(string="Follow-up Email Sent?")
-    x_proposal_sent = fields.Boolean(string="Proposal Sent?")
-    x_next_contact_date = fields.Date(string="Next Scheduled Contact Date")
-
-    # === BUDGET & FINANCIAL ===
-    x_budget_range = fields.Char(string="Total Event Budget (range)")
-    x_services_already_booked = fields.Text(string="Services Already Booked (if any)")
+    # === CFO/FINANCE CONTACT (for corporate clients) ===
     x_cfo_name = fields.Char(string="CFO/Finance Contact Name")
     x_cfo_phone = fields.Char(string="CFO/Finance Contact Phone")
     x_cfo_email = fields.Char(string="CFO/Finance Contact Email")
@@ -165,247 +140,33 @@ class CrmLead(models.Model):
         string="CFO Preferred Contact Method",
     )
 
-    # === PROJECT LINK ===
-    x_project_id = fields.Many2one(
-        "project.project",
-        string="Related Project",
-        help="Project created from this opportunity.",
-        index=True,
-        ondelete="set null",
-    )
-    project_count = fields.Integer(
-        string="# Projects",
-        compute="_compute_project_count",
-        help="Counter for the project linked to this lead",
-    )
-    
-    x_has_project = fields.Boolean(
-        string="Has Project",
-        compute="_compute_project_count",
-        help="True if this lead has a linked project (via x_project_id or confirmed Sales Order)",
-    )
+    # === ACTION METHODS ===
 
-    @api.depends("x_project_id", "order_ids", "order_ids.state", "order_ids.project_ids")
-    def _compute_project_count(self):
-        for record in self:
-            if record.x_project_id:
-                record.project_count = 1
-                record.x_has_project = True
-            else:
-                confirmed_orders = record.order_ids.filtered(lambda so: so.state == 'sale')
-                if confirmed_orders:
-                    projects_from_so = confirmed_orders.mapped('project_ids').filtered(lambda p: p)
-                    projects_from_crm = self.env['project.project'].search([
-                        ('x_crm_lead_id', '=', record.id)
-                    ])
-                    all_projects = (projects_from_so | projects_from_crm)
-                    if all_projects:
-                        record.project_count = len(all_projects)
-                        record.x_has_project = True
-                    else:
-                        record.project_count = 0
-                        record.x_has_project = False
-                else:
-                    record.project_count = 0
-                    record.x_has_project = False
-
-    x_project_task_count = fields.Integer(
-        string="# Project Tasks",
-        compute="_compute_project_task_count",
-        help="Number of tasks in the related project",
-    )
-
-    @api.depends("x_project_id", "x_project_id.task_count")
-    def _compute_project_task_count(self):
-        for record in self:
-            record.x_project_task_count = record.x_project_id.task_count if record.x_project_id else 0
-
-    def action_create_project_from_lead(self):
-        """Create a project from this CRM Lead and copy all relevant fields."""
+    def action_view_sale_orders(self):
+        """Open linked Sale Orders."""
         self.ensure_one()
-        
-        if self.x_project_id:
-            raise UserError(_("A project has already been created from this opportunity."))
-        
-        event_id = self.x_event_id
-        project_name = self.partner_name or self.contact_name or "Event"
-        if event_id:
-            project_name = f"{project_name}-{event_id}"
-        
-        project_vals = {
-            "name": project_name,
-            "partner_id": self.partner_id.id if self.partner_id else False,
-            "user_id": self.user_id.id if self.user_id else False,
-            "x_crm_lead_id": self.id,
-            "x_event_id": event_id,
-            "x_event_type": self.x_event_type,
-            "x_event_name": self.x_event_name,
-            "x_event_date": self.x_event_date,
-            "x_event_time": self.x_event_time,
-            "x_guest_count": self.x_estimated_guest_count,
-            "x_venue_name": self.x_venue_name,
-            "x_total_hours": self.x_total_hours,
-            "date_start": self.x_event_date,
-        }
-        
-        project = self.env["project.project"].sudo().create(project_vals)
-        self.write({"x_project_id": project.id})
-        
-        try:
-            project.action_create_event_tasks()
-            self.message_post(
-                body=_("Event tasks created for project: %s") % project.name,
-                message_type="notification",
-            )
-        except Exception as e:
-            self.message_post(
-                body=_("Project created but error creating tasks: %s") % str(e),
-                message_type="notification",
-                subtype_xmlid="mail.mt_note",
-            )
-        
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Project Created"),
-            "res_model": "project.project",
-            "res_id": project.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    def action_view_project(self):
-        """Open the related project."""
-        self.ensure_one()
-        if self.x_project_id:
-            project = self.x_project_id
-        else:
-            confirmed_orders = self.order_ids.filtered(lambda so: so.state == 'sale')
-            if confirmed_orders:
-                projects_from_so = confirmed_orders.mapped('project_ids').filtered(lambda p: p)
-                projects_from_crm = self.env['project.project'].search([
-                    ('x_crm_lead_id', '=', self.id)
-                ], limit=1)
-                project = projects_from_so[0] if projects_from_so else projects_from_crm
-                if project:
-                    self.write({'x_project_id': project.id})
-                else:
-                    return False
-            else:
-                return False
-        
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Project"),
-            "res_model": "project.project",
-            "res_id": project.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    def action_view_project_tasks(self):
-        """Open the project tasks."""
-        self.ensure_one()
-        if not self.x_project_id:
+        if not self.order_ids:
             return False
+        if len(self.order_ids) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Sale Order"),
+                "res_model": "sale.order",
+                "res_id": self.order_ids.id,
+                "view_mode": "form",
+                "target": "current",
+            }
         return {
             "type": "ir.actions.act_window",
-            "name": _("Project Tasks"),
-            "res_model": "project.task",
-            "view_mode": "list,form,kanban",
-            "domain": [("project_id", "=", self.x_project_id.id)],
-            "context": {
-                "default_project_id": self.x_project_id.id,
-                "search_default_project_id": self.x_project_id.id,
-            },
+            "name": _("Sale Orders"),
+            "res_model": "sale.order",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", self.order_ids.ids)],
+            "target": "current",
         }
-
-    # === INVOICE PAYMENT TRACKING ===
-    company_currency = fields.Many2one(
-        "res.currency",
-        string="Company Currency",
-        related="company_id.currency_id",
-        store=True,
-        readonly=True,
-        help="Currency of the company",
-    )
-    x_invoice_count = fields.Integer(
-        string="# Invoices",
-        compute="_compute_invoice_payment_data",
-        help="Number of invoices linked to this opportunity via sale orders.",
-    )
-    x_invoice_total = fields.Monetary(
-        string="Total Invoice Amount",
-        compute="_compute_invoice_payment_data",
-        currency_field="company_currency",
-        help="Total amount of all invoices.",
-    )
-    x_invoice_paid = fields.Monetary(
-        string="Amount Paid",
-        compute="_compute_invoice_payment_data",
-        currency_field="company_currency",
-        help="Total amount paid across all invoices.",
-    )
-    x_invoice_remaining = fields.Monetary(
-        string="Remaining Balance",
-        compute="_compute_invoice_payment_data",
-        currency_field="company_currency",
-        help="Outstanding balance across all invoices.",
-    )
-    x_invoice_payment_status = fields.Selection(
-        [
-            ("not_paid", "Not Paid"),
-            ("partial", "Partially Paid"),
-            ("paid", "Paid"),
-            ("overdue", "Overdue"),
-        ],
-        string="Payment Status",
-        compute="_compute_invoice_payment_data",
-        help="Overall payment status based on linked invoices.",
-    )
-
-    @api.depends("order_ids.invoice_ids.payment_state", "order_ids.invoice_ids.amount_total", 
-                 "order_ids.invoice_ids.amount_residual", "order_ids.invoice_ids.invoice_date_due",
-                 "order_ids.invoice_ids.state")
-    def _compute_invoice_payment_data(self):
-        """Compute invoice payment tracking data from linked sale orders."""
-        for lead in self:
-            invoices = self.env["account.move"]
-            for order in lead.order_ids:
-                invoices |= order.invoice_ids.filtered(
-                    lambda inv: inv.state == "posted" and inv.move_type == "out_invoice"
-                )
-            
-            lead.x_invoice_count = len(invoices)
-            company_currency = lead.company_currency or self.env.company.currency_id
-            invoice_total = 0.0
-            invoice_remaining = 0.0
-            for inv in invoices:
-                inv_total = inv.currency_id._convert(
-                    inv.amount_total, company_currency, inv.company_id, inv.date or fields.Date.today()
-                )
-                inv_residual = inv.currency_id._convert(
-                    inv.amount_residual, company_currency, inv.company_id, inv.date or fields.Date.today()
-                )
-                invoice_total += inv_total
-                invoice_remaining += inv_residual
-            
-            lead.x_invoice_total = invoice_total
-            lead.x_invoice_remaining = invoice_remaining
-            lead.x_invoice_paid = invoice_total - invoice_remaining
-            
-            if not invoices:
-                lead.x_invoice_payment_status = False
-            elif all(inv.payment_state == "paid" for inv in invoices):
-                lead.x_invoice_payment_status = "paid"
-            elif any(inv.payment_state == "paid" for inv in invoices) and any(inv.payment_state != "paid" for inv in invoices):
-                lead.x_invoice_payment_status = "partial"
-            elif any(inv.invoice_date_due and inv.invoice_date_due < fields.Date.today() and inv.payment_state != "paid" for inv in invoices):
-                lead.x_invoice_payment_status = "overdue"
-            else:
-                lead.x_invoice_payment_status = "not_paid"
 
     def action_view_invoices(self):
-        """Action to view linked invoices (only sent invoices)."""
+        """Action to view linked invoices (via sale orders)."""
         self.ensure_one()
         invoices = self.env["account.move"]
         for order in self.order_ids:
@@ -413,17 +174,15 @@ class CrmLead(models.Model):
                 lambda inv: inv.state == "posted" and inv.move_type == "out_invoice"
             )
         
+        if not invoices:
+            return False
+        
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_invoice_type")
         action["domain"] = [("id", "in", invoices.ids)]
         if len(invoices) == 1:
             action["views"] = [(self.env.ref("account.view_move_form").id, "form")]
             action["res_id"] = invoices.id
         return action
-
-    def _merge_get_fields(self):
-        """Include x_project_id in merge dependencies."""
-        merge_fields = super()._merge_get_fields()
-        return merge_fields + ["x_project_id"]
     
     def action_suggest_sale_template(self):
         """Suggest appropriate sale order template based on event type."""
