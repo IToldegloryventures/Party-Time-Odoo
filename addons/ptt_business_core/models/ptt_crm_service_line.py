@@ -1,0 +1,89 @@
+from odoo import models, fields, api
+
+
+class PttCrmServiceLine(models.Model):
+    """Service lines for CRM Leads - allows selecting services with tier categories."""
+    _name = "ptt.crm.service.line"
+    _description = "CRM Lead Service Line"
+    _order = "sequence, id"
+
+    lead_id = fields.Many2one(
+        "crm.lead",
+        string="Lead/Opportunity",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    sequence = fields.Integer(string="Sequence", default=10)
+    
+    # Service Selection - linked to Sales products
+    product_id = fields.Many2one(
+        "product.product",
+        string="Service/Product",
+        domain="[('sale_ok', '=', True)]",
+        help="Select a service from the Sales product catalog",
+    )
+    
+    # Tier Category
+    tier = fields.Selection(
+        [
+            ("bronze", "Bronze"),
+            ("silver", "Silver"),
+            ("gold", "Gold"),
+            ("platinum", "Platinum"),
+        ],
+        string="Service Tier",
+        default="silver",
+        help="Service tier level - affects pricing and service quality",
+    )
+    
+    # Service Type (for quick categorization without product)
+    service_type = fields.Selection(
+        [
+            ("dj", "DJ & MC Services"),
+            ("photovideo", "Photo/Video"),
+            ("live_entertainment", "Live Entertainment"),
+            ("lighting", "Lighting/AV"),
+            ("decor", "Decor/Thematic Design"),
+            ("photobooth", "Photo Booth"),
+            ("caricature", "Caricature Artist"),
+            ("casino", "Casino Services"),
+            ("catering", "Catering & Bartender Services"),
+            ("transportation", "Transportation"),
+            ("rentals", "Rentals (Other)"),
+            ("staffing", "Staffing"),
+            ("venue_sourcing", "Venue Sourcing"),
+            ("coordination", "Event Planning Services"),
+            ("other", "Other"),
+        ],
+        string="Service Category",
+        help="General service category",
+    )
+    
+    description = fields.Text(string="Description/Notes")
+    
+    # Pricing
+    estimated_price = fields.Monetary(
+        string="Estimated Price",
+        currency_field="currency_id",
+        help="Estimated price to quote the customer",
+    )
+    currency_id = fields.Many2one(
+        "res.currency",
+        string="Currency",
+        default=lambda self: self.env.company.currency_id,
+    )
+    
+    # Computed display name
+    display_name = fields.Char(compute="_compute_display_name", store=True)
+    
+    @api.depends("product_id", "service_type", "tier")
+    def _compute_display_name(self):
+        for line in self:
+            if line.product_id:
+                line.display_name = f"{line.product_id.name} ({line.tier.title() if line.tier else 'N/A'})"
+            elif line.service_type:
+                service_label = dict(self._fields['service_type'].selection).get(line.service_type, line.service_type)
+                line.display_name = f"{service_label} ({line.tier.title() if line.tier else 'N/A'})"
+            else:
+                line.display_name = f"Service Line ({line.tier.title() if line.tier else 'N/A'})"

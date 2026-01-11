@@ -18,6 +18,39 @@
         <field name="arch" type="xml">
             <!-- Add PTT Lead Intake tab -->
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
+                <!-- Vendor Tab - Service Selection and Vendor Assignments -->
+                <page name="vendor_tab" string="Vendor">
+                    <!-- Section 1: Service Lines with Tier Selection -->
+                    <group string="Service Selection (Tier Categories)">
+                        <field name="x_service_line_ids" nolabel="1" colspan="2">
+                            <list editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="service_type"/>
+                                <field name="product_id" optional="show"/>
+                                <field name="tier"/>
+                                <field name="estimated_price"/>
+                                <field name="description" optional="hide"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <!-- Section 2: Vendor Assignments -->
+                    <group string="Vendor Assignments">
+                        <field name="x_vendor_assignment_ids" nolabel="1" colspan="2">
+                            <list editable="bottom">
+                                <field name="service_type"/>
+                                <field name="service_line_id" optional="show"/>
+                                <field name="vendor_id"/>
+                                <field name="status"/>
+                                <field name="estimated_cost"/>
+                                <field name="vendor_contact_name" optional="hide"/>
+                                <field name="vendor_contact_phone" optional="hide"/>
+                                <field name="notes" optional="hide"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+
                 <page name="lead_intake" string="Lead Intake">
                     <!-- Additional Contact Information -->
                     <group string="Additional Contact Information">

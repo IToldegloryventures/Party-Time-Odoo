@@ -147,6 +147,22 @@ class CrmLead(models.Model):
         sanitize=False,  # Allow HTML formatting from controller
     )
 
+    # === SERVICE LINES (Vendor Tab) ===
+    x_service_line_ids = fields.One2many(
+        "ptt.crm.service.line",
+        "lead_id",
+        string="Service Lines",
+        help="Services requested for this event with tier selection",
+    )
+
+    # === VENDOR ASSIGNMENTS (Vendor Tab) ===
+    x_vendor_assignment_ids = fields.One2many(
+        "ptt.crm.vendor.assignment",
+        "lead_id",
+        string="Vendor Assignments",
+        help="Vendors assigned to provide services for this event",
+    )
+
     # === ACTION METHODS ===
 
     def action_view_sale_orders(self):
