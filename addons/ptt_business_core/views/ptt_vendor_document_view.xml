@@ -104,11 +104,6 @@
         </field>
     </record>
 
-    <!-- Menu for Vendor Documents (under Contacts → Vendor Configuration) -->
-    <menuitem id="menu_ptt_vendor_document"
-        name="Vendor Documents"
-        parent="menu_ptt_vendor_config_root"
-        action="action_ptt_vendor_document"
-        sequence="5"/>
+    <!-- NOTE: Menu item moved to ptt_vendor_config_menus.xml to avoid dependency on parent menu -->
 
 </odoo>

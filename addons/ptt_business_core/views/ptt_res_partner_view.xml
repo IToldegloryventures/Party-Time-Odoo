@@ -15,20 +15,7 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <!-- Add Documents smart button for vendors -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="%(action_ptt_vendor_document)d" type="action"
-                    class="oe_stat_button" icon="fa-file-text-o"
-                    invisible="supplier_rank == 0"
-                    context="{'search_default_vendor_id': id, 'default_vendor_id': id}">
-                    <div class="o_stat_info">
-                        <span class="o_stat_value">
-                            <field name="x_vendor_document_count"/>
-                        </span>
-                        <span class="o_stat_text">Documents</span>
-                    </div>
-                </button>
-            </xpath>
+            <!-- NOTE: Documents smart button removed - documents accessible via Documents tab below -->
             
             <!-- Add Vendor Contact Role field (visible for contacts linked to vendor companies) -->
             <xpath expr="//field[@name='function']" position="after">
