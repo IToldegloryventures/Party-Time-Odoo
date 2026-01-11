@@ -245,9 +245,55 @@ def pre_init_hook(cr):
         _logger.warning(f"PTT Business Core: Error cleaning views referencing x_plan2_id: {e}")
         _logger.error(traceback.format_exc())
     
+    # === CLEANUP 4: Remove x_target_margin field from sale.order.line ===
+    # This field was removed but may still be referenced in database views
+    try:
+        # Delete field definition
+        cr.execute("""
+            SELECT id FROM ir_model_fields 
+            WHERE name = 'x_target_margin' AND model = 'sale.order.line'
+        """)
+        result = cr.fetchone()
+        if result:
+            field_id = result[0]
+            _logger.info(f"PTT Business Core: Removing x_target_margin field from sale.order.line")
+            cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
+            cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
+        
+        # Also remove x_target_margin_price if it exists
+        cr.execute("""
+            SELECT id FROM ir_model_fields 
+            WHERE name = 'x_target_margin_price' AND model = 'sale.order.line'
+        """)
+        result = cr.fetchone()
+        if result:
+            field_id = result[0]
+            _logger.info(f"PTT Business Core: Removing x_target_margin_price field from sale.order.line")
+            cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
+            cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
+        
+        # Clean views referencing these fields
+        cr.execute("""
+            SELECT id, arch_db FROM ir_ui_view 
+            WHERE arch_db::text LIKE '%x_target_margin%'
+        """)
+        views_to_fix = cr.fetchall()
+        for view_id, arch_db in views_to_fix:
+            if arch_db:
+                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin["\'][^>]*/>', '', str(arch_db))
+                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin_price["\'][^>]*/>', '', new_arch)
+                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                new_arch = re.sub(r'<field[^>]*name=["\']x_target_margin_price["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                if str(new_arch) != str(arch_db):
+                    cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
+                    _logger.info(f"PTT Business Core: Cleaned x_target_margin from view {view_id}")
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error cleaning x_target_margin: {e}")
+        _logger.error(traceback.format_exc())
+    
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
     
-    # === CLEANUP 4: DELETE unwanted CRM stages (don't fold, actually delete them) ===
+    # === CLEANUP 5: DELETE unwanted CRM stages (don't fold, actually delete them) ===
     # Delete all unwanted duplicate stages completely
     # ONLY keep: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
     wanted_stage_names = ['Intake', 'Qualification', 'Approval', 'Proposal Sent', 'Contract Sent', 'Booked', 'Closed/Won', 'Lost']
