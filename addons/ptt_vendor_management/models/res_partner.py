@@ -8,6 +8,13 @@ class ResPartner(models.Model):
     """
     _inherit = "res.partner"
 
+    # === VENDOR TOGGLE ===
+    x_is_vendor = fields.Boolean(
+        string="Is a Vendor",
+        default=False,
+        help="Toggle on to mark this contact as a vendor. This will show vendor-specific fields and tabs.",
+    )
+
     # === VENDOR SERVICE TAGS & TIER ===
     x_vendor_service_tag_ids = fields.Many2many(
         "ptt.vendor.service.tag",
@@ -28,11 +35,20 @@ class ResPartner(models.Model):
         help="Overall quality tier for this vendor. Used to match with product tiers when assigning vendors to quotes.",
     )
     
-    # === VENDOR CONTACT ROLE ===
+    # === VENDOR CONTACT ROLE (for contacts under vendor companies) ===
     x_vendor_contact_role = fields.Char(
         string="Role at Vendor",
         help="This person's role at the vendor company (e.g., Owner, Talent, Accounting)",
     )
+
+    @api.onchange("x_is_vendor")
+    def _onchange_x_is_vendor(self):
+        """When vendor toggle is switched on, set supplier_rank so Odoo treats this as a vendor."""
+        if self.x_is_vendor and self.supplier_rank == 0:
+            self.supplier_rank = 1
+        elif not self.x_is_vendor and self.supplier_rank > 0:
+            # Optionally reset supplier_rank when toggle is off
+            self.supplier_rank = 0
 
     # === VENDOR DOCUMENT RELATION ===
     x_vendor_document_ids = fields.One2many(
@@ -59,7 +75,7 @@ class ResPartner(models.Model):
         help="Vendor document compliance status based on required documents",
     )
 
-    @api.depends("x_vendor_document_ids", "x_vendor_document_ids.status", 
+    @api.depends("x_is_vendor", "x_vendor_document_ids", "x_vendor_document_ids.status", 
                  "x_vendor_document_ids.document_type_id.required")
     def _compute_vendor_compliance(self):
         """Compute vendor compliance status based on required documents."""
@@ -69,8 +85,8 @@ class ResPartner(models.Model):
         for partner in self:
             partner.x_vendor_document_count = len(partner.x_vendor_document_ids)
             
-            # Only compute compliance for vendors (supplier_rank > 0)
-            if partner.supplier_rank == 0:
+            # Only compute compliance for vendors (x_is_vendor toggled on)
+            if not partner.x_is_vendor:
                 partner.x_vendor_compliance_status = False
                 continue
             

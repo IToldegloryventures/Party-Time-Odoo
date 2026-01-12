@@ -3,29 +3,33 @@
     <!--
         PTT Res Partner Form View Extension
         
-        NOTE: Use standard Odoo fields:
-        - supplier_rank > 0 = Is a Vendor (standard)
-        - comment = Internal Notes (standard - use instead of x_vendor_notes)
-        
-        To mark a contact as a vendor, use the standard "Purchase" tab 
-        or set supplier_rank > 0 programmatically.
+        Adds vendor toggle and vendor-specific tabs.
+        When x_is_vendor is toggled on, vendor fields and tabs become visible.
     -->
     <record id="view_partner_form_ptt" model="ir.ui.view">
         <field name="name">res.partner.form.ptt</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <!-- NOTE: Documents smart button removed - documents accessible via Documents tab below -->
             
-            <!-- Add Vendor Contact Role field (visible for contacts linked to vendor companies) -->
-            <xpath expr="//field[@name='function']" position="after">
-                <field name="x_vendor_contact_role" 
-                       placeholder="e.g., Owner, Talent, Accounting"/>
+            <!-- Add Vendor Toggle under Person/Company selector -->
+            <xpath expr="//field[@name='company_type']" position="after">
+                <span class="ms-4 d-flex align-items-center gap-1">
+                    <field name="x_is_vendor" widget="boolean_toggle"/>
+                    <label for="x_is_vendor" string="Vendor"/>
+                </span>
             </xpath>
             
-            <!-- Add Vendor Info tab (visible when supplier_rank > 0, i.e. is a vendor) -->
+            <!-- Add Vendor Contact Role field (only for Person contacts under a vendor company) -->
+            <xpath expr="//field[@name='function']" position="after">
+                <field name="x_vendor_contact_role" 
+                       placeholder="e.g., Owner, Talent, Accounting"
+                       invisible="not parent_id or company_type == 'company'"/>
+            </xpath>
+            
+            <!-- Add Vendor Info tab (visible when x_is_vendor is toggled on) -->
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="PTT Vendor Info" invisible="supplier_rank == 0">
+                <page string="Vendor Info" name="ptt_vendor_info" invisible="not x_is_vendor">
                     <group>
                         <group string="Vendor Classification">
                             <field name="x_vendor_tier" widget="radio" options="{'horizontal': true}"/>
@@ -46,8 +50,8 @@
                            placeholder="Internal notes about this vendor..."/>
                 </page>
                 
-                <!-- Vendor Documents Tab -->
-                <page string="Documents" invisible="supplier_rank == 0">
+                <!-- Vendor Documents Tab (visible when x_is_vendor is toggled on) -->
+                <page string="Documents" name="ptt_vendor_documents" invisible="not x_is_vendor">
                     <field name="x_vendor_document_ids" context="{'default_vendor_id': id}">
                         <list editable="bottom"
                               decoration-danger="status == 'expired'"

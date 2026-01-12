@@ -52,5 +52,5 @@ class PttVendorServiceTag(models.Model):
         for tag in self:
             tag.vendor_count = self.env["res.partner"].search_count([
                 ("x_vendor_service_tag_ids", "in", tag.id),
-                ("supplier_rank", ">", 0),
+                ("x_is_vendor", "=", True),
             ])
