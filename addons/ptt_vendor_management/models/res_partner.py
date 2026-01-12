@@ -72,6 +72,7 @@ class ResPartner(models.Model):
         ],
         string="Compliance Status",
         compute="_compute_vendor_compliance",
+        store=True,
         help="Vendor document compliance status based on required documents",
     )
 
