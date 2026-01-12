@@ -291,7 +291,7 @@ class ContactFormController(http.Controller):
     # Content-Type: application/json
     # =========================================================================
     
-    @http.route('/api/contact-form', type='json', auth='public', methods=['POST'], csrf=False, cors='*')
+    @http.route('/api/contact-form', type='jsonrpc', auth='public', methods=['POST'], csrf=False, cors='*')
     def api_contact_form(self, **kw):
         """
         WordPress Webhook API endpoint for contact form submissions.

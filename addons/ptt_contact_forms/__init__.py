@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-from . import controllers
+# Temporarily disabled to prevent build issues
+# from . import controllers
