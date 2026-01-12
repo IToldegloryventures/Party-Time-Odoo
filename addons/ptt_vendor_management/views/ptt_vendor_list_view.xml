@@ -16,22 +16,26 @@
                   decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
                   decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')">
                 <field name="name" string="Vendor Name"/>
-                <field name="x_vendor_tier" widget="badge"
+                <field name="x_vendor_tier" string="Tier" widget="badge"
                        decoration-warning="x_vendor_tier == 'gold'"
                        decoration-info="x_vendor_tier == 'silver'"
                        decoration-muted="x_vendor_tier == 'bronze'"/>
-                <field name="x_vendor_service_tag_ids" widget="many2many_tags" 
+                <field name="x_vendor_service_tag_ids" string="Services" widget="many2many_tags" 
                        options="{'color_field': 'color'}"/>
-                <field name="city"/>
-                <field name="state_id"/>
-                <field name="phone"/>
-                <field name="email"/>
-                <field name="x_vendor_compliance_status" widget="badge"
+                <field name="x_vendor_compliance_status" string="Compliance" widget="badge"
                        decoration-success="x_vendor_compliance_status == 'compliant'"
                        decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
-                       decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"
+                       decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"/>
+                <field name="x_vendor_rating" string="Rating" widget="badge"
+                       decoration-success="x_vendor_rating in ('4', '5')"
+                       decoration-warning="x_vendor_rating == '3'"
+                       decoration-danger="x_vendor_rating in ('1', '2')"
                        optional="show"/>
-                <field name="x_vendor_document_count" string="Docs" optional="hide"/>
+                <field name="phone" string="Phone"/>
+                <field name="email" string="Email"/>
+                <field name="x_vendor_document_count" string="Docs" optional="show"/>
+                <field name="city" optional="hide"/>
+                <field name="state_id" optional="hide"/>
             </list>
         </field>
     </record>
@@ -67,19 +71,23 @@
                             </div>
                             <field name="x_vendor_service_tag_ids" widget="many2many_tags" 
                                    options="{'color_field': 'color'}"/>
-                            <div class="text-muted small">
-                                <t t-if="record.city.value"><t t-esc="record.city.value"/>, </t>
-                                <field name="state_id"/>
-                            </div>
-                            <div class="d-flex gap-2 mt-1">
-                                <span t-if="record.phone.value" class="text-muted small">
-                                    <i class="fa fa-phone"/> <t t-esc="record.phone.value"/>
-                                </span>
-                            </div>
                             <field name="x_vendor_compliance_status" widget="badge"
                                    decoration-success="x_vendor_compliance_status == 'compliant'"
                                    decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
                                    decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"/>
+                            <div class="d-flex gap-2 mt-1">
+                                <span t-if="record.phone.value" class="text-muted small">
+                                    <i class="fa fa-phone"/> <t t-esc="record.phone.value"/>
+                                </span>
+                                <span t-if="record.email.value" class="text-muted small">
+                                    <i class="fa fa-envelope"/> <t t-esc="record.email.value"/>
+                                </span>
+                            </div>
+                            <div class="d-flex gap-2 mt-1" t-if="record.x_vendor_rating.value">
+                                <span class="text-muted small">
+                                    <i class="fa fa-star"/> <t t-esc="record.x_vendor_rating.value"/> Stars
+                                </span>
+                            </div>
                         </main>
                     </t>
                 </templates>
@@ -97,12 +105,24 @@
                 <field name="name" string="Vendor" 
                        filter_domain="['|', '|', ('name', 'ilike', self), ('email', 'ilike', self), ('phone', 'ilike', self)]"/>
                 <field name="x_vendor_service_tag_ids" string="Service"/>
-                <field name="city"/>
-                <field name="state_id"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city" string="City" optional="hide"/>
+                <field name="state_id" string="State" optional="hide"/>
+                <separator/>
+                <filter string="Compliant" name="compliant" domain="[('x_vendor_compliance_status', '=', 'compliant')]"/>
+                <filter string="Missing Documents" name="missing_docs" domain="[('x_vendor_compliance_status', '=', 'missing_required')]"/>
+                <filter string="Expired Documents" name="expired_docs" domain="[('x_vendor_compliance_status', '=', 'expired')]"/>
+                <filter string="Expiring Soon" name="expiring_soon" domain="[('x_vendor_compliance_status', '=', 'expiring_soon')]"/>
+                <separator/>
                 <filter string="Gold Tier" name="tier_gold" domain="[('x_vendor_tier', '=', 'gold')]"/>
                 <filter string="Silver Tier" name="tier_silver" domain="[('x_vendor_tier', '=', 'silver')]"/>
                 <filter string="Bronze Tier" name="tier_bronze" domain="[('x_vendor_tier', '=', 'bronze')]"/>
                 <filter string="No Tier Set" name="tier_none" domain="[('x_vendor_tier', '=', False)]"/>
+                <separator/>
+                <filter string="4-5 Stars" name="rating_high" domain="[('x_vendor_rating', 'in', ['4', '5'])]"/>
+                <filter string="3 Stars" name="rating_medium" domain="[('x_vendor_rating', '=', '3')]"/>
+                <filter string="1-2 Stars" name="rating_low" domain="[('x_vendor_rating', 'in', ['1', '2'])]"/>
             </search>
         </field>
     </record>
