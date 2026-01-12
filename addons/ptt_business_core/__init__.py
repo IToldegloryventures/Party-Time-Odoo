@@ -107,6 +107,7 @@ def pre_init_hook(cr):
     
     for field_name in all_deleted_fields:
         try:
+            # Clean ir_ui_view (arch_db)
             cr.execute("""
                 SELECT id, arch_db FROM ir_ui_view 
                 WHERE arch_db::text LIKE %s
@@ -123,6 +124,24 @@ def pre_init_hook(cr):
                     if new_arch != str(arch_db):
                         cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
                         _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view_id}")
+            
+            # Clean ir_ui_view_custom (Studio customizations)
+            cr.execute("""
+                SELECT id, arch FROM ir_ui_view_custom 
+                WHERE arch::text LIKE %s
+            """, (f'%{field_name}%',))
+            custom_views_to_fix = cr.fetchall()
+            for view_id, arch in custom_views_to_fix:
+                if arch:
+                    new_arch = str(arch)
+                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                    new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                    new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                    new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                    if new_arch != str(arch):
+                        cr.execute("UPDATE ir_ui_view_custom SET arch = %s WHERE id = %s", (new_arch, view_id))
+                        _logger.info(f"PTT Business Core: Cleaned {field_name} from custom view {view_id}")
         except Exception as e:
             _logger.warning(f"PTT Business Core: Error cleaning views for {field_name}: {e}")
     
