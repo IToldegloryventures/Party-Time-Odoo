@@ -122,7 +122,8 @@ class ResPartner(models.Model):
     # === VENDOR NOTES ===
     x_vendor_notes = fields.Text(
         string="Vendor Notes",
-        help="Internal notes about this vendor. Visible only to internal users.",
+        help="Internal notes about this vendor. Visible only to internal users. "
+             "This field can be imported via CSV using the column name 'x_vendor_notes'.",
     )
     
     # === LEGACY VENDOR FIELDS (kept for compatibility) ===
