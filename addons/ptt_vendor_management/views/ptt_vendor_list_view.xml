@@ -33,6 +33,7 @@
                        optional="show"/>
                 <field name="phone" string="Phone"/>
                 <field name="email" string="Email"/>
+                <field name="x_vendor_notes" string="Notes" optional="show" widget="text"/>
                 <field name="x_vendor_document_count" string="Docs" optional="show"/>
                 <field name="city" optional="hide"/>
                 <field name="state_id" optional="hide"/>

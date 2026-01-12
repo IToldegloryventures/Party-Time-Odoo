@@ -45,9 +45,14 @@
                             <field name="x_vendor_rating" widget="priority"/>
                         </group>
                     </group>
-                    <separator string="Internal Notes"/>
-                    <field name="comment" widget="text" nolabel="1" 
-                           placeholder="Internal notes about this vendor..."/>
+                </page>
+                
+                <!-- Vendor Notes Tab (visible when x_is_vendor is toggled on) -->
+                <page string="Vendor Notes" name="ptt_vendor_notes" invisible="not x_is_vendor">
+                    <group>
+                        <field name="x_vendor_notes" widget="text" nolabel="1" 
+                               placeholder="Add internal notes about this vendor...&#10;&#10;Examples:&#10;- Preferred contact method&#10;- Special pricing arrangements&#10;- Performance history&#10;- Preferred event types&#10;- Any special requirements or considerations"/>
+                    </group>
                 </page>
                 
                 <!-- Vendor Documents Tab (visible when x_is_vendor is toggled on) -->

@@ -119,6 +119,12 @@ class ResPartner(models.Model):
             # All required documents present and valid
             partner.x_vendor_compliance_status = "compliant"
     
+    # === VENDOR NOTES ===
+    x_vendor_notes = fields.Text(
+        string="Vendor Notes",
+        help="Internal notes about this vendor. Visible only to internal users.",
+    )
+    
     # === LEGACY VENDOR FIELDS (kept for compatibility) ===
     x_vendor_rating = fields.Selection(
         [
