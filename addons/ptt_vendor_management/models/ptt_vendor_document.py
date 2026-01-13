@@ -70,18 +70,17 @@ class PttVendorDocument(models.Model):
         help="User who uploaded this document",
     )
     
-    # Status
+    # Status - Manual selection for now, can automate based on expiry later
     status = fields.Selection(
         [
-            ("valid", "Valid"),
+            ("compliant", "Compliant"),
             ("expiring_soon", "Expiring Soon"),
-            ("expired", "Expired"),
-            ("not_applicable", "N/A"),
+            ("non_compliant", "Non-Compliant"),
         ],
         string="Status",
-        compute="_compute_status",
-        store=True,
-        help="Document validity status",
+        default="non_compliant",
+        tracking=True,
+        help="Document compliance status. Set manually by sales rep.",
     )
     
     notes = fields.Text(
@@ -89,26 +88,23 @@ class PttVendorDocument(models.Model):
         help="Additional notes about this document",
     )
     
-    @api.depends("validity", "document_type_id.expiry_warning_days", "document_type_id.has_expiry")
-    def _compute_status(self):
-        """Compute document status based on expiry date.
-        
-        This is a stored computed field that automatically recomputes when:
-        - validity date changes
-        - document type expiry settings change
-        
-        The store=True ensures status is persisted and searchable.
-        """
-        today = fields.Date.today()
-        for doc in self:
-            if not doc.document_type_id.has_expiry or not doc.validity:
-                doc.status = "not_applicable"
-            elif doc.validity < today:
-                doc.status = "expired"
-            elif doc.validity <= today + timedelta(days=doc.document_type_id.expiry_warning_days or 30):
-                doc.status = "expiring_soon"
-            else:
-                doc.status = "valid"
+    # NOTE: Status is now manual. This computed method is kept for future automation.
+    # To re-enable automated status, change status field to compute="_compute_status", store=True
+    # and uncomment this method:
+    #
+    # @api.depends("validity", "document_type_id.expiry_warning_days", "document_type_id.has_expiry")
+    # def _compute_status(self):
+    #     """Compute document status based on expiry date."""
+    #     today = fields.Date.today()
+    #     for doc in self:
+    #         if not doc.validity:
+    #             doc.status = "non_compliant"
+    #         elif doc.validity < today:
+    #             doc.status = "non_compliant"  
+    #         elif doc.validity <= today + timedelta(days=doc.document_type_id.expiry_warning_days or 30):
+    #             doc.status = "expiring_soon"
+    #         else:
+    #             doc.status = "compliant"
     
     @api.constrains("vendor_id", "document_type_id")
     def _check_unique_vendor_doctype(self):
@@ -128,37 +124,27 @@ class PttVendorDocument(models.Model):
     def _cron_check_document_expiry_30day(self):
         """Alert vendors with documents expiring in 30 days.
         
-        PERFORMANCE: Only searches documents in the 30-day expiry window,
-        not the entire table. No full-table status recomputation.
-        
-        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html
+        PERFORMANCE: Only searches documents in the 30-day expiry window.
         """
         today = fields.Date.today()
         warning_date = today + timedelta(days=30)
         
-        # Only search documents that:
-        # 1. Have expiry tracking enabled
-        # 2. Expire between today and 30 days from now
-        # 3. Haven't already expired
+        # Find documents expiring in 30 days
         expiring_docs = self.search([
             ("document_type_id.has_expiry", "=", True),
             ("validity", ">=", today),
             ("validity", "<=", warning_date),
         ])
         
-        # Force recompute status only for these specific documents
-        expiring_docs._compute_status()
-        
-        # Filter to only "expiring_soon" status after recompute
-        expiring_docs = expiring_docs.filtered(lambda d: d.status == "expiring_soon")
-        
         todo_activity_type = self.env.ref("mail.mail_activity_type_todo", raise_if_not_found=False)
         
         for doc in expiring_docs:
+            # Auto-update status to expiring_soon
+            if doc.status == "compliant":
+                doc.status = "expiring_soon"
+            
             if doc.vendor_id.email and todo_activity_type:
-                # Create activity for admin to follow up
                 user_id = self.env.ref("base.user_admin").id
-                # Check if activity already exists to avoid duplicates
                 existing_activity = self.env["mail.activity"].search([
                     ("res_model", "=", "res.partner"),
                     ("res_id", "=", doc.vendor_id.id),
@@ -177,33 +163,25 @@ class PttVendorDocument(models.Model):
     
     @api.model
     def _cron_check_document_expiry_7day(self):
-        """Alert vendors with documents expiring in 7 days.
-        
-        PERFORMANCE: Only searches documents in the 7-day expiry window,
-        not the entire table. No full-table status recomputation.
-        """
+        """Alert vendors with documents expiring in 7 days (urgent)."""
         today = fields.Date.today()
         warning_date = today + timedelta(days=7)
         
-        # Only search documents expiring in next 7 days
         expiring_docs = self.search([
             ("document_type_id.has_expiry", "=", True),
             ("validity", ">=", today),
             ("validity", "<=", warning_date),
         ])
         
-        # Force recompute status only for these specific documents
-        expiring_docs._compute_status()
-        
-        # Filter to only "expiring_soon" status
-        expiring_docs = expiring_docs.filtered(lambda d: d.status == "expiring_soon")
-        
         todo_activity_type = self.env.ref("mail.mail_activity_type_todo", raise_if_not_found=False)
         
         for doc in expiring_docs:
+            # Auto-update status to expiring_soon
+            if doc.status == "compliant":
+                doc.status = "expiring_soon"
+            
             if doc.vendor_id.email and todo_activity_type:
                 user_id = self.env.ref("base.user_admin").id
-                # Check if urgent activity already exists
                 existing_activity = self.env["mail.activity"].search([
                     ("res_model", "=", "res.partner"),
                     ("res_id", "=", doc.vendor_id.id),
@@ -223,29 +201,21 @@ class PttVendorDocument(models.Model):
     
     @api.model
     def _cron_check_document_expired(self):
-        """Handle expired documents - alert about vendors with expired required docs.
-        
-        PERFORMANCE: Only searches documents that have already expired,
-        not the entire table. No full-table status recomputation.
-        """
+        """Handle expired documents - auto-set to non-compliant and alert."""
         today = fields.Date.today()
         
-        # Only search documents that have expired and are required
         expired_docs = self.search([
             ("document_type_id.has_expiry", "=", True),
             ("document_type_id.required", "=", True),
             ("validity", "<", today),
+            ("status", "!=", "non_compliant"),  # Only update if not already non-compliant
         ])
         
-        # Force recompute status only for these specific documents
-        expired_docs._compute_status()
-        
-        # Filter to only "expired" status
-        expired_docs = expired_docs.filtered(lambda d: d.status == "expired")
-        
         for doc in expired_docs:
+            # Auto-update status to non-compliant
+            doc.status = "non_compliant"
+            
             vendor = doc.vendor_id
-            # Post a message if not already posted today
             today_str = today.strftime("%Y-%m-%d")
             recent_messages = vendor.message_ids.filtered(
                 lambda m: m.date.strftime("%Y-%m-%d") == today_str and 

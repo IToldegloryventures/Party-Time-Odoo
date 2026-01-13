@@ -127,11 +127,11 @@ class ResPartner(models.Model):
                 partner.ptt_vendor_compliance_status = "missing_required"
                 continue
             
-            # Check for expired documents (among required types)
-            expired_docs = vendor_docs.filtered(
-                lambda d: d.document_type_id.required and d.status == "expired"
+            # Check for non-compliant documents (among required types)
+            non_compliant_docs = vendor_docs.filtered(
+                lambda d: d.document_type_id.required and d.status == "non_compliant"
             )
-            if expired_docs:
+            if non_compliant_docs:
                 partner.ptt_vendor_compliance_status = "expired"
                 continue
             
@@ -151,6 +151,59 @@ class ResPartner(models.Model):
         string="Vendor Notes",
         help="Internal notes about this vendor. Visible only to internal users.",
     )
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Auto-populate standard document lines when creating a vendor."""
+        records = super().create(vals_list)
+        
+        # Auto-populate document lines for new vendors
+        for record in records:
+            if record.supplier_rank > 0:
+                record._populate_vendor_document_lines()
+        
+        return records
+    
+    def write(self, vals):
+        """Auto-populate document lines when partner becomes a vendor."""
+        # Check if becoming a vendor (supplier_rank going from 0 to > 0)
+        becoming_vendor = 'supplier_rank' in vals and vals['supplier_rank'] > 0
+        was_vendor = self.filtered(lambda p: p.supplier_rank > 0)
+        
+        result = super().write(vals)
+        
+        if becoming_vendor:
+            new_vendors = self.filtered(lambda p: p.supplier_rank > 0 and p not in was_vendor)
+            for vendor in new_vendors:
+                vendor._populate_vendor_document_lines()
+        
+        return result
+    
+    def _populate_vendor_document_lines(self):
+        """Create document lines for all required document types.
+        
+        This creates placeholder document records so sales reps only need
+        to upload the PDF files instead of remembering each document type.
+        """
+        self.ensure_one()
+        if self.supplier_rank <= 0:
+            return
+        
+        # Get all required document types
+        doc_types = self.env["ptt.document.type"].search([("required", "=", True)])
+        
+        # Get existing document type IDs for this vendor
+        existing_type_ids = set(self.ptt_vendor_document_ids.mapped("document_type_id").ids)
+        
+        # Create document lines for missing types
+        VendorDocument = self.env["ptt.vendor.document"]
+        for doc_type in doc_types:
+            if doc_type.id not in existing_type_ids:
+                VendorDocument.create({
+                    "vendor_id": self.id,
+                    "document_type_id": doc_type.id,
+                    "status": "non_compliant",  # Default until document is uploaded
+                })
     
     # === VENDOR RATING ===
     ptt_vendor_rating = fields.Selection(
