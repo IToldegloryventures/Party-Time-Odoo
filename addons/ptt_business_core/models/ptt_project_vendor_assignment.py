@@ -1,4 +1,6 @@
-from odoo import models, fields
+from odoo import models, fields, api
+
+from .constants import SERVICE_TYPES
 
 
 class PttProjectVendorAssignment(models.Model):
@@ -18,24 +20,9 @@ class PttProjectVendorAssignment(models.Model):
         ondelete="cascade",
         index=True,
     )
+    # Uses shared constant to avoid duplication (DRY principle)
     service_type = fields.Selection(
-        [
-            ("dj", "DJ & MC Services"),
-            ("photovideo", "Photo/Video"),
-            ("live_entertainment", "Live Entertainment"),
-            ("lighting", "Lighting/AV"),
-            ("decor", "Decor/Thematic Design"),
-            ("photobooth", "Photo Booth"),
-            ("caricature", "Caricature Artist"),
-            ("casino", "Casino Services"),
-            ("catering", "Catering & Bartender Services"),
-            ("transportation", "Transportation"),
-            ("rentals", "Rentals (Other)"),
-            ("staffing", "Staffing"),
-            ("venue_sourcing", "Venue Sourcing"),
-            ("coordination", "Event Planning Services"),
-            ("other", "Other"),
-        ],
+        SERVICE_TYPES,
         string="Service Type",
         required=True,
     )
@@ -55,10 +42,23 @@ class PttProjectVendorAssignment(models.Model):
     currency_id = fields.Many2one(
         "res.currency",
         string="Currency",
-        related="project_id.currency_id",
+        compute="_compute_currency_id",
+        store=True,
         readonly=True,
     )
     notes = fields.Text(string="Notes")
+    
+    @api.depends('project_id.currency_id')
+    def _compute_currency_id(self):
+        """Compute currency with company fallback.
+        
+        Pattern matches project.project._compute_currency_id in Odoo core.
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#computed-fields
+        """
+        for record in self:
+            record.currency_id = (
+                record.project_id.currency_id or self.env.company.currency_id
+            )
     
     # Vendor Status Tracking Fields (renamed from x_ to ptt_ prefix)
     ptt_status = fields.Selection(

@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 
+from .constants import SERVICE_TYPES
+
 
 class PttCrmServiceLine(models.Model):
     """Service lines for CRM Leads - allows selecting services with tier categories."""
@@ -38,24 +40,9 @@ class PttCrmServiceLine(models.Model):
     )
     
     # Service Type (for quick categorization without product)
+    # Uses shared constant to avoid duplication (DRY principle)
     service_type = fields.Selection(
-        [
-            ("dj", "DJ & MC Services"),
-            ("photovideo", "Photo/Video"),
-            ("live_entertainment", "Live Entertainment"),
-            ("lighting", "Lighting/AV"),
-            ("decor", "Decor/Thematic Design"),
-            ("photobooth", "Photo Booth"),
-            ("caricature", "Caricature Artist"),
-            ("casino", "Casino Services"),
-            ("catering", "Catering & Bartender Services"),
-            ("transportation", "Transportation"),
-            ("rentals", "Rentals (Other)"),
-            ("staffing", "Staffing"),
-            ("venue_sourcing", "Venue Sourcing"),
-            ("coordination", "Event Planning Services"),
-            ("other", "Other"),
-        ],
+        SERVICE_TYPES,
         string="Service Category",
         help="General service category",
     )

@@ -1,5 +1,7 @@
 from odoo import models, fields
 
+from .constants import SERVICE_TYPES
+
 
 class PttCrmVendorAssignment(models.Model):
     """Vendor assignments at CRM Lead level.
@@ -28,24 +30,9 @@ class PttCrmVendorAssignment(models.Model):
         help="Link to specific service line if applicable",
     )
     
+    # Uses shared constant to avoid duplication (DRY principle)
     service_type = fields.Selection(
-        [
-            ("dj", "DJ & MC Services"),
-            ("photovideo", "Photo/Video"),
-            ("live_entertainment", "Live Entertainment"),
-            ("lighting", "Lighting/AV"),
-            ("decor", "Decor/Thematic Design"),
-            ("photobooth", "Photo Booth"),
-            ("caricature", "Caricature Artist"),
-            ("casino", "Casino Services"),
-            ("catering", "Catering & Bartender Services"),
-            ("transportation", "Transportation"),
-            ("rentals", "Rentals (Other)"),
-            ("staffing", "Staffing"),
-            ("venue_sourcing", "Venue Sourcing"),
-            ("coordination", "Event Planning Services"),
-            ("other", "Other"),
-        ],
+        SERVICE_TYPES,
         string="Service Type",
         required=True,
     )

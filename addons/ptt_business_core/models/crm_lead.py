@@ -1,5 +1,11 @@
+import re
+
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+
+# Time format pattern for HH:MM validation
+# Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#method-decorators
+TIME_PATTERN = re.compile(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
 
 
 class CrmLead(models.Model):
@@ -117,21 +123,6 @@ class CrmLead(models.Model):
         string="Event Location",
     )
 
-    # === SERVICES REQUESTED (CHECKBOXES) ===
-    ptt_service_dj = fields.Boolean(string="DJ & MC Services")
-    ptt_service_photovideo = fields.Boolean(string="Photo/Video")
-    ptt_service_live_entertainment = fields.Boolean(string="Live Entertainment")
-    ptt_service_lighting = fields.Boolean(string="Lighting/AV")
-    ptt_service_decor = fields.Boolean(string="Decor/Thematic Design")
-    ptt_service_venue_sourcing = fields.Boolean(string="Venue Sourcing")
-    ptt_service_catering = fields.Boolean(string="Catering & Bartender Services")
-    ptt_service_transportation = fields.Boolean(string="Transportation")
-    ptt_service_rentals = fields.Boolean(string="Rentals (Other)")
-    ptt_service_photobooth = fields.Boolean(string="Photo Booth")
-    ptt_service_caricature = fields.Boolean(string="Caricature Artist")
-    ptt_service_casino = fields.Boolean(string="Casino Services")
-    ptt_service_staffing = fields.Boolean(string="Staffing")
-
     # === CFO/FINANCE CONTACT (for corporate clients) ===
     ptt_cfo_name = fields.Char(string="CFO/Finance Contact Name")
     ptt_cfo_phone = fields.Char(string="CFO/Finance Contact Phone")
@@ -161,6 +152,21 @@ class CrmLead(models.Model):
         string="Vendor Assignments",
         help="Vendors assigned to provide services for this event",
     )
+
+    # === CONSTRAINTS ===
+    
+    @api.constrains('ptt_event_time')
+    def _check_event_time_format(self):
+        """Validate event time is in HH:MM format.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#method-decorators
+        Pattern matches Odoo core examples in res_lang.py, res_country.py.
+        """
+        for record in self:
+            if record.ptt_event_time and not TIME_PATTERN.match(record.ptt_event_time):
+                raise ValidationError(
+                    _("Event Time must be in HH:MM format (e.g., 09:30, 14:00). Got: %s") % record.ptt_event_time
+                )
 
     # === ACTION METHODS ===
 

@@ -61,27 +61,6 @@
                         </group>
                     </group>
 
-                    <!-- Services Requested -->
-                    <group string="Services Requested">
-                        <group>
-                            <field name="ptt_service_dj"/>
-                            <field name="ptt_service_photovideo"/>
-                            <field name="ptt_service_live_entertainment"/>
-                            <field name="ptt_service_lighting"/>
-                            <field name="ptt_service_decor"/>
-                        </group>
-                        <group>
-                            <field name="ptt_service_venue_sourcing"/>
-                            <field name="ptt_service_catering"/>
-                            <field name="ptt_service_transportation"/>
-                            <field name="ptt_service_rentals"/>
-                            <field name="ptt_service_photobooth"/>
-                            <field name="ptt_service_caricature"/>
-                            <field name="ptt_service_casino"/>
-                            <field name="ptt_service_staffing"/>
-                        </group>
-                    </group>
-
                     <!-- CFO/Finance Contact (for corporate clients) -->
                     <group string="CFO/Finance Contact">
                         <group>

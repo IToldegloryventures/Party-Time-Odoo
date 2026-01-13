@@ -1,5 +1,12 @@
-from odoo import models, fields, api
+import re
+
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from datetime import timedelta
+
+# Time format pattern for HH:MM validation
+# Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#method-decorators
+TIME_PATTERN = re.compile(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
 
 
 class ProjectProject(models.Model):
@@ -100,6 +107,34 @@ class ProjectProject(models.Model):
     ptt_special_requirements_desc = fields.Text(string="Special Requirements")
     ptt_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
     ptt_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
+
+    # === CONSTRAINTS ===
+    
+    @api.constrains('ptt_event_time', 'ptt_setup_start_time', 'ptt_event_start_time', 
+                    'ptt_event_end_time', 'ptt_teardown_deadline')
+    def _check_time_format(self):
+        """Validate all time fields are in HH:MM format.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#method-decorators
+        Pattern matches Odoo core examples in res_lang.py, res_country.py.
+        """
+        time_fields = [
+            ('ptt_event_time', _("Event Time")),
+            ('ptt_setup_start_time', _("Setup Start Time")),
+            ('ptt_event_start_time', _("Event Start Time")),
+            ('ptt_event_end_time', _("Event End Time")),
+            ('ptt_teardown_deadline', _("Tear-Down Deadline")),
+        ]
+        for record in self:
+            for field_name, field_label in time_fields:
+                value = record[field_name]
+                if value and not TIME_PATTERN.match(value):
+                    raise ValidationError(
+                        _("%(field)s must be in HH:MM format (e.g., 09:30, 14:00). Got: %(value)s") % {
+                            'field': field_label,
+                            'value': value,
+                        }
+                    )
 
     # === TASK CREATION ===
     
