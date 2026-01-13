@@ -210,54 +210,6 @@ class ContactFormController(http.Controller):
                 if mapped_location:
                     custom_vals['x_event_location_type'] = mapped_location
                 
-                # Build HTML for customer submission notes
-                # Services appear as TEXT only (not mapped to boolean fields)
-                try:
-                    # Escape user input for security
-                    safe_event_type = html.escape(event_type_form) if event_type_form else 'Not specified'
-                    safe_event_date = html.escape(event_date) if event_date else 'Not specified'
-                    safe_event_time = html.escape(event_time) if event_time else 'Not specified'
-                    safe_event_location = html.escape(event_location) if event_location else 'Not specified'
-                    safe_guest_count = html.escape(guest_count) if guest_count else 'Not specified'
-                    safe_budget = html.escape(budget) if budget else 'Not specified'
-                    safe_indoor_outdoor = html.escape(indoor_outdoor) if indoor_outdoor else 'Not specified'
-                    safe_special_requests = html.escape(special_requests) if special_requests else ''
-                    
-                    # Format services as HTML list (TEXT ONLY - not mapped to fields)
-                    services_html = ''
-                    if services:
-                        services_html = '<ul>' + ''.join([f'<li>{html.escape(service)}</li>' for service in services]) + '</ul>'
-                    else:
-                        services_html = '<p><em>None selected</em></p>'
-                    
-                    # Build customer notes HTML
-                    submission_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    customer_notes_html = f"""
-<div class="ptt-customer-notes">
-    <h3>Form Submission Details</h3>
-    <p><strong>Submitted:</strong> {submission_time}</p>
-    
-    <h4>Event Information</h4>
-    <ul>
-        <li><strong>Event Type:</strong> {safe_event_type}</li>
-        <li><strong>Event Date:</strong> {safe_event_date}</li>
-        <li><strong>Event Time:</strong> {safe_event_time}</li>
-        <li><strong>Location:</strong> {safe_event_location}</li>
-        <li><strong>Guest Count:</strong> {safe_guest_count}</li>
-        <li><strong>Budget:</strong> {safe_budget}</li>
-        <li><strong>Setting:</strong> {safe_indoor_outdoor}</li>
-    </ul>
-    
-    <h4>Services of Interest (Customer Selection)</h4>
-    {services_html}
-    
-    {f'<h4>Special Requests</h4><p>{safe_special_requests}</p>' if safe_special_requests else ''}
-</div>
-"""
-                    custom_vals['x_customer_submission_notes'] = customer_notes_html.strip()
-                except Exception as html_err:
-                    _logger.warning("Could not build customer notes HTML for lead #%s: %s", lead.id, str(html_err))
-                
                 # Update the lead with custom fields
                 if custom_vals:
                     lead.sudo().write(custom_vals)
@@ -470,47 +422,6 @@ class ContactFormController(http.Controller):
                 mapped_location = indoor_outdoor_mapping.get(indoor_outdoor)
                 if mapped_location:
                     custom_vals['x_event_location_type'] = mapped_location
-                
-                # Build customer submission notes HTML
-                safe_event_type = html.escape(event_type_form) if event_type_form else 'Not specified'
-                safe_event_date = html.escape(event_date) if event_date else 'Not specified'
-                safe_event_time = html.escape(event_time) if event_time else 'Not specified'
-                safe_event_location = html.escape(event_location) if event_location else 'Not specified'
-                safe_guest_count = html.escape(guest_count) if guest_count else 'Not specified'
-                safe_budget = html.escape(budget) if budget else 'Not specified'
-                safe_indoor_outdoor = html.escape(indoor_outdoor) if indoor_outdoor else 'Not specified'
-                safe_special_requests = html.escape(special_requests) if special_requests else ''
-                
-                services_html = ''
-                if services:
-                    services_html = '<ul>' + ''.join([f'<li>{html.escape(str(s))}</li>' for s in services]) + '</ul>'
-                else:
-                    services_html = '<p><em>None selected</em></p>'
-                
-                submission_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                customer_notes_html = f"""
-<div class="ptt-customer-notes">
-    <h3>WordPress Form Submission</h3>
-    <p><strong>Submitted:</strong> {submission_time}</p>
-    
-    <h4>Event Information</h4>
-    <ul>
-        <li><strong>Event Type:</strong> {safe_event_type}</li>
-        <li><strong>Event Date:</strong> {safe_event_date}</li>
-        <li><strong>Event Time:</strong> {safe_event_time}</li>
-        <li><strong>Location:</strong> {safe_event_location}</li>
-        <li><strong>Guest Count:</strong> {safe_guest_count}</li>
-        <li><strong>Budget:</strong> {safe_budget}</li>
-        <li><strong>Setting:</strong> {safe_indoor_outdoor}</li>
-    </ul>
-    
-    <h4>Services of Interest</h4>
-    {services_html}
-    
-    {f'<h4>Special Requests</h4><p>{safe_special_requests}</p>' if safe_special_requests else ''}
-</div>
-"""
-                custom_vals['x_customer_submission_notes'] = customer_notes_html.strip()
                 
                 if custom_vals:
                     lead.sudo().write(custom_vals)
