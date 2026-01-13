@@ -56,7 +56,15 @@ def pre_init_hook(cr):
     Runs BEFORE the module upgrade to prevent errors during upgrade.
     
     NOTE: In Odoo 19, pre_init_hook receives 'cr' (database cursor), not 'env'.
+    
+    Odoo 19 Guideline Compliance:
+    - Uses savepoints to isolate operations for better error handling
+    - Does NOT call cr.commit() or cr.rollback() manually
+    - Framework handles transaction commits at RPC boundaries
+    Reference: https://www.odoo.com/documentation/19.0/developer/howtos/backend.html#database-cursor-and-transactions
     """
+    from psycopg2 import ProgrammingError, DatabaseError
+    
     _logger.info("PTT Business Core: Running pre_init_hook cleanup")
     
     # === COMPREHENSIVE FIELD CLEANUP ===
@@ -84,66 +92,74 @@ def pre_init_hook(cr):
         'res.partner': ['x_is_vendor', 'x_vendor_notes'],
     }
     
+    # Use savepoint to isolate each field deletion operation
     for model, field_names in fields_to_remove.items():
         for field_name in field_names:
-            try:
-                cr.execute("""
-                    SELECT id FROM ir_model_fields 
-                    WHERE name = %s AND model = %s
-                """, (field_name, model))
-                result = cr.fetchone()
-                if result:
-                    field_id = result[0]
-                    _logger.info(f"PTT Business Core: Removing field {field_name} from {model}")
-                    cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
-                    cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-            except Exception as e:
-                _logger.warning(f"PTT Business Core: Error removing {field_name} from {model}: {e}")
+            with cr.savepoint():
+                try:
+                    cr.execute("""
+                        SELECT id FROM ir_model_fields 
+                        WHERE name = %s AND model = %s
+                    """, (field_name, model))
+                    result = cr.fetchone()
+                    if result:
+                        field_id = result[0]
+                        _logger.info(f"PTT Business Core: Removing field {field_name} from {model}")
+                        cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
+                        cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
+                except (ProgrammingError, DatabaseError) as e:
+                    _logger.warning(f"PTT Business Core: Error removing {field_name} from {model}: {e}")
+                except Exception as e:
+                    _logger.warning(f"PTT Business Core: Unexpected error removing {field_name} from {model}: {e}")
     
     # === CLEANUP VIEWS REFERENCING DELETED FIELDS ===
     all_deleted_fields = []
     for field_list in fields_to_remove.values():
         all_deleted_fields.extend(field_list)
     
+    # Use savepoint to isolate each field's view cleanup operation
     for field_name in all_deleted_fields:
-        try:
-            # Clean ir_ui_view (arch_db)
-            cr.execute("""
-                SELECT id, arch_db FROM ir_ui_view 
-                WHERE arch_db::text LIKE %s
-            """, (f'%{field_name}%',))
-            views_to_fix = cr.fetchall()
-            for view_id, arch_db in views_to_fix:
-                if arch_db:
-                    new_arch = str(arch_db)
-                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                    new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                    new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
-                    new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
-                    if new_arch != str(arch_db):
-                        cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
-                        _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view_id}")
-            
-            # Clean ir_ui_view_custom (Studio customizations)
-            cr.execute("""
-                SELECT id, arch FROM ir_ui_view_custom 
-                WHERE arch::text LIKE %s
-            """, (f'%{field_name}%',))
-            custom_views_to_fix = cr.fetchall()
-            for view_id, arch in custom_views_to_fix:
-                if arch:
-                    new_arch = str(arch)
-                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                    new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                    new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                    new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
-                    new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
-                    if new_arch != str(arch):
-                        cr.execute("UPDATE ir_ui_view_custom SET arch = %s WHERE id = %s", (new_arch, view_id))
-                        _logger.info(f"PTT Business Core: Cleaned {field_name} from custom view {view_id}")
-        except Exception as e:
-            _logger.warning(f"PTT Business Core: Error cleaning views for {field_name}: {e}")
+        with cr.savepoint():
+            try:
+                # Clean ir_ui_view (arch_db)
+                cr.execute("""
+                    SELECT id, arch_db FROM ir_ui_view 
+                    WHERE arch_db::text LIKE %s
+                """, (f'%{field_name}%',))
+                views_to_fix = cr.fetchall()
+                for view_id, arch_db in views_to_fix:
+                    if arch_db:
+                        new_arch = str(arch_db)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                        if new_arch != str(arch_db):
+                            cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
+                            _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view_id}")
+                
+                # Clean ir_ui_view_custom (Studio customizations)
+                cr.execute("""
+                    SELECT id, arch FROM ir_ui_view_custom 
+                    WHERE arch::text LIKE %s
+                """, (f'%{field_name}%',))
+                custom_views_to_fix = cr.fetchall()
+                for view_id, arch in custom_views_to_fix:
+                    if arch:
+                        new_arch = str(arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                        if new_arch != str(arch):
+                            cr.execute("UPDATE ir_ui_view_custom SET arch = %s WHERE id = %s", (new_arch, view_id))
+                            _logger.info(f"PTT Business Core: Cleaned {field_name} from custom view {view_id}")
+            except (ProgrammingError, DatabaseError) as e:
+                _logger.warning(f"PTT Business Core: Database error cleaning views for {field_name}: {e}")
+            except Exception as e:
+                _logger.warning(f"PTT Business Core: Unexpected error cleaning views for {field_name}: {e}")
     
     # === DELETE PTT VIEWS THAT MAY HAVE STALE REFERENCES ===
     ptt_view_names = [
@@ -155,21 +171,25 @@ def pre_init_hook(cr):
         ('ptt_business_core', 'view_partner_form_ptt'),
     ]
     
+    # Use savepoint to isolate each view deletion operation
     for module, view_name in ptt_view_names:
-        try:
-            cr.execute("""
-                SELECT v.id FROM ir_ui_view v
-                JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
-                WHERE d.module = %s AND d.name = %s
-            """, (module, view_name))
-            result = cr.fetchone()
-            if result:
-                view_id = result[0]
-                cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
-                cr.execute("DELETE FROM ir_model_data WHERE module = %s AND name = %s", (module, view_name))
-                _logger.info(f"PTT Business Core: Deleted stale view {module}.{view_name}")
-        except Exception as e:
-            _logger.warning(f"PTT Business Core: Error deleting view {module}.{view_name}: {e}")
+        with cr.savepoint():
+            try:
+                cr.execute("""
+                    SELECT v.id FROM ir_ui_view v
+                    JOIN ir_model_data d ON d.res_id = v.id AND d.model = 'ir.ui.view'
+                    WHERE d.module = %s AND d.name = %s
+                """, (module, view_name))
+                result = cr.fetchone()
+                if result:
+                    view_id = result[0]
+                    cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
+                    cr.execute("DELETE FROM ir_model_data WHERE module = %s AND name = %s", (module, view_name))
+                    _logger.info(f"PTT Business Core: Deleted stale view {module}.{view_name}")
+            except (ProgrammingError, DatabaseError) as e:
+                _logger.warning(f"PTT Business Core: Database error deleting view {module}.{view_name}: {e}")
+            except Exception as e:
+                _logger.warning(f"PTT Business Core: Unexpected error deleting view {module}.{view_name}: {e}")
     
     # === CLEANUP STUDIO FIELDS ===
     studio_fields = [
@@ -183,19 +203,23 @@ def pre_init_hook(cr):
         ('project.project', 'x_plan2_id'),
     ]
     
+    # Use savepoint to isolate each Studio field deletion operation
     for model, field_name in studio_fields:
-        try:
-            cr.execute("""
-                SELECT id FROM ir_model_fields 
-                WHERE name = %s AND model = %s
-            """, (field_name, model))
-            result = cr.fetchone()
-            if result:
-                field_id = result[0]
-                _logger.info(f"PTT Business Core: Removing Studio field {field_name} from {model}")
-                cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
-                cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-        except Exception as e:
-            _logger.warning(f"PTT Business Core: Error removing Studio field {field_name}: {e}")
+        with cr.savepoint():
+            try:
+                cr.execute("""
+                    SELECT id FROM ir_model_fields 
+                    WHERE name = %s AND model = %s
+                """, (field_name, model))
+                result = cr.fetchone()
+                if result:
+                    field_id = result[0]
+                    _logger.info(f"PTT Business Core: Removing Studio field {field_name} from {model}")
+                    cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
+                    cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
+            except (ProgrammingError, DatabaseError) as e:
+                _logger.warning(f"PTT Business Core: Database error removing Studio field {field_name}: {e}")
+            except Exception as e:
+                _logger.warning(f"PTT Business Core: Unexpected error removing Studio field {field_name}: {e}")
     
     _logger.info("PTT Business Core: pre_init_hook cleanup completed")
