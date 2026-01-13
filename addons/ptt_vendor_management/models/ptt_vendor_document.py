@@ -4,7 +4,15 @@ from datetime import timedelta
 
 
 class PttVendorDocument(models.Model):
-    """Vendor documents with expiry tracking"""
+    """Vendor documents with expiry tracking.
+    
+    PERFORMANCE OPTIMIZATIONS:
+    - Cron jobs only query documents in their specific expiry windows
+    - No full-table recomputation on cron runs
+    - Status computed on-demand with proper depends decorators
+    
+    Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
+    """
     _name = "ptt.vendor.document"
     _description = "Vendor Document"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -83,7 +91,14 @@ class PttVendorDocument(models.Model):
     
     @api.depends("validity", "document_type_id.expiry_warning_days", "document_type_id.has_expiry")
     def _compute_status(self):
-        """Compute document status based on expiry date."""
+        """Compute document status based on expiry date.
+        
+        This is a stored computed field that automatically recomputes when:
+        - validity date changes
+        - document type expiry settings change
+        
+        The store=True ensures status is persisted and searchable.
+        """
         today = fields.Date.today()
         for doc in self:
             if not doc.document_type_id.has_expiry or not doc.validity:
@@ -111,84 +126,135 @@ class PttVendorDocument(models.Model):
     
     @api.model
     def _cron_check_document_expiry_30day(self):
-        """Alert vendors with documents expiring in 30 days."""
-        # Recompute status first
-        self.search([])._compute_status()
+        """Alert vendors with documents expiring in 30 days.
         
+        PERFORMANCE: Only searches documents in the 30-day expiry window,
+        not the entire table. No full-table status recomputation.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html
+        """
         today = fields.Date.today()
         warning_date = today + timedelta(days=30)
         
+        # Only search documents that:
+        # 1. Have expiry tracking enabled
+        # 2. Expire between today and 30 days from now
+        # 3. Haven't already expired
         expiring_docs = self.search([
+            ("document_type_id.has_expiry", "=", True),
             ("validity", ">=", today),
             ("validity", "<=", warning_date),
-            ("status", "=", "expiring_soon"),
         ])
+        
+        # Force recompute status only for these specific documents
+        expiring_docs._compute_status()
+        
+        # Filter to only "expiring_soon" status after recompute
+        expiring_docs = expiring_docs.filtered(lambda d: d.status == "expiring_soon")
         
         todo_activity_type = self.env.ref("mail.mail_activity_type_todo", raise_if_not_found=False)
         
         for doc in expiring_docs:
             if doc.vendor_id.email and todo_activity_type:
-                # Create activity for vendor's portal user or admin
-                # Note: portal_user_id field will be added in Phase 2
+                # Create activity for admin to follow up
                 user_id = self.env.ref("base.user_admin").id
-                doc.vendor_id.activity_schedule(
-                    activity_type_id=todo_activity_type.id,
-                    summary=_("Document Expiring Soon: %s", doc.document_type_id.name),
-                    note=_("Your %s expires on %s. Please upload a renewed document.",
-                           doc.document_type_id.name, doc.validity),
-                    user_id=user_id,
-                )
+                # Check if activity already exists to avoid duplicates
+                existing_activity = self.env["mail.activity"].search([
+                    ("res_model", "=", "res.partner"),
+                    ("res_id", "=", doc.vendor_id.id),
+                    ("activity_type_id", "=", todo_activity_type.id),
+                    ("summary", "ilike", doc.document_type_id.name),
+                ], limit=1)
+                
+                if not existing_activity:
+                    doc.vendor_id.activity_schedule(
+                        activity_type_id=todo_activity_type.id,
+                        summary=_("Document Expiring Soon: %s", doc.document_type_id.name),
+                        note=_("Vendor %s: Document '%s' expires on %s. Please request a renewed document.",
+                               doc.vendor_id.name, doc.document_type_id.name, doc.validity),
+                        user_id=user_id,
+                    )
     
     @api.model
     def _cron_check_document_expiry_7day(self):
-        """Alert vendors with documents expiring in 7 days."""
-        # Recompute status first
-        self.search([])._compute_status()
+        """Alert vendors with documents expiring in 7 days.
         
+        PERFORMANCE: Only searches documents in the 7-day expiry window,
+        not the entire table. No full-table status recomputation.
+        """
         today = fields.Date.today()
         warning_date = today + timedelta(days=7)
         
+        # Only search documents expiring in next 7 days
         expiring_docs = self.search([
+            ("document_type_id.has_expiry", "=", True),
             ("validity", ">=", today),
             ("validity", "<=", warning_date),
-            ("status", "=", "expiring_soon"),
         ])
+        
+        # Force recompute status only for these specific documents
+        expiring_docs._compute_status()
+        
+        # Filter to only "expiring_soon" status
+        expiring_docs = expiring_docs.filtered(lambda d: d.status == "expiring_soon")
         
         todo_activity_type = self.env.ref("mail.mail_activity_type_todo", raise_if_not_found=False)
         
         for doc in expiring_docs:
             if doc.vendor_id.email and todo_activity_type:
-                # Create urgent activity
-                # Note: portal_user_id field will be added in Phase 2
                 user_id = self.env.ref("base.user_admin").id
-                doc.vendor_id.activity_schedule(
-                    activity_type_id=todo_activity_type.id,
-                    summary=_("URGENT: Document Expiring Soon: %s", doc.document_type_id.name),
-                    note=_("Your %s expires on %s. Please upload a renewed document immediately.",
-                           doc.document_type_id.name, doc.validity),
-                    user_id=user_id,
-                )
+                # Check if urgent activity already exists
+                existing_activity = self.env["mail.activity"].search([
+                    ("res_model", "=", "res.partner"),
+                    ("res_id", "=", doc.vendor_id.id),
+                    ("activity_type_id", "=", todo_activity_type.id),
+                    ("summary", "ilike", "URGENT"),
+                    ("summary", "ilike", doc.document_type_id.name),
+                ], limit=1)
+                
+                if not existing_activity:
+                    doc.vendor_id.activity_schedule(
+                        activity_type_id=todo_activity_type.id,
+                        summary=_("URGENT: Document Expiring Soon: %s", doc.document_type_id.name),
+                        note=_("Vendor %s: Document '%s' expires on %s. Please request a renewed document immediately.",
+                               doc.vendor_id.name, doc.document_type_id.name, doc.validity),
+                        user_id=user_id,
+                    )
     
     @api.model
     def _cron_check_document_expired(self):
-        """Handle expired documents - deactivate vendors if required docs expired."""
-        # Recompute status first
-        self.search([])._compute_status()
+        """Handle expired documents - alert about vendors with expired required docs.
         
+        PERFORMANCE: Only searches documents that have already expired,
+        not the entire table. No full-table status recomputation.
+        """
         today = fields.Date.today()
         
+        # Only search documents that have expired and are required
         expired_docs = self.search([
+            ("document_type_id.has_expiry", "=", True),
+            ("document_type_id.required", "=", True),
             ("validity", "<", today),
-            ("status", "=", "expired"),
         ])
+        
+        # Force recompute status only for these specific documents
+        expired_docs._compute_status()
+        
+        # Filter to only "expired" status
+        expired_docs = expired_docs.filtered(lambda d: d.status == "expired")
         
         for doc in expired_docs:
             vendor = doc.vendor_id
-            if doc.document_type_id.required:
-                # If required document expired, deactivate vendor
-                # Note: x_vendor_status field will be added in Phase 2
-                # For now, just post a message
+            # Post a message if not already posted today
+            today_str = today.strftime("%Y-%m-%d")
+            recent_messages = vendor.message_ids.filtered(
+                lambda m: m.date.strftime("%Y-%m-%d") == today_str and 
+                         doc.document_type_id.name in (m.body or "")
+            )
+            
+            if not recent_messages:
                 vendor.message_post(
-                    body=_("Vendor deactivated: Required document '%s' expired on %s.",
+                    body=_("Warning: Required document '%s' expired on %s. Vendor compliance status affected.",
                            doc.document_type_id.name, doc.validity),
+                    message_type="notification",
                 )

@@ -92,7 +92,7 @@ export class AgendaCalendar extends Component {
             name: "My Events",
             res_model: "crm.lead",
             views: [[false, "calendar"], [false, "list"], [false, "kanban"], [false, "form"]],
-            domain: [["x_event_date", "!=", false], ["user_id", "=", this.env.services.user.userId]],
+            domain: [["ptt_event_date", "!=", false], ["user_id", "=", this.env.services.user.userId]],
             target: "current",
         });
     }

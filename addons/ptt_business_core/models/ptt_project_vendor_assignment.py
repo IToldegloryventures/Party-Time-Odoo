@@ -2,7 +2,12 @@ from odoo import models, fields
 
 
 class PttProjectVendorAssignment(models.Model):
-    """Actual vendor assignments and costs for projects."""
+    """Actual vendor assignments and costs for projects.
+    
+    FIELD NAMING:
+    - All custom fields use ptt_ prefix (Party Time Texas)
+    - This follows Odoo best practice: x_ is reserved for Studio fields
+    """
     _name = "ptt.project.vendor.assignment"
     _description = "Project Vendor Assignment"
 
@@ -55,8 +60,8 @@ class PttProjectVendorAssignment(models.Model):
     )
     notes = fields.Text(string="Notes")
     
-    # Vendor Status Tracking Fields
-    x_status = fields.Selection(
+    # Vendor Status Tracking Fields (renamed from x_ to ptt_ prefix)
+    ptt_status = fields.Selection(
         [
             ("pending", "Pending"),
             ("confirmed", "Confirmed"),
@@ -67,26 +72,25 @@ class PttProjectVendorAssignment(models.Model):
         default="pending",
         help="Track the status of this vendor assignment",
     )
-    x_confirmed_date = fields.Date(
+    ptt_confirmed_date = fields.Date(
         string="Confirmed Date",
         help="Date when vendor confirmed their assignment",
     )
-    x_contact_person = fields.Char(
+    ptt_contact_person = fields.Char(
         string="Contact Person",
         help="Name of the contact person for this vendor assignment",
     )
-    x_contact_phone = fields.Char(
+    ptt_contact_phone = fields.Char(
         string="Contact Phone",
         help="Phone number for vendor contact person",
     )
-    x_arrival_time = fields.Char(
+    ptt_arrival_time = fields.Char(
         string="Arrival Time",
         help="Expected arrival/setup time for vendor",
     )
-    x_equipment_notes = fields.Text(
+    ptt_equipment_notes = fields.Text(
         string="Equipment Notes",
         help="Notes about equipment, setup requirements, or special instructions",
     )
 
     _order = "id"
-

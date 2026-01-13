@@ -69,14 +69,14 @@ class PttSalesRep(models.Model):
                 ("state", "in", ["draft", "sent"])
             ])
             
-            # Events this week - using x_event_date from ptt_business_core
+            # Events this week - using ptt_event_date from ptt_business_core
             today = fields.Date.context_today(self)
             week_start = today - timedelta(days=today.weekday())
             week_end = week_start + timedelta(days=6)
             rep.events_count = self.env["project.project"].search_count([
                 ("user_id", "=", rep.user_id.id),
-                ("x_event_date", ">=", week_start),
-                ("x_event_date", "<=", week_end)
+                ("ptt_event_date", ">=", week_start),
+                ("ptt_event_date", "<=", week_end)
             ])
             
             # Outstanding payments

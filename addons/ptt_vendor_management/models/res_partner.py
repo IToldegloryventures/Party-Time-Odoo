@@ -5,18 +5,24 @@ class ResPartner(models.Model):
     """Extend res.partner for PTT vendor management fields.
     
     This module adds vendor-specific fields and functionality to partners.
+    
+    VENDOR IDENTIFICATION:
+    - Uses native Odoo supplier_rank field (supplier_rank > 0 = vendor)
+    - No custom x_is_vendor field needed - this is Odoo best practice
+    - Set supplier_rank = 1 when creating a vendor
+    
+    FIELD NAMING:
+    - All custom fields use ptt_ prefix (Party Time Texas)
+    - This follows Odoo best practice: x_ is reserved for Studio fields
+    
+    PERFORMANCE:
+    - Required document types are cached per-environment to avoid repeated searches
+    - Compliance computation only runs for vendors (supplier_rank > 0)
     """
     _inherit = "res.partner"
 
-    # === VENDOR TOGGLE ===
-    x_is_vendor = fields.Boolean(
-        string="Is a Vendor",
-        default=False,
-        help="Toggle on to mark this contact as a vendor. This will show vendor-specific fields and tabs.",
-    )
-
     # === VENDOR SERVICE TAGS & TIER ===
-    x_vendor_service_tag_ids = fields.Many2many(
+    ptt_vendor_service_tag_ids = fields.Many2many(
         "ptt.vendor.service.tag",
         "res_partner_vendor_service_tag_rel",
         "partner_id",
@@ -25,7 +31,7 @@ class ResPartner(models.Model):
         help="Service categories this vendor provides (DJ, Photography, etc.)",
     )
     
-    x_vendor_tier = fields.Selection(
+    ptt_vendor_tier = fields.Selection(
         [
             ("gold", "Gold"),
             ("silver", "Silver"),
@@ -36,34 +42,25 @@ class ResPartner(models.Model):
     )
     
     # === VENDOR CONTACT ROLE (for contacts under vendor companies) ===
-    x_vendor_contact_role = fields.Char(
+    ptt_vendor_contact_role = fields.Char(
         string="Role at Vendor",
         help="This person's role at the vendor company (e.g., Owner, Talent, Accounting)",
     )
 
-    @api.onchange("x_is_vendor")
-    def _onchange_x_is_vendor(self):
-        """When vendor toggle is switched on, set supplier_rank so Odoo treats this as a vendor."""
-        if self.x_is_vendor and self.supplier_rank == 0:
-            self.supplier_rank = 1
-        elif not self.x_is_vendor and self.supplier_rank > 0:
-            # Optionally reset supplier_rank when toggle is off
-            self.supplier_rank = 0
-
     # === VENDOR DOCUMENT RELATION ===
-    x_vendor_document_ids = fields.One2many(
+    ptt_vendor_document_ids = fields.One2many(
         "ptt.vendor.document",
         "vendor_id",
         string="Vendor Documents",
         help="Documents uploaded by or for this vendor",
     )
     
-    x_vendor_document_count = fields.Integer(
+    ptt_vendor_document_count = fields.Integer(
         string="Vendor Docs",
         compute="_compute_vendor_compliance",
     )
     
-    x_vendor_compliance_status = fields.Selection(
+    ptt_vendor_compliance_status = fields.Selection(
         [
             ("compliant", "Compliant"),
             ("missing_required", "Missing Required"),
@@ -76,29 +73,58 @@ class ResPartner(models.Model):
         help="Vendor document compliance status based on required documents",
     )
 
-    @api.depends("x_is_vendor", "x_vendor_document_ids", "x_vendor_document_ids.status", 
-                 "x_vendor_document_ids.document_type_id.required")
-    def _compute_vendor_compliance(self):
-        """Compute vendor compliance status based on required documents."""
-        required_doc_types = self.env["ptt.document.type"].search([("required", "=", True)])
-        required_type_ids = set(required_doc_types.ids)
+    @api.model
+    def _get_required_document_type_ids(self):
+        """Get required document type IDs with per-environment caching.
         
-        for partner in self:
-            partner.x_vendor_document_count = len(partner.x_vendor_document_ids)
-            
-            # Only compute compliance for vendors (x_is_vendor toggled on)
-            if not partner.x_is_vendor:
-                partner.x_vendor_compliance_status = False
-                continue
+        This avoids repeated database searches during batch computations.
+        Cache is stored on the environment and cleared on transaction end.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
+        """
+        cache_key = '_ptt_required_doc_type_ids'
+        if not hasattr(self.env, cache_key):
+            required_doc_types = self.env["ptt.document.type"].search([
+                ("required", "=", True)
+            ])
+            setattr(self.env, cache_key, set(required_doc_types.ids))
+        return getattr(self.env, cache_key)
+
+    @api.depends("supplier_rank", "ptt_vendor_document_ids", "ptt_vendor_document_ids.status", 
+                 "ptt_vendor_document_ids.document_type_id.required")
+    def _compute_vendor_compliance(self):
+        """Compute vendor compliance status based on required documents.
+        
+        PERFORMANCE OPTIMIZATIONS:
+        - Uses cached required document types to avoid repeated DB searches
+        - Only computes compliance for vendors (supplier_rank > 0)
+        - Non-vendors are set to False in a single operation
+        
+        Uses native supplier_rank field to identify vendors (supplier_rank > 0 = vendor).
+        """
+        required_type_ids = self._get_required_document_type_ids()
+        
+        # Separate vendors from non-vendors for efficient processing
+        vendors = self.filtered(lambda p: p.supplier_rank > 0)
+        non_vendors = self - vendors
+        
+        # Set non-vendors to False (no compliance tracking needed)
+        for partner in non_vendors:
+            partner.ptt_vendor_document_count = len(partner.ptt_vendor_document_ids)
+            partner.ptt_vendor_compliance_status = False
+        
+        # Process only vendors
+        for partner in vendors:
+            partner.ptt_vendor_document_count = len(partner.ptt_vendor_document_ids)
             
             # Get this vendor's documents
-            vendor_docs = partner.x_vendor_document_ids
+            vendor_docs = partner.ptt_vendor_document_ids
             vendor_doc_type_ids = set(vendor_docs.mapped("document_type_id").ids)
             
             # Check for missing required documents
             missing_required = required_type_ids - vendor_doc_type_ids
             if missing_required:
-                partner.x_vendor_compliance_status = "missing_required"
+                partner.ptt_vendor_compliance_status = "missing_required"
                 continue
             
             # Check for expired documents (among required types)
@@ -106,7 +132,7 @@ class ResPartner(models.Model):
                 lambda d: d.document_type_id.required and d.status == "expired"
             )
             if expired_docs:
-                partner.x_vendor_compliance_status = "expired"
+                partner.ptt_vendor_compliance_status = "expired"
                 continue
             
             # Check for expiring soon documents (among required types)
@@ -114,21 +140,20 @@ class ResPartner(models.Model):
                 lambda d: d.document_type_id.required and d.status == "expiring_soon"
             )
             if expiring_docs:
-                partner.x_vendor_compliance_status = "expiring_soon"
+                partner.ptt_vendor_compliance_status = "expiring_soon"
                 continue
             
             # All required documents present and valid
-            partner.x_vendor_compliance_status = "compliant"
+            partner.ptt_vendor_compliance_status = "compliant"
     
     # === VENDOR NOTES ===
-    x_vendor_notes = fields.Text(
+    ptt_vendor_notes = fields.Text(
         string="Vendor Notes",
-        help="Internal notes about this vendor. Visible only to internal users. "
-             "This field can be imported via CSV using the column name 'x_vendor_notes'.",
+        help="Internal notes about this vendor. Visible only to internal users.",
     )
     
-    # === LEGACY VENDOR FIELDS (kept for compatibility) ===
-    x_vendor_rating = fields.Selection(
+    # === VENDOR RATING ===
+    ptt_vendor_rating = fields.Selection(
         [
             ("1", "1 Star"),
             ("2", "2 Stars"),

@@ -12,11 +12,16 @@ class ProjectProject(models.Model):
     - sale_order_id = Related Sale Order (from sale_project)
     
     Custom PTT fields are for event-specific data only.
+    
+    FIELD NAMING:
+    - All custom fields use ptt_ prefix (Party Time Texas)
+    - This follows Odoo best practice: x_ is reserved for Studio fields
+    - Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
     """
     _inherit = "project.project"
 
     # === VENDOR ASSIGNMENTS (Custom PTT Feature) ===
-    x_vendor_assignment_ids = fields.One2many(
+    ptt_vendor_assignment_ids = fields.One2many(
         "ptt.project.vendor.assignment",
         "project_id",
         string="Vendor Assignments",
@@ -24,13 +29,13 @@ class ProjectProject(models.Model):
     )
 
     # === EVENT IDENTITY ===
-    x_event_id = fields.Char(
+    ptt_event_id = fields.Char(
         string="Event Number",
         copy=False,
         index=True,
         help="Unique event identifier for tracking.",
     )
-    x_event_type = fields.Selection(
+    ptt_event_type = fields.Selection(
         [
             # Corporate Events
             ("corporate_conference", "Corporate - Conferences & Conventions"),
@@ -76,25 +81,25 @@ class ProjectProject(models.Model):
     )
 
     # === EVENT SCHEDULE ===
-    x_event_date = fields.Date(
+    ptt_event_date = fields.Date(
         string="Event Date",
         index=True,
         help="Scheduled event date.",
     )
-    x_event_time = fields.Char(string="Event Time")
-    x_guest_count = fields.Integer(string="Guest Count")
-    x_venue_name = fields.Char(string="Venue")
-    x_setup_start_time = fields.Char(string="Setup Start Time")
-    x_event_start_time = fields.Char(string="Event Start Time")
-    x_event_end_time = fields.Char(string="Event End Time")
-    x_total_hours = fields.Float(string="Total Hours")
-    x_teardown_deadline = fields.Char(string="Tear-Down Deadline")
+    ptt_event_time = fields.Char(string="Event Time")
+    ptt_guest_count = fields.Integer(string="Guest Count")
+    ptt_venue_name = fields.Char(string="Venue")
+    ptt_setup_start_time = fields.Char(string="Setup Start Time")
+    ptt_event_start_time = fields.Char(string="Event Start Time")
+    ptt_event_end_time = fields.Char(string="Event End Time")
+    ptt_total_hours = fields.Float(string="Total Hours")
+    ptt_teardown_deadline = fields.Char(string="Tear-Down Deadline")
 
     # === EVENT DETAILS ===
-    x_theme_dress_code = fields.Text(string="Theme, Dress Code, or Style Preference")
-    x_special_requirements_desc = fields.Text(string="Special Requirements")
-    x_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
-    x_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
+    ptt_theme_dress_code = fields.Text(string="Theme, Dress Code, or Style Preference")
+    ptt_special_requirements_desc = fields.Text(string="Special Requirements")
+    ptt_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
+    ptt_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
 
     # === TASK CREATION ===
     
@@ -331,8 +336,8 @@ class ProjectProject(models.Model):
         
         # Task 9: Post-Event Closure / Review
         post_event_deadline = None
-        if self.x_event_date:
-            post_event_deadline = self.x_event_date + timedelta(days=1)
+        if self.ptt_event_date:
+            post_event_deadline = self.ptt_event_date + timedelta(days=1)
         
         post_event_task = Task.create({
             "name": "Post-Event Closure / Review",
@@ -362,13 +367,14 @@ class ProjectProject(models.Model):
     def _cron_10day_event_reminder(self):
         """Create 10-day reminder activities for upcoming events.
         
-        Runs daily. Finds event projects with x_event_date exactly 10 days from today.
+        Runs daily. Finds event projects with ptt_event_date exactly 10 days from today.
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html
         """
         today = fields.Date.today()
         target_date = today + timedelta(days=10)
         
         projects = self.search([
-            ("x_event_date", "=", target_date),
+            ("ptt_event_date", "=", target_date),
         ])
         
         activity_type = self.env.ref(
@@ -396,13 +402,13 @@ class ProjectProject(models.Model):
     def _cron_3day_vendor_reminder(self):
         """Create 3-day vendor reminder activities for upcoming events.
         
-        Runs daily. Finds event projects with x_event_date exactly 3 days from today.
+        Runs daily. Finds event projects with ptt_event_date exactly 3 days from today.
         """
         today = fields.Date.today()
         target_date = today + timedelta(days=3)
         
         projects = self.search([
-            ("x_event_date", "=", target_date),
+            ("ptt_event_date", "=", target_date),
         ])
         
         activity_type = self.env.ref(

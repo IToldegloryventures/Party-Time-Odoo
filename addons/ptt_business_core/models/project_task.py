@@ -7,7 +7,11 @@ class ProjectTask(models.Model):
     NOTE: All event context (date, venue, client, etc.) should be accessed 
     via task.project_id - no need for redundant related fields.
     
-    Access event data via: task.project_id.x_event_date, task.project_id.x_venue_name, etc.
+    Access event data via: task.project_id.ptt_event_date, task.project_id.ptt_venue_name, etc.
+    
+    FIELD NAMING:
+    - All custom fields use ptt_ prefix (Party Time Texas)
+    - This follows Odoo best practice: x_ is reserved for Studio fields
     """
     _inherit = "project.task"
 

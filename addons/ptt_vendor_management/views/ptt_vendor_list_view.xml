@@ -3,6 +3,7 @@
     <!--
         PTT Vendor List View
         Purpose: Easy-to-use vendor list for sales team to search and filter vendors
+        All custom fields use ptt_ prefix (Odoo best practice).
     -->
 
     <!-- Vendor List/Tree View -->
@@ -12,29 +13,29 @@
         <field name="priority">99</field>
         <field name="arch" type="xml">
             <list string="Vendors" 
-                  decoration-success="x_vendor_compliance_status == 'compliant'"
-                  decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
-                  decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')">
+                  decoration-success="ptt_vendor_compliance_status == 'compliant'"
+                  decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
+                  decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')">
                 <field name="name" string="Vendor Name"/>
-                <field name="x_vendor_tier" string="Tier" widget="badge"
-                       decoration-warning="x_vendor_tier == 'gold'"
-                       decoration-info="x_vendor_tier == 'silver'"
-                       decoration-muted="x_vendor_tier == 'bronze'"/>
-                <field name="x_vendor_service_tag_ids" string="Services" widget="many2many_tags" 
+                <field name="ptt_vendor_tier" string="Tier" widget="badge"
+                       decoration-warning="ptt_vendor_tier == 'gold'"
+                       decoration-info="ptt_vendor_tier == 'silver'"
+                       decoration-muted="ptt_vendor_tier == 'bronze'"/>
+                <field name="ptt_vendor_service_tag_ids" string="Services" widget="many2many_tags" 
                        options="{'color_field': 'color'}"/>
-                <field name="x_vendor_compliance_status" string="Compliance" widget="badge"
-                       decoration-success="x_vendor_compliance_status == 'compliant'"
-                       decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
-                       decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"/>
-                <field name="x_vendor_rating" string="Rating" widget="badge"
-                       decoration-success="x_vendor_rating in ('4', '5')"
-                       decoration-warning="x_vendor_rating == '3'"
-                       decoration-danger="x_vendor_rating in ('1', '2')"
+                <field name="ptt_vendor_compliance_status" string="Compliance" widget="badge"
+                       decoration-success="ptt_vendor_compliance_status == 'compliant'"
+                       decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
+                       decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')"/>
+                <field name="ptt_vendor_rating" string="Rating" widget="badge"
+                       decoration-success="ptt_vendor_rating in ('4', '5')"
+                       decoration-warning="ptt_vendor_rating == '3'"
+                       decoration-danger="ptt_vendor_rating in ('1', '2')"
                        optional="show"/>
                 <field name="phone" string="Phone"/>
                 <field name="email" string="Email"/>
-                <field name="x_vendor_notes" string="Notes" optional="show" widget="text"/>
-                <field name="x_vendor_document_count" string="Docs" optional="show"/>
+                <field name="ptt_vendor_notes" string="Notes" optional="show" widget="text"/>
+                <field name="ptt_vendor_document_count" string="Docs" optional="show"/>
                 <field name="city" optional="hide"/>
                 <field name="state_id" optional="hide"/>
             </list>
@@ -49,9 +50,9 @@
         <field name="arch" type="xml">
             <kanban class="o_kanban_mobile">
                 <field name="name"/>
-                <field name="x_vendor_tier"/>
-                <field name="x_vendor_service_tag_ids"/>
-                <field name="x_vendor_compliance_status"/>
+                <field name="ptt_vendor_tier"/>
+                <field name="ptt_vendor_service_tag_ids"/>
+                <field name="ptt_vendor_compliance_status"/>
                 <field name="city"/>
                 <field name="state_id"/>
                 <field name="phone"/>
@@ -65,17 +66,17 @@
                         <main>
                             <div class="d-flex align-items-center gap-1">
                                 <field name="name" class="fw-bold fs-5 text-truncate"/>
-                                <field name="x_vendor_tier" widget="badge"
-                                       decoration-warning="x_vendor_tier == 'gold'"
-                                       decoration-info="x_vendor_tier == 'silver'"
-                                       decoration-muted="x_vendor_tier == 'bronze'"/>
+                                <field name="ptt_vendor_tier" widget="badge"
+                                       decoration-warning="ptt_vendor_tier == 'gold'"
+                                       decoration-info="ptt_vendor_tier == 'silver'"
+                                       decoration-muted="ptt_vendor_tier == 'bronze'"/>
                             </div>
-                            <field name="x_vendor_service_tag_ids" widget="many2many_tags" 
+                            <field name="ptt_vendor_service_tag_ids" widget="many2many_tags" 
                                    options="{'color_field': 'color'}"/>
-                            <field name="x_vendor_compliance_status" widget="badge"
-                                   decoration-success="x_vendor_compliance_status == 'compliant'"
-                                   decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
-                                   decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"/>
+                            <field name="ptt_vendor_compliance_status" widget="badge"
+                                   decoration-success="ptt_vendor_compliance_status == 'compliant'"
+                                   decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
+                                   decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')"/>
                             <div class="d-flex gap-2 mt-1">
                                 <span t-if="record.phone.value" class="text-muted small">
                                     <i class="fa fa-phone"/> <t t-esc="record.phone.value"/>
@@ -84,9 +85,9 @@
                                     <i class="fa fa-envelope"/> <t t-esc="record.email.value"/>
                                 </span>
                             </div>
-                            <div class="d-flex gap-2 mt-1" t-if="record.x_vendor_rating.value">
+                            <div class="d-flex gap-2 mt-1" t-if="record.ptt_vendor_rating.value">
                                 <span class="text-muted small">
-                                    <i class="fa fa-star"/> <t t-esc="record.x_vendor_rating.value"/> Stars
+                                    <i class="fa fa-star"/> <t t-esc="record.ptt_vendor_rating.value"/> Stars
                                 </span>
                             </div>
                         </main>
@@ -105,25 +106,25 @@
             <search>
                 <field name="name" string="Vendor" 
                        filter_domain="['|', '|', ('name', 'ilike', self), ('email', 'ilike', self), ('phone', 'ilike', self)]"/>
-                <field name="x_vendor_service_tag_ids" string="Service"/>
+                <field name="ptt_vendor_service_tag_ids" string="Service"/>
                 <field name="phone"/>
                 <field name="email"/>
                 <field name="city" string="City" optional="hide"/>
                 <field name="state_id" string="State" optional="hide"/>
                 <separator/>
-                <filter string="Compliant" name="compliant" domain="[('x_vendor_compliance_status', '=', 'compliant')]"/>
-                <filter string="Missing Documents" name="missing_docs" domain="[('x_vendor_compliance_status', '=', 'missing_required')]"/>
-                <filter string="Expired Documents" name="expired_docs" domain="[('x_vendor_compliance_status', '=', 'expired')]"/>
-                <filter string="Expiring Soon" name="expiring_soon" domain="[('x_vendor_compliance_status', '=', 'expiring_soon')]"/>
+                <filter string="Compliant" name="compliant" domain="[('ptt_vendor_compliance_status', '=', 'compliant')]"/>
+                <filter string="Missing Documents" name="missing_docs" domain="[('ptt_vendor_compliance_status', '=', 'missing_required')]"/>
+                <filter string="Expired Documents" name="expired_docs" domain="[('ptt_vendor_compliance_status', '=', 'expired')]"/>
+                <filter string="Expiring Soon" name="expiring_soon" domain="[('ptt_vendor_compliance_status', '=', 'expiring_soon')]"/>
                 <separator/>
-                <filter string="Gold Tier" name="tier_gold" domain="[('x_vendor_tier', '=', 'gold')]"/>
-                <filter string="Silver Tier" name="tier_silver" domain="[('x_vendor_tier', '=', 'silver')]"/>
-                <filter string="Bronze Tier" name="tier_bronze" domain="[('x_vendor_tier', '=', 'bronze')]"/>
-                <filter string="No Tier Set" name="tier_none" domain="[('x_vendor_tier', '=', False)]"/>
+                <filter string="Gold Tier" name="tier_gold" domain="[('ptt_vendor_tier', '=', 'gold')]"/>
+                <filter string="Silver Tier" name="tier_silver" domain="[('ptt_vendor_tier', '=', 'silver')]"/>
+                <filter string="Bronze Tier" name="tier_bronze" domain="[('ptt_vendor_tier', '=', 'bronze')]"/>
+                <filter string="No Tier Set" name="tier_none" domain="[('ptt_vendor_tier', '=', False)]"/>
                 <separator/>
-                <filter string="4-5 Stars" name="rating_high" domain="[('x_vendor_rating', 'in', ['4', '5'])]"/>
-                <filter string="3 Stars" name="rating_medium" domain="[('x_vendor_rating', '=', '3')]"/>
-                <filter string="1-2 Stars" name="rating_low" domain="[('x_vendor_rating', 'in', ['1', '2'])]"/>
+                <filter string="4-5 Stars" name="rating_high" domain="[('ptt_vendor_rating', 'in', ['4', '5'])]"/>
+                <filter string="3 Stars" name="rating_medium" domain="[('ptt_vendor_rating', '=', '3')]"/>
+                <filter string="1-2 Stars" name="rating_low" domain="[('ptt_vendor_rating', 'in', ['1', '2'])]"/>
             </search>
         </field>
     </record>
@@ -133,9 +134,8 @@
         <field name="name">Vendors</field>
         <field name="res_model">res.partner</field>
         <field name="view_mode">list,kanban,form</field>
-        <field name="domain">[('x_is_vendor', '=', True), ('is_company', '=', True)]</field>
+        <field name="domain">[('supplier_rank', '>', 0), ('is_company', '=', True)]</field>
         <field name="context">{
-            'default_x_is_vendor': True,
             'default_supplier_rank': 1,
             'default_is_company': True
         }</field>

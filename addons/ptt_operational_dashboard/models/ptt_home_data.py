@@ -180,8 +180,8 @@ class PttHomeData(models.AbstractModel):
         
         # Get event project IDs (projects linked to CRM leads)
         event_project_ids = []
-        if "x_crm_lead_id" in Project._fields:
-            event_projects = Project.search([("x_crm_lead_id", "!=", False)])
+        if "ptt_crm_lead_id" in Project._fields:
+            event_projects = Project.search([("ptt_crm_lead_id", "!=", False)])
             event_project_ids = event_projects.ids
         
         # Base domain: all active tasks (not in folded/done stages)
@@ -267,7 +267,7 @@ class PttHomeData(models.AbstractModel):
                 is_event_task = True
             
             # Check if it's a CRM task (linked to CRM lead via project or activity)
-            if task.project_id and hasattr(task.project_id, 'x_crm_lead_id') and task.project_id.x_crm_lead_id:
+            if task.project_id and hasattr(task.project_id, 'ptt_crm_lead_id') and task.project_id.ptt_crm_lead_id:
                 is_crm_task = True
             
             # Include task if it matches any category
@@ -437,7 +437,7 @@ class PttHomeData(models.AbstractModel):
     def get_agenda_events(self, days=14):
         """Get upcoming events from CRM leads for the current user's agenda.
         
-        Pulls from crm.lead where x_event_date is set and assigned to user.
+        Pulls from crm.lead where ptt_event_date is set and assigned to user.
         Shows events in the next N days (default 14).
         
         This shows the USER'S assigned events at ALL stages.
@@ -449,19 +449,19 @@ class PttHomeData(models.AbstractModel):
         
         Lead = self.env["crm.lead"]
         
-        # Check if x_event_date field exists on crm.lead
-        if "x_event_date" not in Lead._fields:
+        # Check if ptt_event_date field exists on crm.lead
+        if "ptt_event_date" not in Lead._fields:
             return []
         
         # Get leads assigned to user with event dates in range
         domain = [
             ("user_id", "=", user.id),
-            ("x_event_date", ">=", today),
-            ("x_event_date", "<=", end_date),
-            ("x_event_date", "!=", False),
+            ("ptt_event_date", ">=", today),
+            ("ptt_event_date", "<=", end_date),
+            ("ptt_event_date", "!=", False),
         ]
         
-        leads = Lead.search(domain, order="x_event_date asc", limit=20)
+        leads = Lead.search(domain, order="ptt_event_date asc", limit=20)
         
         # PTT CRM Stage Colors
         # Official stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
@@ -483,9 +483,9 @@ class PttHomeData(models.AbstractModel):
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
             color = stage_colors.get(stage_name, default_color)
-            event_name = getattr(lead, 'x_event_name', None) or lead.name or "Untitled Event"
+            event_name = getattr(lead, 'ptt_event_name', None) or lead.name or "Untitled Event"
 
-            project = lead.x_project_id if hasattr(lead, "x_project_id") else False
+            project = lead.ptt_project_id if hasattr(lead, "ptt_project_id") else False
             if project:
                 # De-duplicate: if multiple leads point to the same project, only show it once
                 if project.id in seen_project_ids:
@@ -496,7 +496,7 @@ class PttHomeData(models.AbstractModel):
                 "id": f"project_{project.id}" if project else lead.id,
                 "name": event_name,
                 "lead_name": lead.name,
-                "event_date": lead.x_event_date.isoformat() if lead.x_event_date else False,
+                "event_date": lead.ptt_event_date.isoformat() if lead.ptt_event_date else False,
                 "partner_name": lead.partner_id.name if lead.partner_id else (lead.partner_name or ""),
                 "stage_name": stage_name,
                 "color": color,
@@ -527,7 +527,7 @@ class PttHomeData(models.AbstractModel):
     def get_event_calendar_data(self, start_date=None, end_date=None, my_events_only=False):
         """Get all CRM leads with event dates for the calendar view.
         
-        Pulls from crm.lead where x_event_date is set.
+        Pulls from crm.lead where ptt_event_date is set.
         Shows ALL events company-wide by default.
         Filter to user's assigned events with my_events_only=True.
         
@@ -561,22 +561,22 @@ class PttHomeData(models.AbstractModel):
         
         Lead = self.env["crm.lead"]
         
-        # Check if x_event_date field exists on crm.lead
-        if "x_event_date" not in Lead._fields:
+        # Check if ptt_event_date field exists on crm.lead
+        if "ptt_event_date" not in Lead._fields:
             return {"events": [], "stages": []}
         
         # Build domain - ALL events by default
         domain = [
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
-            ("x_event_date", "!=", False),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
+            ("ptt_event_date", "!=", False),
         ]
         
         # Filter to user's events if requested
         if my_events_only:
             domain.append(("user_id", "=", user.id))
         
-        leads = Lead.search(domain, order="x_event_date asc")
+        leads = Lead.search(domain, order="ptt_event_date asc")
         
         # PTT CRM Stage Colors
         # These are the official PTT pipeline stages
@@ -600,13 +600,13 @@ class PttHomeData(models.AbstractModel):
             color = stage_colors.get(stage_name, default_color)
             
             # Get event display name
-            event_name = getattr(lead, 'x_event_name', None) or lead.name or "Untitled Event"
+            event_name = getattr(lead, 'ptt_event_name', None) or lead.name or "Untitled Event"
             
             # Get assignee info
             assignee_name = lead.user_id.name if lead.user_id else "Unassigned"
             is_mine = lead.user_id.id == user.id if lead.user_id else False
             
-            project = lead.x_project_id if hasattr(lead, "x_project_id") else False
+            project = lead.ptt_project_id if hasattr(lead, "ptt_project_id") else False
             if project:
                 if project.id in seen_project_ids:
                     continue
@@ -616,16 +616,16 @@ class PttHomeData(models.AbstractModel):
                 "id": f"project_{project.id}" if project else lead.id,
                 "name": event_name,
                 "lead_name": lead.name,
-                "event_date": lead.x_event_date.isoformat() if lead.x_event_date else False,
-                "event_time": lead.x_event_time if hasattr(lead, 'x_event_time') else "",
+                "event_date": lead.ptt_event_date.isoformat() if lead.ptt_event_date else False,
+                "event_time": lead.ptt_event_time if hasattr(lead, 'ptt_event_time') else "",
                 "partner_name": lead.partner_id.name if lead.partner_id else (lead.partner_name or ""),
                 "contact_name": lead.contact_name or "",
                 "stage_id": lead.stage_id.id if lead.stage_id else False,
                 "stage_name": stage_name,
                 "color": color,
-                "event_type": lead.x_event_type if hasattr(lead, 'x_event_type') else "",
-                "venue_name": lead.x_venue_name if hasattr(lead, 'x_venue_name') else "",
-                "guest_count": lead.x_estimated_guest_count if hasattr(lead, 'x_estimated_guest_count') else 0,
+                "event_type": lead.ptt_event_type if hasattr(lead, 'ptt_event_type') else "",
+                "venue_name": lead.ptt_venue_name if hasattr(lead, 'ptt_venue_name') else "",
+                "guest_count": lead.ptt_estimated_guest_count if hasattr(lead, 'ptt_estimated_guest_count') else 0,
                 "assignee_id": lead.user_id.id if lead.user_id else False,
                 "assignee_name": assignee_name,
                 "is_mine": is_mine,
@@ -652,17 +652,17 @@ class PttHomeData(models.AbstractModel):
 
         # Also include projects with event dates that are NOT linked to CRM leads (project-only events)
         Project = self.env["project.project"]
-        if "x_event_date" in Project._fields:
+        if "ptt_event_date" in Project._fields:
             project_domain = [
-                ("x_event_date", ">=", start_date),
-                ("x_event_date", "<=", end_date),
-                ("x_event_date", "!=", False),
+                ("ptt_event_date", ">=", start_date),
+                ("ptt_event_date", "<=", end_date),
+                ("ptt_event_date", "!=", False),
             ]
             if my_events_only:
                 project_domain.append(("user_id", "=", user.id))
-            if "x_crm_lead_id" in Project._fields:
-                project_domain.append(("x_crm_lead_id", "=", False))
-            projects = Project.search(project_domain, order="x_event_date asc")
+            if "ptt_crm_lead_id" in Project._fields:
+                project_domain.append(("ptt_crm_lead_id", "=", False))
+            projects = Project.search(project_domain, order="ptt_event_date asc")
             for project in projects:
                 if project.id in seen_project_ids:
                     continue
@@ -671,7 +671,7 @@ class PttHomeData(models.AbstractModel):
                     "id": f"project_{project.id}",
                     "name": project.name or "Project Event",
                     "lead_name": "",
-                    "event_date": project.x_event_date.isoformat() if project.x_event_date else False,
+                    "event_date": project.ptt_event_date.isoformat() if project.ptt_event_date else False,
                     "event_time": "",
                     "partner_name": "",
                     "contact_name": "",
@@ -756,17 +756,17 @@ class PttHomeData(models.AbstractModel):
         
         Lead = self.env["crm.lead"]
         
-        if "x_event_date" not in Lead._fields:
+        if "ptt_event_date" not in Lead._fields:
             return []
         
         domain = [
-            ("x_event_date", "=", event_date),
+            ("ptt_event_date", "=", event_date),
         ]
         
         if my_events_only:
             domain.append(("user_id", "=", user.id))
         
-        leads = Lead.search(domain, order="x_event_time asc, name asc")
+        leads = Lead.search(domain, order="ptt_event_time asc, name asc")
         
         stage_colors = {
             "Intake": "#17A2B8",              # Teal/Cyan - New inquiries
@@ -783,9 +783,9 @@ class PttHomeData(models.AbstractModel):
         seen_project_ids = set()
         for lead in leads:
             stage_name = lead.stage_id.name if lead.stage_id else "Unknown"
-            event_name = getattr(lead, 'x_event_name', None) or lead.name or "Untitled Event"
+            event_name = getattr(lead, 'ptt_event_name', None) or lead.name or "Untitled Event"
 
-            project = lead.x_project_id if hasattr(lead, "x_project_id") else False
+            project = lead.ptt_project_id if hasattr(lead, "ptt_project_id") else False
             if project:
                 if project.id in seen_project_ids:
                     continue
@@ -795,11 +795,11 @@ class PttHomeData(models.AbstractModel):
                 "id": f"project_{project.id}" if project else lead.id,
                 "name": event_name,
                 "lead_name": lead.name,
-                "event_time": lead.x_event_time if hasattr(lead, 'x_event_time') else "",
+                "event_time": lead.ptt_event_time if hasattr(lead, 'ptt_event_time') else "",
                 "partner_name": lead.partner_id.name if lead.partner_id else (lead.partner_name or ""),
                 "stage_name": stage_name,
                 "color": stage_colors.get(stage_name, default_color),
-                "venue_name": lead.x_venue_name if hasattr(lead, 'x_venue_name') else "",
+                "venue_name": lead.ptt_venue_name if hasattr(lead, 'ptt_venue_name') else "",
                 "assignee_name": lead.user_id.name if lead.user_id else "Unassigned",
                 "is_mine": lead.user_id.id == user.id if lead.user_id else False,
                 "project_id": project.id if project else False,
@@ -854,8 +854,8 @@ class PttHomeData(models.AbstractModel):
         
         # === TOTAL BOOKED (CRM leads in "Booked" stage within date range) ===
         booked_domain = [
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
         ]
         # Find "Booked" stage
         booked_stage = self.env["crm.stage"].search([("name", "ilike", "Booked")], limit=1)
@@ -896,8 +896,8 @@ class PttHomeData(models.AbstractModel):
         # === PER-REP DATA ===
         # Get sales reps (users with CRM leads in this period)
         all_leads = Lead.search([
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
             ("user_id", "!=", False),
         ])
         
@@ -998,8 +998,8 @@ class PttHomeData(models.AbstractModel):
         
         # Get all leads in date range
         all_leads = Lead.search([
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
         ])
         
         # Find "Booked" and "Lost" stages
@@ -1038,8 +1038,8 @@ class PttHomeData(models.AbstractModel):
             return {"avg": 0.0, "count": 0}
         
         booked_leads = Lead.search([
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
             ("stage_id", "=", booked_stage.id),
         ])
         
@@ -1071,8 +1071,8 @@ class PttHomeData(models.AbstractModel):
         if booked_stage:
             # Current period
             current_leads = Lead.search([
-                ("x_event_date", ">=", start_date),
-                ("x_event_date", "<=", end_date),
+                ("ptt_event_date", ">=", start_date),
+                ("ptt_event_date", "<=", end_date),
                 ("stage_id", "=", booked_stage.id),
             ])
             current_total = sum(current_leads.mapped("expected_revenue"))
@@ -1081,8 +1081,8 @@ class PttHomeData(models.AbstractModel):
             prev_start = start_date - relativedelta(years=1)
             prev_end = end_date - relativedelta(years=1)
             prev_leads = Lead.search([
-                ("x_event_date", ">=", prev_start),
-                ("x_event_date", "<=", prev_end),
+                ("ptt_event_date", ">=", prev_start),
+                ("ptt_event_date", "<=", prev_end),
                 ("stage_id", "=", booked_stage.id),
             ])
             previous_year_total = sum(prev_leads.mapped("expected_revenue"))
@@ -1091,8 +1091,8 @@ class PttHomeData(models.AbstractModel):
             prev2_start = start_date - relativedelta(years=2)
             prev2_end = end_date - relativedelta(years=2)
             prev2_leads = Lead.search([
-                ("x_event_date", ">=", prev2_start),
-                ("x_event_date", "<=", prev2_end),
+                ("ptt_event_date", ">=", prev2_start),
+                ("ptt_event_date", "<=", prev2_end),
                 ("stage_id", "=", booked_stage.id),
             ])
             previous_2year_total = sum(prev2_leads.mapped("expected_revenue"))
@@ -1387,9 +1387,9 @@ class PttHomeData(models.AbstractModel):
         
         # Get all events in date range
         all_events = Lead.search([
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
-            ("x_event_date", "!=", False),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
+            ("ptt_event_date", "!=", False),
         ])
         
         # Check for rain delay field (if it exists)
@@ -1451,15 +1451,15 @@ class PttHomeData(models.AbstractModel):
     def _get_avg_time_to_event(self, start_date, end_date):
         """Get average time from lead creation to event date.
         
-        Returns average days from lead create_date to x_event_date.
+        Returns average days from lead create_date to ptt_event_date.
         """
         Lead = self.env["crm.lead"]
         
         # Get leads with event dates in range
         leads = Lead.search([
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
-            ("x_event_date", "!=", False),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
+            ("ptt_event_date", "!=", False),
         ])
         
         if len(leads) == 0:
@@ -1471,8 +1471,8 @@ class PttHomeData(models.AbstractModel):
         total_days = 0
         count = 0
         for lead in leads:
-            if lead.create_date and lead.x_event_date:
-                days = (lead.x_event_date - lead.create_date.date()).days
+            if lead.create_date and lead.ptt_event_date:
+                days = (lead.ptt_event_date - lead.create_date.date()).days
                 if days >= 0:
                     total_days += days
                     count += 1
@@ -1505,8 +1505,8 @@ class PttHomeData(models.AbstractModel):
         
         # Get booked events in range
         booked_leads = Lead.search([
-            ("x_event_date", ">=", start_date),
-            ("x_event_date", "<=", end_date),
+            ("ptt_event_date", ">=", start_date),
+            ("ptt_event_date", "<=", end_date),
             ("stage_id", "=", booked_stage.id),
         ])
         

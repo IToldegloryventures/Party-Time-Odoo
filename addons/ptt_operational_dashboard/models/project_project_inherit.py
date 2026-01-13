@@ -5,7 +5,7 @@ from datetime import datetime
 class ProjectProject(models.Model):
     """Inherit Project to trigger dashboard KPI updates.
     
-    Note: PTT event fields (x_event_date, x_crm_lead_id) are defined in
+    Note: PTT event fields (ptt_event_date, ptt_crm_lead_id) are defined in
     ptt_business_core.models.project_project - do NOT redefine them here.
     """
     _inherit = "project.project"
@@ -15,7 +15,7 @@ class ProjectProject(models.Model):
         result = super().write(vals)
         
         # Trigger dashboard widget KPI update if relevant fields changed
-        if any(field in vals for field in ['x_event_date', 'user_id', 'account_id']):
+        if any(field in vals for field in ['ptt_event_date', 'user_id', 'account_id']):
             self._trigger_dashboard_kpi_update()
             # Trigger sales rep KPI update if user_id changed
             if 'user_id' in vals:

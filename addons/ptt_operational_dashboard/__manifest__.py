@@ -1,6 +1,6 @@
 {
     "name": "PTT Operational Dashboard",
-    "version": "19.0.1.0.4",
+    "version": "19.0.2.0.0",
     "summary": "Party Time Texas Home Hub - unified view into all Odoo apps",
     "description": """
         PTT Home Dashboard Hub
@@ -37,7 +37,7 @@
         "account",
         "analytic",
         "sale_project",
-        "ptt_business_core",  # Required for x_is_vendor, x_primary_sales_rep_id fields on res.partner
+        "ptt_business_core",  # Required for ptt_event_date and other PTT fields on crm.lead and project.project
     ],
     "data": [
         # Security (load first)

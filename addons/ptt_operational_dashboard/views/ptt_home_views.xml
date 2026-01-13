@@ -18,7 +18,7 @@
         <field name="name">project.project.ptt.event.calendar</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <calendar string="Events" date_start="x_event_date" mode="month">
+            <calendar string="Events" date_start="ptt_event_date" mode="month">
                 <field name="name"/>
                 <field name="user_id"/>
             </calendar>
@@ -30,7 +30,7 @@
         <field name="name">Event Calendar</field>
         <field name="res_model">project.project</field>
         <field name="view_mode">calendar,tree,form</field>
-        <field name="domain">[('x_event_date', '!=', False)]</field>
+        <field name="domain">[('ptt_event_date', '!=', False)]</field>
         <field name="context">{'search_default_my_projects': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

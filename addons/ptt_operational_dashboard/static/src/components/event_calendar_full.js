@@ -16,7 +16,7 @@ import { useService } from "@web/core/utils/hooks";
  * - Day panel showing selected date's events
  * - Click event to open CRM Lead form
  * 
- * Data Source: crm.lead with x_event_date field
+ * Data Source: crm.lead with ptt_event_date field
  */
 export class EventCalendarFull extends Component {
     static template = "ptt_operational_dashboard.EventCalendarFull";
@@ -317,7 +317,7 @@ export class EventCalendarFull extends Component {
             name: "Events Calendar",
             res_model: "crm.lead",
             views: [[false, "calendar"], [false, "list"], [false, "kanban"], [false, "form"]],
-            domain: [["x_event_date", "!=", false]],
+            domain: [["ptt_event_date", "!=", false]],
             context: {
                 default_type: "opportunity",
             },

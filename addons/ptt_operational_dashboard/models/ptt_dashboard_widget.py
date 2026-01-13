@@ -66,15 +66,15 @@ class PttDashboardWidget(models.Model):
                 ("state", "in", ["draft", "sent"])
             ])
             
-            # Events this week - using x_event_date from this module (project.project inherit)
+            # Events this week - using ptt_event_date from ptt_business_core (project.project inherit)
             today = fields.Date.context_today(self)
             week_start = today - timedelta(days=today.weekday())
             week_end = week_start + timedelta(days=6)
             Project = self.env["project.project"]
-            if "x_event_date" in Project._fields:
+            if "ptt_event_date" in Project._fields:
                 rec.total_events_week = Project.search_count([
-                    ("x_event_date", ">=", week_start),
-                    ("x_event_date", "<=", week_end),
+                    ("ptt_event_date", ">=", week_start),
+                    ("ptt_event_date", "<=", week_end),
                 ])
             else:
                 rec.total_events_week = 0
@@ -114,20 +114,18 @@ class PttDashboardWidget(models.Model):
         }
     
     def action_assign_vendor(self):
-        """Open vendor list filtered to companies."""
+        """Open vendor list filtered to companies.
+        
+        Uses native supplier_rank field to identify vendors (supplier_rank > 0 = vendor).
+        """
         self.ensure_one()
-        Partner = self.env["res.partner"]
-        domain = [("is_company", "=", True)]
-        # x_is_vendor is typically a Studio/custom field; guard to avoid crashing on clean databases.
-        if "x_is_vendor" in Partner._fields:
-            domain.append(("x_is_vendor", "=", True))
         return {
             "type": "ir.actions.act_window",
             "name": "Assign Vendor",
             "res_model": "res.partner",
             "view_mode": "list,form",
             "target": "current",
-            "domain": domain,
+            "domain": [("is_company", "=", True), ("supplier_rank", ">", 0)],
         }
     
     def action_record_payment(self):
@@ -300,7 +298,7 @@ class PttDashboardWidget(models.Model):
         """Open events list/pivot view where users can use standard Odoo export or pivot Excel export."""
         self.ensure_one()
         Project = self.env["project.project"]
-        if "x_event_date" not in Project._fields:
+        if "ptt_event_date" not in Project._fields:
             today = fields.Date.context_today(self)
             return {
                 "type": "ir.actions.act_window",
@@ -317,8 +315,8 @@ class PttDashboardWidget(models.Model):
             "view_mode": "list,pivot,form",
             "target": "current",
             "domain": [
-                ("x_event_date", ">=", today),
-                ("x_event_date", "<=", today + timedelta(days=30))
+                ("ptt_event_date", ">=", today),
+                ("ptt_event_date", "<=", today + timedelta(days=30))
             ],
         }
     
@@ -326,7 +324,7 @@ class PttDashboardWidget(models.Model):
         """Open events pivot view filtered to current month - can export as Excel."""
         self.ensure_one()
         Project = self.env["project.project"]
-        if "x_event_date" not in Project._fields:
+        if "ptt_event_date" not in Project._fields:
             return self.action_view_events()
         today = fields.Date.context_today(self)
         month_start = today.replace(day=1)
@@ -341,8 +339,8 @@ class PttDashboardWidget(models.Model):
             "view_mode": "pivot,list,form",
             "target": "current",
             "domain": [
-                ("x_event_date", ">=", month_start.strftime("%Y-%m-%d")),
-                ("x_event_date", "<=", month_end.strftime("%Y-%m-%d"))
+                ("ptt_event_date", ">=", month_start.strftime("%Y-%m-%d")),
+                ("ptt_event_date", "<=", month_end.strftime("%Y-%m-%d"))
             ],
         }
     
@@ -350,7 +348,7 @@ class PttDashboardWidget(models.Model):
         """Open events pivot view filtered to previous month - can export as Excel."""
         self.ensure_one()
         Project = self.env["project.project"]
-        if "x_event_date" not in Project._fields:
+        if "ptt_event_date" not in Project._fields:
             return self.action_view_events()
         today = fields.Date.context_today(self)
         if today.month == 1:
@@ -366,8 +364,8 @@ class PttDashboardWidget(models.Model):
             "view_mode": "pivot,list,form",
             "target": "current",
             "domain": [
-                ("x_event_date", ">=", prev_month_start.strftime("%Y-%m-%d")),
-                ("x_event_date", "<=", prev_month_end.strftime("%Y-%m-%d"))
+                ("ptt_event_date", ">=", prev_month_start.strftime("%Y-%m-%d")),
+                ("ptt_event_date", "<=", prev_month_end.strftime("%Y-%m-%d"))
             ],
         }
     
@@ -392,22 +390,18 @@ class PttDashboardWidget(models.Model):
         }
     
     def action_view_vendor_compliance(self):
-        """Open vendor compliance issues view."""
+        """Open vendor compliance issues view.
+        
+        Uses native supplier_rank field to identify vendors (supplier_rank > 0 = vendor).
+        """
         self.ensure_one()
-        # TODO: Replace with actual vendor compliance model when implemented
-        # For now, open vendor list filtered to companies
-        Partner = self.env["res.partner"]
-        domain = [("is_company", "=", True)]
-        # x_is_vendor is defined in ptt_business_core; guard for safety
-        if "x_is_vendor" in Partner._fields:
-            domain.append(("x_is_vendor", "=", True))
         return {
             "type": "ir.actions.act_window",
             "name": "Vendor Compliance Issues",
             "res_model": "res.partner",
             "view_mode": "list,form",
             "target": "current",
-            "domain": domain,
+            "domain": [("is_company", "=", True), ("supplier_rank", ">", 0)],
             "context": {
                 "search_default_compliance_issues": 1,
             }

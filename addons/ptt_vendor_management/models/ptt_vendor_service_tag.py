@@ -48,9 +48,12 @@ class PttVendorServiceTag(models.Model):
     )
     
     def _compute_vendor_count(self):
-        """Count vendors tagged with this service."""
+        """Count vendors tagged with this service.
+        
+        Uses native supplier_rank field to identify vendors (supplier_rank > 0 = vendor).
+        """
         for tag in self:
             tag.vendor_count = self.env["res.partner"].search_count([
-                ("x_vendor_service_tag_ids", "in", tag.id),
-                ("x_is_vendor", "=", True),
+                ("ptt_vendor_service_tag_ids", "in", tag.id),
+                ("supplier_rank", ">", 0),
             ])

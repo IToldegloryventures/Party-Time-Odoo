@@ -8,6 +8,10 @@
         - partner_id = Client
         - name = Project/Event Name
         - sale_order_id = Related Sale Order (from sale_project)
+        
+        FIELD NAMING:
+        - All custom fields use ptt_ prefix (Party Time Texas)
+        - This follows Odoo best practice: x_ is reserved for Studio fields
     -->
     <record id="view_project_form_ptt" model="ir.ui.view">
         <field name="name">project.project.form.ptt</field>
@@ -21,7 +25,7 @@
                     <div class="row mb-3">
                         <div class="col-12">
                             <h2 style="margin: 0; font-weight: bold;">
-                                Event: <field name="x_event_id" readonly="1" style="display: inline; margin-right: 10px;"/>
+                                Event: <field name="ptt_event_id" readonly="1" style="display: inline; margin-right: 10px;"/>
                             </h2>
                         </div>
                     </div>
@@ -31,14 +35,14 @@
                         <div class="col-md-4">
                             <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Event Date &amp; Time:</div>
                             <div>
-                                <field name="x_event_date" readonly="1" style="display: inline-block; margin-right: 10px;"/>
-                                <field name="x_event_time" readonly="1" style="display: inline-block;"/>
+                                <field name="ptt_event_date" readonly="1" style="display: inline-block; margin-right: 10px;"/>
+                                <field name="ptt_event_time" readonly="1" style="display: inline-block;"/>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Event Type:</div>
                             <div>
-                                <field name="x_event_type" readonly="1"/>
+                                <field name="ptt_event_type" readonly="1"/>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -73,39 +77,39 @@
                     <!-- Event Overview -->
                     <group string="Event Overview">
                         <group>
-                            <field name="x_event_id"/>
-                            <field name="x_event_type"/>
-                            <field name="x_event_date"/>
+                            <field name="ptt_event_id"/>
+                            <field name="ptt_event_type"/>
+                            <field name="ptt_event_date"/>
                         </group>
                         <group>
-                            <field name="x_event_time"/>
-                            <field name="x_guest_count"/>
-                            <field name="x_venue_name"/>
+                            <field name="ptt_event_time"/>
+                            <field name="ptt_guest_count"/>
+                            <field name="ptt_venue_name"/>
                         </group>
                     </group>
                     
                     <!-- Event Schedule -->
                     <group string="Event Schedule">
                         <group>
-                            <field name="x_setup_start_time"/>
-                            <field name="x_event_start_time"/>
+                            <field name="ptt_setup_start_time"/>
+                            <field name="ptt_event_start_time"/>
                         </group>
                         <group>
-                            <field name="x_event_end_time"/>
-                            <field name="x_total_hours"/>
-                            <field name="x_teardown_deadline"/>
+                            <field name="ptt_event_end_time"/>
+                            <field name="ptt_total_hours"/>
+                            <field name="ptt_teardown_deadline"/>
                         </group>
                     </group>
                     
                     <!-- Event Details -->
                     <group string="Event Details">
                         <group>
-                            <field name="x_theme_dress_code"/>
-                            <field name="x_special_requirements_desc"/>
+                            <field name="ptt_theme_dress_code"/>
+                            <field name="ptt_special_requirements_desc"/>
                         </group>
                         <group>
-                            <field name="x_inclement_weather_plan"/>
-                            <field name="x_parking_restrictions_desc"/>
+                            <field name="ptt_inclement_weather_plan"/>
+                            <field name="ptt_parking_restrictions_desc"/>
                         </group>
                     </group>
                 </page>
@@ -115,7 +119,7 @@
             <xpath expr="//page[@name='ptt_event_details']" position="after">
                 <page name="vendor_assignment" string="Vendor Assignment">
                     <group string="Vendor Assignments">
-                        <field name="x_vendor_assignment_ids" nolabel="1">
+                        <field name="ptt_vendor_assignment_ids" nolabel="1">
                             <list>
                                 <field name="service_type"/>
                                 <field name="vendor_id"/>

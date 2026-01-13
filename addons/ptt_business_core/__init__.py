@@ -21,8 +21,8 @@ def post_init_hook(env):
             'x_event_name', 'x_sale_order_count', 'x_lead_type', 'x_inquiry_source',
             'x_followup_email_sent', 'x_proposal_sent', 'x_next_contact_date', 'x_budget_range',
             'x_services_already_booked', 'x_project_id', 'x_invoice_count', 'x_invoice_total',
-            'x_invoice_paid', 'x_invoice_remaining', 'x_invoice_payment_status', 'x_is_vendor',
-            'x_vendor_notes', 'x_has_project', 'x_project_task_count', 'company_currency',
+            'x_invoice_paid', 'x_invoice_remaining', 'x_invoice_payment_status',
+            'x_has_project', 'x_project_task_count', 'company_currency',
             'x_project_event_id', 'x_project_event_name', 'x_project_event_date', 'x_project_event_time',
             'x_project_event_type', 'x_project_venue', 'x_project_client_name', 'x_project_guest_count',
             'x_project_crm_lead_id', 'x_project_sales_rep_id', 'x_is_event_task',
@@ -89,7 +89,7 @@ def pre_init_hook(cr):
             'x_invoice_remaining', 'x_invoice_payment_status', 'x_has_project',
             'x_project_task_count', 'company_currency',
         ],
-        'res.partner': ['x_is_vendor', 'x_vendor_notes'],
+        'res.partner': [],
     }
     
     # Use savepoint to isolate each field deletion operation

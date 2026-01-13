@@ -5,11 +5,15 @@
         
         NOTE: Use standard Odoo fields:
         - user_id = Sales Rep
-        - source_id = Lead Source (instead of x_inquiry_source)
-        - expected_revenue = Budget (instead of x_budget_range)
-        - name = Event/Opportunity Name (instead of x_event_name)
-        - Activities = Follow-ups (instead of x_followup_email_sent, x_proposal_sent, x_next_contact_date)
+        - source_id = Lead Source (instead of custom inquiry_source)
+        - expected_revenue = Budget (instead of custom budget_range)
+        - name = Event/Opportunity Name (instead of custom event_name)
+        - Activities = Follow-ups (instead of custom booleans)
         - Stages = Status tracking (instead of custom booleans)
+        
+        FIELD NAMING:
+        - All custom fields use ptt_ prefix (Party Time Texas)
+        - This follows Odoo best practice: x_ is reserved for Studio fields
     -->
     <record id="view_crm_lead_form_ptt" model="ir.ui.view">
         <field name="name">crm.lead.form.ptt</field>
@@ -22,71 +26,71 @@
                     <!-- Additional Contact Information -->
                     <group string="Additional Contact Information">
                         <group>
-                            <field name="x_date_of_call"/>
-                            <field name="x_preferred_contact_method"/>
-                            <field name="x_referral_source"/>
+                            <field name="ptt_date_of_call"/>
+                            <field name="ptt_preferred_contact_method"/>
+                            <field name="ptt_referral_source"/>
                         </group>
                         <group string="2nd POC (Signing Authority)">
-                            <field name="x_second_poc_name"/>
-                            <field name="x_second_poc_phone"/>
-                            <field name="x_second_poc_email"/>
+                            <field name="ptt_second_poc_name"/>
+                            <field name="ptt_second_poc_phone"/>
+                            <field name="ptt_second_poc_email"/>
                         </group>
                     </group>
 
                     <!-- Event ID -->
                     <group string="Event Identification">
                         <group>
-                            <field name="x_event_id" placeholder="Enter Event ID (e.g., 000001)"/>
+                            <field name="ptt_event_id" placeholder="Enter Event ID (e.g., 000001)"/>
                         </group>
                     </group>
 
                     <!-- Event Overview -->
                     <group string="Event Overview">
                         <group>
-                            <field name="x_event_type"/>
-                            <field name="x_event_specific_goal"/>
-                            <field name="x_event_date"/>
-                            <field name="x_event_time"/>
+                            <field name="ptt_event_type"/>
+                            <field name="ptt_event_specific_goal"/>
+                            <field name="ptt_event_date"/>
+                            <field name="ptt_event_time"/>
                         </group>
                         <group>
-                            <field name="x_estimated_guest_count"/>
-                            <field name="x_total_hours"/>
-                            <field name="x_event_location_type"/>
-                            <field name="x_venue_booked"/>
-                            <field name="x_venue_name"/>
+                            <field name="ptt_estimated_guest_count"/>
+                            <field name="ptt_total_hours"/>
+                            <field name="ptt_event_location_type"/>
+                            <field name="ptt_venue_booked"/>
+                            <field name="ptt_venue_name"/>
                         </group>
                     </group>
 
                     <!-- Services Requested -->
                     <group string="Services Requested">
                         <group>
-                            <field name="x_service_dj"/>
-                            <field name="x_service_photovideo"/>
-                            <field name="x_service_live_entertainment"/>
-                            <field name="x_service_lighting"/>
-                            <field name="x_service_decor"/>
+                            <field name="ptt_service_dj"/>
+                            <field name="ptt_service_photovideo"/>
+                            <field name="ptt_service_live_entertainment"/>
+                            <field name="ptt_service_lighting"/>
+                            <field name="ptt_service_decor"/>
                         </group>
                         <group>
-                            <field name="x_service_venue_sourcing"/>
-                            <field name="x_service_catering"/>
-                            <field name="x_service_transportation"/>
-                            <field name="x_service_rentals"/>
-                            <field name="x_service_photobooth"/>
-                            <field name="x_service_caricature"/>
-                            <field name="x_service_casino"/>
-                            <field name="x_service_staffing"/>
+                            <field name="ptt_service_venue_sourcing"/>
+                            <field name="ptt_service_catering"/>
+                            <field name="ptt_service_transportation"/>
+                            <field name="ptt_service_rentals"/>
+                            <field name="ptt_service_photobooth"/>
+                            <field name="ptt_service_caricature"/>
+                            <field name="ptt_service_casino"/>
+                            <field name="ptt_service_staffing"/>
                         </group>
                     </group>
 
                     <!-- CFO/Finance Contact (for corporate clients) -->
                     <group string="CFO/Finance Contact">
                         <group>
-                            <field name="x_cfo_name"/>
-                            <field name="x_cfo_phone"/>
+                            <field name="ptt_cfo_name"/>
+                            <field name="ptt_cfo_phone"/>
                         </group>
                         <group>
-                            <field name="x_cfo_email"/>
-                            <field name="x_cfo_contact_method"/>
+                            <field name="ptt_cfo_email"/>
+                            <field name="ptt_cfo_contact_method"/>
                         </group>
                     </group>
                 </page>
@@ -105,7 +109,7 @@
                 <page name="vendor_tab" string="Vendor">
                     <!-- Section 1: Service Lines with Tier Selection -->
                     <group string="Service Selection (Tier Categories)">
-                        <field name="x_service_line_ids" nolabel="1" colspan="2">
+                        <field name="ptt_service_line_ids" nolabel="1" colspan="2">
                             <list editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="service_type"/>
@@ -119,7 +123,7 @@
 
                     <!-- Section 2: Vendor Assignments -->
                     <group string="Vendor Assignments">
-                        <field name="x_vendor_assignment_ids" nolabel="1" colspan="2">
+                        <field name="ptt_vendor_assignment_ids" nolabel="1" colspan="2">
                             <list editable="bottom">
                                 <field name="service_type"/>
                                 <field name="service_line_id" optional="show"/>

@@ -141,8 +141,8 @@ export class SalesDashboard extends Component {
             views: [[false, "list"], [false, "kanban"], [false, "form"]],
             domain: [
                 ["stage_id.name", "=", "Booked"],
-                ["x_event_date", ">=", this.state.startDate],
-                ["x_event_date", "<=", this.state.endDate],
+                ["ptt_event_date", ">=", this.state.startDate],
+                ["ptt_event_date", "<=", this.state.endDate],
             ],
             target: "current",
         });
@@ -188,8 +188,8 @@ export class SalesDashboard extends Component {
             views: [[false, "list"], [false, "kanban"], [false, "form"]],
             domain: [
                 ["user_id", "=", rep.id],
-                ["x_event_date", ">=", this.state.startDate],
-                ["x_event_date", "<=", this.state.endDate],
+                ["ptt_event_date", ">=", this.state.startDate],
+                ["ptt_event_date", "<=", this.state.endDate],
             ],
             target: "current",
         });

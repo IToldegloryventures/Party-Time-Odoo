@@ -172,26 +172,26 @@ class ContactFormController(http.Controller):
                 except Exception:
                     pass  # utm.source may not be available
                 
-                # Event details - map to PTT custom fields
+                # Event details - map to PTT custom fields (using ptt_ prefix)
                 mapped_event_type = event_type_mapping.get(event_type_form)
                 if mapped_event_type:
-                    custom_vals['x_event_type'] = mapped_event_type
+                    custom_vals['ptt_event_type'] = mapped_event_type
                 
                 # Event date
                 if event_date:
-                    custom_vals['x_event_date'] = event_date
+                    custom_vals['ptt_event_date'] = event_date
                 
                 # Event time
                 if event_time:
-                    custom_vals['x_event_time'] = event_time
+                    custom_vals['ptt_event_time'] = event_time
                 
                 # Guest count
                 if guest_count and guest_count.isdigit():
-                    custom_vals['x_estimated_guest_count'] = int(guest_count)
+                    custom_vals['ptt_estimated_guest_count'] = int(guest_count)
                 
                 # Venue/Location
                 if event_location:
-                    custom_vals['x_venue_name'] = event_location
+                    custom_vals['ptt_venue_name'] = event_location
                 
                 # Budget - use standard expected_revenue if numeric, otherwise store in description
                 if budget:
@@ -208,7 +208,7 @@ class ContactFormController(http.Controller):
                 # Indoor/Outdoor
                 mapped_location = indoor_outdoor_mapping.get(indoor_outdoor)
                 if mapped_location:
-                    custom_vals['x_event_location_type'] = mapped_location
+                    custom_vals['ptt_event_location_type'] = mapped_location
                 
                 # Update the lead with custom fields
                 if custom_vals:
@@ -387,28 +387,28 @@ class ContactFormController(http.Controller):
             except Exception:
                 pass
             
-            # Update with custom PTT fields
+            # Update with custom PTT fields (using ptt_ prefix)
             try:
                 custom_vals = {}
                 
                 mapped_event_type = event_type_mapping.get(event_type_form)
                 if mapped_event_type:
-                    custom_vals['x_event_type'] = mapped_event_type
+                    custom_vals['ptt_event_type'] = mapped_event_type
                 
                 if event_date:
-                    custom_vals['x_event_date'] = event_date
+                    custom_vals['ptt_event_date'] = event_date
                 
                 if event_time:
-                    custom_vals['x_event_time'] = event_time
+                    custom_vals['ptt_event_time'] = event_time
                 
                 if guest_count:
                     try:
-                        custom_vals['x_estimated_guest_count'] = int(re.sub(r'[^\d]', '', guest_count))
+                        custom_vals['ptt_estimated_guest_count'] = int(re.sub(r'[^\d]', '', guest_count))
                     except (ValueError, TypeError):
                         pass
                 
                 if event_location:
-                    custom_vals['x_venue_name'] = event_location
+                    custom_vals['ptt_venue_name'] = event_location
                 
                 if budget:
                     budget_match = re.search(r'[\d,]+', budget.replace(',', ''))
@@ -421,7 +421,7 @@ class ContactFormController(http.Controller):
                 
                 mapped_location = indoor_outdoor_mapping.get(indoor_outdoor)
                 if mapped_location:
-                    custom_vals['x_event_location_type'] = mapped_location
+                    custom_vals['ptt_event_location_type'] = mapped_location
                 
                 if custom_vals:
                     lead.sudo().write(custom_vals)

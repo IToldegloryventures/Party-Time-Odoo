@@ -3,8 +3,9 @@
     <!--
         PTT Res Partner Form View Extension
         
-        Adds vendor toggle and vendor-specific tabs.
-        When x_is_vendor is toggled on, vendor fields and tabs become visible.
+        Adds vendor-specific tabs visible when supplier_rank > 0.
+        Uses native Odoo supplier_rank field for vendor identification.
+        All custom fields use ptt_ prefix (Odoo best practice).
     -->
     <record id="view_partner_form_ptt" model="ir.ui.view">
         <field name="name">res.partner.form.ptt</field>
@@ -12,52 +13,54 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             
-            <!-- Add Vendor Toggle under Person/Company selector -->
+            <!-- Add Vendor Toggle under Person/Company selector using supplier_rank -->
             <xpath expr="//field[@name='company_type']" position="after">
                 <span class="ms-4 d-flex align-items-center gap-1">
-                    <field name="x_is_vendor" widget="boolean_toggle"/>
-                    <label for="x_is_vendor" string="Vendor"/>
+                    <field name="supplier_rank" widget="boolean_toggle" 
+                           options="{'autosave': false}"
+                           class="o_field_boolean"/>
+                    <label for="supplier_rank" string="Vendor"/>
                 </span>
             </xpath>
             
             <!-- Add Vendor Contact Role field (only for Person contacts under a vendor company) -->
             <xpath expr="//field[@name='function']" position="after">
-                <field name="x_vendor_contact_role" 
+                <field name="ptt_vendor_contact_role" 
                        placeholder="e.g., Owner, Talent, Accounting"
                        invisible="not parent_id or company_type == 'company'"/>
             </xpath>
             
-            <!-- Add Vendor Info tab (visible when x_is_vendor is toggled on) -->
+            <!-- Add Vendor Info tab (visible when supplier_rank > 0) -->
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="Vendor Info" name="ptt_vendor_info" invisible="not x_is_vendor">
+                <page string="Vendor Info" name="ptt_vendor_info" invisible="supplier_rank == 0">
                     <group>
                         <group string="Vendor Classification">
-                            <field name="x_vendor_tier" widget="radio" options="{'horizontal': true}"/>
-                            <field name="x_vendor_service_tag_ids" widget="many2many_tags" 
+                            <field name="ptt_vendor_tier" widget="radio" options="{'horizontal': true}"/>
+                            <field name="ptt_vendor_service_tag_ids" widget="many2many_tags" 
                                    options="{'color_field': 'color', 'no_create_edit': True}"
                                    placeholder="Select services this vendor provides..."/>
                         </group>
                         <group string="Compliance Status">
-                            <field name="x_vendor_compliance_status" widget="badge"
-                                   decoration-success="x_vendor_compliance_status == 'compliant'"
-                                   decoration-warning="x_vendor_compliance_status == 'expiring_soon'"
-                                   decoration-danger="x_vendor_compliance_status in ('missing_required', 'expired')"/>
-                            <field name="x_vendor_rating" widget="priority"/>
+                            <field name="ptt_vendor_compliance_status" widget="badge"
+                                   decoration-success="ptt_vendor_compliance_status == 'compliant'"
+                                   decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
+                                   decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')"/>
+                            <field name="ptt_vendor_rating" widget="priority"/>
                         </group>
                     </group>
                 </page>
                 
-                <!-- Vendor Notes Tab (visible when x_is_vendor is toggled on) -->
-                <page string="Vendor Notes" name="ptt_vendor_notes" invisible="not x_is_vendor">
+                <!-- Vendor Notes Tab (visible when supplier_rank > 0) -->
+                <page string="Vendor Notes" name="ptt_vendor_notes" invisible="supplier_rank == 0">
                     <group>
-                        <field name="x_vendor_notes" widget="text" nolabel="1" 
+                        <field name="ptt_vendor_notes" widget="text" nolabel="1" 
                                placeholder="Add internal notes about this vendor...&#10;&#10;Examples:&#10;- Preferred contact method&#10;- Special pricing arrangements&#10;- Performance history&#10;- Preferred event types&#10;- Any special requirements or considerations"/>
                     </group>
                 </page>
                 
-                <!-- Vendor Documents Tab (visible when x_is_vendor is toggled on) -->
-                <page string="Documents" name="ptt_vendor_documents" invisible="not x_is_vendor">
-                    <field name="x_vendor_document_ids" context="{'default_vendor_id': id}">
+                <!-- Vendor Documents Tab (visible when supplier_rank > 0) -->
+                <page string="Documents" name="ptt_vendor_documents" invisible="supplier_rank == 0">
+                    <field name="ptt_vendor_document_ids" context="{'default_vendor_id': id}">
                         <list editable="bottom"
                               decoration-danger="status == 'expired'"
                               decoration-warning="status == 'expiring_soon'"

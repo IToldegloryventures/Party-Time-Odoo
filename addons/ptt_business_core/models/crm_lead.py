@@ -12,21 +12,26 @@ class CrmLead(models.Model):
     - phone = Phone Number (standard)
     - email_from = Email Address (standard)
     - description = Additional Notes (standard)
-    - source_id = Lead Source (standard - use instead of x_inquiry_source)
-    - expected_revenue = Budget (standard - use instead of x_budget_range)
+    - source_id = Lead Source (standard - use instead of custom inquiry_source)
+    - expected_revenue = Budget (standard - use instead of custom budget_range)
     - name = Opportunity Name / Event Name (standard)
     
     Use Activities for follow-ups instead of custom boolean fields.
     Use Stages for tracking proposal/contract status.
+    
+    FIELD NAMING:
+    - All custom fields use ptt_ prefix (Party Time Texas)
+    - This follows Odoo best practice: x_ is reserved for Studio fields
+    - Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
     """
     _inherit = "crm.lead"
 
     # === TIER 1: ADDITIONAL CONTACT INFORMATION ===
-    x_date_of_call = fields.Date(
+    ptt_date_of_call = fields.Date(
         string="Date of Call",
         help="Date of the initial inquiry call.",
     )
-    x_preferred_contact_method = fields.Selection(
+    ptt_preferred_contact_method = fields.Selection(
         [
             ("call", "Phone Call"),
             ("text", "Text Message"),
@@ -34,12 +39,12 @@ class CrmLead(models.Model):
         ],
         string="Preferred Contact Method",
     )
-    x_second_poc_name = fields.Char(string="2nd POC Name")
-    x_second_poc_phone = fields.Char(string="2nd POC Phone")
-    x_second_poc_email = fields.Char(string="2nd POC Email")
+    ptt_second_poc_name = fields.Char(string="2nd POC Name")
+    ptt_second_poc_phone = fields.Char(string="2nd POC Phone")
+    ptt_second_poc_email = fields.Char(string="2nd POC Email")
 
     # === EVENT ID (Manual Entry - Links CRM, SO, Project, Tasks) ===
-    x_event_id = fields.Char(
+    ptt_event_id = fields.Char(
         string="Event ID",
         copy=False,
         index=True,
@@ -47,13 +52,13 @@ class CrmLead(models.Model):
         help="Unique event identifier. Enter manually to link this opportunity with its Project and Tasks.",
     )
 
-    x_referral_source = fields.Char(
+    ptt_referral_source = fields.Char(
         string="Referral Details",
         help="If referral, who referred this client? (Use source_id for lead source type)",
     )
 
     # === EVENT OVERVIEW ===
-    x_event_type = fields.Selection(
+    ptt_event_type = fields.Selection(
         [
             # Corporate Events
             ("corporate_conference", "Corporate - Conferences & Conventions"),
@@ -96,14 +101,14 @@ class CrmLead(models.Model):
         ],
         string="Event Category",
     )
-    x_event_specific_goal = fields.Char(string="Specific Goal")
-    x_event_date = fields.Date(string="Event Date", index=True)
-    x_event_time = fields.Char(string="Event Time")
-    x_total_hours = fields.Float(string="Total Hours")
-    x_estimated_guest_count = fields.Integer(string="Estimated Guest Count")
-    x_venue_booked = fields.Boolean(string="Venue Booked?")
-    x_venue_name = fields.Char(string="Venue")
-    x_event_location_type = fields.Selection(
+    ptt_event_specific_goal = fields.Char(string="Specific Goal")
+    ptt_event_date = fields.Date(string="Event Date", index=True)
+    ptt_event_time = fields.Char(string="Event Time")
+    ptt_total_hours = fields.Float(string="Total Hours")
+    ptt_estimated_guest_count = fields.Integer(string="Estimated Guest Count")
+    ptt_venue_booked = fields.Boolean(string="Venue Booked?")
+    ptt_venue_name = fields.Char(string="Venue")
+    ptt_event_location_type = fields.Selection(
         [
             ("indoor", "Indoor"),
             ("outdoor", "Outdoor"),
@@ -113,25 +118,25 @@ class CrmLead(models.Model):
     )
 
     # === SERVICES REQUESTED (CHECKBOXES) ===
-    x_service_dj = fields.Boolean(string="DJ & MC Services")
-    x_service_photovideo = fields.Boolean(string="Photo/Video")
-    x_service_live_entertainment = fields.Boolean(string="Live Entertainment")
-    x_service_lighting = fields.Boolean(string="Lighting/AV")
-    x_service_decor = fields.Boolean(string="Decor/Thematic Design")
-    x_service_venue_sourcing = fields.Boolean(string="Venue Sourcing")
-    x_service_catering = fields.Boolean(string="Catering & Bartender Services")
-    x_service_transportation = fields.Boolean(string="Transportation")
-    x_service_rentals = fields.Boolean(string="Rentals (Other)")
-    x_service_photobooth = fields.Boolean(string="Photo Booth")
-    x_service_caricature = fields.Boolean(string="Caricature Artist")
-    x_service_casino = fields.Boolean(string="Casino Services")
-    x_service_staffing = fields.Boolean(string="Staffing")
+    ptt_service_dj = fields.Boolean(string="DJ & MC Services")
+    ptt_service_photovideo = fields.Boolean(string="Photo/Video")
+    ptt_service_live_entertainment = fields.Boolean(string="Live Entertainment")
+    ptt_service_lighting = fields.Boolean(string="Lighting/AV")
+    ptt_service_decor = fields.Boolean(string="Decor/Thematic Design")
+    ptt_service_venue_sourcing = fields.Boolean(string="Venue Sourcing")
+    ptt_service_catering = fields.Boolean(string="Catering & Bartender Services")
+    ptt_service_transportation = fields.Boolean(string="Transportation")
+    ptt_service_rentals = fields.Boolean(string="Rentals (Other)")
+    ptt_service_photobooth = fields.Boolean(string="Photo Booth")
+    ptt_service_caricature = fields.Boolean(string="Caricature Artist")
+    ptt_service_casino = fields.Boolean(string="Casino Services")
+    ptt_service_staffing = fields.Boolean(string="Staffing")
 
     # === CFO/FINANCE CONTACT (for corporate clients) ===
-    x_cfo_name = fields.Char(string="CFO/Finance Contact Name")
-    x_cfo_phone = fields.Char(string="CFO/Finance Contact Phone")
-    x_cfo_email = fields.Char(string="CFO/Finance Contact Email")
-    x_cfo_contact_method = fields.Selection(
+    ptt_cfo_name = fields.Char(string="CFO/Finance Contact Name")
+    ptt_cfo_phone = fields.Char(string="CFO/Finance Contact Phone")
+    ptt_cfo_email = fields.Char(string="CFO/Finance Contact Email")
+    ptt_cfo_contact_method = fields.Selection(
         [
             ("call", "Phone Call"),
             ("text", "Text Message"),
@@ -142,7 +147,7 @@ class CrmLead(models.Model):
 
 
     # === SERVICE LINES (Vendor Tab) ===
-    x_service_line_ids = fields.One2many(
+    ptt_service_line_ids = fields.One2many(
         "ptt.crm.service.line",
         "lead_id",
         string="Service Lines",
@@ -150,7 +155,7 @@ class CrmLead(models.Model):
     )
 
     # === VENDOR ASSIGNMENTS (Vendor Tab) ===
-    x_vendor_assignment_ids = fields.One2many(
+    ptt_vendor_assignment_ids = fields.One2many(
         "ptt.crm.vendor.assignment",
         "lead_id",
         string="Vendor Assignments",
@@ -204,7 +209,7 @@ class CrmLead(models.Model):
     def action_suggest_sale_template(self):
         """Suggest appropriate sale order template based on event type."""
         self.ensure_one()
-        if not self.x_event_type:
+        if not self.ptt_event_type:
             return False
         
         template_mapping = {
@@ -243,7 +248,7 @@ class CrmLead(models.Model):
             "themed_cigar_whiskey": "ptt_business_core.sale_order_template_private",
         }
         
-        template_xmlid = template_mapping.get(self.x_event_type)
+        template_xmlid = template_mapping.get(self.ptt_event_type)
         if template_xmlid:
             template = self.env.ref(template_xmlid, raise_if_not_found=False)
             if template:
