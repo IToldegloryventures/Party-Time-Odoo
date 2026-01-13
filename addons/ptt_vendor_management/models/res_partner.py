@@ -57,7 +57,7 @@ class ResPartner(models.Model):
     
     ptt_vendor_document_count = fields.Integer(
         string="Vendor Docs",
-        compute="_compute_vendor_compliance",
+        compute="_compute_vendor_document_count",
     )
     
     ptt_vendor_compliance_status = fields.Selection(
@@ -68,20 +68,20 @@ class ResPartner(models.Model):
             ("expiring_soon", "Expiring Soon"),
         ],
         string="Compliance Status",
-        compute="_compute_vendor_compliance",
+        compute="_compute_vendor_compliance_status",
         store=True,
         help="Vendor document compliance status based on required documents",
     )
 
+    @api.depends("ptt_vendor_document_ids")
+    def _compute_vendor_document_count(self):
+        """Compute document count (non-stored field)."""
+        for partner in self:
+            partner.ptt_vendor_document_count = len(partner.ptt_vendor_document_ids)
+
     @api.model
     def _get_required_document_type_ids(self):
-        """Get required document type IDs with per-environment caching.
-        
-        This avoids repeated database searches during batch computations.
-        Cache is stored on the environment and cleared on transaction end.
-        
-        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
-        """
+        """Get required document type IDs with per-environment caching."""
         cache_key = '_ptt_required_doc_type_ids'
         if not hasattr(self.env, cache_key):
             required_doc_types = self.env["ptt.document.type"].search([
@@ -92,30 +92,14 @@ class ResPartner(models.Model):
 
     @api.depends("supplier_rank", "ptt_vendor_document_ids", "ptt_vendor_document_ids.status", 
                  "ptt_vendor_document_ids.document_type_id.required")
-    def _compute_vendor_compliance(self):
-        """Compute vendor compliance status based on required documents.
-        
-        PERFORMANCE OPTIMIZATIONS:
-        - Uses cached required document types to avoid repeated DB searches
-        - Only computes compliance for vendors (supplier_rank > 0)
-        - Non-vendors are set to False in a single operation
-        
-        Uses native supplier_rank field to identify vendors (supplier_rank > 0 = vendor).
-        """
+    def _compute_vendor_compliance_status(self):
+        """Compute vendor compliance status based on required documents (stored field)."""
         required_type_ids = self._get_required_document_type_ids()
         
-        # Separate vendors from non-vendors for efficient processing
-        vendors = self.filtered(lambda p: p.supplier_rank > 0)
-        non_vendors = self - vendors
-        
-        # Set non-vendors to False (no compliance tracking needed)
-        for partner in non_vendors:
-            partner.ptt_vendor_document_count = len(partner.ptt_vendor_document_ids)
-            partner.ptt_vendor_compliance_status = False
-        
-        # Process only vendors
-        for partner in vendors:
-            partner.ptt_vendor_document_count = len(partner.ptt_vendor_document_ids)
+        for partner in self:
+            if partner.supplier_rank <= 0:
+                partner.ptt_vendor_compliance_status = False
+                continue
             
             # Get this vendor's documents
             vendor_docs = partner.ptt_vendor_document_ids
