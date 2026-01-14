@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class JustCallCall(models.Model):
-    _name = 'justcall.call'
+    _name = 'ptt.justcall.call'
     _description = 'JustCall Call Log'
     _order = 'call_date desc'
     _rec_name = 'display_name'
@@ -288,7 +288,7 @@ class JustCallCall(models.Model):
                 user_id = user.id
             else:
                 # Try user mapping
-                mapping = self.env['justcall.user.mapping'].search([
+                mapping = self.env['ptt.justcall.user.mapping'].search([
                     ('justcall_email', '=', justcall_user_email)
                 ], limit=1)
                 if mapping:

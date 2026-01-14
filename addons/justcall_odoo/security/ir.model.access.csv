@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_justcall_config_user,justcall.config.user,model_justcall_config,base.group_user,1,0,0,0
-access_justcall_config_manager,justcall.config.manager,model_justcall_config,base.group_system,1,1,1,1
-access_justcall_call_user,justcall.call.user,model_justcall_call,base.group_user,1,0,0,0
-access_justcall_call_manager,justcall.call.manager,model_justcall_call,base.group_system,1,1,1,1
-access_justcall_user_mapping_user,justcall.user.mapping.user,model_justcall_user_mapping,base.group_user,1,0,0,0
-access_justcall_user_mapping_manager,justcall.user.mapping.manager,model_justcall_user_mapping,base.group_system,1,1,1,1

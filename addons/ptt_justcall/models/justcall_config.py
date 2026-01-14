@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 
 class JustCallConfig(models.Model):
-    _name = 'justcall.config'
+    _name = 'ptt.justcall.config'
     _description = 'JustCall Configuration'
     _order = 'create_date desc'
 
@@ -79,7 +79,7 @@ class JustCallConfig(models.Model):
     def _compute_call_count(self):
         """Compute total call count"""
         for config in self:
-            config.call_count = self.env['justcall.call'].search_count([])
+            config.call_count = self.env['ptt.justcall.call'].search_count([])
 
     def action_view_calls(self):
         """Open call history"""
@@ -87,7 +87,7 @@ class JustCallConfig(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'name': 'JustCall Calls',
-            'res_model': 'justcall.call',
+            'res_model': 'ptt.justcall.call',
             'view_mode': 'tree,form',
             'domain': [],
         }
@@ -103,7 +103,7 @@ class JustCallConfig(models.Model):
         for config in self:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             if base_url:
-                config.webhook_url = f"{base_url.rstrip('/')}/justcall/webhook"
+                config.webhook_url = f"{base_url.rstrip('/')}/ptt_justcall/webhook"
             else:
                 config.webhook_url = ""
 
@@ -202,6 +202,6 @@ class JustCallConfig(models.Model):
         ], limit=1)
         
         if not config:
-            raise UserError(_("No active JustCall configuration found. Please configure in Settings → JustCall Configuration."))
+            raise UserError(_("No active JustCall configuration found. Please configure in Settings → PTT JustCall Configuration."))
         
         return config

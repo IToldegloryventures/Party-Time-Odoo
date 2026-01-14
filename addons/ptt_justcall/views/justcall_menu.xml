@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="ptt_menu_justcall_root"
+              name="PTT JustCall"
+              sequence="100"
+              web_icon="ptt_justcall,static/description/icon.png"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="ptt_menu_justcall_config"
+              name="Configuration"
+              parent="ptt_menu_justcall_root"
+              action="ptt_action_justcall_config"
+              sequence="10"/>
+
+    <!-- Call History Menu -->
+    <menuitem id="ptt_menu_justcall_calls"
+              name="Call History"
+              parent="ptt_menu_justcall_root"
+              action="ptt_action_justcall_call"
+              sequence="20"/>
+
+    <!-- User Mapping Menu -->
+    <menuitem id="ptt_menu_justcall_user_mapping"
+              name="User Mappings"
+              parent="ptt_menu_justcall_root"
+              action="ptt_action_justcall_user_mapping"
+              sequence="30"/>
+
+    <!-- Settings Menu Integration -->
+    <menuitem id="ptt_menu_justcall_settings"
+              name="PTT JustCall"
+              parent="base.menu_administration"
+              action="ptt_action_justcall_config"
+              sequence="100"/>
+</odoo>

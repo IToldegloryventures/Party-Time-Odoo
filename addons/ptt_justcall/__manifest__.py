@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'JustCall Integration',
+    'name': 'PTT JustCall Integration',
     'version': '19.0.1.0.0',
     'category': 'CRM',
     'summary': 'Integrate JustCall VoIP with Odoo CRM for click-to-call, call logging, and SMS',
@@ -39,7 +39,7 @@ Requirements:
     ],
     'data': [
         'security/ir.model.access.csv',
-        'security/justcall_security.xml',
+        'security/ptt_justcall_security.xml',
         'data/ir_config_parameter.xml',
         'views/justcall_config_views.xml',
         'views/justcall_call_views.xml',

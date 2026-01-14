@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 class JustCallWebhookController(http.Controller):
     """Handle webhook events from JustCall"""
 
-    @http.route('/justcall/webhook', type='http', auth='public',
+    @http.route('/ptt_justcall/webhook', type='http', auth='public',
                 methods=['POST'], csrf=False)
     def justcall_webhook(self):
         """Process webhook events from JustCall"""
@@ -57,7 +57,7 @@ class JustCallWebhookController(http.Controller):
     def _validate_signature(self, payload):
         """Validate webhook signature using HMAC"""
         try:
-            config = request.env['justcall.config'].sudo().search([
+            config = request.env['ptt.justcall.config'].sudo().search([
                 ('active', '=', True)
             ], limit=1)
             
@@ -97,7 +97,7 @@ class JustCallWebhookController(http.Controller):
         """Handle call-related webhook events"""
         try:
             # Create or update call record
-            call = request.env['justcall.call'].sudo().create_from_webhook(data)
+            call = request.env['ptt.justcall.call'].sudo().create_from_webhook(data)
             if call:
                 _logger.info("JustCall webhook: Created/updated call %s", call.justcall_call_id)
             else:

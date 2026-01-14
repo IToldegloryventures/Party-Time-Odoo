@@ -7,7 +7,7 @@ class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
     justcall_call_ids = fields.One2many(
-        'justcall.call',
+        'ptt.justcall.call',
         'lead_id',
         string="JustCall Calls",
     )
@@ -41,7 +41,7 @@ class CrmLead(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'name': 'JustCall Calls',
-            'res_model': 'justcall.call',
+            'res_model': 'ptt.justcall.call',
             'view_mode': 'tree,form',
             'domain': [('lead_id', '=', self.id)],
             'context': {'default_lead_id': self.id},

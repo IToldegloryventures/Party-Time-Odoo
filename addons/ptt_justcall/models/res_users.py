@@ -7,7 +7,7 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     justcall_call_ids = fields.One2many(
-        'justcall.call',
+        'ptt.justcall.call',
         'user_id',
         string="JustCall Calls",
     )

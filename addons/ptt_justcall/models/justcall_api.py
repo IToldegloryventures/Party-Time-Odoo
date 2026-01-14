@@ -22,7 +22,7 @@ class JustCallAPI(models.AbstractModel):
 
     def _get_config(self):
         """Get active JustCall configuration"""
-        return self.env['justcall.config'].get_active_config()
+        return self.env['ptt.justcall.config'].get_active_config()
 
     def _get_auth_headers(self):
         """Generate authentication headers"""

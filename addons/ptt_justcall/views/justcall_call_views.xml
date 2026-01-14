@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_justcall_call_tree" model="ir.ui.view">
-        <field name="name">justcall.call.tree</field>
-        <field name="model">justcall.call</field>
+    <record id="ptt_view_justcall_call_tree" model="ir.ui.view">
+        <field name="name">ptt.justcall.call.tree</field>
+        <field name="model">ptt.justcall.call</field>
         <field name="arch" type="xml">
             <tree string="JustCall Calls" decoration-success="status == 'completed'" decoration-muted="status == 'no-answer'">
                 <field name="call_date"/>
@@ -19,9 +19,9 @@
         </field>
     </record>
 
-    <record id="view_justcall_call_form" model="ir.ui.view">
-        <field name="name">justcall.call.form</field>
-        <field name="model">justcall.call</field>
+    <record id="ptt_view_justcall_call_form" model="ir.ui.view">
+        <field name="name">ptt.justcall.call.form</field>
+        <field name="model">ptt.justcall.call</field>
         <field name="arch" type="xml">
             <form string="JustCall Call">
                 <header>
@@ -85,9 +85,9 @@
         </field>
     </record>
 
-    <record id="view_justcall_call_search" model="ir.ui.view">
-        <field name="name">justcall.call.search</field>
-        <field name="model">justcall.call</field>
+    <record id="ptt_view_justcall_call_search" model="ir.ui.view">
+        <field name="name">ptt.justcall.call.search</field>
+        <field name="model">ptt.justcall.call</field>
         <field name="arch" type="xml">
             <search string="JustCall Calls">
                 <field name="contact_number"/>
@@ -116,9 +116,9 @@
         </field>
     </record>
 
-    <record id="action_justcall_call" model="ir.actions.act_window">
-        <field name="name">JustCall Calls</field>
-        <field name="res_model">justcall.call</field>
+    <record id="ptt_action_justcall_call" model="ir.actions.act_window">
+        <field name="name">PTT JustCall Calls</field>
+        <field name="res_model">ptt.justcall.call</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

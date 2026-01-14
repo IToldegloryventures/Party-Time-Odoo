@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 
 
 class JustCallUserMapping(models.Model):
-    _name = 'justcall.user.mapping'
+    _name = 'ptt.justcall.user.mapping'
     _description = 'JustCall User to Odoo User Mapping'
     _rec_name = 'display_name'
 
