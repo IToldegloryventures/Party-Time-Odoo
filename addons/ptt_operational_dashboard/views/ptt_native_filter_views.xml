@@ -91,30 +91,8 @@
     </record>
 
     <!-- ====== SALE ORDER SEARCH ENHANCEMENTS ====== -->
-    <!-- NOTE: Odoo 19 uses sale.sale_order_view_search (not sale.view_sale_order_search) -->
-    <record id="view_ptt_sale_order_search_enhanced" model="ir.ui.view">
-        <field name="name">sale.order.ptt.search</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.sale_order_view_search"/>
-        <field name="arch" type="xml">
-            <xpath expr="//search" position="inside">
-                <!-- Quote age filters -->
-                <separator/>
-                <filter string="Recent Quotes" name="recent_quotes"
-                        domain="[('state', '=', 'sent')]"
-                        date="date_order"/>
-                <filter string="Old Quotes" name="old_quotes"
-                        domain="[('state', '=', 'sent')]"
-                        date="date_order"/>
-
-                <!-- Grouping -->
-                <group>
-                    <filter string="Order Date (Month)" name="group_date"
-                            context="{'group_by': 'date_order:month'}"/>
-                </group>
-            </xpath>
-        </field>
-    </record>
+    <!-- REMOVED: Caused XML ID compatibility issues across Odoo versions -->
+    <!-- Odoo's native sale.order search view already has quote filters and date grouping -->
 
     <!-- ====== INVOICE SEARCH ENHANCEMENTS ====== -->
     <record id="view_ptt_invoice_search_enhanced" model="ir.ui.view">
