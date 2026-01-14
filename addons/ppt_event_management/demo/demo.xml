@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+        <record id="crm_lead_event_demo_1" model="crm.lead">
+            <field name="name">Birthday Party Planning - John Smith</field>
+            <field name="ppt_event_type">birthday</field>
+            <field name="ppt_event_name">John's 30th Birthday Bash</field>
+            <field name="ppt_event_date">2026-02-15</field>
+            <field name="ppt_event_start_time">18:00</field>
+            <field name="ppt_event_end_time">22:00</field>
+            <field name="ppt_total_hours">4.0</field>
+            <field name="ppt_guest_count">50</field>
+            <field name="ppt_event_location_type">venue</field>
+            <field name="ppt_venue_booked">True</field>
+            <field name="ppt_venue_name">The Grand Ballroom</field>
+        </record>
+
+        <record id="crm_lead_event_demo_2" model="crm.lead">
+            <field name="name">Corporate Team Building Event</field>
+            <field name="ppt_event_type">corporate</field>
+            <field name="ppt_event_name">Annual Team Building 2026</field>
+            <field name="ppt_event_date">2026-03-20</field>
+            <field name="ppt_event_start_time">09:00</field>
+            <field name="ppt_event_end_time">17:00</field>
+            <field name="ppt_total_hours">8.0</field>
+            <field name="ppt_guest_count">75</field>
+            <field name="ppt_event_location_type">outdoor</field>
+            <field name="ppt_venue_booked">False</field>
+        </record>
+        -->
+    </data>
+</odoo>
