@@ -22,6 +22,9 @@
         # Reference: QuickBooks Chart of Accounts alignment
         "data/product_categories.xml",
         "data/product_attributes.xml",
+        # Project Template (must load before products_services.xml because Event Kickoff references it)
+        # Uses Odoo native service_tracking + project_template_id for auto-project creation
+        "data/project_template.xml",
         # Products (load order: entertainment with variants first, then services, rentals, addons, adjustments)
         "data/products_entertainment.xml",
         "data/products_services.xml",
