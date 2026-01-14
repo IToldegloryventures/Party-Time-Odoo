@@ -20,12 +20,12 @@
                     </t>
                     <t t-else="">
                         <t t-foreach="allTodos" t-as="todo" t-key="todo.id">
-                            <div t-att-class="'ptt-todo-item' + (String(todo.id).startsWith('temp_') ? ' ptt-todo-pending' : '')">
+                            <div t-att-class="'ptt-todo-item' + (isTempId(todo.id) ? ' ptt-todo-pending' : '')">
                                 <div 
                                     class="ptt-todo-checkbox"
                                     t-on-click="() => this.onToggleTodo(todo)"
-                                    t-att-title="String(todo.id).startsWith('temp_') ? 'Saving...' : 'Mark as done'">
-                                    <i t-if="String(todo.id).startsWith('temp_')" class="fa fa-spinner fa-spin"/>
+                                    t-att-title="isTempId(todo.id) ? 'Saving...' : 'Mark as done'">
+                                    <i t-if="isTempId(todo.id)" class="fa fa-spinner fa-spin"/>
                                     <i t-else="" class="fa fa-check" style="display: none;"/>
                                 </div>
                                 <div class="ptt-todo-name">
@@ -38,7 +38,7 @@
                                 <button 
                                     class="ptt-todo-delete"
                                     t-on-click="(ev) => this.onDeleteTodo(ev, todo)"
-                                    t-att-disabled="String(todo.id).startsWith('temp_')"
+                                    t-att-disabled="isTempId(todo.id)"
                                     title="Delete">
                                     <i class="fa fa-trash-o"/>
                                 </button>

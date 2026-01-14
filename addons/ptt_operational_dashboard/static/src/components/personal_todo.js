@@ -47,6 +47,10 @@ export class PersonalTodo extends Component {
         return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     }
 
+    isTempId(id) {
+        return String(id).startsWith('temp_');
+    }
+
     async onToggleTodo(todo) {
         if (this.state.loading) return;
         this.state.loading = true;
