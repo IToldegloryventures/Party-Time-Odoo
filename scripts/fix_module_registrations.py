@@ -19,7 +19,7 @@ Or run in Odoo shell:
 
 FIX_COMMANDS = """
 # Step 1: Check current module states
-modules = ['ptt_justcall', 'ptt_event_management', 'ppt_event_management']
+modules = ['ptt_business_core', 'ptt_operational_dashboard', 'ptt_vendor_management', 'ptt_justcall']
 for mod in modules:
     m = env['ir.module.module'].search([('name', '=', mod)], limit=1)
     if m:
@@ -27,7 +27,7 @@ for mod in modules:
 
 # Step 2: Clean broken registrations (if manifest not found)
 # Only unlink if you're sure the module structure is correct
-broken_modules = ['ptt_justcall', 'ptt_event_management']
+broken_modules = ['ptt_justcall']
 for mod_name in broken_modules:
     mod = env['ir.module.module'].search([('name', '=', mod_name)], limit=1)
     if mod and mod.state == 'to install':
@@ -48,7 +48,7 @@ for mod in modules:
         print(f"{mod}: NOT FOUND - check folder structure")
 
 # Step 5: Install modules
-for mod_name in ['ptt_justcall', 'ptt_event_management']:
+for mod_name in ['ptt_justcall']:
     mod = env['ir.module.module'].search([('name', '=', mod_name)], limit=1)
     if mod and mod.state == 'to install':
         mod.button_install()
@@ -60,7 +60,7 @@ SAFE_FIX_SCRIPT = """
 # Safe Module Registration Fix
 # Run this in Odoo shell (odoo-bin shell)
 
-modules_to_fix = ['ptt_justcall', 'ptt_event_management']
+modules_to_fix = ['ptt_justcall']
 
 # 1. Check current state
 print("=== Current Module States ===")

@@ -5,7 +5,7 @@ class ProjectTask(models.Model):
     """Extend project.task with computed category for My Work section."""
     _inherit = "project.task"
 
-    x_task_category = fields.Selection(
+    ptt_task_category = fields.Selection(
         [
             ("today", "Today"),
             ("overdue", "Overdue"),
@@ -24,11 +24,11 @@ class ProjectTask(models.Model):
         today = fields.Date.context_today(self)
         for task in self:
             if not task.date_deadline:
-                task.x_task_category = "unscheduled"
+                task.ptt_task_category = "unscheduled"
             elif task.date_deadline < today:
-                task.x_task_category = "overdue"
+                task.ptt_task_category = "overdue"
             elif task.date_deadline == today:
-                task.x_task_category = "today"
+                task.ptt_task_category = "today"
             else:
-                task.x_task_category = "upcoming"
+                task.ptt_task_category = "upcoming"
 

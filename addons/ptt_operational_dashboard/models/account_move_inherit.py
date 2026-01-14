@@ -1,5 +1,4 @@
-from odoo import models, api
-from datetime import datetime
+from odoo import models, fields, api
 
 
 class AccountMove(models.Model):
@@ -41,7 +40,7 @@ class AccountMove(models.Model):
         """Update dashboard widget to trigger KPI recalculation."""
         widget = self.env['ptt.dashboard.widget'].search([], limit=1)
         if widget:
-            widget.write({'last_kpi_update': datetime.now()})
+            widget.write({'last_kpi_update': fields.Datetime.now()})
     
     def _trigger_sales_rep_kpi_update(self, user_id=None):
         """Update sales rep to trigger KPI recalculation."""
@@ -49,5 +48,5 @@ class AccountMove(models.Model):
         if user_id:
             sales_rep = self.env['ptt.sales.rep'].search([('user_id', '=', user_id)], limit=1)
             if sales_rep:
-                sales_rep.write({'last_kpi_update': datetime.now()})
+                sales_rep.write({'last_kpi_update': fields.Datetime.now()})
 

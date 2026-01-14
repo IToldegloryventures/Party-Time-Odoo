@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ptt_event_crm_lead,ptt_event_management crm.lead,model_crm_lead,,1,0,0,0
-access_ptt_event_sale_order,ptt_event_management sale.order,model_sale_order,,1,1,1,0
-access_ptt_event_account_move,ptt_event_management account.move,model_account_move,,1,0,0,0
-access_ptt_event_product_template,ptt_event_management product.template,model_product_template,,1,0,0,0

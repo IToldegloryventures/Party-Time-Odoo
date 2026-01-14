@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import base64
 import logging
 import requests
 from odoo import api, fields, models, _
@@ -128,13 +127,12 @@ class JustCallConfig(models.Model):
         if not self.api_key or not self.api_secret:
             raise UserError(_("API Key and API Secret are required"))
         
-        # Basic Auth: base64(api_key:api_secret)
+        # JustCall API expects: Authorization: api_key:api_secret
+        # Reference: https://developer.justcall.io/reference/authentication
         credentials = f"{self.api_key}:{self.api_secret}"
-        encoded = base64.b64encode(credentials.encode()).decode()
         
         return {
-            'Authorization': f'Basic {encoded}',
-            'Content-Type': 'application/json',
+            'Authorization': credentials,
             'Accept': 'application/json',
         }
 

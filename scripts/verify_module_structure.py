@@ -17,11 +17,9 @@ ADDONS_DIR = PROJECT_ROOT / "addons"
 # Custom modules to check
 CUSTOM_MODULES = [
     'ptt_justcall',
-    'ptt_event_management',
     'ptt_business_core',
     'ptt_operational_dashboard',
     'ptt_vendor_management',
-    'ppt_event_management',  # Check this duplicate too
 ]
 
 def check_module_structure(module_name):
@@ -190,12 +188,7 @@ def main():
         print("[ERROR] Some modules have issues - fix before deploying")
     print("=" * 80)
     
-    # Check for duplicate modules
-    print("\n[CHECK] Checking for duplicate modules...")
-    if (ADDONS_DIR / "ppt_event_management").exists() and (ADDONS_DIR / "ptt_event_management").exists():
-        print("  [WARN] WARNING: Both 'ppt_event_management' and 'ptt_event_management' exist!")
-        print("     This may cause confusion. Consider removing one.")
-        print("     Recommended: Keep 'ptt_event_management' (single 'p')")
+    # All duplicate module checks removed - modules consolidated
 
 if __name__ == '__main__':
     main()

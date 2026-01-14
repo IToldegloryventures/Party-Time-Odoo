@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import base64
 import logging
 import requests
 import time
-from odoo import api, models
+from odoo import api, models, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)

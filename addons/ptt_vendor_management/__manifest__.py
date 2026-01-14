@@ -27,6 +27,7 @@
         "mail",
         "portal",
         "purchase",
+        "project",  # Required for project view references
         "ptt_business_core",  # Has ptt.project.vendor.assignment model
     ],
     "data": [
@@ -37,7 +38,7 @@
         "data/ptt_document_type_data.xml",
         "data/ptt_vendor_service_tag_data.xml",
         "data/mail_template_work_order.xml",
-        "data/server_actions.xml",
+      "data/server_actions.xml",
         # Views (configuration views first, then main views)
         "views/ptt_document_type_view.xml",
         "views/ptt_vendor_document_view.xml",
