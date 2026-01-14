@@ -6,6 +6,11 @@
         Adds:
         1. Tier 1 info header on quote form (Event Date, Venue, Guest Count)
         2. Price Per Person on form, kanban, and tree views
+        3. INTERNAL Pricing Reference section with DJ pricing matrix
+        4. Order line pricing info (min/max rate, min hours)
+        
+        INTERNAL ONLY: Pricing reference sections are for sales reps only.
+        They do NOT appear on printed quotes/invoices.
         
         Reference: https://www.odoo.com/documentation/19.0/developer/reference/user_interface/view_architectures.html
     -->
@@ -34,14 +39,185 @@
                     </group>
                 </group>
             </xpath>
+            
+            <!-- =========================================================== -->
+            <!-- INTERNAL PRICING REFERENCE - DJ Services Matrix              -->
+            <!-- This section is for INTERNAL USE ONLY - helps sales reps    -->
+            <!-- know the pricing ranges. NEVER appears on customer documents -->
+            <!-- =========================================================== -->
+            <xpath expr="//notebook" position="inside">
+                <page string="📊 Pricing Reference" name="ptt_pricing_reference"
+                      groups="sales_team.group_sale_salesman">
+                    <div class="alert alert-info mb-3" role="alert">
+                        <strong>🔒 Internal Reference Only</strong> - This pricing guide helps you quote accurately. 
+                        It does NOT appear on customer quotes or invoices.
+                    </div>
+                    
+                    <!-- DJ Services Pricing Matrix -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>🎧 DJ &amp; MC Services - Hourly Rates</h4>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Event Type</th>
+                                        <th>Tier</th>
+                                        <th>Min Hours</th>
+                                        <th>Guest Range</th>
+                                        <th>Min Rate</th>
+                                        <th>Max Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- SOCIAL -->
+                                    <tr class="table-light">
+                                        <td rowspan="3"><strong>Social</strong></td>
+                                        <td>Essentials</td>
+                                        <td>2 hrs</td>
+                                        <td>1-100</td>
+                                        <td><strong>$300</strong></td>
+                                        <td>$400</td>
+                                    </tr>
+                                    <tr class="table-light">
+                                        <td>Classic</td>
+                                        <td>2 hrs</td>
+                                        <td>101-175</td>
+                                        <td><strong>$425</strong></td>
+                                        <td>$600</td>
+                                    </tr>
+                                    <tr class="table-light">
+                                        <td>Premier</td>
+                                        <td>2 hrs</td>
+                                        <td>176+</td>
+                                        <td><strong>$600</strong></td>
+                                        <td>$675</td>
+                                    </tr>
+                                    <!-- CORPORATE -->
+                                    <tr>
+                                        <td rowspan="3"><strong>Corporate</strong></td>
+                                        <td>Essentials</td>
+                                        <td>2 hrs</td>
+                                        <td>1-100</td>
+                                        <td><strong>$300</strong></td>
+                                        <td>$400</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Classic</td>
+                                        <td>2 hrs</td>
+                                        <td>101-250</td>
+                                        <td><strong>$425</strong></td>
+                                        <td>$600</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Premier</td>
+                                        <td>2 hrs</td>
+                                        <td>251-500</td>
+                                        <td><strong>$600</strong></td>
+                                        <td>$675</td>
+                                    </tr>
+                                    <!-- WEDDING -->
+                                    <tr class="table-warning">
+                                        <td rowspan="3"><strong>Wedding</strong></td>
+                                        <td>Essentials</td>
+                                        <td><strong>3 hrs</strong></td>
+                                        <td>50-350</td>
+                                        <td><strong>$350</strong></td>
+                                        <td>$450</td>
+                                    </tr>
+                                    <tr class="table-warning">
+                                        <td>Classic</td>
+                                        <td><strong>4 hrs</strong></td>
+                                        <td>101-250</td>
+                                        <td><strong>$475</strong></td>
+                                        <td>$625</td>
+                                    </tr>
+                                    <tr class="table-warning">
+                                        <td>Premier</td>
+                                        <td><strong>5 hrs</strong></td>
+                                        <td>251-500</td>
+                                        <td><strong>$650</strong></td>
+                                        <td>$700</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Tips -->
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <strong>✅ Pricing Tips</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li><strong>Start at MIN</strong> - Default quote price</li>
+                                        <li><strong>Negotiate up to MAX</strong> - For premium requests</li>
+                                        <li><strong>6+ hour events</strong> - Consider 1.5x rate</li>
+                                        <li><strong>Check guest count</strong> - Use appropriate tier</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <strong>💡 Tier Selection Guide</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li><strong>Essentials</strong> - Basic setup, budget-conscious</li>
+                                        <li><strong>Classic</strong> - Full DJ/MC, lighting included</li>
+                                        <li><strong>Premier</strong> - Premium experience, all extras</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </page>
+            </xpath>
         </field>
     </record>
     
-    <!-- ===================================== -->
-    <!-- KANBAN/CARD VIEW: Show Price Per Person -->
-    <!-- NOTE: Odoo 19 kanban structure simplified   -->
-    <!-- Fields are searchable/filterable via tree  -->
-    <!-- ===================================== -->
+    <!-- ============================================= -->
+    <!-- ORDER LINE TREE: Add Pricing Reference Cols  -->
+    <!-- Shows min/max rates and status on each line  -->
+    <!-- ============================================= -->
+    <record id="view_order_line_tree_ptt_inherit" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.ptt</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_unit']" position="after">
+                <field name="ptt_price_min" optional="hide" string="Min $"/>
+                <field name="ptt_price_max" optional="hide" string="Max $"/>
+                <field name="ptt_min_hours" optional="hide" string="Min Hrs"/>
+                <field name="ptt_price_status" optional="hide" 
+                       decoration-danger="ptt_price_status == 'below_min'"
+                       decoration-warning="ptt_price_status == 'above_max'"
+                       decoration-success="ptt_price_status == 'in_range'"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- ============================================= -->
+    <!-- ORDER LINE FORM (in SO): Show pricing info   -->
+    <!-- ============================================= -->
+    <record id="view_sale_order_form_line_ptt" model="ir.ui.view">
+        <field name="name">sale.order.form.line.ptt</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Add pricing columns to the order lines tree inside the form -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="after">
+                <field name="ptt_price_min" optional="show" string="Min $" readonly="1"/>
+                <field name="ptt_price_max" optional="show" string="Max $" readonly="1"/>
+                <field name="ptt_min_hours" optional="show" string="Min Hrs" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
     
     <!-- ===================================== -->
     <!-- TREE/LIST VIEW: Add columns          -->

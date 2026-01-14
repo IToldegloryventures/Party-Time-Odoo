@@ -8,27 +8,38 @@
         IMPORTANT: Standard Odoo fields used (DO NOT duplicate):
         - categ_id: Many2one to product.category
         - type: Selection (service/consu/product)
-        - list_price: Float (sale price)
-        - standard_price: Float (cost)
+        - list_price: Float (sale price) - HOURLY RATE for services
+        - standard_price: Float (cost) - HOURLY COST for services
         - sale_ok: Boolean
         - purchase_ok: Boolean
         - description_sale: Text
         - default_code: Char (SKU)
+        - uom_id / uom_po_id: Unit of Measure (Hours for services)
+        
+        DJ PRICING MODEL (Jan 2026):
+        - list_price = BASE hourly rate ($300 = Social Essential MIN)
+        - Variant pricing via product.template.attribute.value price_extra
+        - See dj_variant_pricing.xml for tier adjustments
     -->
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- ============================================ -->
         <!-- DJ & MC SERVICES - PRODUCT TEMPLATE (PARENT) -->
         <!-- Creates 9 variants via attributes            -->
+        <!-- Base price: $300/hr (Social Essential MIN)   -->
+        <!-- Variants adjust via price_extra              -->
         <!-- ============================================ -->
         <record id="product_template_dj_services" model="product.template">
             <field name="name">DJ &amp; MC Services</field>
+            <field name="default_code">DJ-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
-            <field name="list_price">1695.0</field>
-            <field name="standard_price">800.0</field>
+            <field name="list_price">300.0</field>
+            <field name="standard_price">150.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional DJ services for your event. Includes music, basic audio equipment, and microphones. Tier and event type determine specific inclusions.</field>
+            <field name="description_sale">Professional DJ services for your event. Pricing is per hour. Package inclusions and rates vary by Event Type and Service Tier selected. Minimum hours may apply based on tier.</field>
         </record>
 
         <!-- Link Event Type Attribute to DJ Template -->

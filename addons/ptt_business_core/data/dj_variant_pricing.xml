@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        DJ Service Variant Pricing Configuration
+        
+        Uses product.template.attribute.value to set price_extra for each
+        variant combination. This creates the pricing matrix from the spreadsheet.
+        
+        BASE PRICE: $300/hr (Social Essential MIN - set on product.template)
+        
+        PRICING STRATEGY:
+        - Store MIN price as base, sales reps can negotiate up to MAX
+        - price_extra on attribute values creates final variant price
+        - Final Price = Base ($300) + Event Type Extra + Tier Extra
+        
+        RESULTING PRICES (All match spreadsheet MIN values):
+        ┌─────────────┬───────────┬─────────┬─────────┐
+        │ Event Type  │ Essential │ Classic │ Premier │
+        ├─────────────┼───────────┼─────────┼─────────┤
+        │ Social      │ $300      │ $425    │ $600    │
+        │ Corporate   │ $300      │ $425    │ $600    │
+        │ Wedding     │ $350      │ $475    │ $650    │
+        └─────────────┴───────────┴─────────┴─────────┘
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
+    -->
+    <data noupdate="0">
+        
+        <!-- ================================================ -->
+        <!-- EVENT TYPE PRICE ADJUSTMENTS (from Social base)  -->
+        <!-- Social = base (+$0), Corporate = same (+$0)      -->
+        <!-- Wedding = +$50 (Wedding Essential $350 - $300)   -->
+        <!-- ================================================ -->
+        
+        <!-- Social: +$0 (base pricing) -->
+        <record id="ptav_dj_social" model="product.template.attribute.value">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_line_id" ref="dj_event_type_attribute_line"/>
+            <field name="product_attribute_value_id" ref="pav_event_social"/>
+            <field name="price_extra">0.0</field>
+        </record>
+        
+        <!-- Corporate: +$0 (same pricing structure as Social) -->
+        <record id="ptav_dj_corporate" model="product.template.attribute.value">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_line_id" ref="dj_event_type_attribute_line"/>
+            <field name="product_attribute_value_id" ref="pav_event_corporate"/>
+            <field name="price_extra">0.0</field>
+        </record>
+        
+        <!-- Wedding: +$50 (Wedding Essential $350 vs Social Essential $300) -->
+        <record id="ptav_dj_wedding" model="product.template.attribute.value">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_line_id" ref="dj_event_type_attribute_line"/>
+            <field name="product_attribute_value_id" ref="pav_event_wedding"/>
+            <field name="price_extra">50.0</field>
+        </record>
+        
+        <!-- ================================================ -->
+        <!-- SERVICE TIER PRICE ADJUSTMENTS (from Essential)  -->
+        <!-- Essential = base (+$0)                           -->
+        <!-- Classic = +$125 ($425 - $300)                    -->
+        <!-- Premier = +$300 ($600 - $300)                    -->
+        <!-- ================================================ -->
+        
+        <!-- Essential: +$0 (base tier) -->
+        <record id="ptav_dj_essential" model="product.template.attribute.value">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_line_id" ref="dj_service_tier_attribute_line"/>
+            <field name="product_attribute_value_id" ref="pav_tier_essentials"/>
+            <field name="price_extra">0.0</field>
+        </record>
+        
+        <!-- Classic: +$125 (Social Classic $425 - Social Essential $300) -->
+        <record id="ptav_dj_classic" model="product.template.attribute.value">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_line_id" ref="dj_service_tier_attribute_line"/>
+            <field name="product_attribute_value_id" ref="pav_tier_classic"/>
+            <field name="price_extra">125.0</field>
+        </record>
+        
+        <!-- Premier: +$300 (Social Premier $600 - Social Essential $300) -->
+        <record id="ptav_dj_premier" model="product.template.attribute.value">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_line_id" ref="dj_service_tier_attribute_line"/>
+            <field name="product_attribute_value_id" ref="pav_tier_premier"/>
+            <field name="price_extra">300.0</field>
+        </record>
+        
+    </data>
+</odoo>

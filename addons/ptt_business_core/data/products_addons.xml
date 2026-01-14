@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
-        <!-- 
-            DJ Add-On Products
-            Per meeting: "MC should be an add-on. Karaoke should be an add-on."
-            
-            SKU Pattern: ADDON-{TYPE}
-        -->
+    <!-- 
+        DJ Add-On Products
+        
+        EXISTING ADD-ONS (pre-Jan 2026):
+        - MC Services, Karaoke, Line Dancing, Extra Hour, Additional Mics, Uplighting
+        
+        NEW ADD-ONS (Jan 2026 - from PTT_Event Pricing spreadsheet):
+        - Essential Tier: Lighting Upgrade
+        - Classic Tier: Assistant DJ, Song Request Queue
+        - Premier Tier: Video DJ Booth, Co-Host
+        - Wedding: Playlist Planning, Timeline Assist, Custom Transitions, Guest Request App
+        - Corporate: Branded Loop, Raffle Music, Branded Booth, Remix Sets, Sponsor Plugs, Custom Cues
+        - General: Intro Voiceover
+        
+        SKU Pattern: ADDON-{TYPE}
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
+    -->
+    <data noupdate="0">
+        
+        <!-- ============================================ -->
+        <!-- EXISTING ADD-ONS (updated pricing)          -->
+        <!-- ============================================ -->
         
         <record id="product_addon_mc_services" model="product.product">
             <field name="name">MC Services (Add-On)</field>
@@ -38,6 +54,7 @@
             <field name="list_price">100.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional line dancing instruction and crowd participation.</field>
         </record>
         
         <record id="product_addon_extra_hour" model="product.product">
@@ -46,9 +63,11 @@
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">200.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Additional hour of DJ/entertainment services.</field>
+            <field name="description_sale">Additional hour of DJ/entertainment services beyond package minimum.</field>
         </record>
         
         <record id="product_addon_additional_mics" model="product.product">
@@ -59,6 +78,7 @@
             <field name="list_price">50.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Additional wireless or wired microphones for your event.</field>
         </record>
         
         <record id="product_addon_uplighting" model="product.product">
@@ -69,6 +89,208 @@
             <field name="list_price">300.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Uplighting package with customizable colors. Sold in increments of 10 lights.</field>
         </record>
+        
+        <!-- ============================================ -->
+        <!-- ESSENTIAL TIER ADD-ONS                      -->
+        <!-- ============================================ -->
+        
+        <record id="product_addon_lighting_upgrade" model="product.product">
+            <field name="name">Lighting Upgrade (Add-On)</field>
+            <field name="default_code">ADDON-LIGHTING</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">150.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Enhanced lighting package upgrade for Essential tier events.</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- CLASSIC TIER ADD-ONS                        -->
+        <!-- ============================================ -->
+        
+        <record id="product_addon_assistant_dj" model="product.product">
+            <field name="name">Assistant DJ (Add-On)</field>
+            <field name="default_code">ADDON-ASSIST-DJ</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">175.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Secondary DJ to assist with setup, transitions, and crowd management.</field>
+        </record>
+        
+        <record id="product_addon_song_request_queue" model="product.product">
+            <field name="name">Song Request Queue (Add-On)</field>
+            <field name="default_code">ADDON-REQUEST-Q</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">75.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Digital song request system allowing guests to submit requests via tablet or phone.</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- PREMIER TIER ADD-ONS                        -->
+        <!-- ============================================ -->
+        
+        <record id="product_addon_video_dj_booth" model="product.product">
+            <field name="name">Video DJ Booth (Add-On)</field>
+            <field name="default_code">ADDON-VIDEO-DJ</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">350.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Video DJ booth with visual mixing, screens, and music video integration.</field>
+        </record>
+        
+        <record id="product_addon_co_host" model="product.product">
+            <field name="name">Co-Host (Add-On)</field>
+            <field name="default_code">ADDON-COHOST</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">200.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional co-host to work alongside the DJ for enhanced crowd interaction.</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- WEDDING-SPECIFIC ADD-ONS                    -->
+        <!-- ============================================ -->
+        
+        <record id="product_addon_playlist_planning" model="product.product">
+            <field name="name">Playlist Planning (Add-On)</field>
+            <field name="default_code">ADDON-PLAYLIST</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">100.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Custom playlist planning and curation service with consultation.</field>
+        </record>
+        
+        <record id="product_addon_timeline_assist" model="product.product">
+            <field name="name">Timeline Assistance (Add-On)</field>
+            <field name="default_code">ADDON-TIMELINE</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">75.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Event timeline planning and coordination assistance for seamless transitions.</field>
+        </record>
+        
+        <record id="product_addon_custom_transitions" model="product.product">
+            <field name="name">Custom Transitions (Add-On)</field>
+            <field name="default_code">ADDON-TRANSITIONS</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">125.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Custom music transitions between event segments (ceremony to reception, etc.).</field>
+        </record>
+        
+        <record id="product_addon_guest_request_app" model="product.product">
+            <field name="name">Guest Request App (Add-On)</field>
+            <field name="default_code">ADDON-GUEST-APP</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">125.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Mobile app for guest song requests, dedications, and event interaction.</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- CORPORATE-SPECIFIC ADD-ONS                  -->
+        <!-- ============================================ -->
+        
+        <record id="product_addon_branded_loop" model="product.product">
+            <field name="name">Branded Loop (Add-On)</field>
+            <field name="default_code">ADDON-BRAND-LOOP</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">100.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Custom branded audio/video loop with company messaging.</field>
+        </record>
+        
+        <record id="product_addon_raffle_music" model="product.product">
+            <field name="name">Raffle Music (Add-On)</field>
+            <field name="default_code">ADDON-RAFFLE</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">50.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Raffle/prize drawing music, drum rolls, and celebration sound effects.</field>
+        </record>
+        
+        <record id="product_addon_branded_booth" model="product.product">
+            <field name="name">Branded DJ Booth (Add-On)</field>
+            <field name="default_code">ADDON-BRAND-BOOTH</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">200.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Custom branded DJ booth facade with company logo and colors.</field>
+        </record>
+        
+        <record id="product_addon_remix_sets" model="product.product">
+            <field name="name">Custom Remix Sets (Add-On)</field>
+            <field name="default_code">ADDON-REMIX</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">175.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Custom remix sets tailored to your event theme or company brand.</field>
+        </record>
+        
+        <record id="product_addon_sponsor_plugs" model="product.product">
+            <field name="name">Sponsor Plugs (Add-On)</field>
+            <field name="default_code">ADDON-SPONSOR</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">75.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Sponsor mentions, thank-you announcements, and recognition plugs.</field>
+        </record>
+        
+        <record id="product_addon_custom_cues" model="product.product">
+            <field name="name">Custom Audio Cues (Add-On)</field>
+            <field name="default_code">ADDON-CUES</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">100.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Custom audio cues for event segments, speaker introductions, and transitions.</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- GENERAL ADD-ONS                             -->
+        <!-- ============================================ -->
+        
+        <record id="product_addon_intro_voiceover" model="product.product">
+            <field name="name">Intro Voiceover (Add-On)</field>
+            <field name="default_code">ADDON-VOICEOVER</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">150.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional recorded intro voiceover and custom announcements.</field>
+        </record>
+        
     </data>
 </odoo>

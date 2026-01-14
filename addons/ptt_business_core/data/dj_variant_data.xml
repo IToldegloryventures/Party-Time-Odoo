@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        DJ Service Variant Configuration Data
+        
+        Server action to populate per-variant fields:
+        - Minimum hours required
+        - Guest count ranges
+        - Hourly rate min/max ranges
+        - Vendor cost min/max ranges
+        - "What's Included" descriptions
+        
+        NOTE: product.product variants are auto-created by Odoo when attributes
+        are linked to the template. This server action populates the custom fields.
+        
+        RUN: Settings > Technical > Server Actions > "Configure DJ Service Variants"
+        Or via XML-RPC / scheduled action after module upgrade.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html
+    -->
+    <data noupdate="0">
+        
+        <!-- ================================================ -->
+        <!-- Server Action: Configure DJ Service Variants     -->
+        <!-- Populates ptt_* fields on each DJ variant        -->
+        <!-- ================================================ -->
+        <record id="action_configure_dj_variants" model="ir.actions.server">
+            <field name="name">Configure DJ Service Variants</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="state">code</field>
+            <field name="code">
+# DJ Variant Configuration Data (from PTT_Event Pricing spreadsheet)
+# Each key is (event_type_name, tier_name) tuple
+DJ_CONFIG = {
+    # === SOCIAL EVENT TIERS ===
+    ('Social', 'Essentials'): {
+        'min_hours': 2.0,
+        'guest_min': 1,
+        'guest_max': 100,
+        'price_min': 300.0,
+        'price_max': 400.0,
+        'cost_min': 150.0,
+        'cost_max': 225.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;2 hours of music&lt;/li&gt;
+            &lt;li&gt;Curated playlist&lt;/li&gt;
+            &lt;li&gt;Basic audio setup (1-2 speakers)&lt;/li&gt;
+            &lt;li&gt;DJ controller&lt;/li&gt;
+            &lt;li&gt;Microphone&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    ('Social', 'Classic'): {
+        'min_hours': 2.0,
+        'guest_min': 101,
+        'guest_max': 175,
+        'price_min': 425.0,
+        'price_max': 600.0,
+        'cost_min': 200.0,
+        'cost_max': 325.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;2 hours of music&lt;/li&gt;
+            &lt;li&gt;Dance floor lighting&lt;/li&gt;
+            &lt;li&gt;Intro announcements&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    ('Social', 'Premier'): {
+        'min_hours': 2.0,
+        'guest_min': 176,
+        'guest_max': 0,  # 0 = unlimited (250+)
+        'price_min': 600.0,
+        'price_max': 675.0,
+        'cost_min': 300.0,
+        'cost_max': 425.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;2 hours of music&lt;/li&gt;
+            &lt;li&gt;Dance floor lighting&lt;/li&gt;
+            &lt;li&gt;Scripted MC services&lt;/li&gt;
+            &lt;li&gt;Crowd engagement&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    
+    # === CORPORATE EVENT TIERS ===
+    ('Corporate', 'Essentials'): {
+        'min_hours': 2.0,
+        'guest_min': 1,
+        'guest_max': 100,
+        'price_min': 300.0,
+        'price_max': 400.0,
+        'cost_min': 150.0,
+        'cost_max': 225.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;2 hours background/dance music&lt;/li&gt;
+            &lt;li&gt;Announcements&lt;/li&gt;
+            &lt;li&gt;1-2 speakers&lt;/li&gt;
+            &lt;li&gt;Wireless microphone&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    ('Corporate', 'Classic'): {
+        'min_hours': 2.0,
+        'guest_min': 101,
+        'guest_max': 250,
+        'price_min': 425.0,
+        'price_max': 600.0,
+        'cost_min': 200.0,
+        'cost_max': 325.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;2 hours networking + dance mix&lt;/li&gt;
+            &lt;li&gt;Dance lights&lt;/li&gt;
+            &lt;li&gt;DJ/MC services&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    ('Corporate', 'Premier'): {
+        'min_hours': 2.0,
+        'guest_min': 251,
+        'guest_max': 500,
+        'price_min': 600.0,
+        'price_max': 675.0,
+        'cost_min': 300.0,
+        'cost_max': 425.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;2 hours DJ performance&lt;/li&gt;
+            &lt;li&gt;Scripted MC services&lt;/li&gt;
+            &lt;li&gt;Stage presence&lt;/li&gt;
+            &lt;li&gt;Walk-on music&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    
+    # === WEDDING EVENT TIERS ===
+    ('Wedding', 'Essentials'): {
+        'min_hours': 3.0,  # Weddings require more hours
+        'guest_min': 50,
+        'guest_max': 350,
+        'price_min': 350.0,
+        'price_max': 450.0,
+        'cost_min': 200.0,
+        'cost_max': 300.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;3 hours ceremony or reception&lt;/li&gt;
+            &lt;li&gt;Curated music selection&lt;/li&gt;
+            &lt;li&gt;Lav/handheld microphone&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    ('Wedding', 'Classic'): {
+        'min_hours': 4.0,
+        'guest_min': 101,
+        'guest_max': 250,
+        'price_min': 475.0,
+        'price_max': 625.0,
+        'cost_min': 250.0,
+        'cost_max': 350.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;4 hours reception coverage&lt;/li&gt;
+            &lt;li&gt;DJ + MC services&lt;/li&gt;
+            &lt;li&gt;Dance floor lights&lt;/li&gt;
+            &lt;li&gt;Wireless microphone&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+    ('Wedding', 'Premier'): {
+        'min_hours': 5.0,
+        'guest_min': 251,
+        'guest_max': 500,
+        'price_min': 650.0,
+        'price_max': 700.0,
+        'cost_min': 300.0,
+        'cost_max': 450.0,
+        'includes': '''&lt;ul&gt;
+            &lt;li&gt;5 hours ceremony and reception&lt;/li&gt;
+            &lt;li&gt;Scripted MC services&lt;/li&gt;
+            &lt;li&gt;Dance floor lighting&lt;/li&gt;
+            &lt;li&gt;Subwoofer for enhanced bass&lt;/li&gt;
+            &lt;li&gt;Wireless microphone&lt;/li&gt;
+        &lt;/ul&gt;''',
+    },
+}
+
+# Find DJ template by XML ID
+dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
+
+if not dj_template:
+    raise UserError("DJ &amp; MC Services template not found. Please ensure the product exists.")
+
+configured_count = 0
+for variant in dj_template.product_variant_ids:
+    # Extract attribute values from variant
+    attr_values = variant.product_template_attribute_value_ids
+    event_type = None
+    tier = None
+    
+    for av in attr_values:
+        if av.attribute_id.name == 'Event Type':
+            event_type = av.name
+        elif av.attribute_id.name == 'Service Tier':
+            tier = av.name
+    
+    # Look up configuration
+    key = (event_type, tier)
+    if key in DJ_CONFIG:
+        config = DJ_CONFIG[key]
+        variant.write({
+            'ptt_min_hours': config['min_hours'],
+            'ptt_guest_count_min': config['guest_min'],
+            'ptt_guest_count_max': config['guest_max'],
+            'ptt_price_per_hour_min': config['price_min'],
+            'ptt_price_per_hour_max': config['price_max'],
+            'ptt_cost_per_hour_min': config['cost_min'],
+            'ptt_cost_per_hour_max': config['cost_max'],
+            'ptt_package_includes': config['includes'],
+        })
+        configured_count += 1
+
+# Return success notification
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params': {
+        'title': 'DJ Variants Configured',
+        'message': f'Successfully configured {configured_count} DJ service variants.',
+        'sticky': False,
+        'type': 'success',
+    }
+}
+            </field>
+        </record>
+        
+        <!-- Menu item to run the configuration (optional - can run from Server Actions) -->
+        <menuitem id="menu_configure_dj_variants"
+            name="Configure DJ Variants"
+            parent="sale.menu_sale_config"
+            action="action_configure_dj_variants"
+            sequence="100"
+            groups="base.group_system"/>
+        
+    </data>
+</odoo>

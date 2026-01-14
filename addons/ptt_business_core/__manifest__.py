@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.5.0.0",  # Tier migration + SERVICE_TYPES expansion (Jan 2026)
+    "version": "19.0.6.0.0",  # DJ Flagship Config - Hourly pricing + variant config (Jan 2026)
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -27,6 +27,10 @@
         "data/project_template.xml",
         # Products (load order: entertainment with variants first, then services, rentals, addons, adjustments)
         "data/products_entertainment.xml",
+        # DJ Variant Pricing (must load after entertainment to reference attribute lines)
+        "data/dj_variant_pricing.xml",
+        # DJ Variant Data (server action to configure variant-specific fields)
+        "data/dj_variant_data.xml",
         "data/products_services.xml",
         "data/products_rentals.xml",
         "data/products_addons.xml",
