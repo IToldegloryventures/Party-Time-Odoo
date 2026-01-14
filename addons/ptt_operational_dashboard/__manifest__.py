@@ -32,6 +32,7 @@
         "mail",
         "project",
         "crm",
+        "sale",  # Required for sale.sale_order_view_search view reference
         "sale_management",
         "sale_crm",
         "account",
