@@ -67,7 +67,7 @@ class PttPersonalTodo(models.Model):
     )
     
     # Computed category for display grouping
-    x_category = fields.Selection(
+    ptt_category = fields.Selection(
         [
             ("today", "Today"),
             ("overdue", "Overdue"),
@@ -77,7 +77,7 @@ class PttPersonalTodo(models.Model):
         string="Category",
         compute="_compute_category",
         store=False,
-        help="Computed category based on due date."
+        help="Computed category based on due date. Used for grouping to-do items in the UI."
     )
     
     @api.depends("due_date", "is_done")
@@ -86,15 +86,15 @@ class PttPersonalTodo(models.Model):
         today = fields.Date.context_today(self)
         for record in self:
             if record.is_done:
-                record.x_category = False
+                record.ptt_category = False
             elif not record.due_date:
-                record.x_category = "unscheduled"
+                record.ptt_category = "unscheduled"
             elif record.due_date < today:
-                record.x_category = "overdue"
+                record.ptt_category = "overdue"
             elif record.due_date == today:
-                record.x_category = "today"
+                record.ptt_category = "today"
             else:
-                record.x_category = "upcoming"
+                record.ptt_category = "upcoming"
     
     def action_toggle_done(self):
         """Toggle the done status of the to-do item."""
@@ -139,8 +139,8 @@ class PttPersonalTodo(models.Model):
                 "priority": todo.priority,
                 "sequence": todo.sequence,
             }
-            if todo.x_category:
-                result[todo.x_category].append(todo_data)
+            if todo.ptt_category:
+                result[todo.ptt_category].append(todo_data)
         
         return result
 

@@ -44,10 +44,20 @@ class CrmLead(models.Model):
             ("email", "Email"),
         ],
         string="Preferred Contact Method",
+        help="Client's preferred method of communication for follow-ups and updates."
     )
-    ptt_second_poc_name = fields.Char(string="2nd POC Name")
-    ptt_second_poc_phone = fields.Char(string="2nd POC Phone")
-    ptt_second_poc_email = fields.Char(string="2nd POC Email")
+    ptt_second_poc_name = fields.Char(
+        string="2nd POC Name",
+        help="Name of the secondary point of contact for this event."
+    )
+    ptt_second_poc_phone = fields.Char(
+        string="2nd POC Phone",
+        help="Phone number of the secondary point of contact."
+    )
+    ptt_second_poc_email = fields.Char(
+        string="2nd POC Email",
+        help="Email address of the secondary point of contact."
+    )
 
     # === EVENT ID (Manual Entry - Links CRM, SO, Project, Tasks) ===
     ptt_event_id = fields.Char(
@@ -106,14 +116,40 @@ class CrmLead(models.Model):
             ("themed_cigar_whiskey", "Themed - Cigar & Whiskey Nights"),
         ],
         string="Event Category",
+        help="Type of event being planned. Used for categorization, reporting, and template selection."
     )
-    ptt_event_specific_goal = fields.Char(string="Specific Goal")
-    ptt_event_date = fields.Date(string="Event Date", index=True)
-    ptt_event_time = fields.Char(string="Event Time")
-    ptt_total_hours = fields.Float(string="Total Hours")
-    ptt_estimated_guest_count = fields.Integer(string="Estimated Guest Count")
-    ptt_venue_booked = fields.Boolean(string="Venue Booked?")
-    ptt_venue_name = fields.Char(string="Venue")
+    ptt_event_specific_goal = fields.Char(
+        string="Specific Goal",
+        help="Primary objective or goal for this event (e.g., celebration, corporate meeting, fundraiser, team building)."
+    )
+    ptt_event_date = fields.Date(
+        string="Event Date",
+        index=True,
+        help="Scheduled date for the event. Used for calendar views and event planning."
+    )
+    ptt_event_time = fields.Char(
+        string="Event Time",
+        help="Scheduled start time for the event in HH:MM format (e.g., 14:00 for 2:00 PM)."
+    )
+    ptt_total_hours = fields.Float(
+        string="Total Hours",
+        default=0.0,
+        help="Total duration of the event in hours (e.g., 4.5 for 4 hours 30 minutes). Used for pricing and scheduling."
+    )
+    ptt_estimated_guest_count = fields.Integer(
+        string="Estimated Guest Count",
+        default=0,
+        help="Expected number of guests/attendees for the event. Used to calculate per-person pricing and resource planning."
+    )
+    ptt_venue_booked = fields.Boolean(
+        string="Venue Booked?",
+        default=False,
+        help="Indicates whether a specific venue has already been booked for this event."
+    )
+    ptt_venue_name = fields.Char(
+        string="Venue",
+        help="Name of the venue where the event will be held (if known or booked)."
+    )
     ptt_event_location_type = fields.Selection(
         [
             ("indoor", "Indoor"),
@@ -121,12 +157,22 @@ class CrmLead(models.Model):
             ("combination", "Combination"),
         ],
         string="Event Location",
+        help="Type of location for the event. Affects equipment needs and weather contingency planning."
     )
 
     # === CFO/FINANCE CONTACT (for corporate clients) ===
-    ptt_cfo_name = fields.Char(string="CFO/Finance Contact Name")
-    ptt_cfo_phone = fields.Char(string="CFO/Finance Contact Phone")
-    ptt_cfo_email = fields.Char(string="CFO/Finance Contact Email")
+    ptt_cfo_name = fields.Char(
+        string="CFO/Finance Contact Name",
+        help="Name of the Chief Financial Officer or finance contact person for approval and payment processing."
+    )
+    ptt_cfo_phone = fields.Char(
+        string="CFO/Finance Contact Phone",
+        help="Phone number of the CFO or finance contact person."
+    )
+    ptt_cfo_email = fields.Char(
+        string="CFO/Finance Contact Email",
+        help="Email address of the CFO or finance contact person for invoicing and payment communications."
+    )
     ptt_cfo_contact_method = fields.Selection(
         [
             ("call", "Phone Call"),
@@ -134,6 +180,7 @@ class CrmLead(models.Model):
             ("email", "Email"),
         ],
         string="CFO Preferred Contact Method",
+        help="Preferred method of communication for the CFO/finance contact regarding billing and payments."
     )
 
 
@@ -177,6 +224,32 @@ class CrmLead(models.Model):
             if record.ptt_event_time and not TIME_PATTERN.match(record.ptt_event_time):
                 raise ValidationError(
                     _("Event Time must be in HH:MM format (e.g., 09:30, 14:00). Got: %s") % record.ptt_event_time
+                )
+    
+    @api.constrains('ptt_estimated_guest_count')
+    def _check_guest_count_positive(self):
+        """Ensure guest count is not negative.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#constraints-and-indexes
+        """
+        for record in self:
+            if record.ptt_estimated_guest_count < 0:
+                raise ValidationError(
+                    _("Guest count cannot be negative. Got: %s. Please enter 0 or a positive number.") 
+                    % record.ptt_estimated_guest_count
+                )
+    
+    @api.constrains('ptt_total_hours')
+    def _check_total_hours_positive(self):
+        """Ensure event duration is positive.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#constraints-and-indexes
+        """
+        for record in self:
+            if record.ptt_total_hours and record.ptt_total_hours <= 0:
+                raise ValidationError(
+                    _("Event duration must be greater than 0 hours. Got: %s hours. Please enter a positive number.") 
+                    % record.ptt_total_hours
                 )
 
     # === ACTION METHODS ===

@@ -208,24 +208,88 @@ class ProjectProject(models.Model):
     ptt_event_date = fields.Date(
         string="Event Date",
         index=True,
-        help="Scheduled event date.",
+        help="Scheduled event date. Used for calendar views and event planning."
     )
-    ptt_event_time = fields.Char(string="Event Time")
-    ptt_guest_count = fields.Integer(string="Guest Count")
-    ptt_venue_name = fields.Char(string="Venue")
-    ptt_setup_start_time = fields.Char(string="Setup Start Time")
-    ptt_event_start_time = fields.Char(string="Event Start Time")
-    ptt_event_end_time = fields.Char(string="Event End Time")
-    ptt_total_hours = fields.Float(string="Total Hours")
-    ptt_teardown_deadline = fields.Char(string="Tear-Down Deadline")
+    ptt_event_time = fields.Char(
+        string="Event Time",
+        help="Scheduled start time for the event in HH:MM format (e.g., 14:00 for 2:00 PM)."
+    )
+    ptt_guest_count = fields.Integer(
+        string="Guest Count",
+        default=0,
+        help="Actual or confirmed number of guests/attendees for the event. Used for profitability calculations."
+    )
+    ptt_venue_name = fields.Char(
+        string="Venue",
+        help="Name of the venue where the event will be held."
+    )
+    ptt_setup_start_time = fields.Char(
+        string="Setup Start Time",
+        help="Time when setup should begin in HH:MM format (e.g., 12:00 for noon)."
+    )
+    ptt_event_start_time = fields.Char(
+        string="Event Start Time",
+        help="Time when the event officially begins in HH:MM format (e.g., 14:00 for 2:00 PM)."
+    )
+    ptt_event_end_time = fields.Char(
+        string="Event End Time",
+        help="Time when the event officially ends in HH:MM format (e.g., 18:00 for 6:00 PM)."
+    )
+    ptt_total_hours = fields.Float(
+        string="Total Hours",
+        default=0.0,
+        help="Total duration of the event in hours (e.g., 4.5 for 4 hours 30 minutes). Used for pricing and scheduling."
+    )
+    ptt_teardown_deadline = fields.Char(
+        string="Tear-Down Deadline",
+        help="Time by which equipment must be removed in HH:MM format (e.g., 20:00 for 8:00 PM)."
+    )
 
     # === EVENT DETAILS ===
-    ptt_theme_dress_code = fields.Text(string="Theme, Dress Code, or Style Preference")
-    ptt_special_requirements_desc = fields.Text(string="Special Requirements")
-    ptt_inclement_weather_plan = fields.Text(string="Inclement Weather Plan")
-    ptt_parking_restrictions_desc = fields.Text(string="Parking/Delivery Restrictions")
+    ptt_theme_dress_code = fields.Text(
+        string="Theme, Dress Code, or Style Preference",
+        help="Event theme, dress code requirements, or style preferences. Used for vendor briefings and event planning."
+    )
+    ptt_special_requirements_desc = fields.Text(
+        string="Special Requirements",
+        help="Any special requirements, accommodations, or unique needs for this event (e.g., accessibility, dietary restrictions, equipment needs)."
+    )
+    ptt_inclement_weather_plan = fields.Text(
+        string="Inclement Weather Plan",
+        help="Contingency plan for bad weather if this is an outdoor event. Includes backup location, rescheduling policy, or weather protection measures."
+    )
+    ptt_parking_restrictions_desc = fields.Text(
+        string="Parking/Delivery Restrictions",
+        help="Parking availability, restrictions, or delivery instructions for vendors. Includes loading dock locations, access times, and parking passes required."
+    )
 
     # === CONSTRAINTS ===
+    
+    @api.constrains('ptt_guest_count')
+    def _check_guest_count_positive(self):
+        """Ensure guest count is not negative.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#constraints-and-indexes
+        """
+        for record in self:
+            if record.ptt_guest_count < 0:
+                raise ValidationError(
+                    _("Guest count cannot be negative. Got: %s. Please enter 0 or a positive number.") 
+                    % record.ptt_guest_count
+                )
+    
+    @api.constrains('ptt_total_hours')
+    def _check_total_hours_positive(self):
+        """Ensure event duration is positive.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#constraints-and-indexes
+        """
+        for record in self:
+            if record.ptt_total_hours and record.ptt_total_hours <= 0:
+                raise ValidationError(
+                    _("Event duration must be greater than 0 hours. Got: %s hours. Please enter a positive number.") 
+                    % record.ptt_total_hours
+                )
     
     @api.constrains('ptt_event_time', 'ptt_setup_start_time', 'ptt_event_start_time', 
                     'ptt_event_end_time', 'ptt_teardown_deadline')
