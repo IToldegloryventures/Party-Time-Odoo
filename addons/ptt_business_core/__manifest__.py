@@ -33,6 +33,8 @@
         "data/dj_variant_data.xml",
         # DJ Product Cleanup (fixes wrong attribute links)
         "data/cleanup_dj_product.xml",
+        # Unarchive Products (reactivates archived products)
+        "data/unarchive_products.xml",
         "data/products_services.xml",
         "data/products_rentals.xml",
         "data/products_addons.xml",

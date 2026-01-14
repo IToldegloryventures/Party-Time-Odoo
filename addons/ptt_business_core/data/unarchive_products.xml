@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Unarchive All PTT Products
+        
+        When products are archived, noupdate="0" updates them but doesn't
+        automatically unarchive them. This server action fixes that.
+        
+        Run via: Settings → Technical → Server Actions → "Unarchive All PTT Products"
+    -->
+    <data noupdate="0">
+        
+        <record id="action_unarchive_products" model="ir.actions.server">
+            <field name="name">Unarchive All PTT Products</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="code">
+# =============================================================
+# UNARCHIVE ALL PTT PRODUCTS
+# Activates archived products and product templates
+# =============================================================
+
+# Unarchive product categories
+categories = env['product.category'].with_context(active_test=False).search([
+    ('name', 'in', ['Event Entertainment', 'Event Services', 
+                    'Rental Equipment, Decor &amp; Decorations', 'Adjustments'])
+])
+if categories:
+    categories.write({'active': True})
+    
+# Unarchive product templates (includes DJ Services)
+templates = env['product.template'].with_context(active_test=False).search([
+    ('active', '=', False)
+])
+if templates:
+    templates.write({'active': True})
+
+# Unarchive product variants
+products = env['product.product'].with_context(active_test=False).search([
+    ('active', '=', False)
+])
+if products:
+    products.write({'active': True})
+
+# Unarchive product attributes
+attributes = env['product.attribute'].with_context(active_test=False).search([
+    ('name', 'in', ['Event Type', 'Service Tier']),
+    ('active', '=', False)
+])
+if attributes:
+    attributes.write({'active': True})
+
+# Count what was unarchived
+template_count = len(templates) if templates else 0
+product_count = len(products) if products else 0
+category_count = len(categories) if categories else 0
+
+# Return success notification
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params': {
+        'title': 'Products Unarchived',
+        'message': f'Unarchived: {template_count} templates, {product_count} variants, {category_count} categories.',
+        'sticky': False,
+        'type': 'success',
+    }
+}
+            </field>
+        </record>
+        
+        <!-- Menu item to run the unarchive -->
+        <menuitem id="menu_unarchive_products"
+            name="Unarchive All PTT Products"
+            parent="sale.menu_sale_config"
+            action="action_unarchive_products"
+            sequence="98"
+            groups="base.group_system"/>
+        
+    </data>
+</odoo>
