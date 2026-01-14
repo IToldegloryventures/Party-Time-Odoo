@@ -45,6 +45,113 @@ class ProjectProject(models.Model):
         help="Original CRM lead/opportunity that created this project.",
     )
 
+    # === CLIENT TAB - Related Fields from CRM Lead ===
+    # These fields pull data from the linked CRM lead for the CLIENT tab.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#related-fields
+    ptt_preferred_contact_method = fields.Selection(
+        related="ptt_crm_lead_id.ptt_preferred_contact_method",
+        readonly=True,
+        string="Preferred Contact Method",
+    )
+    ptt_date_of_call = fields.Date(
+        related="ptt_crm_lead_id.ptt_date_of_call",
+        readonly=True,
+        string="Date of Call",
+    )
+    ptt_second_poc_name = fields.Char(
+        related="ptt_crm_lead_id.ptt_second_poc_name",
+        readonly=True,
+        string="2nd POC Name",
+    )
+    ptt_second_poc_phone = fields.Char(
+        related="ptt_crm_lead_id.ptt_second_poc_phone",
+        readonly=True,
+        string="2nd POC Phone",
+    )
+    ptt_second_poc_email = fields.Char(
+        related="ptt_crm_lead_id.ptt_second_poc_email",
+        readonly=True,
+        string="2nd POC Email",
+    )
+    ptt_venue_booked = fields.Boolean(
+        related="ptt_crm_lead_id.ptt_venue_booked",
+        readonly=True,
+        string="Venue Booked?",
+    )
+    ptt_cfo_name = fields.Char(
+        related="ptt_crm_lead_id.ptt_cfo_name",
+        readonly=True,
+        string="CFO/Finance Contact",
+    )
+    ptt_cfo_phone = fields.Char(
+        related="ptt_crm_lead_id.ptt_cfo_phone",
+        readonly=True,
+        string="CFO Phone",
+    )
+    ptt_cfo_email = fields.Char(
+        related="ptt_crm_lead_id.ptt_cfo_email",
+        readonly=True,
+        string="CFO Email",
+    )
+    ptt_cfo_contact_method = fields.Selection(
+        related="ptt_crm_lead_id.ptt_cfo_contact_method",
+        readonly=True,
+        string="CFO Preferred Contact",
+    )
+
+    # === FINANCIALS TAB - Profitability Fields ===
+    # These computed fields calculate event profitability for the FINANCIALS tab.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#compute-methods
+    ptt_total_revenue = fields.Monetary(
+        string="Total Revenue",
+        compute="_compute_profitability",
+        store=True,
+        currency_field="currency_id",
+        help="Total from confirmed sale orders",
+    )
+    ptt_total_vendor_cost = fields.Monetary(
+        string="Total Vendor Cost",
+        compute="_compute_profitability",
+        store=True,
+        currency_field="currency_id",
+        help="Sum of all vendor assignment costs",
+    )
+    ptt_gross_profit = fields.Monetary(
+        string="Gross Profit",
+        compute="_compute_profitability",
+        store=True,
+        currency_field="currency_id",
+    )
+    ptt_profit_margin = fields.Float(
+        string="Profit Margin %",
+        compute="_compute_profitability",
+        store=True,
+    )
+    ptt_cost_per_guest = fields.Monetary(
+        string="Cost Per Guest",
+        compute="_compute_profitability",
+        store=True,
+        currency_field="currency_id",
+    )
+    ptt_revenue_per_guest = fields.Monetary(
+        string="Revenue Per Guest",
+        compute="_compute_profitability",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    # === VENDORS TAB - Internal Team Fields ===
+    ptt_lead_coordinator_id = fields.Many2one(
+        "res.users",
+        string="Lead Coordinator",
+        help="Primary coordinator for this event",
+    )
+    ptt_onsite_contact_id = fields.Many2one(
+        "res.partner",
+        string="Onsite Contact",
+        help="Client contact who will be present at event",
+    )
+
     # === EVENT IDENTITY ===
     ptt_event_id = fields.Char(
         string="Event Number",
@@ -145,6 +252,54 @@ class ProjectProject(models.Model):
                             'value': value,
                         }
                     )
+
+    # === PROFITABILITY COMPUTATION ===
+    
+    @api.depends(
+        "sale_order_id.amount_total",
+        "sale_order_id.state",
+        "ptt_vendor_assignment_ids.actual_cost",
+        "ptt_guest_count",
+    )
+    def _compute_profitability(self):
+        """Compute profitability metrics for FINANCIALS tab.
+        
+        Calculates:
+        - Total revenue from confirmed sale orders
+        - Total vendor costs from assignments
+        - Gross profit and margin percentage
+        - Per-guest metrics
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#compute-methods
+        """
+        for project in self:
+            # Revenue from sale orders
+            revenue = 0.0
+            if project.sale_order_id and project.sale_order_id.state == "sale":
+                revenue = project.sale_order_id.amount_total
+            
+            # Vendor costs from assignments
+            vendor_cost = sum(
+                project.ptt_vendor_assignment_ids.mapped("actual_cost")
+            ) if project.ptt_vendor_assignment_ids else 0.0
+            
+            # Profit calculations
+            gross_profit = revenue - vendor_cost
+            margin = (gross_profit / revenue * 100) if revenue > 0 else 0.0
+            
+            # Per guest calculations
+            guest_count = project.ptt_guest_count or 0
+            cost_per_guest = vendor_cost / guest_count if guest_count > 0 else 0.0
+            revenue_per_guest = revenue / guest_count if guest_count > 0 else 0.0
+            
+            project.update({
+                "ptt_total_revenue": revenue,
+                "ptt_total_vendor_cost": vendor_cost,
+                "ptt_gross_profit": gross_profit,
+                "ptt_profit_margin": margin,
+                "ptt_cost_per_guest": cost_per_guest,
+                "ptt_revenue_per_guest": revenue_per_guest,
+            })
 
     # === TASK CREATION ===
     
