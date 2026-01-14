@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ptt_view_justcall_call_tree" model="ir.ui.view">
+        <field name="name">ptt.justcall.call.tree</field>
+        <field name="model">ptt.justcall.call</field>
+        <field name="arch" type="xml">
+            <tree string="JustCall Calls" decoration-success="status == 'completed'" decoration-muted="status == 'no-answer'">
+                <field name="call_date"/>
+                <field name="direction" widget="badge" decoration-info="direction == 'inbound'" decoration-primary="direction == 'outbound'"/>
+                <field name="contact_number"/>
+                <field name="partner_id"/>
+                <field name="lead_id"/>
+                <field name="project_id"/>
+                <field name="user_id"/>
+                <field name="duration_formatted"/>
+                <field name="status" widget="badge" decoration-success="status == 'completed'"/>
+                <field name="recording_url" widget="url"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ptt_view_justcall_call_form" model="ir.ui.view">
+        <field name="name">ptt.justcall.call.form</field>
+        <field name="model">ptt.justcall.call</field>
+        <field name="arch" type="xml">
+            <form string="JustCall Call">
+                <header>
+                    <button name="action_open_partner" string="Open Contact" type="object" 
+                            attrs="{'invisible': [('partner_id', '=', False)]}" class="btn-primary"/>
+                    <button name="action_open_lead" string="Open Lead" type="object" 
+                            attrs="{'invisible': [('lead_id', '=', False)]}" class="btn-primary"/>
+                    <button name="action_open_project" string="Open Project" type="object" 
+                            attrs="{'invisible': [('project_id', '=', False)]}" class="btn-primary"/>
+                    <button name="action_open_recording" string="Open Recording" type="object" 
+                            attrs="{'invisible': [('recording_url', '=', False)]}" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="call_date"/>
+                            <field name="direction" widget="radio" options="{'horizontal': true}"/>
+                            <field name="status" widget="badge"/>
+                            <field name="duration_formatted"/>
+                        </group>
+                        <group>
+                            <field name="from_number"/>
+                            <field name="to_number"/>
+                            <field name="contact_number"/>
+                            <field name="cost"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="partner_id" options="{'no_create': True}"/>
+                            <field name="lead_id" options="{'no_create': True}"/>
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="user_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="justcall_call_id"/>
+                            <field name="justcall_user_email"/>
+                            <field name="recording_url" widget="url"/>
+                            <field name="recording_duration"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="notes" widget="text"/>
+                            </group>
+                        </page>
+                        <page string="Transcription" name="transcription">
+                            <group>
+                                <field name="transcription" widget="text"/>
+                            </group>
+                        </page>
+                        <page string="Raw Data" name="raw_data">
+                            <group>
+                                <field name="raw_data" widget="text" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ptt_view_justcall_call_search" model="ir.ui.view">
+        <field name="name">ptt.justcall.call.search</field>
+        <field name="model">ptt.justcall.call</field>
+        <field name="arch" type="xml">
+            <search string="JustCall Calls">
+                <field name="contact_number"/>
+                <field name="partner_id"/>
+                <field name="lead_id"/>
+                <field name="project_id"/>
+                <field name="user_id"/>
+                <field name="justcall_call_id"/>
+                <filter string="Inbound" name="inbound" domain="[('direction', '=', 'inbound')]"/>
+                <filter string="Outbound" name="outbound" domain="[('direction', '=', 'outbound')]"/>
+                <filter string="Completed" name="completed" domain="[('status', '=', 'completed')]"/>
+                <filter string="With Recording" name="with_recording" domain="[('recording_url', '!=', False)]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('call_date', '>=', datetime.datetime.now().replace(hour=0, minute=0, second=0))]"/>
+                <filter string="This Week" name="this_week" domain="[('call_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)))]"/>
+                <filter string="This Month" name="this_month" domain="[('call_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=30)))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Date" name="group_date" context="{'group_by': 'call_date:day'}"/>
+                    <filter string="Direction" name="group_direction" context="{'group_by': 'direction'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Contact" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Project" name="group_project" context="{'group_by': 'project_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ptt_action_justcall_call" model="ir.actions.act_window">
+        <field name="name">PTT JustCall Calls</field>
+        <field name="res_model">ptt.justcall.call</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No calls logged yet
+            </p>
+            <p>
+                Calls will appear here automatically when webhooks are configured 
+                and calls are made through JustCall.
+            </p>
+        </field>
+    </record>
+</odoo>
