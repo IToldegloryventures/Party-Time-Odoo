@@ -31,14 +31,15 @@ class ResPartner(models.Model):
         help="Service categories this vendor provides (DJ, Photography, etc.)",
     )
     
+    # Vendor Tier - migrated from gold/silver/bronze to essentials/classic/premier in v19.0.5.0.0
     ptt_vendor_tier = fields.Selection(
         [
-            ("gold", "Gold"),
-            ("silver", "Silver"),
-            ("bronze", "Bronze"),
+            ("essentials", "Essentials"),
+            ("classic", "Classic"),
+            ("premier", "Premier"),
         ],
         string="Vendor Tier",
-        help="Overall quality tier for this vendor. Used to match with product tiers when assigning vendors to quotes.",
+        help="Overall quality tier for this vendor. Used to match with product tiers when assigning vendors to quotes. Essentials=Basic, Classic=Standard, Premier=Premium.",
     )
     
     # === VENDOR CONTACT ROLE (for contacts under vendor companies) ===

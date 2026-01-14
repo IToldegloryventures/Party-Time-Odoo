@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 
-from .constants import SERVICE_TYPES
+from .constants import SERVICE_TYPES, SERVICE_TIERS
 
 
 class PttCrmServiceLine(models.Model):
@@ -26,17 +26,12 @@ class PttCrmServiceLine(models.Model):
         help="Select a service from the Sales product catalog",
     )
     
-    # Tier Category
+    # Tier Category - uses shared constant (migrated from bronze/silver/gold/platinum in v19.0.5.0.0)
     tier = fields.Selection(
-        [
-            ("bronze", "Bronze"),
-            ("silver", "Silver"),
-            ("gold", "Gold"),
-            ("platinum", "Platinum"),
-        ],
+        SERVICE_TIERS,
         string="Service Tier",
-        default="silver",
-        help="Service tier level - affects pricing and service quality",
+        default="classic",
+        help="Service tier level - Essentials/Classic/Premier. Affects pricing and service quality.",
     )
     
     # Service Type (for quick categorization without product)

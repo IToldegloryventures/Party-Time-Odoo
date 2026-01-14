@@ -1,6 +1,6 @@
 {
     "name": "PTT Vendor Management",
-    "version": "19.0.2.1.0",
+    "version": "19.0.2.2.0",  # Tier migration: Gold/Silver/Bronze → Essentials/Classic/Premier (Jan 2026)
     "summary": "Standalone Vendor Management application for Party Time Texas",
     "description": """
         Vendor Management Application
@@ -8,7 +8,7 @@
         
         Comprehensive vendor management system for Party Time Texas:
         - Vendor service tags and categorization
-        - Vendor tier system (Gold/Silver/Bronze)
+        - Vendor tier system (Essentials/Classic/Premier)
         - Document management and compliance tracking
         - Vendor list views and search functionality
     """,

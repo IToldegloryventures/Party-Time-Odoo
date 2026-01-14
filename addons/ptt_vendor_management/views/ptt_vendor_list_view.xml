@@ -18,9 +18,9 @@
                   decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')">
                 <field name="name" string="Vendor Name"/>
                 <field name="ptt_vendor_tier" string="Tier" widget="badge"
-                       decoration-warning="ptt_vendor_tier == 'gold'"
-                       decoration-info="ptt_vendor_tier == 'silver'"
-                       decoration-muted="ptt_vendor_tier == 'bronze'"/>
+                       decoration-success="ptt_vendor_tier == 'premier'"
+                       decoration-info="ptt_vendor_tier == 'classic'"
+                       decoration-muted="ptt_vendor_tier == 'essentials'"/>
                 <field name="ptt_vendor_service_tag_ids" string="Services" widget="many2many_tags" 
                        options="{'color_field': 'color'}"/>
                 <field name="ptt_vendor_compliance_status" string="Compliance" widget="badge"
@@ -67,9 +67,9 @@
                             <div class="d-flex align-items-center gap-1">
                                 <field name="name" class="fw-bold fs-5 text-truncate"/>
                                 <field name="ptt_vendor_tier" widget="badge"
-                                       decoration-warning="ptt_vendor_tier == 'gold'"
-                                       decoration-info="ptt_vendor_tier == 'silver'"
-                                       decoration-muted="ptt_vendor_tier == 'bronze'"/>
+                                       decoration-success="ptt_vendor_tier == 'premier'"
+                                       decoration-info="ptt_vendor_tier == 'classic'"
+                                       decoration-muted="ptt_vendor_tier == 'essentials'"/>
                             </div>
                             <field name="ptt_vendor_service_tag_ids" widget="many2many_tags" 
                                    options="{'color_field': 'color'}"/>
@@ -117,9 +117,9 @@
                 <filter string="Expired Documents" name="expired_docs" domain="[('ptt_vendor_compliance_status', '=', 'expired')]"/>
                 <filter string="Expiring Soon" name="expiring_soon" domain="[('ptt_vendor_compliance_status', '=', 'expiring_soon')]"/>
                 <separator/>
-                <filter string="Gold Tier" name="tier_gold" domain="[('ptt_vendor_tier', '=', 'gold')]"/>
-                <filter string="Silver Tier" name="tier_silver" domain="[('ptt_vendor_tier', '=', 'silver')]"/>
-                <filter string="Bronze Tier" name="tier_bronze" domain="[('ptt_vendor_tier', '=', 'bronze')]"/>
+                <filter string="Premier Tier" name="tier_premier" domain="[('ptt_vendor_tier', '=', 'premier')]"/>
+                <filter string="Classic Tier" name="tier_classic" domain="[('ptt_vendor_tier', '=', 'classic')]"/>
+                <filter string="Essentials Tier" name="tier_essentials" domain="[('ptt_vendor_tier', '=', 'essentials')]"/>
                 <filter string="No Tier Set" name="tier_none" domain="[('ptt_vendor_tier', '=', False)]"/>
                 <separator/>
                 <filter string="4-5 Stars" name="rating_high" domain="[('ptt_vendor_rating', 'in', ['4', '5'])]"/>
