@@ -18,6 +18,10 @@
         "security/ptt_security.xml",
         # Data files
         "data/cleanup_orphaned_fields.xml",
+        # Product Categories & Attributes (must load before products)
+        # Reference: QuickBooks Chart of Accounts alignment
+        "data/product_categories.xml",
+        "data/product_attributes.xml",
         # CRM stages managed directly in database via SQL - XML files removed to prevent conflicts
         # Stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         "data/crm_tags.xml",

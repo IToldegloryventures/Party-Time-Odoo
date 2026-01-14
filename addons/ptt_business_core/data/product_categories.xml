@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Product Categories matching QuickBooks Chart of Accounts
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
+        - Use noupdate="1" for master data that shouldn't change on upgrade
+        - id attribute before model attribute
+        - Field order: name first, then relationships
+        
+        QuickBooks Income Account Mapping:
+        - Event Entertainment: 4231-4239
+        - Event Services: 4220s
+        - Rental Equipment: 4211-4215
+        - Adjustments: 4320-4390
+    -->
+    <data noupdate="1">
+        <!-- Event Entertainment (Income 4231-4239) -->
+        <record id="product_category_event_entertainment" model="product.category">
+            <field name="name">Event Entertainment</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+        
+        <!-- Event Services (Income 4220s) -->
+        <record id="product_category_event_services" model="product.category">
+            <field name="name">Event Services</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+        
+        <!-- Rental Equipment, Decor & Decorations (Income 4211-4215) -->
+        <record id="product_category_rental_equipment" model="product.category">
+            <field name="name">Rental Equipment, Decor &amp; Decorations</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+        
+        <!-- Adjustments (Income 4320-4390) -->
+        <record id="product_category_adjustments" model="product.category">
+            <field name="name">Adjustments</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+    </data>
+</odoo>

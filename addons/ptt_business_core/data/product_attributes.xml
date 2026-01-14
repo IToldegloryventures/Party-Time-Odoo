@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Product Attributes for DJ Services Variants
+        Creates 9 variants: 3 Event Types x 3 Service Tiers
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
+        Standard Odoo models used:
+        - product.attribute: Defines attribute types
+        - product.attribute.value: Defines values for each attribute
+    -->
+    <data noupdate="1">
+        <!-- ===================== -->
+        <!-- EVENT TYPE ATTRIBUTE  -->
+        <!-- ===================== -->
+        <record id="pa_event_type" model="product.attribute">
+            <field name="name">Event Type</field>
+            <field name="sequence">10</field>
+            <field name="display_type">radio</field>
+            <field name="create_variant">always</field>
+        </record>
+        
+        <record id="pav_event_social" model="product.attribute.value">
+            <field name="name">Social</field>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="sequence">1</field>
+        </record>
+        
+        <record id="pav_event_corporate" model="product.attribute.value">
+            <field name="name">Corporate</field>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="sequence">2</field>
+        </record>
+        
+        <record id="pav_event_wedding" model="product.attribute.value">
+            <field name="name">Wedding</field>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- SERVICE TIER ATTRIBUTE -->
+        <!-- ===================== -->
+        <record id="pa_service_tier" model="product.attribute">
+            <field name="name">Service Tier</field>
+            <field name="sequence">20</field>
+            <field name="display_type">pills</field>
+            <field name="create_variant">always</field>
+        </record>
+        
+        <record id="pav_tier_essentials" model="product.attribute.value">
+            <field name="name">Essentials</field>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="sequence">1</field>
+        </record>
+        
+        <record id="pav_tier_classic" model="product.attribute.value">
+            <field name="name">Classic</field>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="sequence">2</field>
+        </record>
+        
+        <record id="pav_tier_premier" model="product.attribute.value">
+            <field name="name">Premier</field>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="sequence">3</field>
+        </record>
+    </data>
+</odoo>
