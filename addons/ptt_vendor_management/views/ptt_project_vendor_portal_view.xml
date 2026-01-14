@@ -3,14 +3,13 @@
     <!--
         PTT Vendor Management - Project Form Extension
         
-        Extends the VENDORS tab in project form to add portal work order features:
-        - state field (replaces ptt_status with portal-aware state)
+        Extends the VENDORS tab in project form to add work order features:
         - Send Work Order button
         - Resend button
         - Signature date
         - Decline reason
         
-        NOTE: This view inherits ptt_business_core's project form, adding portal features.
+        NOTE: Uses ptt_status field from base model (not 'state')
     -->
     
     <record id="view_project_form_vendor_portal" model="ir.ui.view">
@@ -25,20 +24,19 @@
                     <list editable="bottom">
                         <field name="service_type"/>
                         <field name="vendor_id"/>
-                        <field name="state" widget="badge" 
-                               decoration-warning="state == 'sent'"
-                               decoration-success="state == 'accepted'"
-                               decoration-danger="state == 'declined'"
-                               decoration-info="state == 'completed'"
-                               decoration-muted="state == 'draft' or state == 'cancelled'"/>
+                        <field name="ptt_status" widget="badge" 
+                               decoration-warning="ptt_status == 'pending'"
+                               decoration-success="ptt_status in ('confirmed', 'completed')"
+                               decoration-danger="ptt_status == 'cancelled'"/>
                         <field name="actual_cost" widget="monetary"/>
                         <field name="vendor_signature_date" string="Signed" optional="show"/>
                         <button name="action_send_work_order" type="object" 
                                 string="Send WO" class="btn-primary btn-sm"
-                                invisible="state != 'draft'"/>
+                                invisible="ptt_status != 'pending' or not vendor_id"/>
                         <button name="action_resend_work_order" type="object" 
                                 string="Resend" class="btn-secondary btn-sm"
-                                invisible="state not in ('sent', 'declined')"/>
+                                invisible="ptt_status == 'completed'"
+                                optional="hide"/>
                     </list>
                     <form>
                         <sheet>
@@ -46,7 +44,7 @@
                                 <group>
                                     <field name="service_type"/>
                                     <field name="vendor_id"/>
-                                    <field name="state" widget="badge"/>
+                                    <field name="ptt_status" widget="badge"/>
                                 </group>
                                 <group>
                                     <field name="actual_cost" widget="monetary"/>
@@ -64,9 +62,9 @@
                                 <field name="notes" nolabel="1"/>
                                 <field name="ptt_equipment_notes" nolabel="1"/>
                             </group>
-                            <group string="Vendor Response" invisible="state == 'draft'">
+                            <group string="Vendor Response" invisible="ptt_status == 'pending'">
                                 <field name="vendor_decline_reason" readonly="1" 
-                                       invisible="state != 'declined'"/>
+                                       invisible="ptt_status != 'cancelled'"/>
                             </group>
                         </sheet>
                     </form>

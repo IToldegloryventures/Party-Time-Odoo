@@ -1,7 +1,7 @@
 """
 Extend ptt.project.vendor.assignment for vendor portal functionality.
 
-SIMPLIFIED: Uses portal.mixin for native portal support.
+SIMPLIFIED: Adds portal-related fields to existing model.
 Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
 """
 from odoo import api, fields, models, _
@@ -9,23 +9,11 @@ from odoo.exceptions import UserError
 
 
 class ProjectVendorAssignment(models.Model):
-    """Extend ptt.project.vendor.assignment with portal.mixin for vendor work order portal."""
+    """Extend ptt.project.vendor.assignment with vendor work order fields."""
     
-    _inherit = ['ptt.project.vendor.assignment', 'portal.mixin']  # Extend existing model + add portal.mixin (mail.thread already in base model)
+    _inherit = 'ptt.project.vendor.assignment'
     
-    # === PORTAL STATE TRACKING ===
-    # Replaces ptt_status from base model with portal-aware state
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('sent', 'Work Order Sent'),
-        ('accepted', 'Accepted'),
-        ('declined', 'Declined'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-    ], string='Portal Status', default='draft', tracking=True, copy=False,
-       help="Work order portal status: Draft → Sent → Accepted/Declined → Completed")
-    
-    # === VENDOR RESPONSE ===
+    # === VENDOR RESPONSE FIELDS ===
     vendor_signature = fields.Binary(
         string="Vendor Signature",
         attachment=True,
@@ -42,21 +30,19 @@ class ProjectVendorAssignment(models.Model):
         help="Reason provided by vendor for declining work order",
     )
     
-    # === PORTAL.MIXIN REQUIRED METHODS ===
+    # === PORTAL ACCESS ===
+    access_token = fields.Char(
+        string="Access Token",
+        copy=False,
+        help="Token for portal access",
+    )
     
-    @api.depends()
-    def _compute_access_url(self):
-        """Required by portal.mixin - returns portal URL for each record.
-        
-        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#portal-mixin
-        Note: Uses plural '/my/work-orders/' to match controller list route.
-        """
-        for rec in self:
-            rec.access_url = f'/my/work-orders/{rec.id}'
-    
-    def _get_report_base_filename(self):
-        """Optional - for PDF generation."""
-        return f'WorkOrder-{self.id}'
+    def _get_access_token(self):
+        """Generate access token for portal link."""
+        import uuid
+        if not self.access_token:
+            self.access_token = str(uuid.uuid4())
+        return self.access_token
     
     # === ACTIONS ===
     
@@ -73,29 +59,21 @@ class ProjectVendorAssignment(models.Model):
         if not self.vendor_id.email:
             raise UserError(_("Vendor %s has no email address.") % self.vendor_id.name)
         
-        # Update state
-        self.state = 'sent'
+        # Update status to sent (use existing ptt_status field)
+        self.ptt_status = 'pending'
         
-        # Send email - portal.mixin provides access_token automatically
+        # Generate access token
+        self._get_access_token()
+        
+        # Send email
         template = self.env.ref('ptt_vendor_management.email_template_vendor_work_order', raise_if_not_found=False)
         if template:
-            self.message_post_with_template(
-                template.id,
-                composition_mode='comment',
-                email_layout_xmlid='mail.mail_notification_light',
-            )
-        else:
-            # Fallback: just post a message with portal URL
-            # portal.mixin provides _get_share_url() method which includes access_token
-            base_url = self.get_base_url()
-            portal_url = base_url + self._get_share_url()
-            self.message_post(
-                body=_("Work order sent to %s. Portal link: %s") % (
-                    self.vendor_id.name,
-                    portal_url,
-                ),
-                message_type='notification',
-            )
+            template.send_mail(self.id, force_send=True)
+        
+        self.message_post(
+            body=_("Work order sent to %s") % self.vendor_id.name,
+            message_type='notification',
+        )
         
         return True
     
@@ -107,13 +85,11 @@ class ProjectVendorAssignment(models.Model):
         """
         self.ensure_one()
         
-        if self.state != 'sent':
-            raise UserError(_("Only pending work orders can be accepted."))
-        
         self.write({
-            'state': 'accepted',
+            'ptt_status': 'confirmed',
             'vendor_signature': signature,
             'vendor_signature_date': fields.Datetime.now(),
+            'ptt_confirmed_date': fields.Date.today(),
         })
         
         # Get service type display name
@@ -142,11 +118,8 @@ class ProjectVendorAssignment(models.Model):
         """
         self.ensure_one()
         
-        if self.state != 'sent':
-            raise UserError(_("Only pending work orders can be declined."))
-        
         self.write({
-            'state': 'declined',
+            'ptt_status': 'cancelled',
             'vendor_decline_reason': reason or _("No reason provided"),
         })
         
@@ -156,10 +129,6 @@ class ProjectVendorAssignment(models.Model):
         )
         
         # URGENT notification to project manager
-        partner_ids = []
-        if self.project_id.user_id and self.project_id.user_id.partner_id:
-            partner_ids = self.project_id.user_id.partner_id.ids
-        
         self.project_id.message_post(
             body=_("❌ URGENT: %s declined %s assignment!<br/>Reason: %s") % (
                 self.vendor_id.name,
@@ -168,7 +137,6 @@ class ProjectVendorAssignment(models.Model):
             ),
             subject=_("URGENT: Vendor Declined - %s") % service_type_label,
             message_type='notification',
-            partner_ids=partner_ids,
         )
         
         return True
@@ -177,35 +145,14 @@ class ProjectVendorAssignment(models.Model):
         """Resend work order email to vendor."""
         self.ensure_one()
         
-        if self.state not in ('sent', 'declined'):
-            raise UserError(_("Can only resend sent or declined work orders."))
-        
         template = self.env.ref('ptt_vendor_management.email_template_vendor_work_order', raise_if_not_found=False)
         if template:
-            self.message_post_with_template(
-                template.id,
-                composition_mode='comment',
-                email_layout_xmlid='mail.mail_notification_light',
-            )
+            template.send_mail(self.id, force_send=True)
         
         return True
     
     def action_mark_completed(self):
         """Mark work order as completed (after event)."""
         self.ensure_one()
-        
-        if self.state != 'accepted':
-            raise UserError(_("Only accepted work orders can be marked completed."))
-        
-        self.state = 'completed'
-        return True
-    
-    def action_cancel(self):
-        """Cancel work order."""
-        self.ensure_one()
-        
-        if self.state == 'completed':
-            raise UserError(_("Cannot cancel completed work orders."))
-        
-        self.state = 'cancelled'
+        self.ptt_status = 'completed'
         return True
