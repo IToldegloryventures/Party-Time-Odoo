@@ -20,7 +20,8 @@
             <field name="name">Standard Event Project Template</field>
             <field name="privacy_visibility">followers</field>
             <field name="active" eval="True"/>
-            <field name="allow_subtasks" eval="True"/>
+            <!-- NOTE: allow_subtasks field removed - doesn't exist in Odoo 19 -->
+            <!-- Subtasks work via parent_id on project.task -->
         </record>
 
         <!-- ============================================ -->
