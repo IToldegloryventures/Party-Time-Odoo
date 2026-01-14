@@ -1,6 +1,6 @@
 {
     "name": "PTT Vendor Management",
-    "version": "19.0.3.0.0",  # Vendor Portal: Work order accept/decline via portal (Jan 2026)
+    "version": "19.0.3.1.0",  # Fix: Button to populate document lines for existing vendors
     "summary": "Vendor Management + Portal for Work Order Accept/Decline",
     "description": """
         Vendor Management Application
@@ -37,6 +37,7 @@
         "data/ptt_document_type_data.xml",
         "data/ptt_vendor_service_tag_data.xml",
         "data/mail_template_work_order.xml",
+        "data/server_actions.xml",
         # Views (configuration views first, then main views)
         "views/ptt_document_type_view.xml",
         "views/ptt_vendor_document_view.xml",

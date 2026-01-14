@@ -202,3 +202,38 @@ class ResPartner(models.Model):
         string="Rating",
         help="Vendor performance rating",
     )
+    
+    # === ACTION METHODS ===
+    def action_populate_document_lines(self):
+        """Button action to populate missing document lines for this vendor.
+        
+        Use this for existing vendors who don't have document lines yet.
+        """
+        for vendor in self:
+            if vendor.supplier_rank > 0:
+                vendor._populate_vendor_document_lines()
+        return True
+    
+    @api.model
+    def action_populate_all_vendor_documents(self):
+        """Server action to populate document lines for ALL existing vendors.
+        
+        Call this once after installing/updating to populate existing vendors.
+        """
+        vendors = self.search([("supplier_rank", ">", 0)])
+        count = 0
+        for vendor in vendors:
+            existing_count = len(vendor.ptt_vendor_document_ids)
+            vendor._populate_vendor_document_lines()
+            if len(vendor.ptt_vendor_document_ids) > existing_count:
+                count += 1
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Document Lines Populated",
+                "message": f"Populated document lines for {count} vendors.",
+                "sticky": False,
+                "type": "success",
+            }
+        }

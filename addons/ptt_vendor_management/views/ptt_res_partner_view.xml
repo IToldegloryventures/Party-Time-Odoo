@@ -60,20 +60,30 @@
                 
                 <!-- Vendor Documents Tab (visible when supplier_rank > 0) -->
                 <page string="Documents" name="ptt_vendor_documents" invisible="supplier_rank == 0">
+                    <div class="mb-3">
+                        <button name="action_populate_document_lines" type="object"
+                                string="⟳ Populate Required Document Lines" 
+                                class="btn btn-secondary"
+                                title="Click to add missing required document types as lines. Your sales team can then just upload the files."
+                                invisible="ptt_vendor_document_count > 0"/>
+                        <span class="text-muted ms-2" invisible="ptt_vendor_document_count > 0">
+                            Click the button to add standard document lines (W-9, COI, ACH, etc.)
+                        </span>
+                    </div>
+                    <field name="ptt_vendor_document_count" invisible="1"/>
                     <field name="ptt_vendor_document_ids" context="{'default_vendor_id': id}">
                         <list editable="bottom"
-                              decoration-danger="status == 'expired'"
+                              decoration-danger="status == 'non_compliant'"
                               decoration-warning="status == 'expiring_soon'"
-                              decoration-success="status == 'valid'">
+                              decoration-success="status == 'compliant'">
                             <field name="document_type_id" options="{'no_create': True}"/>
                             <field name="validity"/>
                             <field name="document_filename" column_invisible="1"/>
                             <field name="attached_document" filename="document_filename"/>
                             <field name="status" widget="badge"
-                                   decoration-success="status == 'valid'"
+                                   decoration-success="status == 'compliant'"
                                    decoration-warning="status == 'expiring_soon'"
-                                   decoration-danger="status == 'expired'"
-                                   decoration-muted="status == 'not_applicable'"/>
+                                   decoration-danger="status == 'non_compliant'"/>
                             <field name="upload_date" readonly="1" optional="hide"/>
                             <field name="notes" optional="hide"/>
                         </list>
