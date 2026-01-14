@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Sale Order View Extensions for PTT
+        
+        Adds:
+        1. Tier 1 info header on quote form (Event Date, Venue, Guest Count)
+        2. Price Per Person on form, kanban, and tree views
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/user_interface/view_architectures.html
+    -->
+    
+    <!-- ===================================== -->
+    <!-- FORM VIEW: Add Tier 1 Header + Price  -->
+    <!-- ===================================== -->
+    <record id="view_order_form_ptt_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.ptt</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Event Details group after partner info -->
+            <xpath expr="//field[@name='partner_id']/.." position="after">
+                <group string="Event Details" name="ptt_event_details" 
+                       invisible="not opportunity_id">
+                    <group>
+                        <field name="ptt_event_date"/>
+                        <field name="ptt_event_type"/>
+                        <field name="ptt_venue_name"/>
+                    </group>
+                    <group>
+                        <field name="ptt_guest_count"/>
+                        <field name="ptt_event_time"/>
+                        <field name="ptt_price_per_person" widget="monetary"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- ===================================== -->
+    <!-- KANBAN/CARD VIEW: Show Price Per Person -->
+    <!-- ===================================== -->
+    <record id="view_sale_order_kanban_ptt_inherit" model="ir.ui.view">
+        <field name="name">sale.order.kanban.ptt</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+        <field name="arch" type="xml">
+            <!-- Add fields to kanban card data -->
+            <xpath expr="//kanban" position="inside">
+                <field name="ptt_event_date"/>
+                <field name="ptt_guest_count"/>
+                <field name="ptt_price_per_person"/>
+                <field name="ptt_venue_name"/>
+            </xpath>
+            
+            <!-- Add event info to card bottom left -->
+            <xpath expr="//div[hasclass('oe_kanban_bottom_left')]" position="inside">
+                <span t-if="record.ptt_event_date.raw_value" class="me-2">
+                    <i class="fa fa-calendar" title="Event Date"/>
+                    <t t-esc="record.ptt_event_date.value"/>
+                </span>
+                <span t-if="record.ptt_guest_count.raw_value" class="me-2">
+                    <i class="fa fa-users" title="Guests"/>
+                    <t t-esc="record.ptt_guest_count.value"/>
+                </span>
+            </xpath>
+            
+            <!-- Add price per person badge to card bottom right -->
+            <xpath expr="//div[hasclass('oe_kanban_bottom_right')]" position="inside">
+                <span t-if="record.ptt_price_per_person.raw_value" 
+                      class="badge bg-info text-white ms-1" title="Price Per Person">
+                    $<t t-esc="record.ptt_price_per_person.value"/>/person
+                </span>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- ===================================== -->
+    <!-- TREE/LIST VIEW: Add columns          -->
+    <!-- ===================================== -->
+    <record id="view_order_tree_ptt_inherit" model="ir.ui.view">
+        <field name="name">sale.order.tree.ptt</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="ptt_event_date" optional="show"/>
+                <field name="ptt_guest_count" optional="show"/>
+                <field name="ptt_price_per_person" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

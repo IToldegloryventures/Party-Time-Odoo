@@ -2,18 +2,86 @@ from odoo import models, fields, api, _
 
 
 class SaleOrder(models.Model):
-    """Extend Sale Order with PTT CRM stage automation.
+    """Extend Sale Order with PTT CRM stage automation and event details.
     
     CRM Stage Workflow:
     1. Quote/Proposal Sent → CRM moves to "Proposal Sent"
     2. Customer Accepts (SO Confirmed) → CRM moves to "Booked"
     
+    Event Details:
+    - Related fields pull Tier 1 info from CRM for display on quote
+    - Price Per Person computed from quote total ÷ guest count
+    
     NOTE: Contract status = Use standard 'state' field (draft/sent/sale)
     NOTE: Contract signed date = Use standard 'date_order' when state='sale'
     
-    Per Odoo 19 Sales docs: https://www.odoo.com/documentation/19.0/applications/sales/sales.html
+    Reference:
+    - https://www.odoo.com/documentation/19.0/applications/sales/sales.html
+    - https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#related-fields
     """
     _inherit = "sale.order"
+
+    # === EVENT DETAILS (Related from CRM Lead) ===
+    # These fields pull Tier 1 info from the linked CRM opportunity
+    # for display on quotations and sales orders.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#related-fields
+    
+    ptt_event_date = fields.Date(
+        string="Event Date",
+        related="opportunity_id.ptt_event_date",
+        readonly=True,
+        store=True,
+    )
+    ptt_event_type = fields.Selection(
+        related="opportunity_id.ptt_event_type",
+        readonly=True,
+        store=True,
+        string="Event Type",
+    )
+    ptt_venue_name = fields.Char(
+        string="Venue",
+        related="opportunity_id.ptt_venue_name",
+        readonly=True,
+        store=True,
+    )
+    ptt_guest_count = fields.Integer(
+        string="Guest Count",
+        related="opportunity_id.ptt_estimated_guest_count",
+        readonly=True,
+        store=True,
+        help="Estimated guest count from CRM lead",
+    )
+    ptt_event_time = fields.Char(
+        string="Event Time",
+        related="opportunity_id.ptt_event_time",
+        readonly=True,
+        store=True,
+    )
+
+    # === PRICE PER PERSON (Computed) ===
+    # Shows value proposition to client: total cost divided by guests
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#compute-methods
+    ptt_price_per_person = fields.Monetary(
+        string="Price Per Person",
+        compute="_compute_price_per_person",
+        store=True,
+        currency_field="currency_id",
+        help="Quote total divided by guest count. Shows value proposition to client.",
+    )
+
+    @api.depends("amount_total", "ptt_guest_count")
+    def _compute_price_per_person(self):
+        """Calculate price per person from quote total and guest count.
+        
+        Formula: amount_total ÷ ptt_guest_count
+        
+        If guest count is 0 or missing, price per person = 0
+        """
+        for order in self:
+            if order.ptt_guest_count and order.ptt_guest_count > 0:
+                order.ptt_price_per_person = order.amount_total / order.ptt_guest_count
+            else:
+                order.ptt_price_per_person = 0.0
 
     # === CRM STAGE AUTOMATION ===
     
