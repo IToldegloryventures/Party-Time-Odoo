@@ -29,7 +29,7 @@ class PurchaseOrder(models.Model):
         expired_docs = []
         
         for doc_type in required_doc_types:
-            doc = vendor.x_vendor_document_ids.filtered(
+            doc = vendor.ptt_vendor_document_ids.filtered(
                 lambda d: d.document_type_id.id == doc_type.id
             )
             
@@ -50,14 +50,20 @@ class PurchaseOrder(models.Model):
         return True, None
 
     def button_confirm(self):
-        """Override to check vendor documents before confirming PO."""
-        for order in self:
-            if order.partner_id:
-                is_valid, error_msg = self._check_vendor_documents(order.partner_id)
-                if not is_valid:
-                    raise UserError(
-                        _("Cannot confirm Purchase Order: Vendor document compliance issue.\n\n%s")
-                        % error_msg
-                    )
+        """Override to check vendor documents before confirming PO.
+        
+        Note: Document validation only works if ptt_vendor_management is installed.
+        If not installed, PO confirmation proceeds without validation.
+        """
+        # Only validate if ptt_vendor_management is installed
+        if 'ptt.document.type' in self.env:
+            for order in self:
+                if order.partner_id:
+                    is_valid, error_msg = self._check_vendor_documents(order.partner_id)
+                    if not is_valid:
+                        raise UserError(
+                            _("Cannot confirm Purchase Order: Vendor document compliance issue.\n\n%s")
+                            % error_msg
+                        )
         
         return super().button_confirm()
