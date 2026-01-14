@@ -18,16 +18,9 @@
 # =============================================================
 # UNARCHIVE ALL PTT PRODUCTS
 # Activates archived products and product templates
+# NOTE: product.category does NOT have 'active' field in Odoo 19
 # =============================================================
 
-# Unarchive product categories
-categories = env['product.category'].with_context(active_test=False).search([
-    ('name', 'in', ['Event Entertainment', 'Event Services', 
-                    'Rental Equipment, Decor &amp; Decorations', 'Adjustments'])
-])
-if categories:
-    categories.write({'active': True})
-    
 # Unarchive product templates (includes DJ Services)
 templates = env['product.template'].with_context(active_test=False).search([
     ('active', '=', False)
@@ -42,18 +35,9 @@ products = env['product.product'].with_context(active_test=False).search([
 if products:
     products.write({'active': True})
 
-# Unarchive product attributes
-attributes = env['product.attribute'].with_context(active_test=False).search([
-    ('name', 'in', ['Event Type', 'Service Tier']),
-    ('active', '=', False)
-])
-if attributes:
-    attributes.write({'active': True})
-
 # Count what was unarchived
 template_count = len(templates) if templates else 0
 product_count = len(products) if products else 0
-category_count = len(categories) if categories else 0
 
 # Return success notification
 action = {
@@ -61,7 +45,7 @@ action = {
     'tag': 'display_notification',
     'params': {
         'title': 'Products Unarchived',
-        'message': f'Unarchived: {template_count} templates, {product_count} variants, {category_count} categories.',
+        'message': f'Unarchived: {template_count} product templates and {product_count} variants.',
         'sticky': False,
         'type': 'success',
     }
