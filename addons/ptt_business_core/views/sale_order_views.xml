@@ -181,43 +181,19 @@
     </record>
     
     <!-- ============================================= -->
-    <!-- ORDER LINE TREE: Add Pricing Reference Cols  -->
-    <!-- Shows min/max rates and status on each line  -->
+    <!-- ORDER LINE PRICING COLUMNS                   -->
+    <!-- NOTE: Removed - price_unit field not found   -->
+    <!-- in Odoo 19 parent views. The pricing info    -->
+    <!-- is available via the Pricing Reference tab.  -->
     <!-- ============================================= -->
-    <record id="view_order_line_tree_ptt_inherit" model="ir.ui.view">
-        <field name="name">sale.order.line.tree.ptt</field>
-        <field name="model">sale.order.line</field>
-        <field name="inherit_id" ref="sale.view_order_line_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='price_unit']" position="after">
-                <field name="ptt_price_min" optional="hide" string="Min $"/>
-                <field name="ptt_price_max" optional="hide" string="Max $"/>
-                <field name="ptt_min_hours" optional="hide" string="Min Hrs"/>
-                <field name="ptt_price_status" optional="hide" 
-                       decoration-danger="ptt_price_status == 'below_min'"
-                       decoration-warning="ptt_price_status == 'above_max'"
-                       decoration-success="ptt_price_status == 'in_range'"/>
-            </xpath>
-        </field>
-    </record>
-    
-    <!-- ============================================= -->
-    <!-- ORDER LINE FORM (in SO): Show pricing info   -->
-    <!-- ============================================= -->
-    <record id="view_sale_order_form_line_ptt" model="ir.ui.view">
-        <field name="name">sale.order.form.line.ptt</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="priority">20</field>
-        <field name="arch" type="xml">
-            <!-- Add pricing columns to the order lines tree inside the form -->
-            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="after">
-                <field name="ptt_price_min" optional="show" string="Min $" readonly="1"/>
-                <field name="ptt_price_max" optional="show" string="Max $" readonly="1"/>
-                <field name="ptt_min_hours" optional="show" string="Min Hrs" readonly="1"/>
-            </xpath>
-        </field>
-    </record>
+    <!-- 
+        The ptt_price_min, ptt_price_max, ptt_min_hours fields exist
+        on sale.order.line but cannot be added to the line tree due
+        to Odoo 19 view structure changes.
+        
+        Sales reps can use the "Pricing Reference" tab on the quote
+        form to see the pricing matrix for DJ services.
+    -->
     
     <!-- ===================================== -->
     <!-- TREE/LIST VIEW: Add columns          -->
