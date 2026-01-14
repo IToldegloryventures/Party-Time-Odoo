@@ -33,6 +33,7 @@ Requirements:
     'website': 'https://www.odoo.com',
     'depends': [
         'base',
+        'sales_team',  # Required for module_category_sales_crm
         'crm',
         'contacts',
         'project',
