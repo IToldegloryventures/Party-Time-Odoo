@@ -35,6 +35,8 @@
         "data/cleanup_dj_product.xml",
         # Unarchive Products (reactivates archived products)
         "data/unarchive_products.xml",
+        # Fix DJ Prices (forces correct $300 base price)
+        "data/fix_dj_prices.xml",
         "data/products_services.xml",
         "data/products_rentals.xml",
         "data/products_addons.xml",
