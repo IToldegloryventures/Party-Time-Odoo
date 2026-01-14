@@ -11,7 +11,9 @@ from odoo.exceptions import UserError
 class ProjectVendorAssignment(models.Model):
     """Extend ptt.project.vendor.assignment with portal.mixin for vendor work order portal."""
     
+    _name = 'ptt.project.vendor.assignment'
     _inherit = ['ptt.project.vendor.assignment', 'portal.mixin', 'mail.thread']  # Extend existing model + add portal.mixin (mail.thread already in base, but explicit for clarity)
+    _description = 'Project Vendor Assignment'
     
     # === PORTAL STATE TRACKING ===
     # Replaces ptt_status from base model with portal-aware state
