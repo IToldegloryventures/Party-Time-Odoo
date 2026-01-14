@@ -88,21 +88,19 @@ if not dj_template:
         'list_price': 300.0,
         'standard_price': 150.0,
         'uom_id': hours_uom.id if hours_uom else False,
-        'uom_po_id': hours_uom.id if hours_uom else False,
         'categ_id': category.id if category else False,
         'sale_ok': True,
         'purchase_ok': True,
         'description_sale': 'Professional DJ services. Pricing per hour. Package varies by Event Type and Service Tier.',
     })
 
-# Update existing DJ template
+# Update existing DJ template (only safe fields - uom_po_id causes errors)
 hours_uom = env.ref('uom.product_uom_hour', raise_if_not_found=False)
 if dj_template and hours_uom:
     dj_template.write({
         'list_price': 300.0,
         'standard_price': 150.0,
         'uom_id': hours_uom.id,
-        'uom_po_id': hours_uom.id,
     })
 
 # Remove wrong attribute lines (like "Audio")
