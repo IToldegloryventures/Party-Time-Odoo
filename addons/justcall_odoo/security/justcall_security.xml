@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_justcall_user" model="res.groups">
+        <field name="name">JustCall User</field>
+        <field name="category_id" ref="base.module_category_sales_crm"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_justcall_manager" model="res.groups">
+        <field name="name">JustCall Manager</field>
+        <field name="category_id" ref="base.module_category_sales_crm"/>
+        <field name="implied_ids" eval="[(4, ref('group_justcall_user'))]"/>
+    </record>
+</odoo>
