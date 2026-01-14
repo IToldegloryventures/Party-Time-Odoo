@@ -2,13 +2,13 @@
 <odoo>
     <record id="ptt_group_justcall_user" model="res.groups">
         <field name="name">PTT JustCall User</field>
-        <field name="category_id" ref="base.module_category_sales_crm"/>
+        <field name="category" ref="base.module_category_sales_crm"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <record id="ptt_group_justcall_manager" model="res.groups">
         <field name="name">PTT JustCall Manager</field>
-        <field name="category_id" ref="base.module_category_sales_crm"/>
+        <field name="category" ref="base.module_category_sales_crm"/>
         <field name="implied_ids" eval="[(4, ref('ptt_group_justcall_user'))]"/>
     </record>
 </odoo>
