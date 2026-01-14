@@ -64,7 +64,6 @@
             <field name="type">service</field>
             <field name="list_price">200.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Additional hour of DJ/entertainment services beyond package minimum.</field>

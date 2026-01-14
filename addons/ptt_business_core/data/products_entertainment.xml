@@ -14,7 +14,7 @@
         - purchase_ok: Boolean
         - description_sale: Text
         - default_code: Char (SKU)
-        - uom_id / uom_po_id: Unit of Measure (Hours for services)
+        - uom_id: Unit of Measure (Hours for services)
         
         DJ PRICING MODEL (Jan 2026):
         - list_price = BASE hourly rate ($300 = Social Essential MIN)
