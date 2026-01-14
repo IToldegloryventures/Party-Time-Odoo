@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- CRM Lead Form View Extension -->
+    <record id="crm_lead_view_form_ptt_event" model="ir.ui.view">
+        <field name="name">crm.lead.form.ptt.event</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            
+            <!-- Add Event Overview section after Internal Notes or at end of form -->
+            <xpath expr="//page[@name='lead']" position="after">
+                <page string="Event Details" name="ptt_event_details">
+                    
+                    <!-- EVENT OVERVIEW -->
+                    <group string="Event Overview">
+                        <group>
+                            <field name="ptt_event_type"/>
+                            <field name="ptt_event_specific_goal" placeholder="e.g., Company anniversary celebration"/>
+                            <field name="ptt_event_name" placeholder="e.g., Smith Wedding"/>
+                            <field name="ptt_event_date"/>
+                            <field name="ptt_event_start_time"/>
+                            <field name="ptt_event_end_time"/>
+                        </group>
+                        <group>
+                            <field name="ptt_guest_count"/>
+                            <field name="ptt_total_hours" readonly="1"/>
+                            <field name="ptt_event_location_type"/>
+                            <field name="ptt_venue_booked"/>
+                            <field name="ptt_venue_name" placeholder="Venue name"
+                                   invisible="not ptt_venue_booked"/>
+                        </group>
+                    </group>
+                    
+                    <!-- SERVICES REQUESTED -->
+                    <group string="Services Requested">
+                        <field name="ptt_requested_service_ids" 
+                               widget="many2many_checkboxes"
+                               nolabel="1"
+                               colspan="2"/>
+                    </group>
+                    
+                </page>
+            </xpath>
+            
+            <!-- Add button to create quotation with services -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_create_quotation_with_services" 
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        string="Create Quote"
+                        invisible="not partner_id or not ptt_requested_service_ids"/>
+            </xpath>
+            
+        </field>
+    </record>
+
+</odoo>
