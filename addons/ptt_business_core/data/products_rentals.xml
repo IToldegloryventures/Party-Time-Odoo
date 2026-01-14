@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Rental Equipment (Income 4211-4215) -->
+        
+        <record id="product_av_rentals" model="product.product">
+            <field name="name">A/V Rentals</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_lighting_rentals" model="product.product">
+            <field name="name">Lighting Rentals</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_balloon_decor" model="product.product">
+            <field name="name">Balloon Decor</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_misc_rental" model="product.product">
+            <field name="name">Misc Event Rental</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+    </data>
+</odoo>

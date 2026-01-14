@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 
+            DJ Add-On Products
+            Per meeting: "MC should be an add-on. Karaoke should be an add-on."
+            
+            SKU Pattern: ADDON-{TYPE}
+        -->
+        
+        <record id="product_addon_mc_services" model="product.product">
+            <field name="name">MC Services (Add-On)</field>
+            <field name="default_code">ADDON-MC</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">250.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional MC services including announcements, crowd engagement, and event flow management.</field>
+        </record>
+        
+        <record id="product_addon_karaoke" model="product.product">
+            <field name="name">Karaoke (Add-On)</field>
+            <field name="default_code">ADDON-KARAOKE</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">150.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Karaoke setup with song library and microphones.</field>
+        </record>
+        
+        <record id="product_addon_line_dancing" model="product.product">
+            <field name="name">Line Dancing Instruction (Add-On)</field>
+            <field name="default_code">ADDON-LINEDANCE</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">100.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_addon_extra_hour" model="product.product">
+            <field name="name">Extra Hour (Add-On)</field>
+            <field name="default_code">ADDON-HOUR</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">200.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Additional hour of DJ/entertainment services.</field>
+        </record>
+        
+        <record id="product_addon_additional_mics" model="product.product">
+            <field name="name">Additional Microphones (Add-On)</field>
+            <field name="default_code">ADDON-MICS</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">50.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_addon_uplighting" model="product.product">
+            <field name="name">Uplighting Package (Add-On)</field>
+            <field name="default_code">ADDON-UPLIGHT</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">300.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+    </data>
+</odoo>

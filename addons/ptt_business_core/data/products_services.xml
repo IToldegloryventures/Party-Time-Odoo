@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Event Services (Income 4220s) -->
+        
+        <record id="product_caricature_artist" model="product.product">
+            <field name="name">Caricature Artist</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_balloon_face_painters" model="product.product">
+            <field name="name">Balloon &amp; Face Painters</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_catering_bartender" model="product.product">
+            <field name="name">Catering &amp; Bartender Services</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_event_planning" model="product.product">
+            <field name="name">Event Planning Service</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_photography" model="product.product">
+            <field name="name">Photography</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_videography" model="product.product">
+            <field name="name">Videography</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_photo_booth" model="product.product">
+            <field name="name">Photo Booth</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- EVENT KICKOFF - Internal $0 Product         -->
+        <!-- Triggers project and task creation          -->
+        <!-- ============================================ -->
+        <record id="product_event_kickoff" model="product.product">
+            <field name="name">Event Kickoff</field>
+            <field name="default_code">KICKOFF</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="description_sale">Event project initialization. Creates project and standard tasks.</field>
+        </record>
+    </data>
+</odoo>

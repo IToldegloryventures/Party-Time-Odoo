@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 
+            Adjustments & Insurance Products
+            Income Account mapping: 4239, 4320-4390
+            
+            SKU Pattern: {TYPE} (short codes)
+        -->
+        
+        <record id="product_additional_insured" model="product.product">
+            <field name="name">Additional Insured Coverage Extension</field>
+            <field name="default_code">INSURANCE</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">158.0</field>
+            <field name="standard_price">105.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="description_sale">Additional insured coverage for venue requirements.</field>
+        </record>
+        
+        <record id="product_customer_deposit" model="product.product">
+            <field name="name">Customer Deposit / Retainer</field>
+            <field name="default_code">DEPOSIT</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+        
+        <record id="product_client_discount" model="product.product">
+            <field name="name">Client Discounts</field>
+            <field name="default_code">DISCOUNT</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+        
+        <record id="product_client_refund" model="product.product">
+            <field name="name">Client Refund</field>
+            <field name="default_code">REFUND</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+        
+        <record id="product_cancellation_fees" model="product.product">
+            <field name="name">Cancellation Event Fees</field>
+            <field name="default_code">CANCEL</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+        
+        <record id="product_bad_debt" model="product.product">
+            <field name="name">Bad Debt</field>
+            <field name="default_code">BADDEBT</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+    </data>
+</odoo>

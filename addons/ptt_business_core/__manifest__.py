@@ -22,6 +22,12 @@
         # Reference: QuickBooks Chart of Accounts alignment
         "data/product_categories.xml",
         "data/product_attributes.xml",
+        # Products (load order: entertainment with variants first, then services, rentals, addons, adjustments)
+        "data/products_entertainment.xml",
+        "data/products_services.xml",
+        "data/products_rentals.xml",
+        "data/products_addons.xml",
+        "data/products_adjustments.xml",
         # CRM stages managed directly in database via SQL - XML files removed to prevent conflicts
         # Stages: Intake, Qualification, Approval, Proposal Sent, Contract Sent, Booked, Closed/Won, Lost
         "data/crm_tags.xml",
