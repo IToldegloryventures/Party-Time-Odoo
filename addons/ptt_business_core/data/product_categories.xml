@@ -16,7 +16,7 @@
         - Rental Equipment: 4211-4215
         - Adjustments: 4320-4390
     -->
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- Event Entertainment (Income 4231-4239) -->
         <record id="product_category_event_entertainment" model="product.category">
             <field name="name">Event Entertainment</field>

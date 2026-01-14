@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- Rental Equipment (Income 4211-4215) -->
         
         <record id="product_av_rentals" model="product.product">

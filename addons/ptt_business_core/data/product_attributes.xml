@@ -9,7 +9,7 @@
         - product.attribute: Defines attribute types
         - product.attribute.value: Defines values for each attribute
     -->
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- ===================== -->
         <!-- EVENT TYPE ATTRIBUTE  -->
         <!-- ===================== -->
