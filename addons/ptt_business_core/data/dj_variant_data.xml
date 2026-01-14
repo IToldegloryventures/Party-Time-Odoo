@@ -29,6 +29,35 @@
             <field name="model_id" ref="product.model_product_product"/>
             <field name="state">code</field>
             <field name="code">
+# =============================================================
+# STEP 1: Configure price_extra on attribute values
+# This sets variant prices: Base ($300) + Event Extra + Tier Extra
+# =============================================================
+PRICE_EXTRAS = {
+    # Event Type extras (from Social base)
+    'Social': 0.0,
+    'Corporate': 0.0,
+    'Wedding': 50.0,
+    # Service Tier extras (from Essential base)
+    'Essentials': 0.0,
+    'Classic': 125.0,
+    'Premier': 300.0,
+}
+
+# Find DJ template
+dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
+
+if dj_template:
+    # Update price_extra on product.template.attribute.value records
+    for ptav in dj_template.attribute_line_ids.product_template_value_ids:
+        attr_value_name = ptav.product_attribute_value_id.name
+        if attr_value_name in PRICE_EXTRAS:
+            ptav.write({'price_extra': PRICE_EXTRAS[attr_value_name]})
+
+# =============================================================
+# STEP 2: Configure variant-specific fields
+# =============================================================
+
 # DJ Variant Configuration Data (from PTT_Event Pricing spreadsheet)
 # Each key is (event_type_name, tier_name) tuple
 DJ_CONFIG = {
@@ -173,8 +202,7 @@ DJ_CONFIG = {
     },
 }
 
-# Find DJ template by XML ID
-dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
+# dj_template already found above in STEP 1
 
 if not dj_template:
     raise UserError("DJ &amp; MC Services template not found. Please ensure the product exists.")
