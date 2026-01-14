@@ -45,6 +45,8 @@
         "views/ptt_vendor_list_view.xml",
         "views/ptt_vendor_menus.xml",
         "views/vendor_portal_templates.xml",
+        # Portal view extensions (extends ptt_business_core project form)
+        "views/ptt_project_vendor_portal_view.xml",
     ],
     "installable": True,
     "application": True,

@@ -84,11 +84,13 @@ class ProjectVendorAssignment(models.Model):
                 email_layout_xmlid='mail.mail_notification_light',
             )
         else:
-            # Fallback: just post a message
+            # Fallback: just post a message with portal URL
+            # portal.mixin provides get_portal_url() method
+            portal_url = self.get_portal_url() if hasattr(self, 'get_portal_url') else self.access_url
             self.message_post(
                 body=_("Work order sent to %s. Portal link: %s") % (
                     self.vendor_id.name,
-                    self._get_share_url(),
+                    portal_url,
                 ),
                 message_type='notification',
             )

@@ -9,9 +9,14 @@ class PttProjectVendorAssignment(models.Model):
     FIELD NAMING:
     - All custom fields use ptt_ prefix (Party Time Texas)
     - This follows Odoo best practice: x_ is reserved for Studio fields
+    
+    INHERITS:
+    - mail.thread: For messaging (required for work order notifications in ptt_vendor_management)
+    - mail.activity.mixin: For activity scheduling
     """
     _name = "ptt.project.vendor.assignment"
     _description = "Project Vendor Assignment"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
 
     project_id = fields.Many2one(
         "project.project",
