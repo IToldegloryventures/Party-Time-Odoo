@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Cleanup & Reconfigure DJ Product
+        
+        This server action fixes the DJ Services product if it was
+        created with wrong attributes (e.g., "Audio" instead of "Service Tier").
+        
+        Run via: Settings → Technical → Server Actions → "Fix DJ Services Product"
+    -->
+    <data noupdate="0">
+        
+        <record id="action_fix_dj_product" model="ir.actions.server">
+            <field name="name">Fix DJ Services Product</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="code">
+# =============================================================
+# FIX DJ SERVICES PRODUCT
+# Corrects attribute links, pricing, and UoM
+# =============================================================
+
+# Find or create the correct Service Tier attribute
+ServiceTier = env['product.attribute'].search([('name', '=', 'Service Tier')], limit=1)
+if not ServiceTier:
+    ServiceTier = env['product.attribute'].create({
+        'name': 'Service Tier',
+        'display_type': 'pills',
+        'create_variant': 'always',
+        'sequence': 20,
+    })
+
+# Ensure Service Tier has correct values
+tier_values = {'Essentials': 1, 'Classic': 2, 'Premier': 3}
+for tier_name, seq in tier_values.items():
+    existing = env['product.attribute.value'].search([
+        ('attribute_id', '=', ServiceTier.id),
+        ('name', '=', tier_name)
+    ], limit=1)
+    if not existing:
+        env['product.attribute.value'].create({
+            'name': tier_name,
+            'attribute_id': ServiceTier.id,
+            'sequence': seq,
+        })
+
+# Find or create Event Type attribute
+EventType = env['product.attribute'].search([('name', '=', 'Event Type')], limit=1)
+if not EventType:
+    EventType = env['product.attribute'].create({
+        'name': 'Event Type',
+        'display_type': 'radio',
+        'create_variant': 'always',
+        'sequence': 10,
+    })
+
+# Ensure Event Type has correct values
+event_values = {'Social': 1, 'Corporate': 2, 'Wedding': 3}
+for event_name, seq in event_values.items():
+    existing = env['product.attribute.value'].search([
+        ('attribute_id', '=', EventType.id),
+        ('name', '=', event_name)
+    ], limit=1)
+    if not existing:
+        env['product.attribute.value'].create({
+            'name': event_name,
+            'attribute_id': EventType.id,
+            'sequence': seq,
+        })
+
+# Find DJ Services product template
+dj_template = env['product.template'].search([
+    '|', '|',
+    ('name', 'ilike', 'DJ Services'),
+    ('name', 'ilike', 'DJ &amp; MC'),
+    ('default_code', '=', 'DJ-SVC'),
+], limit=1)
+
+if not dj_template:
+    # Create new DJ template
+    hours_uom = env.ref('uom.product_uom_hour', raise_if_not_found=False)
+    category = env.ref('ptt_business_core.product_category_event_entertainment', raise_if_not_found=False)
+    
+    dj_template = env['product.template'].create({
+        'name': 'DJ &amp; MC Services',
+        'default_code': 'DJ-SVC',
+        'type': 'service',
+        'list_price': 300.0,
+        'standard_price': 150.0,
+        'uom_id': hours_uom.id if hours_uom else False,
+        'uom_po_id': hours_uom.id if hours_uom else False,
+        'categ_id': category.id if category else False,
+        'sale_ok': True,
+        'purchase_ok': True,
+        'description_sale': 'Professional DJ services. Pricing per hour. Package varies by Event Type and Service Tier.',
+    })
+
+# Update existing DJ template
+hours_uom = env.ref('uom.product_uom_hour', raise_if_not_found=False)
+if dj_template and hours_uom:
+    dj_template.write({
+        'list_price': 300.0,
+        'standard_price': 150.0,
+        'uom_id': hours_uom.id,
+        'uom_po_id': hours_uom.id,
+    })
+
+# Remove wrong attribute lines (like "Audio")
+if dj_template:
+    wrong_lines = dj_template.attribute_line_ids.filtered(
+        lambda l: l.attribute_id.name not in ['Event Type', 'Service Tier']
+    )
+    wrong_lines.unlink()
+    
+    # Add correct Event Type attribute if missing
+    has_event_type = dj_template.attribute_line_ids.filtered(
+        lambda l: l.attribute_id.name == 'Event Type'
+    )
+    if not has_event_type:
+        event_values = env['product.attribute.value'].search([
+            ('attribute_id', '=', EventType.id)
+        ])
+        env['product.template.attribute.line'].create({
+            'product_tmpl_id': dj_template.id,
+            'attribute_id': EventType.id,
+            'value_ids': [(6, 0, event_values.ids)],
+        })
+    
+    # Add correct Service Tier attribute if missing
+    has_service_tier = dj_template.attribute_line_ids.filtered(
+        lambda l: l.attribute_id.name == 'Service Tier'
+    )
+    if not has_service_tier:
+        tier_values = env['product.attribute.value'].search([
+            ('attribute_id', '=', ServiceTier.id)
+        ])
+        env['product.template.attribute.line'].create({
+            'product_tmpl_id': dj_template.id,
+            'attribute_id': ServiceTier.id,
+            'value_ids': [(6, 0, tier_values.ids)],
+        })
+
+# Return success notification
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params': {
+        'title': 'DJ Product Fixed',
+        'message': 'DJ Services product has been corrected. Now run "Configure DJ Service Variants" to set pricing.',
+        'sticky': False,
+        'type': 'success',
+    }
+}
+            </field>
+        </record>
+        
+        <!-- Menu item to run the fix -->
+        <menuitem id="menu_fix_dj_product"
+            name="Fix DJ Services Product"
+            parent="sale.menu_sale_config"
+            action="action_fix_dj_product"
+            sequence="99"
+            groups="base.group_system"/>
+        
+    </data>
+</odoo>
