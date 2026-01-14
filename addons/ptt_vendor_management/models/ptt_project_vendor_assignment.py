@@ -11,8 +11,7 @@ from odoo.exceptions import UserError
 class ProjectVendorAssignment(models.Model):
     """Extend ptt.project.vendor.assignment with portal.mixin for vendor work order portal."""
     
-    _name = 'ptt.project.vendor.assignment'
-    _inherit = ['ptt.project.vendor.assignment', 'portal.mixin']  # portal.mixin handles auth
+    _inherit = ['ptt.project.vendor.assignment', 'portal.mixin', 'mail.thread']  # Extend existing model + add portal.mixin (mail.thread already in base, but explicit for clarity)
     
     # === PORTAL STATE TRACKING ===
     # Replaces ptt_status from base model with portal-aware state
@@ -45,13 +44,15 @@ class ProjectVendorAssignment(models.Model):
     
     # === PORTAL.MIXIN REQUIRED METHODS ===
     
+    @api.depends()
     def _compute_access_url(self):
         """Required by portal.mixin - returns portal URL for each record.
         
         Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#portal-mixin
+        Note: Uses plural '/my/work-orders/' to match controller list route.
         """
         for rec in self:
-            rec.access_url = f'/my/work-order/{rec.id}'
+            rec.access_url = f'/my/work-orders/{rec.id}'
     
     def _get_report_base_filename(self):
         """Optional - for PDF generation."""
@@ -85,8 +86,9 @@ class ProjectVendorAssignment(models.Model):
             )
         else:
             # Fallback: just post a message with portal URL
-            # portal.mixin provides get_portal_url() method
-            portal_url = self.get_portal_url() if hasattr(self, 'get_portal_url') else self.access_url
+            # portal.mixin provides _get_share_url() method which includes access_token
+            base_url = self.get_base_url()
+            portal_url = base_url + self._get_share_url()
             self.message_post(
                 body=_("Work order sent to %s. Portal link: %s") % (
                     self.vendor_id.name,

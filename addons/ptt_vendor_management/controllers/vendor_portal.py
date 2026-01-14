@@ -76,7 +76,7 @@ class VendorPortal(CustomerPortal):
         
         return request.render("ptt_vendor_management.portal_my_work_orders", values)
     
-    @http.route(['/my/work-order/<int:assignment_id>/<string:access_token>'], 
+    @http.route(['/my/work-orders/<int:assignment_id>/<string:access_token>'], 
                 type='http', auth="public", website=True)
     def portal_work_order_detail(self, assignment_id, access_token, **kw):
         """Public work order detail page (from email link).
@@ -117,7 +117,7 @@ class VendorPortal(CustomerPortal):
         
         return request.render("ptt_vendor_management.portal_work_order_detail", values)
     
-    @http.route(['/my/work-order/<int:assignment_id>/accept'], 
+    @http.route(['/my/work-orders/<int:assignment_id>/accept'], 
                 type='jsonrpc', auth="public", methods=['POST'])
     def portal_work_order_accept(self, assignment_id, access_token, signature=None, **kw):
         """Vendor accepts work order via JSON endpoint."""
@@ -132,7 +132,7 @@ class VendorPortal(CustomerPortal):
         except Exception as e:
             return {'success': False, 'error': str(e)}
     
-    @http.route(['/my/work-order/<int:assignment_id>/decline'], 
+    @http.route(['/my/work-orders/<int:assignment_id>/decline'], 
                 type='jsonrpc', auth="public", methods=['POST'])
     def portal_work_order_decline(self, assignment_id, access_token, reason=None, **kw):
         """Vendor declines work order via JSON endpoint."""

@@ -72,7 +72,7 @@
                                         </span>
                                     </td>
                                     <td class="text-end">
-                                        <a t-attf-href="/my/work-order/#{wo.id}/#{wo.access_token}" 
+                                        <a t-attf-href="/my/work-orders/#{wo.id}/#{wo.access_token}" 
                                            class="btn btn-sm btn-primary">
                                             <i class="fa fa-eye me-1"/>View
                                         </a>
@@ -293,7 +293,7 @@
                             const token = this.dataset.token;
                             
                             try {
-                                const response = await fetch(`/my/work-order/${id}/accept`, {
+                                const response = await fetch(`/my/work-orders/${id}/accept`, {
                                     method: 'POST',
                                     headers: {'Content-Type': 'application/json'},
                                     body: JSON.stringify({
@@ -331,7 +331,7 @@
                             const token = this.dataset.token;
                             
                             try {
-                                const response = await fetch(`/my/work-order/${id}/decline`, {
+                                const response = await fetch(`/my/work-orders/${id}/decline`, {
                                     method: 'POST',
                                     headers: {'Content-Type': 'application/json'},
                                     body: JSON.stringify({

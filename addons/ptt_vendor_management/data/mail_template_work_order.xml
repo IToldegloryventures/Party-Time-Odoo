@@ -57,7 +57,7 @@
         </table>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="{{ object.get_portal_url() }}" 
+            <a href="{{ object.get_base_url() + object._get_share_url() }}" 
                style="background-color: #875A7B; color: white; padding: 15px 40px; 
                       text-decoration: none; border-radius: 5px; font-weight: bold;
                       display: inline-block; font-size: 16px;">
