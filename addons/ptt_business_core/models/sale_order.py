@@ -1,4 +1,4 @@
-from odoo import models, api, _
+from odoo import models, fields, api, _
 
 
 class SaleOrder(models.Model):
@@ -50,14 +50,19 @@ class SaleOrder(models.Model):
         return res
 
     def action_confirm(self):
-        """Override SO confirmation to update CRM stage.
+        """Override SO confirmation to update CRM stage and link project.
         
         When SO is confirmed (customer accepts):
         - Move CRM to 'Booked' stage
+        - Link CRM lead to project (bidirectional)
+        - Copy CRM event fields to project
         
-        Note: Use standard 'date_order' for confirmation timestamp.
+        IMPORTANT: Odoo creates the project via service_tracking on Event Kickoff product.
+        We do NOT create it manually - we just link CRM after Odoo creates it.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
         """
-        res = super().action_confirm()
+        res = super().action_confirm()  # Odoo creates project here via service_tracking
         
         for order in self:
             if order.state == 'sale':
@@ -66,11 +71,46 @@ class SaleOrder(models.Model):
                     message_type="notification",
                 )
                 
-                # Move CRM to Booked stage (if linked to opportunity)
+                # Move CRM to Booked stage and link to project (if linked to opportunity)
                 if order.opportunity_id:
                     self._update_crm_stage(
                         "Booked",
                         _("CRM stage updated to Booked: Customer confirmed order.")
                     )
+                    # Link CRM to project that Odoo created
+                    self._link_crm_to_project(order)
         
         return res
+
+    def _link_crm_to_project(self, order):
+        """Link CRM lead to project that Odoo created via service_tracking.
+        
+        This method:
+        1. Finds the project Odoo created (via sale_order_id)
+        2. Links project to CRM lead (ptt_crm_lead_id)
+        3. Copies CRM event fields to project
+        4. Backlinks CRM to project (ptt_project_id)
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
+        """
+        if not order.opportunity_id:
+            return
+        
+        lead = order.opportunity_id
+        
+        # Find project that Odoo created via service_tracking
+        project = self.env['project.project'].search([
+            ('sale_order_id', '=', order.id),
+        ], limit=1)
+        
+        if project:
+            # Link project to CRM and copy event fields
+            project.write({
+                'ptt_crm_lead_id': lead.id,
+                'ptt_event_type': lead.ptt_event_type,
+                'ptt_event_date': lead.ptt_event_date,
+                'ptt_guest_count': lead.ptt_estimated_guest_count,
+                'ptt_venue_name': lead.ptt_venue_name,
+            })
+            # Backlink CRM to project
+            lead.write({'ptt_project_id': project.id})

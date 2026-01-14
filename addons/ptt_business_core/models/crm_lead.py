@@ -153,6 +153,17 @@ class CrmLead(models.Model):
         help="Vendors assigned to provide services for this event",
     )
 
+    # === PROJECT LINK (Bidirectional CRM↔Project) ===
+    # When SO is confirmed, Odoo creates project via service_tracking.
+    # Our custom code links the project back to this CRM lead.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#relational-fields
+    ptt_project_id = fields.Many2one(
+        "project.project",
+        string="Event Project",
+        copy=False,
+        help="Project created when this opportunity is booked (SO confirmed).",
+    )
+
     # === CONSTRAINTS ===
     
     @api.constrains('ptt_event_time')

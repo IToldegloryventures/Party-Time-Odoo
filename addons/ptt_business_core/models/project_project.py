@@ -35,6 +35,16 @@ class ProjectProject(models.Model):
         help="Vendor assignments for this project/event.",
     )
 
+    # === CRM LINK (Bidirectional CRM↔Project) ===
+    # When SO is confirmed, our custom code links project to CRM lead.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#relational-fields
+    ptt_crm_lead_id = fields.Many2one(
+        "crm.lead",
+        string="CRM Lead",
+        copy=False,
+        help="Original CRM lead/opportunity that created this project.",
+    )
+
     # === EVENT IDENTITY ===
     ptt_event_id = fields.Char(
         string="Event Number",
