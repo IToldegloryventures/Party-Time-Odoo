@@ -20,7 +20,7 @@
                         domain="[('ptt_event_date', '=', False)]"/>
 
                 <!-- Grouping options -->
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Event Date" name="group_event_date"
                             context="{'group_by': 'ptt_event_date:month'}"/>
                     <filter string="Event Type" name="group_event_type"
@@ -56,7 +56,7 @@
                         domain="[('date_deadline', '&gt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('date_deadline', '&lt;=', (context_today() + __import__('datetime').timedelta(days=14)).strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
 
                 <!-- Grouping -->
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Deadline" name="group_deadline"
                             context="{'group_by': 'date_deadline:day'}"/>
                     <filter string="Deadline (Month)" name="group_deadline_month"
@@ -83,7 +83,7 @@
                         domain="[('probability', '&lt;', 40)]"/>
 
                 <!-- Grouping -->
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Probability" name="group_probability"
                             context="{'group_by': 'probability'}"/>
                 </group>
@@ -106,7 +106,7 @@
                         domain="[('state', '=', 'sent'), ('date_order', '&lt;', (context_today() - __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
 
                 <!-- Grouping -->
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Order Date (Month)" name="group_date"
                             context="{'group_by': 'date_order:month'}"/>
                 </group>
@@ -129,7 +129,7 @@
                         domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('invoice_date_due', '&lt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('invoice_date_due', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
 
                 <!-- Grouping -->
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Invoice Date (Month)" name="group_inv_date"
                             context="{'group_by': 'invoice_date:month'}"/>
                     <filter string="Due Date (Month)" name="group_due_date"
