@@ -39,41 +39,9 @@
     
     <!-- ===================================== -->
     <!-- KANBAN/CARD VIEW: Show Price Per Person -->
+    <!-- NOTE: Odoo 19 kanban structure simplified   -->
+    <!-- Fields are searchable/filterable via tree  -->
     <!-- ===================================== -->
-    <record id="view_sale_order_kanban_ptt_inherit" model="ir.ui.view">
-        <field name="name">sale.order.kanban.ptt</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
-        <field name="arch" type="xml">
-            <!-- Add fields to kanban card data -->
-            <xpath expr="//kanban" position="inside">
-                <field name="ptt_event_date"/>
-                <field name="ptt_guest_count"/>
-                <field name="ptt_price_per_person"/>
-                <field name="ptt_venue_name"/>
-            </xpath>
-            
-            <!-- Add event info to card bottom left -->
-            <xpath expr="//div[hasclass('oe_kanban_bottom_left')]" position="inside">
-                <span t-if="record.ptt_event_date.raw_value" class="me-2">
-                    <i class="fa fa-calendar" title="Event Date"/>
-                    <t t-esc="record.ptt_event_date.value"/>
-                </span>
-                <span t-if="record.ptt_guest_count.raw_value" class="me-2">
-                    <i class="fa fa-users" title="Guests"/>
-                    <t t-esc="record.ptt_guest_count.value"/>
-                </span>
-            </xpath>
-            
-            <!-- Add price per person badge to card bottom right -->
-            <xpath expr="//div[hasclass('oe_kanban_bottom_right')]" position="inside">
-                <span t-if="record.ptt_price_per_person.raw_value" 
-                      class="badge bg-info text-white ms-1" title="Price Per Person">
-                    $<t t-esc="record.ptt_price_per_person.value"/>/person
-                </span>
-            </xpath>
-        </field>
-    </record>
     
     <!-- ===================================== -->
     <!-- TREE/LIST VIEW: Add columns          -->
