@@ -178,7 +178,8 @@
                 <!-- ===================================== -->
                 <!-- VENDORS TAB (Vendor Assignments)     -->
                 <!-- This is where internal staff assigns -->
-                <!-- actual vendors to the event          -->
+                <!-- actual vendors to the event and      -->
+                <!-- sends work orders via portal         -->
                 <!-- ===================================== -->
                 <page name="ptt_vendors_tab" string="Vendors">
                     <!-- Internal Event Team -->
@@ -192,16 +193,26 @@
                         </group>
                     </group>
                     
-                    <!-- Vendor Assignments (this is the key STAFF functionality) -->
+                    <!-- Vendor Assignments with Portal Work Order buttons -->
                     <group string="Vendor Assignments">
                         <field name="ptt_vendor_assignment_ids" nolabel="1">
                             <list editable="bottom">
                                 <field name="service_type"/>
                                 <field name="vendor_id"/>
-                                <field name="ptt_status"/>
+                                <field name="state" widget="badge" 
+                                       decoration-warning="state == 'sent'"
+                                       decoration-success="state == 'accepted'"
+                                       decoration-danger="state == 'declined'"
+                                       decoration-info="state == 'completed'"
+                                       decoration-muted="state == 'draft' or state == 'cancelled'"/>
                                 <field name="actual_cost" widget="monetary"/>
-                                <field name="ptt_confirmed_date"/>
-                                <field name="notes" optional="hide"/>
+                                <field name="vendor_signature_date" string="Signed" optional="show"/>
+                                <button name="action_send_work_order" type="object" 
+                                        string="Send WO" class="btn-primary btn-sm"
+                                        invisible="state != 'draft'"/>
+                                <button name="action_resend_work_order" type="object" 
+                                        string="Resend" class="btn-secondary btn-sm"
+                                        invisible="state not in ('sent', 'declined')"/>
                             </list>
                             <form>
                                 <sheet>
@@ -209,12 +220,12 @@
                                         <group>
                                             <field name="service_type"/>
                                             <field name="vendor_id"/>
-                                            <field name="ptt_status"/>
+                                            <field name="state" widget="badge"/>
                                         </group>
                                         <group>
                                             <field name="actual_cost" widget="monetary"/>
-                                            <field name="ptt_confirmed_date"/>
                                             <field name="ptt_arrival_time"/>
+                                            <field name="vendor_signature_date" readonly="1"/>
                                         </group>
                                     </group>
                                     <group string="Vendor Contact">
@@ -226,6 +237,10 @@
                                     <group string="Notes">
                                         <field name="notes" nolabel="1"/>
                                         <field name="ptt_equipment_notes" nolabel="1"/>
+                                    </group>
+                                    <group string="Vendor Response" invisible="state == 'draft'">
+                                        <field name="vendor_decline_reason" readonly="1" 
+                                               invisible="state != 'declined'"/>
                                     </group>
                                 </sheet>
                             </form>
