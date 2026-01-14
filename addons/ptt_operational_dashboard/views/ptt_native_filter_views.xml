@@ -49,11 +49,10 @@
                 <!-- Due date filters -->
                 <separator/>
                 <filter string="Overdue" name="overdue"
-                        domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
+                        domain="[('date_deadline', '&lt;', 'today'), ('stage_id.fold', '=', False)]"/>
                 <filter string="Due This Week" name="due_this_week"
-                        domain="[('date_deadline', '&gt;=', context_today().strftime('%Y-%m-%d')), ('date_deadline', '&lt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
-                <filter string="Due Next Week" name="due_next_week"
-                        domain="[('date_deadline', '&gt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('date_deadline', '&lt;=', (context_today() + __import__('datetime').timedelta(days=14)).strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
+                        domain="[('date_deadline', '!=', False), ('date_deadline', '&lt;=', 'today +7d'), ('stage_id.fold', '=', False)]"/>
+                <filter string="Due Date" name="due_date" date="date_deadline"/>
 
                 <!-- Grouping -->
                 <group>
@@ -100,10 +99,12 @@
             <xpath expr="//search" position="inside">
                 <!-- Quote age filters -->
                 <separator/>
-                <filter string="Quotes (Less than 7 days)" name="recent_quotes"
-                        domain="[('state', '=', 'sent'), ('date_order', '&gt;=', (context_today() - __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                <filter string="Old Quotes (7+ days)" name="old_quotes"
-                        domain="[('state', '=', 'sent'), ('date_order', '&lt;', (context_today() - __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Recent Quotes" name="recent_quotes"
+                        domain="[('state', '=', 'sent')]"
+                        date="date_order"/>
+                <filter string="Old Quotes" name="old_quotes"
+                        domain="[('state', '=', 'sent')]"
+                        date="date_order"/>
 
                 <!-- Grouping -->
                 <group>
@@ -124,9 +125,8 @@
                 <!-- Invoice aging -->
                 <separator/>
                 <filter string="Overdue Invoices" name="overdue_invoices"
-                        domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('invoice_date_due', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
-                <filter string="Due Soon (7 days)" name="due_soon"
-                        domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('invoice_date_due', '&lt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('invoice_date_due', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                        domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('invoice_date_due', '&lt;', 'today')]"/>
+                <filter string="Due Date" name="due_date" date="invoice_date_due"/>
 
                 <!-- Grouping -->
                 <group>
