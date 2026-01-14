@@ -17,3 +17,4 @@ from . import account_move_inherit
 from . import crm_lead_inherit
 from . import project_project_inherit
 from . import sale_order_inherit
+from . import res_users_inherit

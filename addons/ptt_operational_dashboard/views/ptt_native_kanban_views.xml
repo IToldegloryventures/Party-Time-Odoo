@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PTT Operational Dashboard - Native Kanban Views (for comparison) -->
+    <!-- Native Odoo 19 kanban boards - added separately to compare with custom components -->
+
+    <!-- ====== NATIVE EVENT KANBAN VIEW ====== -->
+    <!-- Visual event management board grouped by stage -->
+    <record id="view_ptt_native_project_event_kanban" model="ir.ui.view">
+        <field name="name">project.project.ptt.native.event.kanban</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" quick_create="False"
+                    on_create="quick_create" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="stage_id"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+                <field name="ptt_event_date"/>
+                <field name="ptt_event_type"/>
+                <field name="ptt_total_revenue"/>
+                <field name="ptt_guest_count"/>
+                <field name="color"/>
+
+                <progressbar field="stage_id" type="state"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title oe_partner_heading">
+                                        <field name="name"/>
+                                    </strong>
+                                    <small class="o_kanban_record_subtitle text-muted">
+                                        <field name="ptt_event_date" widget="date"/>
+                                    </small>
+                                </div>
+                                <img t-att-src="kanban_image('res.partner', 'avatar_256', record.partner_id.raw_value)"
+                                     t-att-title="record.partner_id.value"
+                                     class="oe_kanban_avatar o_image_64_max"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div t-if="record.ptt_event_type.raw_value" class="o_kanban_tags">
+                                    <span class="o_kanban_tag" t-attf-style="background-color: #1f1f1f; color: white;">
+                                        <field name="ptt_event_type"/>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_text">
+                                    <p>
+                                        <strong>Guests:</strong>
+                                        <field name="ptt_guest_count"/>
+                                    </p>
+                                    <p t-if="record.ptt_total_revenue.raw_value">
+                                        <strong>Revenue:</strong>
+                                        <field name="ptt_total_revenue" widget="monetary"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Native Event Kanban Action -->
+    <record id="action_ptt_native_event_kanban" model="ir.actions.act_window">
+        <field name="name">Event Kanban (Native Odoo)</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">kanban,calendar,list,form</field>
+        <field name="view_id" ref="view_ptt_native_project_event_kanban"/>
+        <field name="domain">[("ptt_event_date", "!=", False)]</field>
+        <field name="context">{
+            "search_default_my_events": 1,
+            "default_is_template": False
+        }</field>
+    </record>
+
+    <!-- ====== NATIVE TASK KANBAN VIEW ====== -->
+    <!-- Visual task management board grouped by stage -->
+    <record id="view_ptt_native_task_kanban" model="ir.ui.view">
+        <field name="name">project.task.ptt.native.kanban</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" quick_create="True"
+                    on_create="quick_create" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="stage_id"/>
+                <field name="user_ids"/>
+                <field name="project_id"/>
+                <field name="date_deadline"/>
+                <field name="priority"/>
+                <field name="color"/>
+
+                <progressbar field="stage_id" type="state"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <small class="o_kanban_record_subtitle text-muted">
+                                        <field name="project_id"/>
+                                    </small>
+                                </div>
+                                <span t-if="record.priority.raw_value" class="o_priority">
+                                    <field name="priority" widget="priority"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div t-if="record.date_deadline.raw_value" class="o_kanban_tags">
+                                    <span class="o_kanban_tag badge"
+                                          t-attf-style="background-color: {'1':'#d9534f', '2':'#f0ad4e', '3':'#5cb85c'}.get(record.priority.raw_value, '#5cb85c');">
+                                        <field name="date_deadline" widget="date"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left"/>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="user_ids" widget="many2many_avatar_user"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Native Task Kanban Action -->
+    <record id="action_ptt_native_task_kanban" model="ir.actions.act_window">
+        <field name="name">Task Kanban (Native Odoo)</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,calendar,list,form</field>
+        <field name="view_id" ref="view_ptt_native_task_kanban"/>
+        <field name="domain">[("stage_id.fold", "=", False)]</field>
+        <field name="context">{
+            "search_default_my_tasks": 1
+        }</field>
+    </record>
+
+    <!-- ====== NATIVE LEAD KANBAN VIEW ====== -->
+    <!-- Visual lead pipeline board grouped by stage -->
+    <record id="view_ptt_native_lead_kanban" model="ir.ui.view">
+        <field name="name">crm.lead.ptt.native.kanban</field>
+        <field name="model">crm.lead</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" quick_create="False"
+                    on_create="quick_create" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="stage_id"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+                <field name="probability"/>
+                <field name="expected_revenue"/>
+                <field name="color"/>
+
+                <progressbar field="stage_id" type="state"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <small class="o_kanban_record_subtitle text-muted">
+                                        <field name="partner_id"/>
+                                    </small>
+                                </div>
+                                <img t-att-src="kanban_image('res.partner', 'avatar_256', record.partner_id.raw_value)"
+                                     t-att-title="record.partner_id.value"
+                                     class="oe_kanban_avatar o_image_64_max"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="o_kanban_tags">
+                                    <span class="o_kanban_tag badge badge-pill badge-info">
+                                        <field name="probability" widget="progressbar" title="Probability"/>
+                                    </span>
+                                </div>
+                                <p t-if="record.expected_revenue.raw_value">
+                                    <strong>Expected Revenue:</strong>
+                                    <field name="expected_revenue" widget="monetary"/>
+                                </p>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left"/>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Native Lead Kanban Action -->
+    <record id="action_ptt_native_lead_kanban" model="ir.actions.act_window">
+        <field name="name">Lead Pipeline (Native Odoo)</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="view_ptt_native_lead_kanban"/>
+        <field name="domain">[("type", "=", "lead")]</field>
+        <field name="context">{
+            "search_default_my_leads": 1
+        }</field>
+    </record>
+
+</odoo>

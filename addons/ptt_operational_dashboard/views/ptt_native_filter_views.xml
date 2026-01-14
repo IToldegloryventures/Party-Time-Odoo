@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PTT Operational Dashboard - Filter View Customizations -->
+    <!-- Additional search view enhancements to support saved filters -->
+
+    <!-- ====== PROJECT (EVENT) SEARCH ENHANCEMENTS ====== -->
+    <record id="view_ptt_project_search_enhanced" model="ir.ui.view">
+        <field name="name">project.project.ptt.search</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <!-- Separator -->
+                <separator/>
+
+                <!-- Event-specific filters -->
+                <filter string="Has Event Date" name="has_event_date"
+                        domain="[('ptt_event_date', '!=', False)]"/>
+                <filter string="No Event Date" name="no_event_date"
+                        domain="[('ptt_event_date', '=', False)]"/>
+
+                <!-- Grouping options -->
+                <group expand="0" string="Group By">
+                    <filter string="Event Date" name="group_event_date"
+                            context="{'group_by': 'ptt_event_date:month'}"/>
+                    <filter string="Event Type" name="group_event_type"
+                            context="{'group_by': 'ptt_event_type'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ====== TASK SEARCH ENHANCEMENTS ====== -->
+    <record id="view_ptt_task_search_enhanced" model="ir.ui.view">
+        <field name="name">project.task.ptt.search</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <!-- Priority filters -->
+                <separator/>
+                <filter string="High Priority" name="priority_high"
+                        domain="[('priority', '=', '3')]"/>
+                <filter string="Medium Priority" name="priority_medium"
+                        domain="[('priority', '=', '2')]"/>
+                <filter string="Low Priority" name="priority_low"
+                        domain="[('priority', '=', '1')]"/>
+
+                <!-- Due date filters -->
+                <separator/>
+                <filter string="Overdue" name="overdue"
+                        domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
+                <filter string="Due This Week" name="due_this_week"
+                        domain="[('date_deadline', '&gt;=', context_today().strftime('%Y-%m-%d')), ('date_deadline', '&lt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
+                <filter string="Due Next Week" name="due_next_week"
+                        domain="[('date_deadline', '&gt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('date_deadline', '&lt;=', (context_today() + __import__('datetime').timedelta(days=14)).strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]"/>
+
+                <!-- Grouping -->
+                <group expand="0" string="Group By">
+                    <filter string="Deadline" name="group_deadline"
+                            context="{'group_by': 'date_deadline:day'}"/>
+                    <filter string="Deadline (Month)" name="group_deadline_month"
+                            context="{'group_by': 'date_deadline:month'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ====== LEAD SEARCH ENHANCEMENTS ====== -->
+    <record id="view_ptt_lead_search_enhanced" model="ir.ui.view">
+        <field name="name">crm.lead.ptt.search</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <!-- Event-specific filters -->
+                <separator/>
+                <filter string="High Probability" name="high_probability"
+                        domain="[('probability', '&gt;=', 75)]"/>
+                <filter string="Medium Probability" name="medium_probability"
+                        domain="[('probability', '&gt;=', 40), ('probability', '&lt;', 75)]"/>
+                <filter string="Low Probability" name="low_probability"
+                        domain="[('probability', '&lt;', 40)]"/>
+
+                <!-- Grouping -->
+                <group expand="0" string="Group By">
+                    <filter string="Probability" name="group_probability"
+                            context="{'group_by': 'probability'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ====== SALE ORDER SEARCH ENHANCEMENTS ====== -->
+    <record id="view_ptt_sale_order_search_enhanced" model="ir.ui.view">
+        <field name="name">sale.order.ptt.search</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <!-- Quote age filters -->
+                <separator/>
+                <filter string="Quotes (Less than 7 days)" name="recent_quotes"
+                        domain="[('state', '=', 'sent'), ('date_order', '&gt;=', (context_today() - __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Old Quotes (7+ days)" name="old_quotes"
+                        domain="[('state', '=', 'sent'), ('date_order', '&lt;', (context_today() - __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+
+                <!-- Grouping -->
+                <group expand="0" string="Group By">
+                    <filter string="Order Date (Month)" name="group_date"
+                            context="{'group_by': 'date_order:month'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ====== INVOICE SEARCH ENHANCEMENTS ====== -->
+    <record id="view_ptt_invoice_search_enhanced" model="ir.ui.view">
+        <field name="name">account.move.ptt.search</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <!-- Invoice aging -->
+                <separator/>
+                <filter string="Overdue Invoices" name="overdue_invoices"
+                        domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('invoice_date_due', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Due Soon (7 days)" name="due_soon"
+                        domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('invoice_date_due', '&lt;=', (context_today() + __import__('datetime').timedelta(days=7)).strftime('%Y-%m-%d')), ('invoice_date_due', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+
+                <!-- Grouping -->
+                <group expand="0" string="Group By">
+                    <filter string="Invoice Date (Month)" name="group_inv_date"
+                            context="{'group_by': 'invoice_date:month'}"/>
+                    <filter string="Due Date (Month)" name="group_due_date"
+                            context="{'group_by': 'invoice_date_due:month'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
