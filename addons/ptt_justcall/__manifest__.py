@@ -50,7 +50,7 @@ Requirements:
         'views/project_project_views.xml',
         'views/justcall_menu.xml',
     ],
-    'installable': True,
+    'installable': False,  # Temporarily disabled - fix in progress
     'application': False,
     'auto_install': False,
     'license': 'LGPL-3',
