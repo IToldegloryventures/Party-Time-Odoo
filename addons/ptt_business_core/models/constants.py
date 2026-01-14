@@ -1,66 +1,61 @@
 """
 Shared constants for PTT Business Core module.
 
-Centralizes repeated definitions to avoid duplication per Odoo coding guidelines.
 Reference: https://www.odoo.com/documentation/19.0/contributing/development/coding_guidelines.html
-- "Favor readability over conciseness... avoid duplication"
-
-These constants are used across multiple models:
-- ptt.crm.service.line
-- ptt.crm.vendor.assignment  
-- ptt.project.vendor.assignment
-- res.partner (via ptt_vendor_management)
+- Favor readability over conciseness
+- Avoid duplication (DRY principle)
 """
 
-# =============================================================================
-# SERVICE TIERS - Used for vendor matching and product variants
-# =============================================================================
-# MIGRATION NOTE (v19.0.5.0.0): Changed from gold/silver/bronze/platinum to:
-# - essentials: Basic service level
-# - classic: Standard service level  
-# - premier: Premium service level
-# Reference: Internal meeting Jan 2026 - aligns with pricing calculator
+# Service tier options - aligned with product variants
+# Used by: ptt.crm.service.line, res.partner, product.template.attribute.value
 SERVICE_TIERS = [
     ("essentials", "Essentials"),
     ("classic", "Classic"),
     ("premier", "Premier"),
 ]
 
-# =============================================================================
-# SERVICE TYPES - Aligned with QuickBooks categories (Jan 2026)
-# =============================================================================
-# Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#odoo.fields.Selection
-# Categories from QuickBooks: Event Entertainment, Event Services, Rental Equipment, Adjustments
+# SERVICE_TYPES - Expanded to match QuickBooks categories
+# Reference: User's QuickBooks export with Income Account mapping
+# DO NOT add duplicates - use QuickBooks naming where different
 SERVICE_TYPES = [
-    # === Event Entertainment (Income 4230s) ===
+    # Entertainment (Income Acct 4231-4239)
     ("dj", "DJ & MC Services"),
     ("band", "Band Services"),
-    ("musician", "Musician Services"),
-    ("dancer", "Dancers & Characters"),
-    ("balloon_face", "Balloon & Face Painters"),
-    ("psychic", "Psychics & Magicians"),
+    ("musicians", "Musicians (Solo/Duo)"),
+    ("dancers_characters", "Dancers & Characters"),
     ("casino", "Casino Services"),
-    ("event_planning", "Event Planning Services"),
     
-    # === Event Services (Income 4220s) ===
-    ("catering", "Catering & Bartender Services"),
-    ("photography", "Photography Services"),
-    ("videography", "Videography Services"),
+    # Photo/Video (Income Acct 4220s)
+    ("photography", "Photography"),
+    ("videography", "Videography"),
+    ("photobooth", "Photo Booth"),
+    
+    # Artists (Income Acct 4225, 4234)
     ("caricature", "Caricature Artist"),
+    ("balloon_face_painters", "Balloon & Face Painters"),
     
-    # === Rental Equipment, Décor & Decorations (Income 4210s) ===
-    ("balloon_decor", "Balloon Décor"),
-    ("furniture", "Furniture Rentals"),
-    ("decor", "Misc Décor & Decorations"),
-    ("inflatables", "Inflatables & Games Rentals"),
-    ("av_rental", "A/V Rentals"),
+    # Food & Beverage (Income Acct 4221)
+    ("catering", "Catering & Bartender Services"),
+    
+    # Rentals & Equipment (Income Acct 4211-4215)
+    ("av_rentals", "A/V Rentals"),
     ("lighting", "Lighting Rentals"),
-    ("photobooth", "Green Screen & Photo Booths Rentals"),
-    ("misc_rental", "Misc Equipment Rental"),
+    ("balloon_decor", "Balloon Decor"),
+    ("misc_rental", "Misc Event Rental"),
     
-    # === Other Services ===
+    # Services (Income Acct 4200s)
+    ("coordination", "Event Planning Services"),
     ("transportation", "Transportation"),
     ("staffing", "Staffing"),
     ("venue_sourcing", "Venue Sourcing"),
+    
+    # Insurance & Adjustments (Income Acct 4239, 4320-4390)
+    ("insurance", "Additional Insured Coverage Extension"),
+    ("deposit", "Customer Deposit / Retainer"),
+    ("discount", "Client Discounts"),
+    ("refund", "Client Refund"),
+    ("cancellation", "Cancellation Event Fees"),
+    ("bad_debt", "Bad Debt"),
+    
     ("other", "Other"),
 ]
