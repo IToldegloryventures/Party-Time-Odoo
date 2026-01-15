@@ -82,7 +82,7 @@
             <field name="standard_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Event project initialization. Creates project and standard tasks.</field>
+            <!-- description_sale removed - internal product, not visible to customers -->
             <!-- NATIVE ODOO: Auto-create project on SO confirm -->
             <field name="service_tracking">project_only</field>
             <field name="project_template_id" ref="project_template_standard_event"/>

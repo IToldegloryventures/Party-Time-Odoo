@@ -107,6 +107,28 @@ class SaleOrder(models.Model):
         
         return orders
     
+    def write(self, vals):
+        """Override write to auto-populate order lines when opportunity_id is set.
+        
+        Handles cases where:
+        - Quotation is created without opportunity_id, then opportunity_id is set later
+        - Services are added via "Generate Quote" button or other actions
+        """
+        result = super().write(vals)
+        
+        # If opportunity_id was just set, auto-add Event Kickoff and service lines
+        if 'opportunity_id' in vals and vals['opportunity_id']:
+            for order in self:
+                if order.opportunity_id and order.state in ('draft', 'sent'):
+                    # Auto-add Event Kickoff if not already in order
+                    self._ensure_event_kickoff(order)
+                    
+                    # Add service lines from CRM (method handles duplicate checking)
+                    if order.opportunity_id.ptt_service_line_ids:
+                        self._create_order_lines_from_service_lines(order)
+        
+        return result
+    
     def _ensure_event_kickoff(self, order):
         """Ensure Event Kickoff product is added to the order.
         
@@ -286,19 +308,62 @@ class SaleOrder(models.Model):
         lead = order.opportunity_id
         
         # Find project that Odoo created via service_tracking
+        # Odoo links projects via sale_order_id (related from sale_line_id) or reinvoiced_sale_order_id
+        # Reference: odoo/addons/sale_project/models/project_project.py
         project = self.env['project.project'].search([
+            '|',
             ('sale_order_id', '=', order.id),
+            ('reinvoiced_sale_order_id', '=', order.id),
         ], limit=1)
         
         if project:
+            # CRITICAL: Ensure project has type_ids (task stages) to prevent frontend OwlError
+            # If project was created from template but lacks stages, assign them
+            if not project.type_ids:
+                task_stages = self.env['project.task.type'].search([])
+                if task_stages:
+                    project.type_ids = [(6, 0, task_stages.ids)]
+                else:
+                    # Create default stages if none exist
+                    default_stages = self.env['project.task.type'].create([
+                        {'name': 'To Do', 'sequence': 5},
+                        {'name': 'In Progress', 'sequence': 10},
+                        {'name': 'Done', 'sequence': 15},
+                        {'name': 'Cancelled', 'sequence': 20, 'fold': True},
+                    ])
+                    project.type_ids = [(6, 0, default_stages.ids)]
+            
             # Link project to CRM and copy event fields
-            project.write({
+            # Use safe field access - only set fields that exist
+            # Reference: Odoo 19 official docs - safe field population pattern
+            project_vals = {
                 'ptt_crm_lead_id': lead.id,
-                'ptt_event_type': lead.ptt_event_type,
-                'ptt_event_date': lead.ptt_event_date,
-                'ptt_guest_count': lead.ptt_estimated_guest_count,
-                'ptt_venue_name': lead.ptt_venue_name,
-            })
+            }
+            
+            # Safely copy CRM event fields to project (using safe attribute access)
+            if hasattr(lead, 'ptt_event_type') and lead.ptt_event_type:
+                project_vals['ptt_event_type'] = lead.ptt_event_type
+            if hasattr(lead, 'ptt_event_date') and lead.ptt_event_date:
+                project_vals['ptt_event_date'] = lead.ptt_event_date
+            if hasattr(lead, 'ptt_estimated_guest_count') and lead.ptt_estimated_guest_count:
+                project_vals['ptt_guest_count'] = lead.ptt_estimated_guest_count
+            if hasattr(lead, 'ptt_venue_name') and lead.ptt_venue_name:
+                project_vals['ptt_venue_name'] = lead.ptt_venue_name
+            if hasattr(lead, 'ptt_event_time') and lead.ptt_event_time:
+                project_vals['ptt_event_time'] = lead.ptt_event_time
+            
+            # Also set standard project fields from sales order and CRM
+            if order.partner_id:
+                project_vals['partner_id'] = order.partner_id.id
+            # Set project assignee from CRM Lead Salesperson (user_id)
+            # This should auto-populate from contact card if salesperson exists there
+            # Reference: CRM Lead user_id = Salesperson field
+            if lead.user_id:
+                project_vals['user_id'] = lead.user_id.id
+            if order.ptt_event_date:
+                project_vals['date_start'] = order.ptt_event_date  # Standard project field
+            
+            project.write(project_vals)
             # Backlink CRM to project
             lead.write({'ptt_project_id': project.id})
             
@@ -310,6 +375,9 @@ class SaleOrder(models.Model):
         
         After project is created via Event Kickoff, create tasks for each service/product
         to track work for that specific service type.
+        
+        Tasks are assigned to the CRM Lead Salesperson (user_id) if one is assigned.
+        This should auto-populate from contact card if salesperson exists there.
         
         Args:
             order: The confirmed sales order
@@ -327,6 +395,42 @@ class SaleOrder(models.Model):
         if not service_lines:
             return
         
+        # CRITICAL: Get first stage_id for tasks to prevent frontend OwlError
+        # Tasks MUST have stage_id set or the frontend crashes
+        # Reference: Odoo 19 official docs - project.task must have stage_id
+        first_stage = False
+        if project.type_ids and len(project.type_ids) > 0:
+            first_stage = project.type_ids[0]
+        if not first_stage:
+            # Fallback: get any available stage or create default
+            first_stage = self.env['project.task.type'].search([], limit=1)
+            if not first_stage:
+                first_stage = self.env['project.task.type'].create({
+                    'name': 'To Do',
+                    'sequence': 5,
+                })
+        
+        # Build event context for task descriptions (using safe getattr for CRM fields)
+        # Reference: Odoo 19 official docs - safe field access pattern
+        event_context_parts = []
+        if order.ptt_event_date:
+            event_context_parts.append(f"Event Date: {order.ptt_event_date}")
+        if order.ptt_event_time:
+            event_context_parts.append(f"Event Time: {order.ptt_event_time}")
+        if order.ptt_venue_name:
+            event_context_parts.append(f"Venue: {order.ptt_venue_name}")
+        if order.ptt_guest_count:
+            event_context_parts.append(f"Guest Count: {order.ptt_guest_count}")
+        if order.ptt_event_type:
+            # Get readable label from selection field
+            event_type_label = dict(order._fields['ptt_event_type'].selection).get(
+                order.ptt_event_type, order.ptt_event_type
+            ) if hasattr(order, '_fields') and 'ptt_event_type' in order._fields else order.ptt_event_type
+            if event_type_label:
+                event_context_parts.append(f"Event Type: {event_type_label}")
+        
+        event_context = "\n".join(event_context_parts) if event_context_parts else ""
+        
         # Create a task for each service/product
         task_vals_list = []
         sequence = 100  # Start after standard template tasks (which are sequence 10-90)
@@ -337,18 +441,33 @@ class SaleOrder(models.Model):
             service_name = line.product_id.name.upper() if line.product_id.name else "SERVICE"
             task_name = f"{service_name} TASK"
             
+            # Build rich task description with service and event context
+            description_parts = [
+                f"Service: {line.name}",
+                f"Quantity: {line.product_uom_qty} {line.product_uom_id.name if line.product_uom_id else 'units'}",
+                f"Unit Price: ${line.price_unit:.2f}",
+            ]
+            if event_context:
+                description_parts.append("")  # Empty line separator
+                description_parts.append("Event Details:")
+                description_parts.append(event_context)
+            
             task_vals = {
                 'name': task_name,
                 'project_id': project.id,
                 'sale_line_id': line.id,
                 'sale_order_id': order.id,
-                'partner_id': order.partner_id.id,
-                'description': f"Service: {line.name}\n"
-                             f"Quantity: {line.product_uom_qty} {line.product_uom_id.name if line.product_uom_id else 'units'}\n"
-                             f"Unit Price: ${line.price_unit:.2f}",
+                'partner_id': order.partner_id.id if order.partner_id else False,
+                'stage_id': first_stage.id,  # CRITICAL: Must set stage_id to prevent OwlError
+                'description': "\n".join(description_parts),
                 'sequence': sequence,
-                'user_ids': False,  # Unassigned by default
             }
+            
+            # Assign to CRM Lead Salesperson (user_id) if one is assigned
+            # This should auto-populate from contact card if salesperson exists there
+            # Reference: CRM Lead user_id = Salesperson field
+            if order.opportunity_id and order.opportunity_id.user_id:
+                task_vals['user_ids'] = [(4, order.opportunity_id.user_id.id)]  # Assign to CRM Salesperson (Many2many command)
             
             task_vals_list.append(task_vals)
             sequence += 10
