@@ -9,19 +9,19 @@
         Reference: https://www.odoo.com/documentation/19.0/developer/reference/user_interface/view_architectures.html
     -->
     
-    <!-- Tree View -->
-    <record id="ptt_service_task_template_tree" model="ir.ui.view">
-        <field name="name">ptt.service.task.template.tree</field>
+    <!-- List View (Odoo 19: 'tree' renamed to 'list') -->
+    <record id="ptt_service_task_template_list" model="ir.ui.view">
+        <field name="name">ptt.service.task.template.list</field>
         <field name="model">ptt.service.task.template</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle"/>
                 <field name="service_type"/>
                 <field name="name"/>
                 <field name="is_subtask"/>
                 <field name="parent_template_id" optional="show"/>
                 <field name="active" optional="hide"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -56,11 +56,11 @@
                     <notebook invisible="is_subtask">
                         <page string="Subtask Templates" name="subtasks">
                             <field name="child_template_ids" nolabel="1">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="description"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -93,7 +93,7 @@
     <record id="action_ptt_service_task_template" model="ir.actions.act_window">
         <field name="name">Service Task Templates</field>
         <field name="res_model">ptt.service.task.template</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="ptt_service_task_template_search"/>
         <field name="context">{'search_default_parent_tasks': 1}</field>
         <field name="help" type="html">
