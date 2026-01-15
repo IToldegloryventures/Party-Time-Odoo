@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Variant Pricing Configuration Wizard
+        
+        This wizard allows easy editing of Event Type and Service Tier pricing
+        (price_extra values) for all services that have these attributes.
+        
+        Access: Settings > Technical > Actions > Server Actions > "Configure Variant Pricing"
+        Or: Products > Configuration > "Configure Variant Pricing"
+    -->
+    
+    <record id="view_ptt_variant_pricing_config_form" model="ir.ui.view">
+        <field name="name">ptt.variant.pricing.config.form</field>
+        <field name="model">ptt.variant.pricing.config</field>
+        <field name="arch" type="xml">
+            <form string="Configure Variant Pricing">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <strong>💡 How it works:</strong>
+                        <ul class="mb-0">
+                            <li><strong>Base Price:</strong> Set on the product template (e.g., $300 for DJ Services)</li>
+                            <li><strong>Event Type Extra:</strong> Additional price for Social/Corporate/Wedding event types</li>
+                            <li><strong>Service Tier Extra:</strong> Additional price for Essentials/Classic/Premier tiers</li>
+                            <li><strong>Final Price:</strong> Base Price + Event Type Extra + Service Tier Extra</li>
+                        </ul>
+                        <p class="mb-0 mt-2">
+                            <strong>Example:</strong> DJ Services (Wedding, Classic) = $300 (base) + $50 (Wedding) + $125 (Classic) = <strong>$475</strong>
+                        </p>
+                    </div>
+                    
+                    <field name="service_line_ids" nolabel="1">
+                        <tree string="Services" editable="bottom" create="0" delete="0">
+                            <field name="service_name" readonly="1" optional="hide"/>
+                            
+                            <field name="event_type_social_extra" string="Social Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="event_type_corporate_extra" string="Corporate Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="event_type_wedding_extra" string="Wedding Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            
+                            <field name="tier_essentials_extra" string="Essentials Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tier_classic_extra" string="Classic Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="tier_premier_extra" string="Premier Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            
+                            <field name="service_id" invisible="1"/>
+                            <field name="config_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_save" string="Save Pricing" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_ptt_variant_pricing_config" model="ir.actions.act_window">
+        <field name="name">Configure Variant Pricing</field>
+        <field name="res_model">ptt.variant.pricing.config</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+    
+    <menuitem id="menu_ptt_variant_pricing_config"
+              name="Configure Variant Pricing"
+              parent="product.menu_product_config"
+              action="action_ptt_variant_pricing_config"
+              sequence="30"/>
+
+</odoo>
