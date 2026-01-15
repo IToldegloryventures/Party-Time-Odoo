@@ -72,113 +72,105 @@
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="priority">50</field>
         <field name="arch" type="xml">
-            <!-- Modify the lead_info group (for leads) to be two columns with source_id -->
+            <!-- Modify the lead_info group (for leads) to add source_id -->
             <xpath expr="//group[@name='lead_info']" position="replace">
                 <group name="lead_info" invisible="type == 'opportunity'">
-                    <group string="Contact Information" col="1">
-                        <label for="contact_name"/>
-                        <div class="o_row">
-                            <field name="contact_name"/>
-                        </div>
-                        <field name="is_blacklisted" invisible="1"/>
-                        <field name="phone_blacklisted" invisible="1"/>
-                        <field name="email_state" invisible="1"/>
-                        <field name="phone_state" invisible="1"/>
-                        <field name="partner_email_update" invisible="1"/>
-                        <field name="partner_phone_update" invisible="1"/>
-                        <label for="email_from_group_lead_info" class="oe_inline"/>
-                        <div class="o_row o_row_readonly">
-                            <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
-                                title="This email is blacklisted for mass mailings. Click to unblacklist."
-                                type="object" context="{'default_email': email_from}" groups="base.group_user"
-                                invisible="not is_blacklisted"/>
-                            <field name="email_from" id="email_from_group_lead_info" string="Email" widget="email"/>
-                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
-                                title="By saving this change, the customer email will also be updated."
-                                invisible="not partner_email_update"/>
-                        </div>
-                        <field name="email_cc" groups="base.group_no_one"/>
-                        <field name="function"/>
-                        <label for="phone_group_lead_info" class="oe_inline"/>
-                        <div class="o_row o_row_readonly">
-                            <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger"
-                                title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
-                                type="object" context="{'default_phone': phone}" groups="base.group_user"
-                                invisible="not phone_blacklisted"/>
-                            <field name="phone" id="phone_group_lead_info" widget="phone"/>
-                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
-                                title="By saving this change, the customer phone number will also be updated."
-                                invisible="not partner_phone_update"/>
-                        </div>
-                    </group>
-                    <group string="Lead Source" col="1">
-                        <field name="source_id" placeholder="Select lead source"/>
-                    </group>
+                    <label for="contact_name"/>
+                    <div class="o_row">
+                        <field name="contact_name"/>
+                    </div>
+                    <field name="is_blacklisted" invisible="1"/>
+                    <field name="phone_blacklisted" invisible="1"/>
+                    <field name="email_state" invisible="1"/>
+                    <field name="phone_state" invisible="1"/>
+                    <field name="partner_email_update" invisible="1"/>
+                    <field name="partner_phone_update" invisible="1"/>
+                    <label for="email_from_group_lead_info" class="oe_inline"/>
+                    <div class="o_row o_row_readonly">
+                        <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
+                            title="This email is blacklisted for mass mailings. Click to unblacklist."
+                            type="object" context="{'default_email': email_from}" groups="base.group_user"
+                            invisible="not is_blacklisted"/>
+                        <field name="email_from" id="email_from_group_lead_info" string="Email" widget="email"/>
+                        <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                            title="By saving this change, the customer email will also be updated."
+                            invisible="not partner_email_update"/>
+                    </div>
+                    <field name="email_cc" groups="base.group_no_one"/>
+                    <field name="function"/>
+                    <label for="phone_group_lead_info" class="oe_inline"/>
+                    <div class="o_row o_row_readonly">
+                        <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger"
+                            title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
+                            type="object" context="{'default_phone': phone}" groups="base.group_user"
+                            invisible="not phone_blacklisted"/>
+                        <field name="phone" id="phone_group_lead_info" widget="phone"/>
+                        <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                            title="By saving this change, the customer phone number will also be updated."
+                            invisible="not partner_phone_update"/>
+                    </div>
+                    <field name="source_id" placeholder="Select lead source"/>
                 </group>
             </xpath>
-            <!-- For opportunities, modify opportunity_partner to be two columns with source_id -->
+            <!-- For opportunities, modify opportunity_partner to add source_id -->
             <xpath expr="//group[@name='opportunity_partner']" position="replace">
                 <group name="opportunity_partner" invisible="type == 'lead'">
-                    <group string="Contact Information" col="1">
-                        <field name="partner_id"
-                            widget="res_partner_many2one"
-                            context="{'res_partner_search_mode': type == 'opportunity' and 'customer' or False,
-                                'default_name': contact_name or partner_name,
-                                'default_street': street,
-                                'default_is_company': type == 'opportunity' and contact_name == False,
-                                'default_company_name': type == 'opportunity' and partner_name,
-                                'default_street2': street2,
-                                'default_city': city,
-                                'default_state_id': state_id,
-                                'default_zip': zip,
-                                'default_country_id': country_id,
-                                'default_function': function,
-                                'default_phone': phone,
-                                'default_email': email_from,
-                                'default_user_id': user_id,
-                                'default_team_id': team_id,
-                                'default_website': website,
-                                'default_lang': lang_code,
-                                'show_vat': True,
-                            }"
-                        />
-                        <field name="is_blacklisted" invisible="1"/>
-                        <field name="partner_is_blacklisted" invisible="1"/>
-                        <field name="phone_blacklisted" invisible="1"/>
-                        <field name="email_state" invisible="1"/>
-                        <field name="phone_state" invisible="1"/>
-                        <field name="partner_email_update" invisible="1"/>
-                        <field name="partner_phone_update" invisible="1"/>
-                        <label for="email_from" class="oe_inline"/>
-                        <div class="o_row o_row_readonly">
-                            <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
-                                title="This email is blacklisted for mass mailings. Click to unblacklist."
-                                type="object" context="{'default_email': email_from}" groups="base.group_user"
-                                invisible="not is_blacklisted"/>
-                            <field name="email_from" string="Email" widget="email"/>
-                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
-                                title="By saving this change, the customer email will also be updated."
-                                invisible="not partner_email_update"/>
-                        </div>
-                        <label for="phone" class="oe_inline"/>
-                        <div class="o_row o_row_readonly">
-                            <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger"
-                                title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
-                                type="object" context="{'default_phone': phone}" groups="base.group_user"
-                                invisible="not phone_blacklisted"/>
-                            <field name="phone" widget="phone"/>
-                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
-                                title="By saving this change, the customer phone number will also be updated."
-                                invisible="not partner_phone_update"/>
-                        </div>
-                        <field name="lost_reason_id" invisible="won_status != 'lost'"
-                            placeholder="Not specified"/>
-                        <field name="date_conversion" invisible="1"/>
-                        <field name="user_company_ids" invisible="1"/>
-                    </group>
-                    <group string="Lead Source" col="1">
-                        <field name="source_id" placeholder="Select lead source"/>
-                    </group>
+                    <field name="partner_id"
+                        widget="res_partner_many2one"
+                        context="{'res_partner_search_mode': type == 'opportunity' and 'customer' or False,
+                            'default_name': contact_name or partner_name,
+                            'default_street': street,
+                            'default_is_company': type == 'opportunity' and contact_name == False,
+                            'default_company_name': type == 'opportunity' and partner_name,
+                            'default_street2': street2,
+                            'default_city': city,
+                            'default_state_id': state_id,
+                            'default_zip': zip,
+                            'default_country_id': country_id,
+                            'default_function': function,
+                            'default_phone': phone,
+                            'default_email': email_from,
+                            'default_user_id': user_id,
+                            'default_team_id': team_id,
+                            'default_website': website,
+                            'default_lang': lang_code,
+                            'show_vat': True,
+                        }"
+                    />
+                    <field name="is_blacklisted" invisible="1"/>
+                    <field name="partner_is_blacklisted" invisible="1"/>
+                    <field name="phone_blacklisted" invisible="1"/>
+                    <field name="email_state" invisible="1"/>
+                    <field name="phone_state" invisible="1"/>
+                    <field name="partner_email_update" invisible="1"/>
+                    <field name="partner_phone_update" invisible="1"/>
+                    <label for="email_from" class="oe_inline"/>
+                    <div class="o_row o_row_readonly">
+                        <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
+                            title="This email is blacklisted for mass mailings. Click to unblacklist."
+                            type="object" context="{'default_email': email_from}" groups="base.group_user"
+                            invisible="not is_blacklisted"/>
+                        <field name="email_from" string="Email" widget="email"/>
+                        <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                            title="By saving this change, the customer email will also be updated."
+                            invisible="not partner_email_update"/>
+                    </div>
+                    <label for="phone" class="oe_inline"/>
+                    <div class="o_row o_row_readonly">
+                        <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger"
+                            title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
+                            type="object" context="{'default_phone': phone}" groups="base.group_user"
+                            invisible="not phone_blacklisted"/>
+                        <field name="phone" widget="phone"/>
+                        <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                            title="By saving this change, the customer phone number will also be updated."
+                            invisible="not partner_phone_update"/>
+                    </div>
+                    <field name="lost_reason_id" invisible="won_status != 'lost'"
+                        placeholder="Not specified"/>
+                    <field name="date_conversion" invisible="1"/>
+                    <field name="user_company_ids" invisible="1"/>
+                    <field name="source_id" placeholder="Select lead source"/>
                 </group>
             </xpath>
         </field>
