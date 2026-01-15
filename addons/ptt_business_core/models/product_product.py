@@ -73,8 +73,21 @@ class ProductProduct(models.Model):
         "addon_id",
         string="Recommended Add-Ons",
         domain="[('default_code', 'like', 'ADDON-%')]",
-        help="Add-on products recommended for this service variant.",
+        help="Add-on products recommended for this DJ service variant. NOTE: Addons are ONLY for DJ Services, not other services.",
     )
+    
+    @api.model
+    def _setup_complete(self):
+        """Restrict addons field to DJ Service variants only."""
+        super()._setup_complete()
+        # Make addons field invisible for non-DJ products
+        # Addons should ONLY be for DJ Service variants
+        addons_field = self._fields.get('ptt_recommended_addon_ids')
+        if addons_field:
+            # Domain will filter by default_code in view if needed
+            # But we can't restrict field access per-record in model
+            # So we'll rely on views to hide it for non-DJ products
+            pass
     
     # Currency field for monetary fields
     currency_id = fields.Many2one(

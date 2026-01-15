@@ -87,45 +87,42 @@ class SaleOrder(models.Model):
     
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to auto-populate order lines from service lines.
+        """Override create to auto-add Event Kickoff product.
         
-        When a quotation is created from a CRM lead with service lines,
-        automatically create sale order lines from those service lines.
-        Also automatically adds Event Kickoff product if not already present.
+        When a quotation is created from a CRM lead,
+        automatically adds Event Kickoff product if not already present.
+        
+        NOTE: Services should be added directly in the quotation (not from CRM service lines)
+        to support product variants properly (Event Type + Tier attributes).
         """
         orders = super().create(vals_list)
         
-        # Create order lines from service lines for orders with opportunities
+        # Auto-add Event Kickoff for orders with opportunities
         for order in orders:
             if order.opportunity_id:
                 # Auto-add Event Kickoff if not already in order
                 self._ensure_event_kickoff(order)
-                
-                # Add service lines from CRM
-                if order.opportunity_id.ptt_service_line_ids:
-                    self._create_order_lines_from_service_lines(order)
         
         return orders
     
     def write(self, vals):
-        """Override write to auto-populate order lines when opportunity_id is set.
+        """Override write to auto-add Event Kickoff when opportunity_id is set.
         
         Handles cases where:
         - Quotation is created without opportunity_id, then opportunity_id is set later
         - Services are added via "Generate Quote" button or other actions
+        
+        NOTE: Services should be added directly in the quotation (not from CRM service lines)
+        to support product variants properly (Event Type + Tier attributes).
         """
         result = super().write(vals)
         
-        # If opportunity_id was just set, auto-add Event Kickoff and service lines
+        # If opportunity_id was just set, auto-add Event Kickoff
         if 'opportunity_id' in vals and vals['opportunity_id']:
             for order in self:
                 if order.opportunity_id and order.state in ('draft', 'sent'):
                     # Auto-add Event Kickoff if not already in order
                     self._ensure_event_kickoff(order)
-                    
-                    # Add service lines from CRM (method handles duplicate checking)
-                    if order.opportunity_id.ptt_service_line_ids:
-                        self._create_order_lines_from_service_lines(order)
         
         return result
     
@@ -156,73 +153,6 @@ class SaleOrder(models.Model):
             'sequence': -99,  # Put it first
         })
     
-    def _create_order_lines_from_service_lines(self, order):
-        """Create sale order lines from CRM service lines.
-        
-        Maps service line fields to sale order line fields:
-        - product_id → product_id
-        - estimated_price → price_unit
-        - description → name (or product name if no description)
-        - tier/service_type → stored in description or notes
-        
-        Only adds service lines if the product is not already in the order
-        to prevent duplicates.
-        """
-        if not order.opportunity_id or not order.opportunity_id.ptt_service_line_ids:
-            return
-        
-        # Get existing product IDs in the order to avoid duplicates
-        existing_product_ids = set(order.order_line.mapped('product_id').ids)
-        
-        service_lines = order.opportunity_id.ptt_service_line_ids.sorted('sequence')
-        order_line_vals = []
-        
-        for service_line in service_lines:
-            # Skip if no product selected
-            if not service_line.product_id:
-                continue
-            
-            # Skip if this product is already in the order
-            if service_line.product_id.id in existing_product_ids:
-                continue
-            
-            # Build description from service line
-            name_parts = []
-            if service_line.product_id.name:
-                name_parts.append(service_line.product_id.name)
-            if service_line.tier and service_line.tier != 'classic':
-                tier_label = dict(service_line._fields['tier'].selection).get(
-                    service_line.tier, service_line.tier
-                )
-                name_parts.append(f"({tier_label})")
-            if service_line.description:
-                name_parts.append(f"- {service_line.description}")
-            
-            name = " ".join(name_parts) if name_parts else service_line.product_id.name
-            
-            # Prepare order line values
-            line_vals = {
-                'order_id': order.id,
-                'product_id': service_line.product_id.id,
-                'product_uom_qty': 1.0,  # Default quantity
-                'product_uom_id': service_line.product_id.uom_id.id,
-                'name': name,
-                'sequence': service_line.sequence if service_line.sequence else 10,
-            }
-            
-            # Set price if provided in service line (even if $0)
-            # Use estimated_price if it exists, otherwise let Odoo compute it
-            if service_line.estimated_price is not False:  # Allow 0.0
-                line_vals['price_unit'] = service_line.estimated_price or 0.0
-            # Otherwise, price will be computed by Odoo's onchange when product is set
-            
-            order_line_vals.append(line_vals)
-        
-        # Create order lines directly if any were prepared
-        if order_line_vals:
-            # Create order lines using create_multi for better performance
-            self.env['sale.order.line'].create(order_line_vals)
-
     # === CRM STAGE AUTOMATION ===
     
     def _update_crm_stage(self, stage_name, message=None):

@@ -19,7 +19,7 @@ SERVICE_TIERS = [
 # DO NOT add duplicates - use QuickBooks naming where different
 SERVICE_TYPES = [
     # Entertainment (Income Acct 4231-4239)
-    ("dj", "DJ & MC Services"),
+    ("dj", "DJ Services"),  # NOTE: MC Services is a separate addon
     ("band", "Band Services"),
     ("musicians", "Musicians (Solo/Duo)"),
     ("dancers_characters", "Dancers & Characters"),

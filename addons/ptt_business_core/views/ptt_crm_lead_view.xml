@@ -77,31 +77,33 @@
         </field>
     </record>
 
-    <!-- Vendor Tab - After Notes Tab -->
-    <record id="view_crm_lead_form_vendor_tab_ptt" model="ir.ui.view">
-        <field name="name">crm.lead.form.vendor.tab.ptt</field>
+    <!-- Remove old Services tab with service lines and replace with Services Notes -->
+    <record id="view_crm_lead_form_hide_service_lines" model="ir.ui.view">
+        <field name="name">crm.lead.form.hide.service.lines</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
-        <field name="priority">100</field>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='internal_notes']" position="after">
-                <page name="vendor_tab" string="Services">
-                    <!-- Section 1: Service Lines with Tier Selection -->
-                    <group string="Service Selection (Tier Categories)">
-                        <field name="ptt_service_line_ids" nolabel="1" colspan="2">
-                            <list editable="bottom">
-                                <field name="sequence" widget="handle"/>
-                                <field name="service_type"/>
-                                <field name="product_id" optional="show"/>
-                                <field name="tier"/>
-                                <field name="estimated_price"/>
-                                <field name="description" optional="hide"/>
-                            </list>
-                        </field>
+            <!-- Hide ptt_service_line_ids field if it exists anywhere (old Services tab) -->
+            <xpath expr="//field[@name='ptt_service_line_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Replace old vendor_tab page if it exists (remove service lines, add notes) -->
+            <xpath expr="//page[@name='vendor_tab']" position="replace">
+                <page name="vendor_tab" string="Services Notes">
+                    <group string="Service-Related Notes">
+                        <div class="alert alert-info" role="alert">
+                            <strong>💡 Service Selection:</strong> Services should be added directly in the quotation to ensure proper variant selection (Event Type + Service Tier). Use the notes below for service-related information, special requirements, or vendor preferences.
+                        </div>
+                        <group>
+                            <field name="description" nolabel="1" placeholder="Add service-related notes here: preferred vendors, special requirements, service details, or any service-related information..."/>
+                        </group>
                     </group>
                 </page>
             </xpath>
         </field>
     </record>
+    
+
 
 </odoo>

@@ -3,67 +3,213 @@
     <data noupdate="0">
         <!-- Event Services (Income 4220s) -->
         
-        <record id="product_caricature_artist" model="product.product">
+        <!-- ============================================ -->
+        <!-- CARICATURE ARTIST - PRODUCT TEMPLATE (9 VARIANTS) -->
+        <!-- Creates variants: Event Type × Service Tier  -->
+        <!-- No variant-specific pricing - base price only -->
+        <!-- ============================================ -->
+        <record id="product_template_caricature_artist" model="product.template">
             <field name="name">Caricature Artist</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Caricature artist services. Select Event Type and Service Tier for your event.</field>
         </record>
         
-        <record id="product_balloon_face_painters" model="product.product">
+        <record id="caricature_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_caricature_artist"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="caricature_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_caricature_artist"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- BALLOON & FACE PAINTERS - PRODUCT TEMPLATE (9 VARIANTS) -->
+        <!-- ============================================ -->
+        <record id="product_template_balloon_face_painters" model="product.template">
             <field name="name">Balloon &amp; Face Painters</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Balloon and face painting services. Select Event Type and Service Tier for your event.</field>
         </record>
         
-        <record id="product_catering_bartender" model="product.product">
+        <record id="balloon_face_painters_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_balloon_face_painters"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="balloon_face_painters_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_balloon_face_painters"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- CATERING & BARTENDER - PRODUCT TEMPLATE (9 VARIANTS) -->
+        <!-- ============================================ -->
+        <record id="product_template_catering_bartender" model="product.template">
             <field name="name">Catering &amp; Bartender Services</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Catering and bartender services. Select Event Type and Service Tier for your event.</field>
         </record>
         
-        <record id="product_event_planning" model="product.product">
+        <record id="catering_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_catering_bartender"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="catering_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_catering_bartender"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- EVENT PLANNING - PRODUCT TEMPLATE (9 VARIANTS) -->
+        <!-- ============================================ -->
+        <record id="product_template_event_planning" model="product.template">
             <field name="name">Event Planning Service</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Event planning services. Select Event Type and Service Tier for your event.</field>
         </record>
         
-        <record id="product_photography" model="product.product">
+        <record id="event_planning_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_event_planning"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="event_planning_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_event_planning"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- PHOTOGRAPHY - PRODUCT TEMPLATE (9 VARIANTS)  -->
+        <!-- Creates variants: Event Type × Service Tier  -->
+        <!-- No variant-specific pricing - base price only -->
+        <!-- ============================================ -->
+        <record id="product_template_photography" model="product.template">
             <field name="name">Photography</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional photography services. Select Event Type and Service Tier for your event.</field>
         </record>
         
-        <record id="product_videography" model="product.product">
+        <!-- Link Event Type Attribute to Photography Template -->
+        <record id="photography_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photography"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_event_social'),
+                ref('pav_event_corporate'),
+                ref('pav_event_wedding'),
+            ])]"/>
+        </record>
+        
+        <!-- Link Service Tier Attribute to Photography Template -->
+        <record id="photography_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photography"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_tier_essentials'),
+                ref('pav_tier_classic'),
+                ref('pav_tier_premier'),
+            ])]"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- VIDEOGRAPHY - PRODUCT TEMPLATE (9 VARIANTS)  -->
+        <!-- Creates variants: Event Type × Service Tier  -->
+        <!-- No variant-specific pricing - base price only -->
+        <!-- ============================================ -->
+        <record id="product_template_videography" model="product.template">
             <field name="name">Videography</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional videography services. Select Event Type and Service Tier for your event.</field>
         </record>
         
-        <record id="product_photo_booth" model="product.product">
+        <!-- Link Event Type Attribute to Videography Template -->
+        <record id="videography_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_videography"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_event_social'),
+                ref('pav_event_corporate'),
+                ref('pav_event_wedding'),
+            ])]"/>
+        </record>
+        
+        <!-- Link Service Tier Attribute to Videography Template -->
+        <record id="videography_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_videography"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_tier_essentials'),
+                ref('pav_tier_classic'),
+                ref('pav_tier_premier'),
+            ])]"/>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- PHOTO BOOTH - PRODUCT TEMPLATE (9 VARIANTS)  -->
+        <!-- Creates variants: Event Type × Service Tier  -->
+        <!-- No variant-specific pricing - base price only -->
+        <!-- ============================================ -->
+        <record id="product_template_photo_booth" model="product.template">
             <field name="name">Photo Booth</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Photo booth services for your event. Select Event Type and Service Tier for your event.</field>
+        </record>
+        
+        <!-- Link Event Type Attribute to Photo Booth Template -->
+        <record id="photo_booth_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photo_booth"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_event_social'),
+                ref('pav_event_corporate'),
+                ref('pav_event_wedding'),
+            ])]"/>
+        </record>
+        
+        <!-- Link Service Tier Attribute to Photo Booth Template -->
+        <record id="photo_booth_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photo_booth"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_tier_essentials'),
+                ref('pav_tier_classic'),
+                ref('pav_tier_premier'),
+            ])]"/>
         </record>
         
         <!-- ============================================ -->

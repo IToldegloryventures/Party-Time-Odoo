@@ -103,8 +103,8 @@ DJ_CONFIG = {
         'includes': '''&lt;ul&gt;
             &lt;li&gt;2 hours of music&lt;/li&gt;
             &lt;li&gt;Dance floor lighting&lt;/li&gt;
-            &lt;li&gt;Scripted MC services&lt;/li&gt;
             &lt;li&gt;Crowd engagement&lt;/li&gt;
+            &lt;li&gt;MC Services available as add-on&lt;/li&gt;
         &lt;/ul&gt;''',
     },
     
@@ -135,7 +135,8 @@ DJ_CONFIG = {
         'includes': '''&lt;ul&gt;
             &lt;li&gt;2 hours networking + dance mix&lt;/li&gt;
             &lt;li&gt;Dance lights&lt;/li&gt;
-            &lt;li&gt;DJ/MC services&lt;/li&gt;
+            &lt;li&gt;Professional DJ services&lt;/li&gt;
+            &lt;li&gt;MC Services available as add-on&lt;/li&gt;
         &lt;/ul&gt;''',
     },
     ('Corporate', 'Premier'): {
@@ -148,9 +149,9 @@ DJ_CONFIG = {
         'cost_max': 425.0,
         'includes': '''&lt;ul&gt;
             &lt;li&gt;2 hours DJ performance&lt;/li&gt;
-            &lt;li&gt;Scripted MC services&lt;/li&gt;
             &lt;li&gt;Stage presence&lt;/li&gt;
             &lt;li&gt;Walk-on music&lt;/li&gt;
+            &lt;li&gt;MC Services available as add-on&lt;/li&gt;
         &lt;/ul&gt;''',
     },
     
@@ -179,9 +180,10 @@ DJ_CONFIG = {
         'cost_max': 350.0,
         'includes': '''&lt;ul&gt;
             &lt;li&gt;4 hours reception coverage&lt;/li&gt;
-            &lt;li&gt;DJ + MC services&lt;/li&gt;
+            &lt;li&gt;Professional DJ services&lt;/li&gt;
             &lt;li&gt;Dance floor lights&lt;/li&gt;
             &lt;li&gt;Wireless microphone&lt;/li&gt;
+            &lt;li&gt;MC Services available as add-on&lt;/li&gt;
         &lt;/ul&gt;''',
     },
     ('Wedding', 'Premier'): {
@@ -205,7 +207,7 @@ DJ_CONFIG = {
 # dj_template already found above in STEP 1
 
 if not dj_template:
-    raise UserError("DJ &amp; MC Services template not found. Please ensure the product exists.")
+    raise UserError("DJ Services template not found. Please ensure the product exists.")
 
 configured_count = 0
 for variant in dj_template.product_variant_ids:

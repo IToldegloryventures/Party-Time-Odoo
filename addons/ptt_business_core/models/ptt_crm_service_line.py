@@ -19,11 +19,12 @@ class PttCrmServiceLine(models.Model):
     sequence = fields.Integer(string="Sequence", default=10)
     
     # Service Selection - linked to Sales products
+    # Exclude addon products (ADDON-%) - addons should not be selectable as main services
     product_id = fields.Many2one(
         "product.product",
         string="Service/Product",
-        domain="[('sale_ok', '=', True)]",
-        help="Select a service from the Sales product catalog",
+        domain="[('sale_ok', '=', True), ('default_code', 'not ilike', 'ADDON-%')]",
+        help="Select a service from the Sales product catalog (addon products are excluded)",
     )
     
     # Tier Category - uses shared constant (migrated from bronze/silver/gold/platinum in v19.0.5.0.0)

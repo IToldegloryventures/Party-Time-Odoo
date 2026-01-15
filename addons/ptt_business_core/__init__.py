@@ -139,8 +139,8 @@ def _configure_dj_variants(env):
             'includes': '''<ul>
                 <li>2 hours of music</li>
                 <li>Dance floor lighting</li>
-                <li>Scripted MC services</li>
                 <li>Crowd engagement</li>
+                <li>MC Services available as add-on</li>
             </ul>''',
         },
         
@@ -171,7 +171,8 @@ def _configure_dj_variants(env):
             'includes': '''<ul>
                 <li>2 hours networking + dance mix</li>
                 <li>Dance lights</li>
-                <li>DJ/MC services</li>
+                <li>Professional DJ services</li>
+                <li>MC Services available as add-on</li>
             </ul>''',
         },
         ('Corporate', 'Premier'): {
@@ -215,9 +216,10 @@ def _configure_dj_variants(env):
             'cost_max': 350.0,
             'includes': '''<ul>
                 <li>4 hours reception coverage</li>
-                <li>DJ + MC services</li>
+                <li>Professional DJ services</li>
                 <li>Dance floor lights</li>
                 <li>Wireless microphone</li>
+                <li>MC Services available as add-on</li>
             </ul>''',
         },
         ('Wedding', 'Premier'): {
@@ -239,7 +241,7 @@ def _configure_dj_variants(env):
     }
 
     if not dj_template:
-        _logger.warning("PTT Business Core: DJ & MC Services template not found. Skipping variant configuration.")
+        _logger.warning("PTT Business Core: DJ Services template not found. Skipping variant configuration.")
         return
 
     configured_count = 0
