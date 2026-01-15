@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Service Task Template Views
+        
+        These views allow administrators to configure task templates for each service type.
+        When a service is ordered, these templates can auto-create tasks on the project.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/user_interface/view_architectures.html
+    -->
+    
+    <!-- Tree View -->
+    <record id="ptt_service_task_template_tree" model="ir.ui.view">
+        <field name="name">ptt.service.task.template.tree</field>
+        <field name="model">ptt.service.task.template</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="service_type"/>
+                <field name="name"/>
+                <field name="is_subtask"/>
+                <field name="parent_template_id" optional="show"/>
+                <field name="active" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="ptt_service_task_template_form" model="ir.ui.view">
+        <field name="name">ptt.service.task.template.form</field>
+        <field name="model">ptt.service.task.template</field>
+        <field name="arch" type="xml">
+            <form string="Service Task Template">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Task Definition">
+                            <field name="name" placeholder="e.g., Shot list review with client"/>
+                            <field name="service_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Subtask Configuration">
+                            <field name="is_subtask"/>
+                            <field name="parent_template_id" 
+                                   invisible="not is_subtask"
+                                   required="is_subtask"/>
+                        </group>
+                    </group>
+                    <group string="Task Description">
+                        <field name="description" nolabel="1" placeholder="Default description for this task..."/>
+                    </group>
+                    <notebook invisible="is_subtask">
+                        <page string="Subtask Templates" name="subtasks">
+                            <field name="child_template_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="ptt_service_task_template_search" model="ir.ui.view">
+        <field name="name">ptt.service.task.template.search</field>
+        <field name="model">ptt.service.task.template</field>
+        <field name="arch" type="xml">
+            <search string="Service Task Templates">
+                <field name="name"/>
+                <field name="service_type"/>
+                <filter name="parent_tasks" string="Parent Tasks Only" domain="[('is_subtask', '=', False)]"/>
+                <filter name="subtasks" string="Subtasks Only" domain="[('is_subtask', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_service" string="Service Type" context="{'group_by': 'service_type'}"/>
+                    <filter name="group_parent" string="Parent Task" context="{'group_by': 'parent_template_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_ptt_service_task_template" model="ir.actions.act_window">
+        <field name="name">Service Task Templates</field>
+        <field name="res_model">ptt.service.task.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="ptt_service_task_template_search"/>
+        <field name="context">{'search_default_parent_tasks': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first service task template
+            </p>
+            <p>
+                Service task templates define tasks that are auto-created when 
+                specific services are ordered. For example, when Photography is 
+                added to a quote, tasks like "Shot list review" can be automatically 
+                created on the project.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Menu Item - under Sales Configuration -->
+    <menuitem id="menu_ptt_service_task_template"
+              name="Service Task Templates"
+              parent="sale.menu_sale_config"
+              action="action_ptt_service_task_template"
+              sequence="110"
+              groups="base.group_system"/>
+    
+</odoo>

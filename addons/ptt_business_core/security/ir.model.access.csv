@@ -3,3 +3,5 @@ access_ptt_project_vendor_assignment,PTT Vendor Assignment User Access,model_ptt
 access_ptt_project_vendor_assignment_portal,PTT Vendor Assignment Portal Access,model_ptt_project_vendor_assignment,base.group_portal,1,0,0,0
 access_ptt_crm_service_line,PTT CRM Service Line User Access,model_ptt_crm_service_line,base.group_user,1,1,1,1
 access_ptt_crm_vendor_assignment,PTT CRM Vendor Assignment User Access,model_ptt_crm_vendor_assignment,base.group_user,1,1,1,1
+access_ptt_service_task_template_admin,PTT Service Task Template Admin Access,model_ptt_service_task_template,base.group_system,1,1,1,1
+access_ptt_service_task_template_user,PTT Service Task Template User Access,model_ptt_service_task_template,base.group_user,1,0,0,0

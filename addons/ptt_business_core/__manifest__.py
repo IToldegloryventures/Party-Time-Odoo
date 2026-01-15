@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.6.0.0",  # DJ Flagship Config - Hourly pricing + variant config (Jan 2026)
+    "version": "19.0.6.1.0",  # Migration prep: Event Kickoff in SO templates + Service Task Template model
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",
@@ -57,6 +57,7 @@
         "views/ptt_project_project_view.xml",
         "views/ptt_project_task_view.xml",
         "views/sale_order_views.xml",  # Price Per Person + Event Details on quotes
+        "views/ptt_service_task_template_view.xml",  # Service-specific task templates (schema only)
     ],
     # Demo data disabled - was causing test failures on Odoo.sh
     # "demo": [

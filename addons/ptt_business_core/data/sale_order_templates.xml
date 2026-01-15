@@ -6,12 +6,22 @@
         IMPORTANT: These are TEMPLATES ONLY - they do NOT create invoices, payments, or accounting entries.
         Payment terms, invoicing, and all financial processing are handled by the finance implementation team.
         These templates provide standard terms & conditions text for reference only.
+        
+        EVENT KICKOFF PRODUCT LINE:
+        Each template includes the "Event Kickoff" product which triggers automatic project creation
+        when the Sales Order is confirmed. The product uses Odoo's native service_tracking='project_only'
+        with project_template_id pointing to the Standard Event Project Template.
     -->
     
     <!-- Wedding Template -->
     <record id="sale_order_template_wedding" model="sale.order.template">
         <field name="name">Wedding Event Package</field>
         <field name="number_of_days">30</field>
+        <field name="sale_order_template_line_ids" eval="[(5, 0, 0), (0, 0, {
+            'product_id': ref('product_event_kickoff'),
+            'name': 'Event Kickoff - Project &amp; Tasks Creation',
+            'product_uom_qty': 1,
+        })]"/>
         <field name="note"><![CDATA[
             <div>
                 <h3>Wedding Event Terms & Conditions</h3>
@@ -32,6 +42,11 @@
     <record id="sale_order_template_corporate" model="sale.order.template">
         <field name="name">Corporate Event Package</field>
         <field name="number_of_days">45</field>
+        <field name="sale_order_template_line_ids" eval="[(5, 0, 0), (0, 0, {
+            'product_id': ref('product_event_kickoff'),
+            'name': 'Event Kickoff - Project &amp; Tasks Creation',
+            'product_uom_qty': 1,
+        })]"/>
         <field name="note"><![CDATA[
             <div>
                 <h3>Corporate Event Terms & Conditions</h3>
@@ -53,6 +68,11 @@
     <record id="sale_order_template_private" model="sale.order.template">
         <field name="name">Private Party Package</field>
         <field name="number_of_days">20</field>
+        <field name="sale_order_template_line_ids" eval="[(5, 0, 0), (0, 0, {
+            'product_id': ref('product_event_kickoff'),
+            'name': 'Event Kickoff - Project &amp; Tasks Creation',
+            'product_uom_qty': 1,
+        })]"/>
         <field name="note"><![CDATA[
             <div>
                 <h3>Private Party Terms & Conditions</h3>
@@ -72,6 +92,11 @@
     <record id="sale_order_template_team_building" model="sale.order.template">
         <field name="name">Team Building Event Package</field>
         <field name="number_of_days">30</field>
+        <field name="sale_order_template_line_ids" eval="[(5, 0, 0), (0, 0, {
+            'product_id': ref('product_event_kickoff'),
+            'name': 'Event Kickoff - Project &amp; Tasks Creation',
+            'product_uom_qty': 1,
+        })]"/>
         <field name="note"><![CDATA[
             <div>
                 <h3>Team Building Event Terms & Conditions</h3>
@@ -92,6 +117,11 @@
     <record id="sale_order_template_community" model="sale.order.template">
         <field name="name">Community Event Package</field>
         <field name="number_of_days">60</field>
+        <field name="sale_order_template_line_ids" eval="[(5, 0, 0), (0, 0, {
+            'product_id': ref('product_event_kickoff'),
+            'name': 'Event Kickoff - Project &amp; Tasks Creation',
+            'product_uom_qty': 1,
+        })]"/>
         <field name="note"><![CDATA[
             <div>
                 <h3>Community Event Terms & Conditions</h3>

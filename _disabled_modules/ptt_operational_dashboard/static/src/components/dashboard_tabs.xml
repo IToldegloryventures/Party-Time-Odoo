@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.DashboardTabs">
+        <div class="ptt_dashboard_tabs btn-group mb-3" role="group">
+            <button type="button" 
+                    class="btn"
+                    t-att-class="state.activeTab === 'overview' ? 'btn-primary' : 'btn-outline-primary'"
+                    t-on-click="() => this.selectTab('overview')">
+                Overview
+            </button>
+            <t t-foreach="state.salesReps" t-as="rep" t-key="rep.id">
+                <button type="button"
+                        class="btn"
+                        t-att-class="state.activeTab === 'rep_' + rep.id ? 'btn-primary' : 'btn-outline-primary'"
+                        t-on-click="() => this.selectTab('rep_' + rep.id)">
+                    <t t-esc="rep.name"/>
+                </button>
+            </t>
+        </div>
+    </t>
+</templates>
+

@@ -6,6 +6,7 @@ from . import project_task
 from . import ptt_project_vendor_assignment
 from . import ptt_crm_service_line
 from . import ptt_crm_vendor_assignment
+from . import ptt_service_task_template
 from . import sale_order
 from . import sale_order_line
 from . import purchase_order
