@@ -51,6 +51,7 @@
         # "data/project_stages.xml",
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
+        "data/variant_pricing_menu.xml",  # Menu for variant pricing config (must load after sale module)
         # Views
         "views/ptt_project_vendor_assignment_view.xml",
         "views/ptt_crm_lead_view.xml",
