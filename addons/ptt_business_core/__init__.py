@@ -88,11 +88,27 @@ def _configure_dj_variants(env):
 
     if dj_template:
         # Update price_extra on product.template.attribute.value records
-        for ptav in dj_template.attribute_line_ids.product_template_value_ids:
-            attr_value_name = ptav.product_attribute_value_id.name
-            if attr_value_name in PRICE_EXTRAS:
-                ptav.write({'price_extra': PRICE_EXTRAS[attr_value_name]})
-        _logger.info("PTT Business Core: Updated price_extra on DJ attribute values")
+        # This makes prices update dynamically: Base ($300) + Event Extra + Tier Extra
+        updated_count = 0
+        for attribute_line in dj_template.attribute_line_ids:
+            for ptav in attribute_line.product_template_value_ids:
+                attr_value_name = ptav.product_attribute_value_id.name
+                if attr_value_name in PRICE_EXTRAS:
+                    expected_extra = PRICE_EXTRAS[attr_value_name]
+                    # Always set it (don't check if different) to ensure it's correct
+                    ptav.write({'price_extra': expected_extra})
+                    updated_count += 1
+                    _logger.info(f"PTT Business Core: Set {attr_value_name} price_extra to ${expected_extra} for DJ template")
+        
+        if updated_count > 0:
+            _logger.info(f"PTT Business Core: ✅ Updated price_extra on {updated_count} DJ attribute value(s)")
+            # Verify the values were set
+            for attribute_line in dj_template.attribute_line_ids:
+                for ptav in attribute_line.product_template_value_ids:
+                    if ptav.price_extra != 0:
+                        _logger.info(f"PTT Business Core:   {ptav.product_attribute_value_id.name}: ${ptav.price_extra}")
+        else:
+            _logger.warning("PTT Business Core: ⚠️ No DJ attribute values found to update price_extra")
 
     # =============================================================
     # STEP 2: Configure variant-specific fields
