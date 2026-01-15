@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.6.1.0",  # Migration prep: Event Kickoff in SO templates + Service Task Template model
+    "version": "19.0.6.1.0",
     "summary": "Party Time Texas core customizations for Contacts, CRM, Sales and Projects.",
     "category": "Customizations",
     "author": "Party Time Texas",

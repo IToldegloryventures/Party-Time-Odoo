@@ -1,6 +1,5 @@
 import logging
 import re
-import traceback
 from . import models
 
 _logger = logging.getLogger(__name__)
@@ -29,18 +28,20 @@ def post_init_hook(env):
         ]
         
         for field_name in deleted_fields:
-            views_to_fix = env['ir.ui.view'].sudo().search([
+            # Hooks run as superuser - no sudo() needed
+            views_to_fix = env['ir.ui.view'].search([
                 ('arch_db', 'ilike', field_name)
             ])
             for view in views_to_fix:
                 try:
                     if view.arch_db:
                         new_arch = view.arch_db
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        # Fix: Remove space before field_name in f-string to match XML correctly
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
                         if new_arch != view.arch_db:
-                            view.sudo().write({'arch_db': new_arch})
+                            view.write({'arch_db': new_arch})
                             _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view.id}")
                 except Exception as e:
                     _logger.warning(f"PTT Business Core: Error cleaning view {view.id}: {e}")
@@ -63,7 +64,7 @@ def pre_init_hook(cr):
     - Framework handles transaction commits at RPC boundaries
     Reference: https://www.odoo.com/documentation/19.0/developer/howtos/backend.html#database-cursor-and-transactions
     """
-    from psycopg2 import ProgrammingError, DatabaseError
+    from psycopg2 import ProgrammingError, DatabaseError, Error as PsycopgError
     
     _logger.info("PTT Business Core: Running pre_init_hook cleanup")
     
@@ -107,8 +108,12 @@ def pre_init_hook(cr):
                         _logger.info(f"PTT Business Core: Removing field {field_name} from {model}")
                         cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
                         cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-                except (ProgrammingError, DatabaseError) as e:
-                    _logger.warning(f"PTT Business Core: Error removing {field_name} from {model}: {e}")
+                except ProgrammingError as e:
+                    _logger.warning(f"PTT Business Core: SQL syntax error removing {field_name} from {model}: {e}")
+                except DatabaseError as e:
+                    _logger.warning(f"PTT Business Core: Database error removing {field_name} from {model}: {e}")
+                except PsycopgError as e:
+                    _logger.warning(f"PTT Business Core: Postgres error removing {field_name} from {model}: {e}")
                 except Exception as e:
                     _logger.warning(f"PTT Business Core: Unexpected error removing {field_name} from {model}: {e}")
     
@@ -148,11 +153,12 @@ def pre_init_hook(cr):
                 for view_id, arch in custom_views_to_fix:
                     if arch:
                         new_arch = str(arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                        # Fix: Remove space before field_name in f-string to match XML correctly
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
                         if new_arch != str(arch):
                             cr.execute("UPDATE ir_ui_view_custom SET arch = %s WHERE id = %s", (new_arch, view_id))
                             _logger.info(f"PTT Business Core: Cleaned {field_name} from custom view {view_id}")
@@ -186,8 +192,12 @@ def pre_init_hook(cr):
                     cr.execute("DELETE FROM ir_ui_view WHERE id = %s", (view_id,))
                     cr.execute("DELETE FROM ir_model_data WHERE module = %s AND name = %s", (module, view_name))
                     _logger.info(f"PTT Business Core: Deleted stale view {module}.{view_name}")
-            except (ProgrammingError, DatabaseError) as e:
+            except ProgrammingError as e:
+                _logger.warning(f"PTT Business Core: SQL syntax error deleting view {module}.{view_name}: {e}")
+            except DatabaseError as e:
                 _logger.warning(f"PTT Business Core: Database error deleting view {module}.{view_name}: {e}")
+            except PsycopgError as e:
+                _logger.warning(f"PTT Business Core: Postgres error deleting view {module}.{view_name}: {e}")
             except Exception as e:
                 _logger.warning(f"PTT Business Core: Unexpected error deleting view {module}.{view_name}: {e}")
     
@@ -217,8 +227,12 @@ def pre_init_hook(cr):
                     _logger.info(f"PTT Business Core: Removing Studio field {field_name} from {model}")
                     cr.execute("DELETE FROM ir_model_data WHERE model = 'ir.model.fields' AND res_id = %s", (field_id,))
                     cr.execute("DELETE FROM ir_model_fields WHERE id = %s", (field_id,))
-            except (ProgrammingError, DatabaseError) as e:
+            except ProgrammingError as e:
+                _logger.warning(f"PTT Business Core: SQL syntax error removing Studio field {field_name}: {e}")
+            except DatabaseError as e:
                 _logger.warning(f"PTT Business Core: Database error removing Studio field {field_name}: {e}")
+            except PsycopgError as e:
+                _logger.warning(f"PTT Business Core: Postgres error removing Studio field {field_name}: {e}")
             except Exception as e:
                 _logger.warning(f"PTT Business Core: Unexpected error removing Studio field {field_name}: {e}")
     

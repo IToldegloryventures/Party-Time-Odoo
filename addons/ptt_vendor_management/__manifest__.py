@@ -1,6 +1,6 @@
 {
     "name": "PTT Vendor Management",
-    "version": "19.0.3.1.0",  # Fix: Button to populate document lines for existing vendors
+    "version": "19.0.3.1.0",
     "summary": "Vendor Management + Portal for Work Order Accept/Decline",
     "description": """
         Vendor Management Application
