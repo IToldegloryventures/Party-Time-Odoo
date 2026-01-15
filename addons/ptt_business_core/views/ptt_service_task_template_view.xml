@@ -74,14 +74,14 @@
         <field name="name">ptt.service.task.template.search</field>
         <field name="model">ptt.service.task.template</field>
         <field name="arch" type="xml">
-            <search string="Service Task Templates">
+            <search>
                 <field name="name"/>
                 <field name="service_type"/>
                 <filter name="parent_tasks" string="Parent Tasks Only" domain="[('is_subtask', '=', False)]"/>
                 <filter name="subtasks" string="Subtasks Only" domain="[('is_subtask', '=', True)]"/>
                 <separator/>
                 <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_service" string="Service Type" context="{'group_by': 'service_type'}"/>
                     <filter name="group_parent" string="Parent Task" context="{'group_by': 'parent_template_id'}"/>
                 </group>
