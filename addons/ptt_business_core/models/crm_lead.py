@@ -184,12 +184,27 @@ class CrmLead(models.Model):
     )
 
 
-    # === SERVICE LINES (Vendor Tab) ===
+    # === SERVICES REQUESTED (Services Tab) ===
+    ptt_requested_services_ids = fields.Many2many(
+        "product.product",
+        "crm_lead_requested_services_rel",
+        "lead_id",
+        "product_id",
+        string="Services Requested",
+        domain="[('type', '=', 'service'), ('sale_ok', '=', True)]",
+        help="Select services requested for this event. Shows all saleable service products.",
+    )
+    ptt_services_notes = fields.Text(
+        string="Services Notes",
+        help="Additional notes about services requested or requirements",
+    )
+
+    # === SERVICE LINES (Legacy - kept for backward compatibility) ===
     ptt_service_line_ids = fields.One2many(
         "ptt.crm.service.line",
         "lead_id",
         string="Service Lines",
-        help="Services requested for this event with tier selection",
+        help="Services requested for this event with tier selection (legacy - use Services Requested checkboxes)",
     )
 
     # === VENDOR ASSIGNMENTS (Vendor Tab) ===

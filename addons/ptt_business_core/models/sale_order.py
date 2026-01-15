@@ -26,6 +26,13 @@ class SaleOrder(models.Model):
     # for display on quotations and sales orders.
     # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#related-fields
     
+    ptt_event_id = fields.Char(
+        string="Event ID",
+        related="opportunity_id.ptt_event_id",
+        readonly=True,
+        store=True,
+        help="Unique event identifier linking CRM, Sales Order, and Project",
+    )
     ptt_event_date = fields.Date(
         string="Event Date",
         related="opportunity_id.ptt_event_date",
@@ -172,9 +179,10 @@ class SaleOrder(models.Model):
         ], limit=1)
         
         if project:
-            # Link project to CRM and copy event fields
+            # Link project to CRM and copy event fields (including Event ID)
             project.write({
                 'ptt_crm_lead_id': lead.id,
+                'ptt_event_id': lead.ptt_event_id,  # Auto-link Event ID from CRM
                 'ptt_event_type': lead.ptt_event_type,
                 'ptt_event_date': lead.ptt_event_date,
                 'ptt_guest_count': lead.ptt_estimated_guest_count,

@@ -23,6 +23,13 @@
             <!-- Add PTT Lead Intake tab (before Notes) -->
             <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
                 <page name="lead_intake" string="Lead Intake">
+                    <!-- Event ID - Moved to top for easy access -->
+                    <group string="Event Identification">
+                        <group>
+                            <field name="ptt_event_id" placeholder="Enter Event ID (e.g., 000001)"/>
+                        </group>
+                    </group>
+
                     <!-- Additional Contact Information -->
                     <group string="Additional Contact Information">
                         <group>
@@ -34,13 +41,6 @@
                             <field name="ptt_second_poc_name"/>
                             <field name="ptt_second_poc_phone"/>
                             <field name="ptt_second_poc_email"/>
-                        </group>
-                    </group>
-
-                    <!-- Event ID -->
-                    <group string="Event Identification">
-                        <group>
-                            <field name="ptt_event_id" placeholder="Enter Event ID (e.g., 000001)"/>
                         </group>
                     </group>
 
@@ -58,18 +58,6 @@
                             <field name="ptt_event_location_type"/>
                             <field name="ptt_venue_booked"/>
                             <field name="ptt_venue_name"/>
-                        </group>
-                    </group>
-
-                    <!-- CFO/Finance Contact (for corporate clients) -->
-                    <group string="CFO/Finance Contact">
-                        <group>
-                            <field name="ptt_cfo_name"/>
-                            <field name="ptt_cfo_phone"/>
-                        </group>
-                        <group>
-                            <field name="ptt_cfo_email"/>
-                            <field name="ptt_cfo_contact_method"/>
                         </group>
                     </group>
                 </page>
@@ -128,43 +116,93 @@
                     </group>
                 </group>
             </xpath>
-            <!-- For opportunities, wrap the lead_partner group in a two-column layout with source_id -->
-            <xpath expr="//group[@name='lead_partner']" position="after">
-                <group string="Lead Source" invisible="type == 'lead'">
-                    <field name="source_id" placeholder="Select lead source"/>
+            <!-- For opportunities, modify opportunity_partner to be two columns with source_id -->
+            <xpath expr="//group[@name='opportunity_partner']" position="replace">
+                <group name="opportunity_partner" invisible="type == 'lead'">
+                    <group string="Contact Information">
+                        <field name="partner_id"
+                            widget="res_partner_many2one"
+                            context="{'res_partner_search_mode': type == 'opportunity' and 'customer' or False,
+                                'default_name': contact_name or partner_name,
+                                'default_street': street,
+                                'default_is_company': type == 'opportunity' and contact_name == False,
+                                'default_company_name': type == 'opportunity' and partner_name,
+                                'default_street2': street2,
+                                'default_city': city,
+                                'default_state_id': state_id,
+                                'default_zip': zip,
+                                'default_country_id': country_id,
+                                'default_function': function,
+                                'default_phone': phone,
+                                'default_email': email_from,
+                                'default_user_id': user_id,
+                                'default_team_id': team_id,
+                                'default_website': website,
+                                'default_lang': lang_code,
+                                'show_vat': True,
+                            }"
+                        />
+                        <field name="is_blacklisted" invisible="1"/>
+                        <field name="partner_is_blacklisted" invisible="1"/>
+                        <field name="phone_blacklisted" invisible="1"/>
+                        <field name="email_state" invisible="1"/>
+                        <field name="phone_state" invisible="1"/>
+                        <field name="partner_email_update" invisible="1"/>
+                        <field name="partner_phone_update" invisible="1"/>
+                        <label for="email_from" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="mail_action_blacklist_remove" class="fa fa-ban text-danger"
+                                title="This email is blacklisted for mass mailings. Click to unblacklist."
+                                type="object" context="{'default_email': email_from}" groups="base.group_user"
+                                invisible="not is_blacklisted"/>
+                            <field name="email_from" string="Email" widget="email"/>
+                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                                title="By saving this change, the customer email will also be updated."
+                                invisible="not partner_email_update"/>
+                        </div>
+                        <label for="phone" class="oe_inline"/>
+                        <div class="o_row o_row_readonly">
+                            <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger"
+                                title="This phone number is blacklisted for SMS Marketing. Click to unblacklist."
+                                type="object" context="{'default_phone': phone}" groups="base.group_user"
+                                invisible="not phone_blacklisted"/>
+                            <field name="phone" widget="phone"/>
+                            <span class="fa fa-exclamation-triangle text-warning oe_edit_only"
+                                title="By saving this change, the customer phone number will also be updated."
+                                invisible="not partner_phone_update"/>
+                        </div>
+                        <field name="lost_reason_id" invisible="won_status != 'lost'"
+                            placeholder="Not specified"/>
+                        <field name="date_conversion" invisible="1"/>
+                        <field name="user_company_ids" invisible="1"/>
+                    </group>
+                    <group string="Lead Source">
+                        <field name="source_id" placeholder="Select lead source"/>
+                    </group>
                 </group>
-            </xpath>
-            <!-- Wrap both groups in a parent group to create two-column layout for opportunities -->
-            <xpath expr="//group[@name='lead_partner']" position="wrap">
-                <group/>
             </xpath>
         </field>
     </record>
 
-    <!-- Vendor Tab - After Notes Tab -->
-    <record id="view_crm_lead_form_vendor_tab_ptt" model="ir.ui.view">
-        <field name="name">crm.lead.form.vendor.tab.ptt</field>
+    <!-- Services Tab - Renamed from Vendor, with checkboxes for services -->
+    <record id="view_crm_lead_form_services_tab_ptt" model="ir.ui.view">
+        <field name="name">crm.lead.form.services.tab.ptt</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="priority">100</field>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='internal_notes']" position="after">
-                <page name="vendor_tab" string="Vendor">
-                    <!-- Section 1: Service Lines with Tier Selection -->
-                    <group string="Service Selection (Tier Categories)">
-                        <field name="ptt_service_line_ids" nolabel="1" colspan="2">
-                            <list editable="bottom">
-                                <field name="sequence" widget="handle"/>
-                                <field name="service_type"/>
-                                <field name="product_id" optional="show"/>
-                                <field name="tier"/>
-                                <field name="estimated_price"/>
-                                <field name="description" optional="hide"/>
-                            </list>
-                        </field>
+                <page name="services_tab" string="Services">
+                    <group>
+                        <group string="Services Requested">
+                            <field name="ptt_requested_services_ids" widget="many2many_checkboxes" nolabel="1"/>
+                        </group>
+                        <group string="Services Notes">
+                            <field name="ptt_services_notes" nolabel="1" placeholder="Add notes about services requested or special requirements..."/>
+                        </group>
                     </group>
 
-                    <!-- Section 2: Vendor Assignments -->
+                    <!-- Vendor Assignments (kept for vendor management) -->
                     <group string="Vendor Assignments">
                         <field name="ptt_vendor_assignment_ids" nolabel="1" colspan="2">
                             <list editable="bottom">
