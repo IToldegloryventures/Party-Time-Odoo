@@ -77,20 +77,17 @@
         </field>
     </record>
 
-    <!-- Remove old Services tab with service lines and replace with Services Notes -->
-    <record id="view_crm_lead_form_hide_service_lines" model="ir.ui.view">
-        <field name="name">crm.lead.form.hide.service.lines</field>
+    <!-- Replace Services tab with Services Notes (if vendor_tab exists) or add new tab -->
+    <record id="view_crm_lead_form_services_notes" model="ir.ui.view">
+        <field name="name">crm.lead.form.services.notes</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <!-- Hide ptt_service_line_ids field if it exists anywhere (old Services tab) -->
-            <xpath expr="//field[@name='ptt_service_line_ids']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <!-- Replace old vendor_tab page if it exists (remove service lines, add notes) -->
-            <xpath expr="//page[@name='vendor_tab']" position="replace">
-                <page name="vendor_tab" string="Services Notes">
+            <!-- Add Services Notes tab after internal_notes -->
+            <!-- This works whether vendor_tab exists or not -->
+            <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="after">
+                <page name="services_notes" string="Services Notes">
                     <group string="Service-Related Notes">
                         <div class="alert alert-info" role="alert">
                             <strong>💡 Service Selection:</strong> Services should be added directly in the quotation to ensure proper variant selection (Event Type + Service Tier). Use the notes below for service-related information, special requirements, or vendor preferences.
