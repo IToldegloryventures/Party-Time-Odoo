@@ -9,7 +9,7 @@
         <!-- No variant-specific pricing - base price only -->
         <!-- ============================================ -->
         <record id="product_template_caricature_artist" model="product.template">
-            <field name="name">Caricature Artist</field>
+            <field name="name">Caricature Artist [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -33,7 +33,7 @@
         <!-- BALLOON & FACE PAINTERS - PRODUCT TEMPLATE (9 VARIANTS) -->
         <!-- ============================================ -->
         <record id="product_template_balloon_face_painters" model="product.template">
-            <field name="name">Balloon &amp; Face Painters</field>
+            <field name="name">Balloon &amp; Face Painters [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -57,7 +57,7 @@
         <!-- CATERING & BARTENDER - PRODUCT TEMPLATE (9 VARIANTS) -->
         <!-- ============================================ -->
         <record id="product_template_catering_bartender" model="product.template">
-            <field name="name">Catering &amp; Bartender Services</field>
+            <field name="name">Catering &amp; Bartender Services [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -81,7 +81,7 @@
         <!-- EVENT PLANNING - PRODUCT TEMPLATE (9 VARIANTS) -->
         <!-- ============================================ -->
         <record id="product_template_event_planning" model="product.template">
-            <field name="name">Event Planning Service</field>
+            <field name="name">Event Planning Service [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -107,7 +107,7 @@
         <!-- No variant-specific pricing - base price only -->
         <!-- ============================================ -->
         <record id="product_template_photography" model="product.template">
-            <field name="name">Photography</field>
+            <field name="name">Photography [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -144,7 +144,7 @@
         <!-- No variant-specific pricing - base price only -->
         <!-- ============================================ -->
         <record id="product_template_videography" model="product.template">
-            <field name="name">Videography</field>
+            <field name="name">Videography [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -181,7 +181,7 @@
         <!-- No variant-specific pricing - base price only -->
         <!-- ============================================ -->
         <record id="product_template_photo_booth" model="product.template">
-            <field name="name">Photo Booth</field>
+            <field name="name">Photo Booth [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>

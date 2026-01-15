@@ -56,6 +56,10 @@ def post_init_hook(env):
         _logger.warning(f"PTT Business Core: Error configuring DJ variants: {e}")
         _logger.exception("PTT Business Core: DJ variant configuration failed")
     
+    # NOTE: Account mappings are NOT set automatically
+    # Odoo preserves existing account mappings when converting product.product → product.template
+    # Accounting team should verify mappings after migration
+    
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
 
 
@@ -241,7 +245,7 @@ def _configure_dj_variants(env):
     }
 
     if not dj_template:
-        _logger.warning("PTT Business Core: DJ Services template not found. Skipping variant configuration.")
+        _logger.warning("PTT Business Core: DJ & MC Services template not found. Skipping variant configuration.")
         return
 
     configured_count = 0

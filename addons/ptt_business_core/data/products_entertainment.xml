@@ -30,7 +30,7 @@
         <!-- NOTE: MC Services is a separate addon        -->
         <!-- ============================================ -->
         <record id="product_template_dj_services" model="product.template">
-            <field name="name">DJ Services</field>
+            <field name="name">DJ Services [UPDATED]</field>
             <field name="default_code">DJ-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -70,7 +70,7 @@
         <!-- No variant-specific pricing - base price only -->
         <!-- ============================================ -->
         <record id="product_template_band_services" model="product.template">
-            <field name="name">Band Services</field>
+            <field name="name">Band Services [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -94,7 +94,7 @@
         <!-- DANCERS & CHARACTERS - PRODUCT TEMPLATE (9 VARIANTS) -->
         <!-- ============================================ -->
         <record id="product_template_dancers_characters" model="product.template">
-            <field name="name">Dancers &amp; Characters</field>
+            <field name="name">Dancers &amp; Characters [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
@@ -118,7 +118,7 @@
         <!-- CASINO SERVICES - PRODUCT TEMPLATE (9 VARIANTS) -->
         <!-- ============================================ -->
         <record id="product_template_casino_services" model="product.template">
-            <field name="name">Casino Services</field>
+            <field name="name">Casino Services [UPDATED]</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
