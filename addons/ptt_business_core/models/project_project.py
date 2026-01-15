@@ -81,22 +81,22 @@ class ProjectProject(models.Model):
     ptt_cfo_name = fields.Char(
         related="ptt_crm_lead_id.ptt_cfo_name",
         readonly=True,
-        string="CFO/Finance Contact",
+        string="Finance Contact",
     )
     ptt_cfo_phone = fields.Char(
         related="ptt_crm_lead_id.ptt_cfo_phone",
         readonly=True,
-        string="CFO Phone",
+        string="Finance Contact Phone",
     )
     ptt_cfo_email = fields.Char(
         related="ptt_crm_lead_id.ptt_cfo_email",
         readonly=True,
-        string="CFO Email",
+        string="Finance Contact Email",
     )
     ptt_cfo_contact_method = fields.Selection(
         related="ptt_crm_lead_id.ptt_cfo_contact_method",
         readonly=True,
-        string="CFO Preferred Contact",
+        string="Finance Preferred Contact Method",
     )
 
     # === FINANCIALS TAB - Profitability Fields ===

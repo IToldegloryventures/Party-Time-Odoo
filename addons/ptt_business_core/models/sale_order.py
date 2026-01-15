@@ -83,6 +83,85 @@ class SaleOrder(models.Model):
             else:
                 order.ptt_price_per_person = 0.0
 
+    # === CREATE ORDER LINES FROM SERVICE LINES ===
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to auto-populate order lines from service lines.
+        
+        When a quotation is created from a CRM lead with service lines,
+        automatically create sale order lines from those service lines.
+        """
+        orders = super().create(vals_list)
+        
+        # Create order lines from service lines for orders with opportunities
+        for order in orders:
+            if order.opportunity_id and order.opportunity_id.ptt_service_line_ids:
+                self._create_order_lines_from_service_lines(order)
+        
+        return orders
+    
+    def _create_order_lines_from_service_lines(self, order):
+        """Create sale order lines from CRM service lines.
+        
+        Maps service line fields to sale order line fields:
+        - product_id → product_id
+        - estimated_price → price_unit
+        - description → name (or product name if no description)
+        - tier/service_type → stored in description or notes
+        """
+        if not order.opportunity_id or not order.opportunity_id.ptt_service_line_ids:
+            return
+        
+        # Only create lines if order doesn't already have lines
+        # This prevents duplicating lines when editing an existing quotation
+        if order.order_line:
+            return
+        
+        service_lines = order.opportunity_id.ptt_service_line_ids.sorted('sequence')
+        order_line_vals = []
+        
+        for service_line in service_lines:
+            # Skip if no product selected
+            if not service_line.product_id:
+                continue
+            
+            # Build description from service line
+            name_parts = []
+            if service_line.product_id.name:
+                name_parts.append(service_line.product_id.name)
+            if service_line.tier and service_line.tier != 'classic':
+                tier_label = dict(service_line._fields['tier'].selection).get(
+                    service_line.tier, service_line.tier
+                )
+                name_parts.append(f"({tier_label})")
+            if service_line.description:
+                name_parts.append(f"- {service_line.description}")
+            
+            name = " ".join(name_parts) if name_parts else service_line.product_id.name
+            
+            # Prepare order line values
+            line_vals = {
+                'order_id': order.id,
+                'product_id': service_line.product_id.id,
+                'product_uom_qty': 1.0,  # Default quantity
+                'product_uom_id': service_line.product_id.uom_id.id,
+                'name': name,
+                'sequence': service_line.sequence if service_line.sequence else 10,
+            }
+            
+            # Set price if provided in service line
+            if service_line.estimated_price:
+                line_vals['price_unit'] = service_line.estimated_price
+            # Otherwise, price will be computed by Odoo's onchange when product is set
+            
+            order_line_vals.append(line_vals)
+        
+        # Create order lines directly if any were prepared
+        if order_line_vals:
+            # Create order lines using create_multi for better performance
+            self.env['sale.order.line'].create(order_line_vals)
+
     # === CRM STAGE AUTOMATION ===
     
     def _update_crm_stage(self, stage_name, message=None):

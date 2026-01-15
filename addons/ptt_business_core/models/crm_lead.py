@@ -160,18 +160,18 @@ class CrmLead(models.Model):
         help="Type of location for the event. Affects equipment needs and weather contingency planning."
     )
 
-    # === CFO/FINANCE CONTACT (for corporate clients) ===
+    # === FINANCE CONTACT (for corporate clients) ===
     ptt_cfo_name = fields.Char(
-        string="CFO/Finance Contact Name",
-        help="Name of the Chief Financial Officer or finance contact person for approval and payment processing."
+        string="Finance Contact Name",
+        help="Name of the finance contact person for approval and payment processing."
     )
     ptt_cfo_phone = fields.Char(
-        string="CFO/Finance Contact Phone",
-        help="Phone number of the CFO or finance contact person."
+        string="Finance Contact Phone",
+        help="Phone number of the finance contact person."
     )
     ptt_cfo_email = fields.Char(
-        string="CFO/Finance Contact Email",
-        help="Email address of the CFO or finance contact person for invoicing and payment communications."
+        string="Finance Contact Email",
+        help="Email address of the finance contact person for invoicing and payment communications."
     )
     ptt_cfo_contact_method = fields.Selection(
         [
@@ -179,8 +179,8 @@ class CrmLead(models.Model):
             ("text", "Text Message"),
             ("email", "Email"),
         ],
-        string="CFO Preferred Contact Method",
-        help="Preferred method of communication for the CFO/finance contact regarding billing and payments."
+        string="Finance Preferred Contact Method",
+        help="Preferred method of communication for the finance contact regarding billing and payments."
     )
 
 

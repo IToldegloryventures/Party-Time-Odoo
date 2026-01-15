@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 def post_init_hook(env):
     """
-    Post-init hook: Clean up orphaned database objects.
+    Post-init hook: Clean up orphaned database objects and configure DJ variants.
     Runs AFTER the module is installed with full ORM/env access.
     """
     _logger.info("PTT Business Core: Running post_init_hook cleanup")
@@ -47,7 +47,231 @@ def post_init_hook(env):
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error in post_init_hook: {e}")
     
+    # === CONFIGURE DJ SERVICE VARIANTS ===
+    # Automatically configure pricing and variant-specific fields from CSV data
+    try:
+        _logger.info("PTT Business Core: Configuring DJ Service Variants")
+        _configure_dj_variants(env)
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error configuring DJ variants: {e}")
+        _logger.exception("PTT Business Core: DJ variant configuration failed")
+    
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
+
+
+def _configure_dj_variants(env):
+    """
+    Configure DJ service variants with pricing and variant-specific fields.
+    This runs automatically on module install/upgrade.
+    """
+    # =============================================================
+    # STEP 1: Configure price_extra on attribute values
+    # This sets variant prices: Base ($300) + Event Extra + Tier Extra
+    # =============================================================
+    PRICE_EXTRAS = {
+        # Event Type extras (from Social base)
+        'Social': 0.0,
+        'Corporate': 0.0,
+        'Wedding': 50.0,
+        # Service Tier extras (from Essential base)
+        'Essentials': 0.0,
+        'Classic': 125.0,
+        'Premier': 300.0,
+    }
+
+    # Find DJ template
+    dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
+
+    if dj_template:
+        # Update price_extra on product.template.attribute.value records
+        for ptav in dj_template.attribute_line_ids.product_template_value_ids:
+            attr_value_name = ptav.product_attribute_value_id.name
+            if attr_value_name in PRICE_EXTRAS:
+                ptav.write({'price_extra': PRICE_EXTRAS[attr_value_name]})
+        _logger.info("PTT Business Core: Updated price_extra on DJ attribute values")
+
+    # =============================================================
+    # STEP 2: Configure variant-specific fields
+    # =============================================================
+
+    # DJ Variant Configuration Data (from PTT_Event Pricing spreadsheet)
+    # Each key is (event_type_name, tier_name) tuple
+    DJ_CONFIG = {
+        # === SOCIAL EVENT TIERS ===
+        ('Social', 'Essentials'): {
+            'min_hours': 2.0,
+            'guest_min': 1,
+            'guest_max': 100,
+            'price_min': 300.0,
+            'price_max': 400.0,
+            'cost_min': 150.0,
+            'cost_max': 225.0,
+            'includes': '''<ul>
+                <li>2 hours of music</li>
+                <li>Curated playlist</li>
+                <li>Basic audio setup (1-2 speakers)</li>
+                <li>DJ controller</li>
+                <li>Microphone</li>
+            </ul>''',
+        },
+        ('Social', 'Classic'): {
+            'min_hours': 2.0,
+            'guest_min': 101,
+            'guest_max': 175,
+            'price_min': 425.0,
+            'price_max': 600.0,
+            'cost_min': 200.0,
+            'cost_max': 325.0,
+            'includes': '''<ul>
+                <li>2 hours of music</li>
+                <li>Dance floor lighting</li>
+                <li>Intro announcements</li>
+            </ul>''',
+        },
+        ('Social', 'Premier'): {
+            'min_hours': 2.0,
+            'guest_min': 176,
+            'guest_max': 0,  # 0 = unlimited (250+)
+            'price_min': 600.0,
+            'price_max': 675.0,
+            'cost_min': 300.0,
+            'cost_max': 425.0,
+            'includes': '''<ul>
+                <li>2 hours of music</li>
+                <li>Dance floor lighting</li>
+                <li>Scripted MC services</li>
+                <li>Crowd engagement</li>
+            </ul>''',
+        },
+        
+        # === CORPORATE EVENT TIERS ===
+        ('Corporate', 'Essentials'): {
+            'min_hours': 2.0,
+            'guest_min': 1,
+            'guest_max': 100,
+            'price_min': 300.0,
+            'price_max': 400.0,
+            'cost_min': 150.0,
+            'cost_max': 225.0,
+            'includes': '''<ul>
+                <li>2 hours background/dance music</li>
+                <li>Announcements</li>
+                <li>1-2 speakers</li>
+                <li>Wireless microphone</li>
+            </ul>''',
+        },
+        ('Corporate', 'Classic'): {
+            'min_hours': 2.0,
+            'guest_min': 101,
+            'guest_max': 250,
+            'price_min': 425.0,
+            'price_max': 600.0,
+            'cost_min': 200.0,
+            'cost_max': 325.0,
+            'includes': '''<ul>
+                <li>2 hours networking + dance mix</li>
+                <li>Dance lights</li>
+                <li>DJ/MC services</li>
+            </ul>''',
+        },
+        ('Corporate', 'Premier'): {
+            'min_hours': 2.0,
+            'guest_min': 251,
+            'guest_max': 500,
+            'price_min': 600.0,
+            'price_max': 675.0,
+            'cost_min': 300.0,
+            'cost_max': 425.0,
+            'includes': '''<ul>
+                <li>2 hours DJ performance</li>
+                <li>Scripted MC services</li>
+                <li>Stage presence</li>
+                <li>Walk-on music</li>
+            </ul>''',
+        },
+        
+        # === WEDDING EVENT TIERS ===
+        ('Wedding', 'Essentials'): {
+            'min_hours': 3.0,  # Weddings require more hours
+            'guest_min': 50,
+            'guest_max': 350,
+            'price_min': 350.0,
+            'price_max': 450.0,
+            'cost_min': 200.0,
+            'cost_max': 300.0,
+            'includes': '''<ul>
+                <li>3 hours ceremony or reception</li>
+                <li>Curated music selection</li>
+                <li>Lav/handheld microphone</li>
+            </ul>''',
+        },
+        ('Wedding', 'Classic'): {
+            'min_hours': 4.0,
+            'guest_min': 101,
+            'guest_max': 250,
+            'price_min': 475.0,
+            'price_max': 625.0,
+            'cost_min': 250.0,
+            'cost_max': 350.0,
+            'includes': '''<ul>
+                <li>4 hours reception coverage</li>
+                <li>DJ + MC services</li>
+                <li>Dance floor lights</li>
+                <li>Wireless microphone</li>
+            </ul>''',
+        },
+        ('Wedding', 'Premier'): {
+            'min_hours': 5.0,
+            'guest_min': 251,
+            'guest_max': 500,
+            'price_min': 650.0,
+            'price_max': 700.0,
+            'cost_min': 300.0,
+            'cost_max': 450.0,
+            'includes': '''<ul>
+                <li>5 hours ceremony and reception</li>
+                <li>Scripted MC services</li>
+                <li>Dance floor lighting</li>
+                <li>Subwoofer for enhanced bass</li>
+                <li>Wireless microphone</li>
+            </ul>''',
+        },
+    }
+
+    if not dj_template:
+        _logger.warning("PTT Business Core: DJ & MC Services template not found. Skipping variant configuration.")
+        return
+
+    configured_count = 0
+    for variant in dj_template.product_variant_ids:
+        # Extract attribute values from variant
+        attr_values = variant.product_template_attribute_value_ids
+        event_type = None
+        tier = None
+        
+        for av in attr_values:
+            if av.attribute_id.name == 'Event Type':
+                event_type = av.name
+            elif av.attribute_id.name == 'Service Tier':
+                tier = av.name
+        
+        # Look up configuration
+        key = (event_type, tier)
+        if key in DJ_CONFIG:
+            config = DJ_CONFIG[key]
+            variant.write({
+                'ptt_min_hours': config['min_hours'],
+                'ptt_guest_count_min': config['guest_min'],
+                'ptt_guest_count_max': config['guest_max'],
+                'ptt_price_per_hour_min': config['price_min'],
+                'ptt_price_per_hour_max': config['price_max'],
+                'ptt_cost_per_hour_min': config['cost_min'],
+                'ptt_cost_per_hour_max': config['cost_max'],
+                'ptt_package_includes': config['includes'],
+            })
+            configured_count += 1
+
+    _logger.info(f"PTT Business Core: Successfully configured {configured_count} DJ service variants")
 
 
 def pre_init_hook(cr):
