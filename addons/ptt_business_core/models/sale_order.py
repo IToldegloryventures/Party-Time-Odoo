@@ -91,15 +91,48 @@ class SaleOrder(models.Model):
         
         When a quotation is created from a CRM lead with service lines,
         automatically create sale order lines from those service lines.
+        Also automatically adds Event Kickoff product if not already present.
         """
         orders = super().create(vals_list)
         
         # Create order lines from service lines for orders with opportunities
         for order in orders:
-            if order.opportunity_id and order.opportunity_id.ptt_service_line_ids:
-                self._create_order_lines_from_service_lines(order)
+            if order.opportunity_id:
+                # Auto-add Event Kickoff if not already in order
+                self._ensure_event_kickoff(order)
+                
+                # Add service lines from CRM
+                if order.opportunity_id.ptt_service_line_ids:
+                    self._create_order_lines_from_service_lines(order)
         
         return orders
+    
+    def _ensure_event_kickoff(self, order):
+        """Ensure Event Kickoff product is added to the order.
+        
+        Event Kickoff is a $0 product that triggers project creation
+        with standard tasks when the sales order is confirmed.
+        """
+        # Find Event Kickoff product
+        kickoff_product = self.env.ref('ptt_business_core.product_event_kickoff', raise_if_not_found=False)
+        if not kickoff_product:
+            return
+        
+        # Check if Event Kickoff is already in the order
+        existing_product_ids = set(order.order_line.mapped('product_id').ids)
+        if kickoff_product.id in existing_product_ids:
+            return
+        
+        # Add Event Kickoff as first line (sequence -99 to ensure it's first)
+        self.env['sale.order.line'].create({
+            'order_id': order.id,
+            'product_id': kickoff_product.id,
+            'product_uom_qty': 1.0,
+            'product_uom_id': kickoff_product.uom_id.id,
+            'name': kickoff_product.name,
+            'price_unit': 0.0,  # $0 price
+            'sequence': -99,  # Put it first
+        })
     
     def _create_order_lines_from_service_lines(self, order):
         """Create sale order lines from CRM service lines.
@@ -109,14 +142,15 @@ class SaleOrder(models.Model):
         - estimated_price → price_unit
         - description → name (or product name if no description)
         - tier/service_type → stored in description or notes
+        
+        Only adds service lines if the product is not already in the order
+        to prevent duplicates.
         """
         if not order.opportunity_id or not order.opportunity_id.ptt_service_line_ids:
             return
         
-        # Only create lines if order doesn't already have lines
-        # This prevents duplicating lines when editing an existing quotation
-        if order.order_line:
-            return
+        # Get existing product IDs in the order to avoid duplicates
+        existing_product_ids = set(order.order_line.mapped('product_id').ids)
         
         service_lines = order.opportunity_id.ptt_service_line_ids.sorted('sequence')
         order_line_vals = []
@@ -124,6 +158,10 @@ class SaleOrder(models.Model):
         for service_line in service_lines:
             # Skip if no product selected
             if not service_line.product_id:
+                continue
+            
+            # Skip if this product is already in the order
+            if service_line.product_id.id in existing_product_ids:
                 continue
             
             # Build description from service line
@@ -150,9 +188,10 @@ class SaleOrder(models.Model):
                 'sequence': service_line.sequence if service_line.sequence else 10,
             }
             
-            # Set price if provided in service line
-            if service_line.estimated_price:
-                line_vals['price_unit'] = service_line.estimated_price
+            # Set price if provided in service line (even if $0)
+            # Use estimated_price if it exists, otherwise let Odoo compute it
+            if service_line.estimated_price is not False:  # Allow 0.0
+                line_vals['price_unit'] = service_line.estimated_price or 0.0
             # Otherwise, price will be computed by Odoo's onchange when product is set
             
             order_line_vals.append(line_vals)
@@ -237,6 +276,7 @@ class SaleOrder(models.Model):
         2. Links project to CRM lead (ptt_crm_lead_id)
         3. Copies CRM event fields to project
         4. Backlinks CRM to project (ptt_project_id)
+        5. Creates service-specific tasks for each product/service in the order
         
         Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
         """
@@ -261,3 +301,58 @@ class SaleOrder(models.Model):
             })
             # Backlink CRM to project
             lead.write({'ptt_project_id': project.id})
+            
+            # Create service-specific tasks for each product in the order (except Event Kickoff)
+            self._create_service_specific_tasks(order, project)
+    
+    def _create_service_specific_tasks(self, order, project):
+        """Create service-specific tasks for each product/service in the sales order.
+        
+        After project is created via Event Kickoff, create tasks for each service/product
+        to track work for that specific service type.
+        
+        Args:
+            order: The confirmed sales order
+            project: The project that was just created
+        """
+        # Find Event Kickoff product to exclude it
+        kickoff_product = self.env.ref('ptt_business_core.product_event_kickoff', raise_if_not_found=False)
+        kickoff_product_id = kickoff_product.id if kickoff_product else None
+        
+        # Get all order lines with products (excluding Event Kickoff)
+        service_lines = order.order_line.filtered(
+            lambda l: l.product_id and l.product_id.id != kickoff_product_id
+        )
+        
+        if not service_lines:
+            return
+        
+        # Create a task for each service/product
+        task_vals_list = []
+        sequence = 100  # Start after standard template tasks (which are sequence 10-90)
+        
+        for line in service_lines:
+            # Format task name as "[SERVICE] TASK"
+            # Use product name, convert to uppercase, append " TASK"
+            service_name = line.product_id.name.upper() if line.product_id.name else "SERVICE"
+            task_name = f"{service_name} TASK"
+            
+            task_vals = {
+                'name': task_name,
+                'project_id': project.id,
+                'sale_line_id': line.id,
+                'sale_order_id': order.id,
+                'partner_id': order.partner_id.id,
+                'description': f"Service: {line.name}\n"
+                             f"Quantity: {line.product_uom_qty} {line.product_uom_id.name if line.product_uom_id else 'units'}\n"
+                             f"Unit Price: ${line.price_unit:.2f}",
+                'sequence': sequence,
+                'user_ids': False,  # Unassigned by default
+            }
+            
+            task_vals_list.append(task_vals)
+            sequence += 10
+        
+        # Create all tasks at once
+        if task_vals_list:
+            self.env['project.task'].create(task_vals_list)
