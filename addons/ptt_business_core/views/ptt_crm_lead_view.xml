@@ -74,8 +74,8 @@
         <field name="arch" type="xml">
             <!-- Modify the lead_info group (for leads) to be two columns with source_id -->
             <xpath expr="//group[@name='lead_info']" position="replace">
-                <group name="lead_info" col="2" invisible="type == 'opportunity'">
-                    <group string="Contact Information" colspan="1">
+                <group name="lead_info" invisible="type == 'opportunity'">
+                    <group string="Contact Information" col="1">
                         <label for="contact_name"/>
                         <div class="o_row">
                             <field name="contact_name"/>
@@ -111,15 +111,15 @@
                                 invisible="not partner_phone_update"/>
                         </div>
                     </group>
-                    <group string="Lead Source" colspan="1">
+                    <group string="Lead Source" col="1">
                         <field name="source_id" placeholder="Select lead source"/>
                     </group>
                 </group>
             </xpath>
             <!-- For opportunities, modify opportunity_partner to be two columns with source_id -->
             <xpath expr="//group[@name='opportunity_partner']" position="replace">
-                <group name="opportunity_partner" col="2" invisible="type == 'lead'">
-                    <group string="Contact Information" colspan="1">
+                <group name="opportunity_partner" invisible="type == 'lead'">
+                    <group string="Contact Information" col="1">
                         <field name="partner_id"
                             widget="res_partner_many2one"
                             context="{'res_partner_search_mode': type == 'opportunity' and 'customer' or False,
@@ -176,7 +176,7 @@
                         <field name="date_conversion" invisible="1"/>
                         <field name="user_company_ids" invisible="1"/>
                     </group>
-                    <group string="Lead Source" colspan="1">
+                    <group string="Lead Source" col="1">
                         <field name="source_id" placeholder="Select lead source"/>
                     </group>
                 </group>
