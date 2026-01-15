@@ -41,9 +41,9 @@
                             <field name="tier_classic_extra" string="Classic Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="tier_premier_extra" string="Premier Extra" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             
+                            <field name="currency_id" invisible="1"/>
                             <field name="service_id" invisible="1"/>
                             <field name="config_id" invisible="1"/>
-                            <field name="currency_id" invisible="1"/>
                         </tree>
                     </field>
                 </sheet>
