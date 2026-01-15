@@ -47,10 +47,19 @@ def post_init_hook(env):
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error in post_init_hook: {e}")
     
-    # === CONFIGURE DJ SERVICE VARIANTS ===
-    # Automatically configure pricing and variant-specific fields from CSV data
+    # === CONFIGURE VARIANT PRICING FOR ALL SERVICES ===
+    # Automatically configure price_extra for all services with Event Type/Service Tier attributes
     try:
-        _logger.info("PTT Business Core: Configuring DJ Service Variants")
+        _logger.info("PTT Business Core: Configuring variant pricing for all services")
+        _configure_all_service_variants(env)
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error configuring variant pricing: {e}")
+        _logger.exception("PTT Business Core: Variant pricing configuration failed")
+    
+    # === CONFIGURE DJ SERVICE VARIANTS ===
+    # Configure DJ-specific variant fields (min_hours, guest_count, package_includes, etc.)
+    try:
+        _logger.info("PTT Business Core: Configuring DJ Service Variant Fields")
         _configure_dj_variants(env)
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error configuring DJ variants: {e}")
@@ -63,14 +72,18 @@ def post_init_hook(env):
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
 
 
-def _configure_dj_variants(env):
+def _configure_all_service_variants(env):
     """
-    Configure DJ service variants with pricing and variant-specific fields.
+    Configure variant pricing (price_extra) for ALL services with Event Type and Service Tier attributes.
     This runs automatically on module install/upgrade.
+    
+    Sets pricing for:
+    - DJ Services (with full variant-specific data)
+    - All other services (Band, Dancers, Casino, Photography, Videography, etc.)
     """
     # =============================================================
-    # STEP 1: Configure price_extra on attribute values
-    # This sets variant prices: Base ($300) + Event Extra + Tier Extra
+    # STEP 1: Configure price_extra on attribute values for ALL services
+    # This sets variant prices: Base Price + Event Extra + Tier Extra
     # =============================================================
     PRICE_EXTRAS = {
         # Event Type extras (from Social base)
@@ -83,32 +96,75 @@ def _configure_dj_variants(env):
         'Premier': 300.0,
     }
 
-    # Find DJ template
-    dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
-
-    if dj_template:
-        # Update price_extra on product.template.attribute.value records
-        # This makes prices update dynamically: Base ($300) + Event Extra + Tier Extra
-        updated_count = 0
-        for attribute_line in dj_template.attribute_line_ids:
-            for ptav in attribute_line.product_template_value_ids:
+    # Find Event Type and Service Tier attributes
+    event_type_attr = env['product.attribute'].search([('name', '=', 'Event Type')], limit=1)
+    service_tier_attr = env['product.attribute'].search([('name', '=', 'Service Tier')], limit=1)
+    
+    if not event_type_attr or not service_tier_attr:
+        _logger.warning("PTT Business Core: ⚠️ Event Type or Service Tier attributes not found - skipping variant pricing setup")
+        return
+    
+    # Find ALL templates with both attributes
+    all_templates = env['product.template'].search([
+        ('attribute_line_ids.attribute_id', 'in', [event_type_attr.id, service_tier_attr.id])
+    ])
+    
+    # Filter to only those with BOTH attributes
+    services = env['product.template']
+    for template in all_templates:
+        has_event_type = any(line.attribute_id.id == event_type_attr.id for line in template.attribute_line_ids)
+        has_service_tier = any(line.attribute_id.id == service_tier_attr.id for line in template.attribute_line_ids)
+        if has_event_type and has_service_tier:
+            services |= template
+    
+    if not services:
+        _logger.warning("PTT Business Core: ⚠️ No services found with Event Type and Service Tier attributes")
+        return
+    
+    _logger.info(f"PTT Business Core: Configuring variant pricing for {len(services)} service(s)")
+    
+    total_updated = 0
+    for service in services.sorted('name'):
+        service_updated = 0
+        
+        # Update Event Type pricing
+        event_type_line = service.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Event Type')
+        if event_type_line:
+            for ptav in event_type_line.product_template_value_ids:
                 attr_value_name = ptav.product_attribute_value_id.name
                 if attr_value_name in PRICE_EXTRAS:
                     expected_extra = PRICE_EXTRAS[attr_value_name]
-                    # Always set it (don't check if different) to ensure it's correct
                     ptav.write({'price_extra': expected_extra})
-                    updated_count += 1
-                    _logger.info(f"PTT Business Core: Set {attr_value_name} price_extra to ${expected_extra} for DJ template")
+                    service_updated += 1
+                    _logger.info(f"PTT Business Core: Set {service.name} - {attr_value_name} price_extra to ${expected_extra}")
         
-        if updated_count > 0:
-            _logger.info(f"PTT Business Core: ✅ Updated price_extra on {updated_count} DJ attribute value(s)")
-            # Verify the values were set
-            for attribute_line in dj_template.attribute_line_ids:
-                for ptav in attribute_line.product_template_value_ids:
-                    if ptav.price_extra != 0:
-                        _logger.info(f"PTT Business Core:   {ptav.product_attribute_value_id.name}: ${ptav.price_extra}")
-        else:
-            _logger.warning("PTT Business Core: ⚠️ No DJ attribute values found to update price_extra")
+        # Update Service Tier pricing
+        service_tier_line = service.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Service Tier')
+        if service_tier_line:
+            for ptav in service_tier_line.product_template_value_ids:
+                attr_value_name = ptav.product_attribute_value_id.name
+                if attr_value_name in PRICE_EXTRAS:
+                    expected_extra = PRICE_EXTRAS[attr_value_name]
+                    ptav.write({'price_extra': expected_extra})
+                    service_updated += 1
+                    _logger.info(f"PTT Business Core: Set {service.name} - {attr_value_name} price_extra to ${expected_extra}")
+        
+        if service_updated > 0:
+            total_updated += service_updated
+    
+    if total_updated > 0:
+        _logger.info(f"PTT Business Core: ✅ Updated price_extra on {total_updated} attribute value(s) across {len(services)} service(s)")
+    else:
+        _logger.warning("PTT Business Core: ⚠️ No attribute values updated")
+
+
+def _configure_dj_variants(env):
+    """
+    Configure DJ service variants with variant-specific fields (min_hours, guest_count, etc.).
+    This runs automatically on module install/upgrade.
+    
+    NOTE: Pricing (price_extra) is now handled by _configure_all_service_variants().
+    """
 
     # =============================================================
     # STEP 2: Configure variant-specific fields
