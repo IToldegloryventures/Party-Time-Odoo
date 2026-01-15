@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        PTT Lost Reasons for CRM Opportunities
+        Standard Odoo crm.lost.reason model
+        Per Odoo 19 docs: https://www.odoo.com/documentation/19.0/applications/sales/crm/pipeline/lost_opportunities.html
+    -->
+
+    <record id="lost_reason_price_sensitive" model="crm.lost.reason">
+        <field name="name">Price Sensitive</field>
+    </record>
+
+    <record id="lost_reason_retainer_unpaid" model="crm.lost.reason">
+        <field name="name">Retainer Unpaid</field>
+    </record>
+
+    <record id="lost_reason_timeline_short" model="crm.lost.reason">
+        <field name="name">Timeline Too Short</field>
+    </record>
+
+    <record id="lost_reason_competitor" model="crm.lost.reason">
+        <field name="name">Competitor Selected</field>
+    </record>
+
+    <record id="lost_reason_event_cancelled" model="crm.lost.reason">
+        <field name="name">Event Cancelled</field>
+    </record>
+
+    <record id="lost_reason_no_response" model="crm.lost.reason">
+        <field name="name">No Response</field>
+    </record>
+
+    <record id="lost_reason_budget" model="crm.lost.reason">
+        <field name="name">Budget Constraints</field>
+    </record>
+
+    <record id="lost_reason_out_of_area" model="crm.lost.reason">
+        <field name="name">Out of Service Area</field>
+    </record>
+
+    <record id="lost_reason_services_not_offered" model="crm.lost.reason">
+        <field name="name">Services Not Offered</field>
+    </record>
+
+    <record id="lost_reason_duplicate" model="crm.lost.reason">
+        <field name="name">Duplicate Lead</field>
+    </record>
+
+</odoo>

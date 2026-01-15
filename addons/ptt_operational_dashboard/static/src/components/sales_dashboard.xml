@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.SalesDashboard">
+        <div class="ptt-sales-dashboard">
+            <!-- Date Range Filter - Segmented Control Style -->
+            <div class="ptt-date-filter">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="btn-group" role="group">
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'this_week' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('this_week')">
+                            This Week
+                        </button>
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'this_month' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('this_month')">
+                            This Month
+                        </button>
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'last_month' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('last_month')">
+                            Last Month
+                        </button>
+                        <button 
+                            t-att-class="'btn btn-sm' + (state.dateRange === 'ytd' ? ' active' : '')"
+                            t-on-click="() => this.setDateRange('ytd')">
+                            YTD
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
+                            t-model="state.startDate" t-on-change="onDateChange"/>
+                        <span class="text-muted small">to</span>
+                        <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
+                            t-model="state.endDate" t-on-change="onDateChange"/>
+                    </div>
+                    <span class="badge bg-light text-dark border" style="padding: 0.5rem 0.75rem; font-weight: 500;">
+                        <i class="fa fa-calendar me-1"/>
+                        <t t-esc="dateRangeLabel"/>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="ptt-loading">
+                    <div class="ptt-spinner"/>
+                </div>
+            </t>
+            
+            <t t-elif="state.data">
+                <!-- SALES LEADERBOARD - FIRST SECTION -->
+                <div class="ptt-sales-leaderboard mb-4">
+                    <div class="ptt-section-header mb-3">
+                        <h2><i class="fa fa-trophy" style="color: #F59E0B;"/> Sales Performance Leaderboard</h2>
+                    </div>
+                    
+                    <div class="ptt-card" style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #E5E7EB; overflow: hidden;">
+                        <t t-if="!state.data.reps || state.data.reps.length === 0">
+                            <div class="ptt-empty-state" style="padding: 2rem;">
+                                <i class="fa fa-users" style="font-size: 2.5rem; color: #9CA3AF;"/>
+                                <p style="color: #6B7280; margin-top: 1rem;">No sales data for this period</p>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" style="background: white;">
+                                    <thead style="background: #F9FAFB;">
+                                        <tr>
+                                            <th style="width: 60px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Rank</th>
+                                            <th style="font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Sales Rep</th>
+                                            <th class="text-end" style="font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Revenue</th>
+                                            <th class="text-center" style="width: 80px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Deals Won</th>
+                                            <th class="text-center" style="width: 80px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Lost</th>
+                                            <th class="text-center" style="width: 100px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Conversion</th>
+                                            <th style="min-width: 180px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Target Progress</th>
+                                            <th class="text-center" style="width: 70px; font-weight: 600; font-size: 0.8rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.data.reps" t-as="rep" t-key="rep.id">
+                                            <tr t-on-click="() => this.onRepClick(rep)" style="cursor: pointer; background: white;">
+                                                <td style="padding: 1rem; vertical-align: middle;">
+                                                    <span t-att-class="'badge ' + (rep_index === 0 ? 'bg-warning text-dark' : rep_index === 1 ? 'bg-secondary' : rep_index === 2 ? 'bg-danger' : 'bg-light text-dark border')" 
+                                                          style="font-size: 0.875rem; padding: 0.5rem 0.7rem; font-weight: 700; min-width: 36px;">
+                                                        <t t-if="rep_index === 0">
+                                                            <i class="fa fa-trophy me-1"/>
+                                                        </t>
+                                                        <t t-esc="rep_index + 1"/>
+                                                    </span>
+                                                </td>
+                                                <td style="padding: 1rem; vertical-align: middle;">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="ptt-user-avatar me-3">
+                                                            <span class="badge" t-att-style="'background: ' + (rep.color || '#6366F1') + '; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);'">
+                                                                <t t-esc="rep.initials"/>
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <strong style="font-size: 0.95rem; color: #1F2937;"><t t-esc="rep.name"/></strong>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-end" style="padding: 1rem; vertical-align: middle;">
+                                                    <span style="font-size: 1.1rem; font-weight: 700; color: #059669;">
+                                                        <t t-esc="formatCurrency(rep.booked_amount)"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <span class="badge bg-success" style="font-size: 0.9rem; padding: 0.4rem 0.6rem; font-weight: 600;">
+                                                        <t t-esc="rep.booked_count"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <span t-att-class="'badge ' + (rep.lost_count > 0 ? 'bg-danger' : 'bg-secondary')" style="font-size: 0.9rem; padding: 0.4rem 0.6rem; font-weight: 600;">
+                                                        <t t-esc="rep.lost_count || 0"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <span t-att-class="'badge ' + (rep.conversion_rate >= 50 ? 'bg-success' : rep.conversion_rate >= 30 ? 'bg-warning text-dark' : 'bg-danger')" style="font-size: 0.9rem; padding: 0.4rem 0.6rem; font-weight: 600;">
+                                                        <t t-esc="rep.conversion_rate"/>%
+                                                    </span>
+                                                </td>
+                                                <td style="padding: 1rem; vertical-align: middle;">
+                                                    <div class="progress" style="height: 24px; border-radius: 12px; overflow: hidden; background: #E5E7EB; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                                                        <div 
+                                                            t-att-class="'progress-bar ' + (rep.revenue_vs_target_pct >= 100 ? 'bg-success' : rep.revenue_vs_target_pct >= 75 ? 'bg-info' : rep.revenue_vs_target_pct >= 50 ? 'bg-warning' : 'bg-danger')"
+                                                            t-att-style="'width: ' + Math.min(rep.revenue_vs_target_pct || 0, 100) + '%'"
+                                                            role="progressbar"
+                                                            style="display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem;">
+                                                            <t t-esc="(rep.revenue_vs_target_pct || 0).toFixed(0)"/>%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center" style="padding: 1rem; vertical-align: middle;">
+                                                    <button class="btn btn-sm btn-outline-primary" 
+                                                            t-on-click.stop="() => this.onRepClick(rep)"
+                                                            title="View Sales Rep's Deals"
+                                                            style="border-radius: 8px; padding: 0.35rem 0.6rem;">
+                                                        <i class="fa fa-external-link"/>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+                
+                <!-- Company Total Section -->
+                <div class="ptt-section-header mb-3">
+                    <h2><i class="fa fa-building"/> Company Total</h2>
+                </div>
+                
+                <!-- Main KPI Cards - Company Total -->
+                <div class="ptt-kpi-grid mb-4">
+                    <!-- Total Booked (Large) -->
+                    <div class="ptt-kpi-card booked ptt-kpi-large" t-on-click="onBookedClick">
+                        <div class="ptt-kpi-icon booked">
+                            <i class="fa fa-calendar-check-o"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_booked)"/>
+                        <div class="ptt-kpi-label">Total Booked Revenue</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.booked_count"/> events
+                        </div>
+                    </div>
+                    
+                    <!-- Total Paid (Large) -->
+                    <div class="ptt-kpi-card paid ptt-kpi-large" t-on-click="onPaidClick">
+                        <div class="ptt-kpi-icon paid">
+                            <i class="fa fa-check-circle"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_paid)"/>
+                        <div class="ptt-kpi-label">Total Paid</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.paid_count"/> invoices
+                        </div>
+                    </div>
+                    
+                    <!-- Outstanding/Overdue (Large) -->
+                    <div class="ptt-kpi-card outstanding ptt-kpi-large" t-on-click="onOutstandingClick">
+                        <div class="ptt-kpi-icon outstanding">
+                            <i class="fa fa-exclamation-circle"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.total_outstanding)"/>
+                        <div class="ptt-kpi-label">Outstanding</div>
+                        <div class="ptt-kpi-count text-danger" t-if="state.data.overdue_amount > 0">
+                            <t t-esc="formatCurrency(state.data.overdue_amount)"/> overdue
+                        </div>
+                    </div>
+                    
+                    <!-- Capture Rate -->
+                    <div class="ptt-kpi-card" t-if="state.data.capture_rate">
+                        <div class="ptt-kpi-icon" style="background: #DBEAFE; color: #2563EB;">
+                            <i class="fa fa-percent"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.capture_rate.capture_rate + '%'"/>
+                        <div class="ptt-kpi-label">Capture Rate</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.capture_rate.won_count"/> won / <t t-esc="state.data.capture_rate.total_leads"/> total
+                        </div>
+                    </div>
+                    
+                    <!-- Avg Revenue per Event -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_revenue_per_event">
+                        <div class="ptt-kpi-icon" style="background: #DCFCE7; color: #16A34A;">
+                            <i class="fa fa-dollar"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatCurrency(state.data.avg_revenue_per_event.avg)"/>
+                        <div class="ptt-kpi-label">Avg Revenue/Event</div>
+                        <div class="ptt-kpi-count">
+                            <t t-esc="state.data.avg_revenue_per_event.count"/> events
+                        </div>
+                    </div>
+                    
+                    <!-- Revenue Comparison -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_revenue_comparison">
+                        <div class="ptt-kpi-icon" style="background: #FEF3C7; color: #D97706;">
+                            <i class="fa fa-line-chart"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatPercentage(state.data.avg_revenue_comparison.prev_year_change_pct)"/>
+                        <div class="ptt-kpi-label">vs Last Year</div>
+                        <div class="ptt-kpi-count">
+                            Current: <t t-esc="formatCurrency(state.data.avg_revenue_comparison.current)"/>
+                        </div>
+                    </div>
+                </div>
+                
+            </t>
+        </div>
+    </t>
+</templates>

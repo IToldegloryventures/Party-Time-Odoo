@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 
+        Vendor Portal QWeb Templates
+        
+        SECURITY: These templates only show LIMITED information.
+        Vendors CANNOT see customer pricing, other vendors, or profitability.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/frontend/qweb.html
+    -->
+    
+    <!-- Work Orders List Page (Logged-in vendors only) -->
+    <template id="portal_my_work_orders" name="My Work Orders">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Work Orders</t>
+            </t>
+            
+            <t t-if="not assignments">
+                <div class="alert alert-info mt-3">
+                    <i class="fa fa-info-circle me-2"/>
+                    You have no work orders assigned.
+                </div>
+            </t>
+            
+            <t t-if="assignments">
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover o_portal_my_doc_table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Event</th>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th class="text-end">Payment</th>
+                                <th class="text-center">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="assignments" t-as="wo">
+                                <tr>
+                                    <td>
+                                        <strong><t t-esc="wo.project_id.name"/></strong>
+                                    </td>
+                                    <td><t t-esc="wo.service_type"/></td>
+                                    <td>
+                                        <t t-if="wo.project_id.ptt_event_date">
+                                            <t t-esc="wo.project_id.ptt_event_date" t-options="{'widget': 'date'}"/>
+                                        </t>
+                                        <t t-else="">TBD</t>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>$<t t-esc="'%.2f' % wo.actual_cost"/></strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-attf-class="badge rounded-pill #{
+                                            'bg-warning text-dark' if wo.state == 'sent' else
+                                            'bg-success' if wo.state == 'accepted' else
+                                            'bg-danger' if wo.state == 'declined' else
+                                            'bg-info' if wo.state == 'completed' else
+                                            'bg-secondary'
+                                        }">
+                                            <t t-if="wo.state == 'sent'">Pending Response</t>
+                                            <t t-elif="wo.state == 'accepted'">Accepted</t>
+                                            <t t-elif="wo.state == 'declined'">Declined</t>
+                                            <t t-elif="wo.state == 'completed'">Completed</t>
+                                            <t t-elif="wo.state == 'cancelled'">Cancelled</t>
+                                            <t t-else="">Draft</t>
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a t-attf-href="/my/work-orders/#{wo.id}/#{wo.access_token}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fa fa-eye me-1"/>View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pager -->
+                <t t-if="pager">
+                    <div class="d-flex justify-content-center mt-3">
+                        <t t-call="portal.pager"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Work Order Detail Page (PUBLIC ACCESS via token) -->
+    <template id="portal_work_order_detail" name="Work Order Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-4 mb-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0">
+                                <i class="fa fa-clipboard me-2"/>Work Order
+                            </h3>
+                            <span t-attf-class="badge fs-6 #{
+                                'bg-warning text-dark' if assignment.state == 'sent' else
+                                'bg-success' if assignment.state == 'accepted' else
+                                'bg-danger' if assignment.state == 'declined' else
+                                'bg-info' if assignment.state == 'completed' else
+                                'bg-light text-dark'
+                            }">
+                                <t t-if="assignment.state == 'sent'">ACTION REQUIRED</t>
+                                <t t-elif="assignment.state == 'accepted'">ACCEPTED</t>
+                                <t t-elif="assignment.state == 'declined'">DECLINED</t>
+                                <t t-elif="assignment.state == 'completed'">COMPLETED</t>
+                                <t t-else="">DRAFT</t>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <!-- Event Info (LIMITED - No customer pricing) -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-calendar-alt me-2"/>Event Details
+                                </h5>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="fw-bold" style="width: 40%;">Event:</td>
+                                        <td><t t-esc="event_name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Date:</td>
+                                        <td>
+                                            <t t-if="event_date">
+                                                <t t-esc="event_date" t-options="{'widget': 'date'}"/>
+                                            </t>
+                                            <t t-else="">TBD</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Time:</td>
+                                        <td>
+                                            <t t-if="event_time_start">
+                                                <t t-esc="event_time_start"/>
+                                                <t t-if="event_time_end"> - <t t-esc="event_time_end"/></t>
+                                            </t>
+                                            <t t-else="">TBD</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-map-marker-alt me-2"/>Venue
+                                </h5>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="fw-bold" style="width: 40%;">Name:</td>
+                                        <td><t t-esc="venue_name or 'TBD'"/></td>
+                                    </tr>
+                                    <t t-if="venue_address">
+                                        <tr>
+                                            <td class="fw-bold">Address:</td>
+                                            <td><t t-esc="venue_address"/></td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4"/>
+                        
+                        <!-- Vendor Assignment (THEIR info only) -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-user-tie me-2"/>Your Assignment
+                                </h5>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="fw-bold" style="width: 40%;">Service:</td>
+                                        <td><strong><t t-esc="service_type"/></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Arrival/Setup:</td>
+                                        <td><t t-esc="arrival_time or 'TBD'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Your Payment:</td>
+                                        <td>
+                                            <span class="fs-4 text-success fw-bold">
+                                                $<t t-esc="'%.2f' % vendor_payment"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6" t-if="special_instructions">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-sticky-note me-2"/>Special Instructions
+                                </h5>
+                                <div class="alert alert-light border">
+                                    <t t-esc="special_instructions"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons (only if pending) -->
+                        <t t-if="assignment.state == 'sent'">
+                            <hr class="my-4"/>
+                            <div class="text-center py-4 bg-light rounded">
+                                <h5 class="mb-4">
+                                    <i class="fa fa-question-circle text-warning me-2"/>
+                                    Action Required
+                                </h5>
+                                <p class="text-muted mb-4">Please respond to this work order assignment</p>
+                                <button class="btn btn-success btn-lg me-3 px-5" 
+                                        id="btn-accept"
+                                        t-att-data-id="assignment.id"
+                                        t-att-data-token="token">
+                                    <i class="fa fa-check me-2"/>Accept This Assignment
+                                </button>
+                                <button class="btn btn-outline-danger btn-lg px-4" 
+                                        id="btn-decline"
+                                        t-att-data-id="assignment.id"
+                                        t-att-data-token="token">
+                                    <i class="fa fa-times me-2"/>Decline
+                                </button>
+                            </div>
+                        </t>
+                        
+                        <!-- Status Messages -->
+                        <t t-if="assignment.state == 'accepted'">
+                            <div class="alert alert-success d-flex align-items-center mt-4" role="alert">
+                                <i class="fa fa-check-circle fa-2x me-3"/>
+                                <div>
+                                    <strong>You accepted this work order</strong>
+                                    <t t-if="assignment.vendor_signature_date">
+                                        <br/>
+                                        <small class="text-muted">
+                                            Signed on <t t-esc="assignment.vendor_signature_date" t-options="{'widget': 'datetime'}"/>
+                                        </small>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <t t-if="assignment.state == 'declined'">
+                            <div class="alert alert-danger d-flex align-items-center mt-4" role="alert">
+                                <i class="fa fa-times-circle fa-2x me-3"/>
+                                <div>
+                                    <strong>You declined this work order</strong>
+                                    <t t-if="assignment.vendor_decline_reason">
+                                        <br/>
+                                        <small>Reason: <t t-esc="assignment.vendor_decline_reason"/></small>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <t t-if="assignment.state == 'completed'">
+                            <div class="alert alert-info d-flex align-items-center mt-4" role="alert">
+                                <i class="fa fa-check-double fa-2x me-3"/>
+                                <div>
+                                    <strong>This event has been completed</strong>
+                                    <br/>
+                                    <small class="text-muted">Thank you for your service!</small>
+                                </div>
+                            </div>
+                        </t>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JavaScript for Accept/Decline buttons -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    const acceptBtn = document.getElementById('btn-accept');
+                    const declineBtn = document.getElementById('btn-decline');
+                    
+                    if (acceptBtn) {
+                        acceptBtn.addEventListener('click', async function() {
+                            if (!confirm('Are you sure you want to ACCEPT this work order?')) return;
+                            
+                            this.disabled = true;
+                            this.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
+                            
+                            const id = this.dataset.id;
+                            const token = this.dataset.token;
+                            
+                            try {
+                                const response = await fetch(`/my/work-orders/${id}/accept`, {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        jsonrpc: '2.0',
+                                        method: 'call',
+                                        params: {access_token: token}
+                                    })
+                                });
+                                
+                                const result = await response.json();
+                                if (result.result &amp;&amp; result.result.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + (result.result?.error || 'Unknown error'));
+                                    this.disabled = false;
+                                    this.innerHTML = '<i class="fa fa-check me-2"></i>Accept This Assignment';
+                                }
+                            } catch (e) {
+                                alert('Network error. Please try again.');
+                                this.disabled = false;
+                                this.innerHTML = '<i class="fa fa-check me-2"></i>Accept This Assignment';
+                            }
+                        });
+                    }
+                    
+                    if (declineBtn) {
+                        declineBtn.addEventListener('click', async function() {
+                            const reason = prompt('Please provide a reason for declining (optional):');
+                            if (reason === null) return; // User cancelled
+                            
+                            this.disabled = true;
+                            this.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
+                            
+                            const id = this.dataset.id;
+                            const token = this.dataset.token;
+                            
+                            try {
+                                const response = await fetch(`/my/work-orders/${id}/decline`, {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        jsonrpc: '2.0',
+                                        method: 'call',
+                                        params: {access_token: token, reason: reason}
+                                    })
+                                });
+                                
+                                const result = await response.json();
+                                if (result.result &amp;&amp; result.result.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + (result.result?.error || 'Unknown error'));
+                                    this.disabled = false;
+                                    this.innerHTML = '<i class="fa fa-times me-2"></i>Decline';
+                                }
+                            } catch (e) {
+                                alert('Network error. Please try again.');
+                                this.disabled = false;
+                                this.innerHTML = '<i class="fa fa-times me-2"></i>Decline';
+                            }
+                        });
+                    }
+                });
+            </script>
+        </t>
+    </template>
+    
+    <!-- Add Work Orders link to portal home -->
+    <template id="portal_my_home_menu_work_orders" name="Portal My Home: Work Orders" 
+              inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/ptt_vendor_management/static/description/icon.png'"/>
+                <t t-set="title">Work Orders</t>
+                <t t-set="url" t-value="'/my/work-orders'"/>
+                <t t-set="text">View and respond to your event assignments</t>
+                <t t-set="placeholder_count" t-value="'work_order_count'"/>
+            </t>
+        </xpath>
+    </template>
+    
+</odoo>

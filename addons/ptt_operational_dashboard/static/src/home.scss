@@ -1,0 +1,1590 @@
+/**
+ * PTT Home Dashboard Styles
+ * 
+ * Modern, clean design with Party Time Texas branding.
+ * Primary: #CC0000 (PTT Red)
+ * Secondary: #2F2F2F (Dark Gray)
+ */
+
+// Variables
+$ptt-red: #CC0000;
+$ptt-dark: #2F2F2F;
+$ptt-light: #F8F9FA;
+$ptt-border: #DEE2E6;
+
+// Status colors for calendar
+$status-lead: #87CEEB;
+$status-awaiting: #FFD700;
+$status-booked: #28A745;
+$status-planning: #FFA500;
+$status-completed: #6C757D;
+
+    // Home Container
+    .ptt-home-hub {
+        background-color: #F9FAFB;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    
+    // Top Navigation
+    .ptt-top-nav {
+        background: linear-gradient(135deg, $ptt-dark 0%, darken($ptt-dark, 10%) 100%);
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        
+        // Back to Odoo Apps button
+        .ptt-apps-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.4);
+                transform: scale(1.05);
+            }
+            
+            &:active {
+                transform: scale(0.95);
+            }
+        }
+        
+        .ptt-nav-brand {
+            display: flex;
+            align-items: center;
+            
+            .ptt-logo-img {
+                height: 45px;
+                width: auto;
+                object-fit: contain;
+            }
+            
+            // Legacy text logo (fallback)
+            .ptt-logo {
+                width: 40px;
+                height: 40px;
+                background: $ptt-red;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+                font-size: 1.25rem;
+            }
+            
+            .ptt-title {
+                color: white;
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin: 0;
+            }
+        }
+        
+        .ptt-nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            
+            .ptt-nav-tab {
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                color: rgba(255, 255, 255, 0.7);
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    color: white;
+                    background: rgba(255, 255, 255, 0.1);
+                }
+                
+                &.active {
+                    color: white;
+                    background: $ptt-red;
+                }
+                
+                i {
+                    margin-right: 0.5rem;
+                }
+            }
+        }
+        
+        .ptt-nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            
+            .ptt-user-name {
+                font-size: 0.9rem;
+            }
+            
+            .ptt-refresh-btn {
+                padding: 0.5rem;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                color: white;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                }
+                
+                &.spinning i {
+                    animation: spin 1s linear infinite;
+                }
+            }
+        }
+    }
+    
+    // Main Content Area
+    .ptt-home-content {
+        padding: 1.5rem;
+        max-width: 1800px;
+        margin: 0 auto;
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #F9FAFB;
+        
+        // Custom scrollbar
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 4px;
+            
+            &:hover {
+                background: #9CA3AF;
+            }
+        }
+    }
+    
+    // Dashboard Grid Layout
+    .ptt-dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        
+        .ptt-grid-item {
+            min-width: 0; // Prevent overflow
+            
+            &.ptt-grid-full {
+                grid-column: 1 / -1; // Span all columns
+            }
+            
+            &.ptt-grid-2col {
+                grid-column: span 2;
+            }
+        }
+        
+        // Responsive: 2 columns on medium screens
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            
+            .ptt-grid-item.ptt-grid-full {
+                grid-column: 1 / -1;
+            }
+        }
+        
+        // Responsive: 1 column on small screens
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            
+            .ptt-grid-item,
+            .ptt-grid-item.ptt-grid-full,
+            .ptt-grid-item.ptt-grid-2col {
+                grid-column: 1;
+            }
+        }
+    }
+    
+    // Dashboard Tasks Section
+    .ptt-dashboard-tasks-section {
+        .row {
+            margin: 0;
+        }
+        
+        .col-md-6,
+        .col-md-12,
+        .col-lg-4 {
+            padding: 0.75rem;
+            
+            @media (max-width: 768px) {
+                padding: 0.5rem;
+            }
+        }
+        
+        .ptt-card {
+            @media (max-width: 768px) {
+                padding: 1rem !important;
+            }
+        }
+    }
+    
+    // Section Headers
+    .ptt-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $ptt-dark;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.3px;
+            
+            i {
+                color: $ptt-red;
+                font-size: 1.25rem;
+            }
+        }
+        
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: $ptt-dark;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            
+            i {
+                color: $ptt-red;
+                font-size: 1rem;
+            }
+        }
+        
+        .ptt-section-action {
+            color: $ptt-red;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                color: darken($ptt-red, 10%);
+                text-decoration: underline;
+            }
+        }
+        
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.4rem 0.75rem;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+    }
+    
+    // Sections (wrapper for section header + card)
+    .ptt-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    // Cards - Modern, clean design
+    .ptt-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+        
+        &.clickable {
+            cursor: pointer;
+        }
+    }
+    
+    // My Work Categories
+    .ptt-my-work {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr)); // minmax(0, 1fr) prevents overflow
+        gap: 1rem;
+        
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        
+        @media (max-width: 768px) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        
+        .ptt-category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            min-width: 0; // Prevent content from expanding card
+            overflow: hidden;
+            
+            .ptt-category-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 0.75rem;
+                
+                .ptt-category-title {
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    color: $ptt-dark;
+                    white-space: nowrap;
+                }
+                
+                .ptt-category-count {
+                    background: $ptt-light;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 12px;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    flex-shrink: 0;
+                }
+            }
+            
+            .ptt-category-tasks {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            &.overdue .ptt-category-count {
+                background: #FEE2E2;
+                color: #DC2626;
+            }
+            
+            &.today .ptt-category-count {
+                background: #DBEAFE;
+                color: #2563EB;
+            }
+            
+            &.upcoming .ptt-category-count {
+                background: #D1FAE5;
+                color: #059669;
+            }
+            
+            &.unscheduled .ptt-category-count {
+                background: #F3F4F6;
+                color: #6B7280;
+            }
+        }
+    }
+    
+    // Task List Container
+    .ptt-task-list {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        
+        // Custom scrollbar
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            background: #F3F4F6;
+            border-radius: 3px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 3px;
+            
+            &:hover {
+                background: #9CA3AF;
+            }
+        }
+    }
+    
+    // Quick Add Task Form
+    .ptt-quick-add-form {
+        .card {
+            border-width: 2px;
+        }
+    }
+    
+    // Other Tasks Section
+    .ptt-other-tasks {
+        .ptt-card {
+            min-height: 200px;
+        }
+    }
+    
+    // Task Items - Kanban-style cards
+    .ptt-task-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 0.75rem;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:hover {
+            background: #FAFBFC;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ptt-task-priority {
+            width: 4px;
+            height: 100%;
+            min-height: 32px;
+            border-radius: 2px;
+            margin-right: 0.875rem;
+            flex-shrink: 0;
+            
+            &.priority-3 { background: #DC2626; }
+            &.priority-2 { background: #F59E0B; }
+            &.priority-1 { background: #3B82F6; }
+            &.priority-0 { background: #9CA3AF; }
+        }
+        
+        .ptt-task-content {
+            flex: 1;
+            min-width: 0; // Critical for text truncation in flex
+            overflow: hidden;
+            
+            .ptt-task-name {
+                font-weight: 600;
+                font-size: 0.95rem;
+                color: $ptt-dark;
+                margin-bottom: 0.5rem;
+                line-height: 1.4;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                
+                .badge {
+                    font-size: 0.7rem;
+                    padding: 0.25rem 0.5rem;
+                    font-weight: 600;
+                    border-radius: 6px;
+                }
+            }
+            
+            .ptt-task-meta {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.75rem;
+                color: #6B7280;
+                flex-wrap: wrap;
+                
+                .ptt-task-project {
+                    color: $ptt-red;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 120px;
+                    
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+                
+                .ptt-task-date {
+                    white-space: nowrap;
+                    
+                    &.overdue {
+                        color: #DC2626;
+                    }
+                }
+            }
+        }
+        
+        .ptt-task-action {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            
+            button {
+                background: none;
+                border: none;
+                color: #9CA3AF;
+                cursor: pointer;
+                padding: 0.25rem;
+                
+                &:hover {
+                    color: $ptt-red;
+                }
+            }
+        }
+        
+        &:hover .ptt-task-action {
+            opacity: 1;
+        }
+    }
+    
+    // Personal To-Do
+    .ptt-todo-list {
+        .ptt-todo-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: $ptt-light;
+            
+            .ptt-todo-checkbox {
+                width: 20px;
+                height: 20px;
+                border: 2px solid $ptt-border;
+                border-radius: 50%;
+                margin-right: 0.75rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    border-color: $ptt-red;
+                }
+                
+                &.done {
+                    background: $ptt-red;
+                    border-color: $ptt-red;
+                    color: white;
+                }
+            }
+            
+            .ptt-todo-name {
+                flex: 1;
+                
+                &.done {
+                    text-decoration: line-through;
+                    color: #9CA3AF;
+                }
+            }
+            
+            .ptt-todo-delete {
+                opacity: 0;
+                background: none;
+                border: none;
+                color: #9CA3AF;
+                cursor: pointer;
+                
+                &:hover {
+                    color: #DC2626;
+                }
+            }
+            
+            &:hover .ptt-todo-delete {
+                opacity: 1;
+            }
+            
+            // Pending state for items being saved
+            &.ptt-todo-pending {
+                background: linear-gradient(90deg, $ptt-light 0%, rgba($ptt-red, 0.05) 50%, $ptt-light 100%);
+                background-size: 200% 100%;
+                animation: ptt-shimmer 1.5s ease-in-out infinite;
+                
+                .ptt-todo-checkbox {
+                    border-color: $ptt-red;
+                    color: $ptt-red;
+                }
+            }
+        }
+        
+        @keyframes ptt-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .ptt-todo-add {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            
+            input {
+                flex: 1;
+                padding: 0.5rem 0.75rem;
+                border: 1px solid $ptt-border;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                
+                &:focus {
+                    outline: none;
+                    border-color: $ptt-red;
+                }
+            }
+            
+            button {
+                padding: 0.5rem 1rem;
+                background: $ptt-red;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 500;
+                
+                &:hover {
+                    background: darken($ptt-red, 10%);
+                }
+            }
+        }
+    }
+    
+    // Comments
+    .ptt-comment-item {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: $ptt-light;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        
+        &:hover {
+            background: darken($ptt-light, 3%);
+        }
+        
+        .ptt-comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: $ptt-dark;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .ptt-comment-content {
+            flex: 1;
+            min-width: 0;
+            
+            .ptt-comment-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+                
+                .ptt-comment-author {
+                    font-weight: 600;
+                    color: $ptt-dark;
+                }
+                
+                .ptt-comment-record {
+                    font-size: 0.8rem;
+                    color: $ptt-red;
+                }
+                
+                .ptt-comment-date {
+                    font-size: 0.8rem;
+                    color: #9CA3AF;
+                    margin-left: auto;
+                }
+            }
+            
+            .ptt-comment-body {
+                font-size: 0.9rem;
+                color: #4B5563;
+                
+                // Strip HTML but keep basic formatting
+                p { margin: 0; }
+            }
+        }
+    }
+    
+    // Agenda Calendar
+    .ptt-agenda {
+        max-height: 400px;
+        overflow-y: auto;
+        
+        .ptt-agenda-day {
+            margin-bottom: 1rem;
+            
+            .ptt-agenda-date {
+                font-weight: 600;
+                color: $ptt-dark;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+                padding: 0.25rem 0;
+                border-bottom: 1px solid $ptt-border;
+                
+                &.today {
+                    color: $ptt-red;
+                }
+            }
+            
+            .ptt-agenda-events {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+        
+        .ptt-agenda-event {
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: $ptt-light;
+            border-left: 4px solid $status-booked;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                transform: translateX(4px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            .ptt-event-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            .ptt-event-name {
+                font-weight: 500;
+                color: $ptt-dark;
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .ptt-event-stage {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+                border-radius: 3px;
+                color: white;
+                white-space: nowrap;
+            }
+            
+            .ptt-event-client {
+                font-size: 0.8rem;
+                color: #6B7280;
+            }
+        }
+    }
+    
+    // Full Calendar - Light Theme Design
+    .ptt-full-calendar {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 1px solid #E5E7EB;
+        height: calc(100vh - 120px);
+        overflow: hidden;
+        
+        .ptt-calendar-main {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .ptt-calendar-header {
+            flex-shrink: 0;
+            border-bottom: 1px solid #E5E7EB;
+            background: #F9FAFB;
+        }
+        
+        .ptt-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #E5E7EB;
+            flex-grow: 1;
+            overflow: hidden;
+            
+            .ptt-calendar-day-header {
+                background: #F9FAFB;
+                font-weight: 600;
+                color: #6B7280;
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            .ptt-calendar-day {
+                background: white;
+                transition: all 0.2s ease;
+                min-height: 120px;
+                
+                &:hover {
+                    background: #F0F9FF !important;
+                    z-index: 1;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }
+                
+                &.ptt-today {
+                    background: #FEF3F2 !important;
+                    border: 2px solid $ptt-red;
+                    
+                    .ptt-day-number .badge {
+                        background: $ptt-red !important;
+                        color: white !important;
+                    }
+                }
+                
+                &.ptt-selected {
+                    background: #DBEAFE !important;
+                    box-shadow: inset 0 0 0 3px #3B82F6;
+                    z-index: 2;
+                }
+                
+                .ptt-day-number {
+                    color: #374151;
+                    font-weight: 500;
+                }
+                
+                .ptt-day-event {
+                    font-size: 0.7rem;
+                    line-height: 1.3;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    border-radius: 4px;
+                    
+                    &:hover {
+                        filter: brightness(1.1);
+                        transform: translateX(2px);
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                    }
+                }
+            }
+        }
+        
+        .ptt-calendar-legend {
+            flex-shrink: 0;
+            background: #F9FAFB;
+            
+            .ptt-legend-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                display: inline-block;
+            }
+        }
+        
+        // Day Panel (Right Sidebar) - Light Theme
+        .ptt-day-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            background: white;
+            
+            .ptt-day-panel-content {
+                flex-grow: 1;
+                overflow-y: auto;
+                background: white;
+            }
+            
+            .ptt-panel-event {
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                border-radius: 12px;
+                margin-bottom: 0.75rem;
+                background: white;
+                
+                &:hover {
+                    transform: translateX(6px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+                }
+                
+                .card-body {
+                    background: white;
+                }
+            }
+        }
+        
+        // Responsive adjustments
+        @media (max-width: 1200px) {
+            flex-direction: column;
+            height: auto;
+            
+            .ptt-day-panel {
+                width: 100% !important;
+                min-width: 100% !important;
+                border-left: none !important;
+                border-top: 1px solid #E5E7EB;
+                max-height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .ptt-calendar-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 1rem;
+                
+                h4 {
+                    font-size: 1.25rem !important;
+                }
+            }
+            
+            .ptt-calendar-grid {
+                .ptt-calendar-day {
+                    min-height: 80px;
+                }
+            }
+        }
+    }
+    
+    // Sales Dashboard - Light Theme
+    .ptt-sales-dashboard {
+        background: #F9FAFB;
+        
+        .ptt-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .ptt-kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            
+            &:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                transform: translateY(-4px);
+                border-color: #D1D5DB;
+            }
+            
+            .ptt-kpi-icon {
+                width: 56px;
+                height: 56px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.25rem;
+                font-size: 1.5rem;
+                transition: transform 0.3s ease;
+                
+                &.leads { background: #DBEAFE; color: #2563EB; }
+                &.quotes { background: #FEF3C7; color: #D97706; }
+                &.outstanding { background: #FEE2E2; color: #DC2626; }
+            }
+            
+            &:hover .ptt-kpi-icon {
+                transform: scale(1.1) rotate(5deg);
+            }
+            
+            .ptt-kpi-value {
+                font-size: 2.25rem;
+                font-weight: 700;
+                color: #1F2937;
+                margin-bottom: 0.5rem;
+                line-height: 1.2;
+                letter-spacing: -0.5px;
+            }
+            
+            .ptt-kpi-label {
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: #4B5563;
+                margin-bottom: 0.5rem;
+            }
+            
+            .ptt-kpi-count {
+                font-size: 0.85rem;
+                color: #6B7280;
+                margin-top: 0.5rem;
+                font-weight: 500;
+            }
+            
+            // Card type colors
+            &.booked .ptt-kpi-icon { background: #DCFCE7; color: #16A34A; }
+            &.paid .ptt-kpi-icon { background: #DBEAFE; color: #2563EB; }
+            &.outstanding .ptt-kpi-icon { background: #FEE2E2; color: #DC2626; }
+            
+            // Large KPI cards (for important metrics)
+            &.ptt-kpi-large {
+                padding: 2rem;
+                grid-column: span 1;
+                
+                .ptt-kpi-icon {
+                    width: 72px;
+                    height: 72px;
+                    font-size: 2rem;
+                    margin-bottom: 1.5rem;
+                }
+                
+                .ptt-kpi-value {
+                    font-size: 2.5rem;
+                    margin-bottom: 0.75rem;
+                }
+                
+                .ptt-kpi-label {
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                }
+                
+                .ptt-kpi-count {
+                    font-size: 0.95rem;
+                    margin-top: 0.75rem;
+                }
+            }
+        }
+        
+        // Date filter bar - Segmented control style
+        .ptt-date-filter {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            margin-bottom: 2rem;
+            
+            .btn-group {
+                display: inline-flex;
+                background: #F3F4F6;
+                border-radius: 10px;
+                padding: 4px;
+                gap: 4px;
+                
+                .btn {
+                    border: none;
+                    border-radius: 8px;
+                    padding: 0.5rem 1rem;
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                    transition: all 0.2s ease;
+                    background: transparent;
+                    color: #6B7280;
+                    
+                    &:hover:not(.active) {
+                        background: rgba(255, 255, 255, 0.8);
+                        color: #374151;
+                    }
+                    
+                    &.active {
+                        background: white;
+                        color: $ptt-red;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+        
+        // Sales Rep Grid - Deprecated, using leaderboard table now
+        .ptt-rep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .ptt-rep-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            &:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                transform: translateY(-4px);
+                border-color: #D1D5DB;
+            }
+            
+            .ptt-rep-header {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .ptt-rep-avatar {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                transition: transform 0.3s ease;
+            }
+            
+            &:hover .ptt-rep-avatar {
+                transform: scale(1.1);
+            }
+            
+            .ptt-rep-name {
+                font-weight: 600;
+                font-size: 1.15rem;
+                color: #1F2937;
+            }
+            
+            .ptt-rep-stats {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 1rem;
+                
+                .ptt-rep-stat {
+                    flex: 1;
+                    text-align: center;
+                    
+                    .label {
+                        display: block;
+                        font-size: 0.8rem;
+                        color: #6B7280;
+                        margin-bottom: 0.25rem;
+                    }
+                    
+                    .value {
+                        display: block;
+                        font-weight: 600;
+                        font-size: 1rem;
+                        color: #1F2937;
+                    }
+                }
+            }
+            
+            .ptt-rep-progress {
+                .progress {
+                    margin-bottom: 0.5rem;
+                    background: #E5E7EB;
+                }
+            }
+        }
+    }
+    
+    // Operations Dashboard - Light Theme
+    .ptt-operations-dashboard {
+        background: #F9FAFB;
+        
+        .ptt-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .ptt-kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            &:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                transform: translateY(-4px);
+                border-color: #D1D5DB;
+            }
+            
+            .ptt-kpi-icon {
+                width: 56px;
+                height: 56px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.25rem;
+                font-size: 1.5rem;
+                transition: transform 0.3s ease;
+            }
+            
+            &:hover .ptt-kpi-icon {
+                transform: scale(1.1) rotate(5deg);
+            }
+            
+            .ptt-kpi-value {
+                font-size: 2.25rem;
+                font-weight: 700;
+                color: #1F2937;
+                margin-bottom: 0.5rem;
+                line-height: 1.2;
+            }
+            
+            .ptt-kpi-label {
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: #4B5563;
+                margin-bottom: 0.5rem;
+            }
+            
+            .ptt-kpi-count {
+                font-size: 0.85rem;
+                color: #6B7280;
+                margin-top: 0.5rem;
+                font-weight: 500;
+            }
+        }
+        
+        .ptt-date-filter {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            margin-bottom: 2rem;
+            
+            .btn-group {
+                display: inline-flex;
+                background: #F3F4F6;
+                border-radius: 10px;
+                padding: 4px;
+                gap: 4px;
+                
+                .btn {
+                    border: none;
+                    border-radius: 8px;
+                    padding: 0.5rem 1rem;
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                    transition: all 0.2s ease;
+                    background: transparent;
+                    color: #6B7280;
+                    
+                    &:hover:not(.active) {
+                        background: rgba(255, 255, 255, 0.8);
+                        color: #374151;
+                    }
+                    
+                    &.active {
+                        background: white;
+                        color: $ptt-red;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        font-weight: 600;
+                    }
+                }
+                
+                @media (max-width: 768px) {
+                    flex-wrap: wrap;
+                    width: 100%;
+                    
+                    .btn {
+                        flex: 1;
+                        min-width: calc(50% - 4px);
+                    }
+                }
+            }
+        }
+        
+        // Operations users table
+        .ptt-rep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .ptt-rep-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            
+            .ptt-rep-header {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .ptt-rep-avatar {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+            
+            .ptt-rep-name {
+                font-weight: 600;
+                font-size: 1.15rem;
+                color: #1F2937;
+            }
+            
+            .ptt-rep-stats {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+                
+                .ptt-rep-stat {
+                    flex: 1;
+                    text-align: center;
+                    min-width: 70px;
+                    
+                    .label {
+                        display: block;
+                        font-size: 0.8rem;
+                        color: #6B7280;
+                        margin-bottom: 0.25rem;
+                    }
+                    
+                    .value {
+                        display: block;
+                        font-weight: 600;
+                        font-size: 1rem;
+                        color: #1F2937;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Sales Leaderboard - Modern clean design with light theme
+    .ptt-sales-leaderboard {
+        .ptt-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #E5E7EB;
+        }
+        
+        .table {
+            margin-bottom: 0;
+            background: white;
+            
+            thead {
+                background: #F9FAFB;
+                
+                th {
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                    color: #6B7280;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    padding: 1rem;
+                    border-bottom: 2px solid #E5E7EB;
+                    white-space: nowrap;
+                }
+            }
+            
+            tbody {
+                tr {
+                    transition: all 0.2s ease;
+                    background: white;
+                    
+                    &:hover {
+                        background: #F9FAFB;
+                    }
+                    
+                    td {
+                        padding: 1rem;
+                        vertical-align: middle;
+                        color: #374151;
+                        font-size: 0.95rem;
+                    }
+                }
+            }
+        }
+        
+        .ptt-user-avatar {
+            .badge {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 0.95rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+        }
+        
+        .progress {
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #E5E7EB;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            
+            .progress-bar {
+                font-weight: 600;
+                font-size: 0.75rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+    
+    // Empty States
+    .ptt-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #9CA3AF;
+        
+        &.small {
+            padding: 2rem 1rem;
+        }
+        
+        i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0.5;
+        }
+        
+        p {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    }
+    
+    // Loading States
+    .ptt-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        
+        .ptt-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid $ptt-light;
+            border-top-color: $ptt-red;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+// Back to Dashboard Floating Button
+.ptt-back-to-dashboard-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: linear-gradient(135deg, $ptt-red 0%, darken($ptt-red, 10%) 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    animation: slideInRight 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(135deg, darken($ptt-red, 5%) 0%, darken($ptt-red, 15%) 100%);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+    
+    i {
+        font-size: 1.25rem;
+    }
+    
+    .ptt-back-btn-label {
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+

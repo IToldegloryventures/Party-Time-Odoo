@@ -1,0 +1,385 @@
+🚨 Custom Fields Analysis: Issues & Odoo 19 Compliance Report
+Based on my review of the official Odoo 19 documentation and analysis of your customizations, here are the fields that are not set up properly and those interfering with native Odoo functionality:
+
+❌ CRITICAL ISSUES
+1. x_ Prefix Usage in Python Modules (MAJOR ANTI-PATTERN)
+Issue: You are using the x_ prefix extensively in Python-defined custom modules, which is NOT recommended by Odoo standards.
+What the Documentation Says:
+According to the Odoo community best practices:
+The x_ prefix is ONLY for Studio-created fields stored in the database
+Python custom modules should NOT use the x_ prefix - they should use regular field names
+"It is not recommended to use studio fields in custom module. Better way is to have the field added in python custom code with proper dependencies"
+Your Affected Fields (65+ fields):
+All x_event_* fields in crm.lead and project.project
+All x_service_* Boolean fields (12 in crm.lead)
+All x_vendor_* fields in res.partner
+All x_cfo_* fields in crm.lead
+All x_* fields in ppt.project.vendor.assignment
+Recommendation:
+✅ Remove the x_ prefix from all Python-defined fields
+Change x_event_id → ptt_event_id or just event_id (with proper domain)
+Change x_vendor_tier → ptt_vendor_tier or vendor_tier
+Change x_service_dj → ptt_service_dj or service_dj
+Why This Matters:
+The x_ prefix makes your code look unprofessional and confusing to other developers
+It suggests these were Studio fields (which they're not)
+It makes module migration and version control more difficult
+Odoo's official coding guidelines don't use x_ for Python fields
+
+2. Duplicating Native Odoo Functionality
+A. CRM Lead Source Tracking - DUPLICATE
+Your Field:
+x_referral_source = fields.Char(
+    string="Referral Details",
+    help="If referral, who referred this client? (Use source_id for lead source type)",
+)
+
+Native Odoo Field:
+source_id (Many2one to utm.source) - Already exists in crm.lead
+Tracks lead/campaign sources with full UTM tracking
+Issue: Your own help text admits to duplicating source_id! You're creating a redundant Char field when Odoo already provides a relational field with proper source tracking.
+Recommendation:
+❌ Remove x_referral_source
+✅ Use native source_id field and create custom utm.source records like "Referral - Client Name"
+
+B. Contact Method Preferences - REDUNDANT
+Your Fields:
+x_preferred_contact_method = fields.Selection([...])  # crm.lead
+x_cfo_contact_method = fields.Selection([...])       # crm.lead
+
+Native Odoo Capability:
+Activities system with planned activity types (Call, Email, Meeting, etc.)
+phone, mobile, email fields already exist
+Activity scheduling handles contact preferences automatically
+Issue: You're storing static preferences when Odoo's Activity system dynamically tracks communication methods.
+Recommendation:
+⚠️ Consider removing these fields and use Odoo's Activities for communication tracking
+✅ If keeping them, at least remove the x_ prefix
+
+C. Event Management - MISSING NATIVE MODULE
+Your Custom Implementation:
+35+ custom fields in crm.lead for events
+14+ custom fields in project.project for events
+Manual x_event_id linking
+Native Odoo Module:
+Odoo 19 has a full Events application (Events — Odoo 19.0 documentation) with:
+event.event model for event management
+Native CRM integration with "customizable lead generation rules"
+Website integration for registration
+Ticketing and scheduling built-in
+Issue: You've reinvented the wheel by building custom event fields in CRM/Project instead of using the native Events module or creating proper event.event records.
+Recommendation:
+🔄 Major Refactor Recommended:
+Install and use Odoo's native event module
+Replace x_event_id (Char) with event_id (Many2one → event.event)
+Remove duplicate fields like x_event_type, x_event_date, x_venue_name that exist in event.event
+Use native event-to-lead linking instead of manual IDs
+
+D. Vendor Management - CONFLICTING WITH NATIVE PURCHASE
+Your Field:
+x_is_vendor = fields.Boolean(
+    string="Is a Vendor",
+    default=False,
+)
+
+@api.onchange("x_is_vendor")
+def _onchange_x_is_vendor(self):
+    if self.x_is_vendor and self.supplier_rank == 0:
+        self.supplier_rank = 1
+
+Native Odoo Field:
+supplier_rank (Integer) - Native vendor indicator in res.partner
+Automatically managed by Odoo Purchase module
+Values: 0 = not a vendor, ≥1 = is a vendor
+Issue:
+You're duplicating supplier_rank with a Boolean wrapper
+Your onchange sets supplier_rank = 1, but you still check x_is_vendor everywhere
+Creates sync issues and confusion
+Recommendation:
+❌ Remove x_is_vendor completely
+✅ Use native supplier_rank > 0 everywhere to identify vendors
+✅ Update all domains from [('x_is_vendor', '=', True)] to [('supplier_rank', '>', 0)]
+Impact:
+In ppt.vendor.document: Line 18 already uses domain="[('supplier_rank', '>', 0)]" ✅
+In ppt.project.vendor.assignment: Line 40 already uses domain="[('supplier_rank', '>', 0)]" ✅
+Your code is already inconsistent - some places use supplier_rank, others use x_is_vendor
+
+3. Field Naming Convention Violations
+Per Odoo 19 Coding Guidelines:
+Many2one fields MUST use _id suffix
+One2many/Many2many fields MUST use _ids suffix
+Your Violations:
+✅ Correctly Named:
+x_vendor_service_tag_ids (Many2many) ✅
+x_service_line_ids (One2many) ✅
+x_vendor_assignment_ids (One2many) ✅
+✅ All your relational fields follow naming conventions
+
+4. Computed Field Performance Issues
+A. vendor_compliance_status - EXPENSIVE COMPUTATION
+File: ptt_vendor_management/models/res_partner.py:79-121
+@api.depends("x_is_vendor", "x_vendor_document_ids", "x_vendor_document_ids.status", 
+             "x_vendor_document_ids.document_type_id.required")
+def _compute_vendor_compliance(self):
+    required_doc_types = self.env["ppt.document.type"].search([("required", "=", True)])
+    required_type_ids = set(required_doc_types.ids)
+    
+    for partner in self:
+        # ... computation ...
+
+Issues:
+❌ Searches database on EVERY computation (self.env["ppt.document.type"].search(...))
+❌ Runs for ALL partners, not just vendors
+⚠️ store=True means this recomputes on every document change
+Recommendation:
+@api.model
+def _get_required_document_types(self):
+    """Cache required doc types to avoid repeated searches."""
+    if not hasattr(self.env, '_ptt_required_docs_cache'):
+        self.env._ptt_required_docs_cache = self.env["ppt.document.type"].search([
+            ("required", "=", True)
+        ]).ids
+    return self.env._ptt_required_docs_cache
+
+@api.depends(...)
+def _compute_vendor_compliance(self):
+    required_type_ids = set(self._get_required_document_types())
+    vendors = self.filtered('x_is_vendor')  # Only compute for vendors
+    
+    for partner in vendors:
+        # ... computation ...
+    
+    # Set False for non-vendors
+    (self - vendors).x_vendor_compliance_status = False
+
+
+B. Multiple Cron Jobs with Full Table Recomputation
+File: ptt_vendor_document.py:113-194
+Three cron jobs that all start with:
+def _cron_check_document_expiry_30day(self):
+    # Recompute status first
+    self.search([])._compute_status()  # ❌ RECOMPUTES ALL DOCUMENTS
+
+Issue:
+self.search([]) loads EVERY document in the database
+_compute_status() recalculates all statuses every time cron runs
+Runs 3 times (30-day, 7-day, expired) - triple computation!
+Recommendation:
+@api.model
+def _cron_check_document_expiry_30day(self):
+    today = fields.Date.today()
+    warning_date = today + timedelta(days=30)
+    
+    # Only search documents in the expiry window
+    expiring_docs = self.search([
+        ("document_type_id.has_expiry", "=", True),
+        ("validity", ">=", today),
+        ("validity", "<=", warning_date),
+    ])
+    
+    # Recompute only these documents
+    expiring_docs._compute_status()
+    
+    # ... rest of logic ...
+
+
+5. Missing Field Constraints & Security Issues
+A. HTML Field Without Proper Sanitization
+File: crm_lead.py:144-148
+x_customer_submission_notes = fields.Html(
+    string="Customer Submission Notes",
+    help="Auto-populated from contact form submission...",
+    sanitize=False,  # ❌ SECURITY VULNERABILITY
+)
+
+Issue:
+sanitize=False allows XSS attacks via contact form submissions
+Violates OWASP Top 10 security standards
+Could allow malicious HTML/JavaScript injection
+Recommendation:
+x_customer_submission_notes = fields.Html(
+    string="Customer Submission Notes",
+    sanitize=True,  # ✅ Default - always sanitize user input
+    sanitize_tags=True,
+    sanitize_attributes=True,
+    strip_style=True,
+)
+
+
+B. Missing Index on High-Query Fields
+File: ptt_vendor_document.py:23-29
+document_type_id = fields.Many2one(
+    "ptt.document.type",
+    string="Document Type",
+    required=True,
+    index=True,  # ✅ Good
+    tracking=True,
+)
+
+✅ Good: You indexed document_type_id and vendor_id
+Missing Indexes:
+x_event_date in crm.lead ✅ (already indexed)
+x_event_date in project.project ✅ (already indexed)
+x_event_id in crm.lead ✅ (already indexed)
+x_event_id in project.project ✅ (already indexed)
+✅ Your indexing is actually good!
+
+6. Project Creation Interference
+File: Recent commits show:
+c241da7e Fix: Remove x_plan2_id field references and cleanup project_project model 
+         - Ensure code does not interfere with Odoo native project creation from products
+
+Issue: Your custom fields on project.project were interfering with native project creation from sale orders/products.
+Current Status: ✅ Appears to be fixed based on commit
+Recommendation:
+Ensure all project customizations use copy=False for manual-entry fields
+Test project creation from Sale Orders thoroughly
+Consider using create() override to set default values only when creating from specific sources
+
+⚠️ WARNINGS - Not Critical But Should Be Addressed
+1. Time Fields as Char Instead of Datetime
+Your Implementation:
+x_event_time = fields.Char(string="Event Time")
+x_setup_start_time = fields.Char(string="Setup Start Time")
+x_event_start_time = fields.Char(string="Event Start Time")
+x_event_end_time = fields.Char(string="Event End Time")
+x_teardown_deadline = fields.Char(string="Tear-Down Deadline")
+
+Issue:
+Cannot sort by time
+Cannot perform time calculations
+Cannot validate time format
+Cannot use in calendar/Gantt views properly
+Recommendation:
+event_datetime = fields.Datetime(string="Event Start")
+setup_datetime = fields.Datetime(string="Setup Start")
+teardown_deadline = fields.Datetime(string="Teardown Deadline")
+
+event_duration = fields.Float(string="Event Duration (hours)")
+
+
+2. Service Selection - Duplicate Boolean vs. Selection Pattern
+Your Implementation:
+# 12 Boolean fields
+x_service_dj = fields.Boolean(string="DJ & MC Services")
+x_service_photovideo = fields.Boolean(string="Photo/Video")
+# ... 10 more ...
+
+# PLUS a service line model with Selection field
+service_type = fields.Selection([
+    ("dj", "DJ & MC Services"),
+    ("photovideo", "Photo/Video"),
+    # ... same services ...
+])
+
+Issue:
+Service types defined in 3 different places (crm.lead Booleans, service_line Selection, vendor_assignment Selection)
+Changes require updating 3 locations
+Boolean checkboxes in CRM vs. service lines is redundant
+Recommendation:
+Remove the 12 Boolean service fields from crm.lead
+Keep only the x_service_line_ids One2many
+Use service lines for all service selections
+Add a computed field for quick filtering if needed:
+has_dj_service = fields.Boolean(
+    compute='_compute_has_services',
+    search='_search_has_dj_service',
+    store=False
+)
+
+@api.depends('service_line_ids.service_type')
+def _compute_has_services(self):
+    for lead in self:
+        lead.has_dj_service = any(line.service_type == 'dj' for line in lead.service_line_ids)
+
+
+3. Currency Field Pattern - Inconsistent
+Good Example (ptt.crm.service.line):
+currency_id = fields.Many2one(
+    "res.currency",
+    string="Currency",
+    default=lambda self: self.env.company.currency_id,  # ✅ Good
+)
+
+Less Optimal (ppt.project.vendor.assignment):
+currency_id = fields.Many2one(
+    "res.currency",
+    string="Currency",
+    related="project_id.currency_id",  # ⚠️ What if project has no sale order?
+    readonly=True,
+)
+
+Issue: If project_id doesn't have a currency_id (some projects don't have sale orders), this will be empty.
+Recommendation:
+currency_id = fields.Many2one(
+    "res.currency",
+    string="Currency",
+    compute="_compute_currency_id",
+    store=True,
+    readonly=False,
+)
+
+@api.depends('project_id', 'project_id.currency_id')
+def _compute_currency_id(self):
+    for record in self:
+        record.currency_id = (
+            record.project_id.currency_id 
+            or self.env.company.currency_id
+        )
+
+
+✅ THINGS YOU'RE DOING RIGHT
+✅ Proper use of ondelete="cascade" for dependent records
+✅ Good indexing on high-query fields
+✅ Proper Many2one/One2many/Many2many suffix conventions
+✅ Using @api.depends decorators for computed fields
+✅ Proper tracking on important fields
+✅ Good use of help text for documentation
+✅ Modular structure with separate models
+✅ Using standard Odoo patterns (mail.thread, mail.activity.mixin)
+✅ Proper SQL constraints (unique vendor+doctype)
+✅ Using domains correctly on Many2one fields
+
+📋 PRIORITY ACTION ITEMS
+HIGH PRIORITY (Do First)
+Remove ALL x_ prefixes from Python-defined fields
+Use ptt_ prefix instead (matches your module name)
+Requires database migration script
+Fix HTML sanitization vulnerability
+Change sanitize=False to sanitize=True in x_customer_submission_notes
+Remove duplicate x_is_vendor field
+Use native supplier_rank > 0 everywhere
+Update all view domains and filters
+Optimize vendor compliance computation
+Cache required document types
+Only compute for vendors
+MEDIUM PRIORITY
+Consider using native Events module
+Replace manual x_event_id linking with proper event.event records
+Would eliminate 30+ duplicate fields
+Replace x_referral_source with native source_id
+Create utm.source records for referral tracking
+Optimize cron job searches
+Don't recompute all documents; only search relevant date ranges
+LOW PRIORITY (Quality Improvements)
+Convert time Char fields to Datetime fields
+Better sorting, calculations, and calendar integration
+Consolidate service selection logic
+Remove Boolean service checkboxes; use service lines exclusively
+Standardize currency field patterns
+Ensure fallback to company currency everywhere
+
+📚 Documentation Sources
+Odoo 19 Coding Guidelines
+Studio vs Custom Modules Best Practices
+Odoo 19 ORM API Reference
+Odoo 19 Events Documentation
+Odoo 19 CRM Documentation
+Odoo 19 Project Management
+
+Summary: While your code structure and patterns are generally solid, the biggest issues are:
+Misuse of x_ prefix (anti-pattern for Python modules)
+Duplicating native Odoo functionality (Events, vendor tracking, lead sources)
+Performance issues in computed fields and cron jobs
+Security vulnerability in HTML field sanitization
+Fix these in priority order to align with Odoo 19 best practices.

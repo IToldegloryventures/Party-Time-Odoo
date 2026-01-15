@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="0">
+    <!-- 
+        Rename default Odoo CRM stages to match PTT workflow.
+        These stages come from odoo/addons/crm/data/crm_stage_data.xml with noupdate="1".
+        We override them here (without noupdate, and forcecreate="0") to rename existing records.
+        
+        Mapping:
+        - stage_lead1: "New" → "Intake" (sequence 1)
+        - stage_lead2: "Qualified" → "Qualification" (sequence 2)
+        - stage_lead3: "Proposition" → "Approval" (sequence 3)
+        - stage_lead4: "Won" → "Closed/Won" (sequence 7, is_won=True)
+        
+        Note: Additional stages (Contract Sent, Booked, Lost) are defined in crm_stages.xml
+    -->
+    
+    <!-- Rename "New" stage to "Intake" -->
+    <record id="crm.stage_lead1" model="crm.stage" forcecreate="0">
+        <field name="name">Intake</field>
+        <field name="sequence">1</field>
+        <field name="is_won">False</field>
+        <field name="fold" eval="False"/>
+    </record>
+    
+    <!-- Rename "Qualified" stage to "Qualification" -->
+    <record id="crm.stage_lead2" model="crm.stage" forcecreate="0">
+        <field name="name">Qualification</field>
+        <field name="sequence">2</field>
+        <field name="is_won">False</field>
+        <field name="fold" eval="False"/>
+    </record>
+    
+    <!-- Rename "Proposition" stage to "Approval" -->
+    <record id="crm.stage_lead3" model="crm.stage" forcecreate="0">
+        <field name="name">Approval</field>
+        <field name="sequence">3</field>
+        <field name="is_won">False</field>
+        <field name="fold" eval="False"/>
+    </record>
+    
+    <!-- Rename "Won" stage to "Closed/Won" and update sequence -->
+    <record id="crm.stage_lead4" model="crm.stage" forcecreate="0">
+        <field name="name">Closed/Won</field>
+        <field name="sequence">7</field>
+        <field name="is_won">True</field>
+        <field name="fold" eval="False"/>
+    </record>
+    
+</odoo>

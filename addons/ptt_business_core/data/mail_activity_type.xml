@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        PTT Activity Types for CRM Follow-ups
+        Standard Odoo mail.activity.type model
+        Per Odoo 19 docs: https://www.odoo.com/documentation/19.0/applications/sales/crm/optimize/utilize_activities.html
+    -->
+
+    <!-- 24hr Follow-up Email - Schedule when new lead created -->
+    <record id="activity_type_24hr_followup" model="mail.activity.type">
+        <field name="name">24hr Follow-up Email</field>
+        <field name="summary">Send initial follow-up email to new lead</field>
+        <field name="delay_count">1</field>
+        <field name="delay_unit">days</field>
+        <field name="delay_from">previous_activity</field>
+        <field name="icon">fa-envelope</field>
+        <field name="res_model">crm.lead</field>
+        <field name="category">default</field>
+    </record>
+
+    <!-- Quote Follow-up Call - Schedule when quote sent -->
+    <record id="activity_type_quote_followup" model="mail.activity.type">
+        <field name="name">Quote Follow-up Call</field>
+        <field name="summary">Follow up with client on sent proposal</field>
+        <field name="delay_count">3</field>
+        <field name="delay_unit">days</field>
+        <field name="delay_from">previous_activity</field>
+        <field name="icon">fa-phone</field>
+        <field name="res_model">crm.lead</field>
+        <field name="category">default</field>
+    </record>
+
+    <!-- Contract Follow-up - Schedule when contract sent -->
+    <record id="activity_type_contract_followup" model="mail.activity.type">
+        <field name="name">Contract Follow-up</field>
+        <field name="summary">Follow up on contract signature</field>
+        <field name="delay_count">2</field>
+        <field name="delay_unit">days</field>
+        <field name="delay_from">previous_activity</field>
+        <field name="icon">fa-file-signature</field>
+        <field name="res_model">crm.lead</field>
+        <field name="category">default</field>
+    </record>
+
+    <!-- Retainer Follow-up - Schedule when awaiting retainer -->
+    <record id="activity_type_retainer_followup" model="mail.activity.type">
+        <field name="name">Retainer Follow-up</field>
+        <field name="summary">Follow up on retainer payment</field>
+        <field name="delay_count">3</field>
+        <field name="delay_unit">days</field>
+        <field name="delay_from">previous_activity</field>
+        <field name="icon">fa-dollar</field>
+        <field name="res_model">crm.lead</field>
+        <field name="category">default</field>
+    </record>
+
+    <!-- 10-Day Event Confirmation - For projects -->
+    <record id="activity_type_10day_confirmation" model="mail.activity.type">
+        <field name="name">10-Day Event Confirmation</field>
+        <field name="summary">Confirm all details with client and vendors 10 days before event</field>
+        <field name="delay_count">0</field>
+        <field name="delay_unit">days</field>
+        <field name="icon">fa-calendar-check-o</field>
+        <field name="res_model">project.project</field>
+        <field name="category">default</field>
+    </record>
+
+    <!-- 3-Day Vendor Reminder - For projects -->
+    <record id="activity_type_3day_vendor_reminder" model="mail.activity.type">
+        <field name="name">3-Day Vendor Reminder</field>
+        <field name="summary">Send final reminders to all vendors</field>
+        <field name="delay_count">0</field>
+        <field name="delay_unit">days</field>
+        <field name="icon">fa-users</field>
+        <field name="res_model">project.project</field>
+        <field name="category">default</field>
+    </record>
+
+</odoo>

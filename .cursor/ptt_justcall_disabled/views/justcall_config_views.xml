@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ptt_view_justcall_config_form" model="ir.ui.view">
+        <field name="name">ptt.justcall.config.form</field>
+        <field name="model">ptt.justcall.config</field>
+        <field name="arch" type="xml">
+            <form string="JustCall Configuration">
+                <header>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"/>
+                    <field name="connection_status" widget="statusbar" statusbar_visible="not_tested,connected,failed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_calls" type="object" class="oe_stat_button" icon="fa-phone">
+                            <field name="call_count" widget="statinfo" string="Calls"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="webhook_url" readonly="1" placeholder="Will be generated automatically"/>
+                            <field name="last_test_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="API Credentials" name="credentials">
+                            <group>
+                                <field name="api_key" password="True" placeholder="Enter your JustCall API Key"/>
+                                <field name="api_secret" password="True" placeholder="Enter your JustCall API Secret"/>
+                                <field name="webhook_secret" password="True" placeholder="Optional: Webhook secret for signature validation"/>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>How to get your API credentials:</strong></p>
+                                <ol>
+                                    <li>Log in to JustCall</li>
+                                    <li>Click your Profile Icon → APIs and Webhooks</li>
+                                    <li>Copy your API Key and API Secret</li>
+                                </ol>
+                            </div>
+                        </page>
+                        <page string="Connection Test" name="test">
+                            <group>
+                                <field name="test_message" widget="text" readonly="1" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ptt_view_justcall_config_tree" model="ir.ui.view">
+        <field name="name">ptt.justcall.config.tree</field>
+        <field name="model">ptt.justcall.config</field>
+        <field name="arch" type="xml">
+            <tree string="JustCall Configurations">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="active"/>
+                <field name="connection_status"/>
+                <field name="last_test_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ptt_view_justcall_config_search" model="ir.ui.view">
+        <field name="name">ptt.justcall.config.search</field>
+        <field name="model">ptt.justcall.config</field>
+        <field name="arch" type="xml">
+            <search string="JustCall Configurations">
+                <field name="name"/>
+                <field name="company_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Connected" name="connected" domain="[('connection_status', '=', 'connected')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'connection_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ptt_action_justcall_config" model="ir.actions.act_window">
+        <field name="name">PTT JustCall Configuration</field>
+        <field name="res_model">ptt.justcall.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure JustCall Integration
+            </p>
+            <p>
+                Set up your JustCall API credentials to enable click-to-call, 
+                call logging, and SMS integration with Odoo.
+            </p>
+        </field>
+    </record>
+</odoo>

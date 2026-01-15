@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--
+        PTT Project Vendor Assignment Views
+        
+        FIELD NAMING:
+        - All custom fields use ptt_ prefix (Party Time Texas)
+        - This follows Odoo best practice: x_ is reserved for Studio fields
+    -->
     <record id="view_ptt_project_vendor_assignment_list" model="ir.ui.view">
         <field name="name">ptt.project.vendor.assignment.list</field>
         <field name="model">ptt.project.vendor.assignment</field>
@@ -7,6 +14,8 @@
             <list>
                 <field name="service_type"/>
                 <field name="vendor_id"/>
+                <field name="ptt_status" widget="badge" decoration-success="ptt_status == 'completed'" decoration-info="ptt_status == 'confirmed'" decoration-warning="ptt_status == 'pending'" decoration-danger="ptt_status == 'cancelled'"/>
+                <field name="ptt_confirmed_date"/>
                 <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="notes"/>
             </list>
@@ -18,13 +27,27 @@
         <field name="model">ptt.project.vendor.assignment</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <field name="ptt_status" widget="statusbar" statusbar_visible="pending,confirmed,completed"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="project_id" invisible="1"/>
                         <field name="service_type"/>
                         <field name="vendor_id"/>
                         <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                        <field name="notes" widget="text"/>
+                    </group>
+                    <group string="Vendor Contact">
+                        <field name="ptt_contact_person"/>
+                        <field name="ptt_contact_phone" widget="phone"/>
+                        <field name="ptt_confirmed_date"/>
+                    </group>
+                    <group string="Event Details">
+                        <field name="ptt_arrival_time"/>
+                        <field name="ptt_equipment_notes" widget="text" nolabel="1" placeholder="Equipment, setup requirements, or special instructions..."/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" widget="text" nolabel="1"/>
                     </group>
                 </sheet>
             </form>

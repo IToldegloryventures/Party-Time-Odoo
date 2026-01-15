@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="1">
+    <!-- Event-Specific CRM Tags for Party Time Texas -->
+    
+    <!-- Event Type Tags -->
+    <record id="crm_tag_wedding" model="crm.tag">
+        <field name="name">Wedding</field>
+        <field name="color">1</field>
+    </record>
+    
+    <record id="crm_tag_corporate" model="crm.tag">
+        <field name="name">Corporate</field>
+        <field name="color">2</field>
+    </record>
+    
+    <record id="crm_tag_private" model="crm.tag">
+        <field name="name">Private</field>
+        <field name="color">3</field>
+    </record>
+    
+    <record id="crm_tag_community" model="crm.tag">
+        <field name="name">Community</field>
+        <field name="color">4</field>
+    </record>
+    
+    <record id="crm_tag_charity" model="crm.tag">
+        <field name="name">Charity</field>
+        <field name="color">5</field>
+    </record>
+    
+    <!-- Location Tags -->
+    <record id="crm_tag_outdoor" model="crm.tag">
+        <field name="name">Outdoor</field>
+        <field name="color">6</field>
+    </record>
+    
+    <record id="crm_tag_indoor" model="crm.tag">
+        <field name="name">Indoor</field>
+        <field name="color">7</field>
+    </record>
+    
+    <!-- Season Tags -->
+    <record id="crm_tag_summer" model="crm.tag">
+        <field name="name">Summer</field>
+        <field name="color">8</field>
+    </record>
+    
+    <record id="crm_tag_winter" model="crm.tag">
+        <field name="name">Winter</field>
+        <field name="color">9</field>
+    </record>
+    
+    <!-- Service Tags -->
+    <record id="crm_tag_tent_rental" model="crm.tag">
+        <field name="name">Tent Rental</field>
+        <field name="color">10</field>
+    </record>
+    
+    <record id="crm_tag_dj_services" model="crm.tag">
+        <field name="name">DJ Services</field>
+        <field name="color">11</field>
+    </record>
+    
+    <record id="crm_tag_catering" model="crm.tag">
+        <field name="name">Catering</field>
+        <field name="color">12</field>
+    </record>
+    
+    <record id="crm_tag_photography" model="crm.tag">
+        <field name="name">Photography</field>
+        <field name="color">13</field>
+    </record>
+    
+    <!-- Priority Tags -->
+    <record id="crm_tag_high_priority" model="crm.tag">
+        <field name="name">High Priority</field>
+        <field name="color">14</field>
+    </record>
+    
+    <record id="crm_tag_urgent" model="crm.tag">
+        <field name="name">Urgent</field>
+        <field name="color">15</field>
+    </record>
+    
+</odoo>
