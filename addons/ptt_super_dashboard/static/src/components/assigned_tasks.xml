@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.AssignedTasks">
+    <t t-name="ptt_super_dashboard.AssignedTasks">
         <div class="ptt-section ptt-other-tasks">
             <div class="ptt-section-header">
                 <h2><i class="fa fa-clipboard"/> Other Tasks</h2>

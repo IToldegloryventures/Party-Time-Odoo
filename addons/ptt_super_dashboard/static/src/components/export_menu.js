@@ -11,7 +11,7 @@ import { useService } from "@web/core/utils/hooks";
  * - Export to PDF
  */
 export class ExportMenu extends Component {
-    static template = "ptt_operational_dashboard.ExportMenu";
+    static template = "ptt_super_dashboard.ExportMenu";
     static props = {
         data: { type: Object },
         title: { type: String },

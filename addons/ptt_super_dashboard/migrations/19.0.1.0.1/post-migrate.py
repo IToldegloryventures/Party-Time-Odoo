@@ -50,7 +50,7 @@ def migrate(cr, version):
     # Also delete any ir_model_data references to these views
     cr.execute("""
         DELETE FROM ir_model_data 
-        WHERE module = 'ptt_operational_dashboard'
+        WHERE module = 'ptt_super_dashboard'
         AND name IN ('view_ptt_personal_todo_search', 'ptt_sales_commission_view_search')
     """)
     

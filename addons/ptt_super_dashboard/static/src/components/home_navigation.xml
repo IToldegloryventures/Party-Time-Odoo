@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.HomeNavigation">
+    <t t-name="ptt_super_dashboard.HomeNavigation">
         <div class="ptt-top-nav">
             <!-- Back to Odoo Apps -->
             <button class="ptt-apps-btn" t-on-click="onAppsClick" title="Back to Odoo Apps">
@@ -9,7 +9,7 @@
             
             <!-- Brand -->
             <div class="ptt-nav-brand">
-                <img class="ptt-logo-img" src="/ptt_operational_dashboard/static/src/img/logo.png" alt="Party Time Texas"/>
+                <img class="ptt-logo-img" src="/ptt_super_dashboard/static/src/img/logo.png" alt="Party Time Texas"/>
             </div>
             
             <!-- Navigation Tabs -->

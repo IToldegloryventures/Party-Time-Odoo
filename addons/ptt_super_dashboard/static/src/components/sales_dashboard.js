@@ -15,7 +15,7 @@ import { useService } from "@web/core/utils/hooks";
  * Filtered by date range (default: current month)
  */
 export class SalesDashboard extends Component {
-    static template = "ptt_operational_dashboard.SalesDashboard";
+    static template = "ptt_super_dashboard.SalesDashboard";
     static props = {};
 
     setup() {

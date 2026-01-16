@@ -10,7 +10,7 @@ import { useService } from "@web/core/utils/hooks";
  * Includes quick "Add Task" functionality for bosses to assign tasks to staff.
  */
 export class AssignedTasks extends Component {
-    static template = "ptt_operational_dashboard.AssignedTasks";
+    static template = "ptt_super_dashboard.AssignedTasks";
     static props = {
         tasks: { type: Array },
         onRefresh: { type: Function, optional: true },

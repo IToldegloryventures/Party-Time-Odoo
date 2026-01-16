@@ -11,7 +11,7 @@ import { useService } from "@web/core/utils/hooks";
  * Each event is clickable and opens the CRM lead form.
  */
 export class AgendaCalendar extends Component {
-    static template = "ptt_operational_dashboard.AgendaCalendar";
+    static template = "ptt_super_dashboard.AgendaCalendar";
     static props = {
         events: { type: Array },
     };

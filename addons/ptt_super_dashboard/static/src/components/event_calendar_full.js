@@ -19,7 +19,7 @@ import { useService } from "@web/core/utils/hooks";
  * Data Source: crm.lead with ptt_event_date field
  */
 export class EventCalendarFull extends Component {
-    static template = "ptt_operational_dashboard.EventCalendarFull";
+    static template = "ptt_super_dashboard.EventCalendarFull";
     static props = {};
 
     setup() {

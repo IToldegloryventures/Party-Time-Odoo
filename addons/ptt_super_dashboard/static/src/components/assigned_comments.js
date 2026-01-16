@@ -10,7 +10,7 @@ import { useService } from "@web/core/utils/hooks";
  * Each comment is clickable and opens the source record (any model).
  */
 export class AssignedComments extends Component {
-    static template = "ptt_operational_dashboard.AssignedComments";
+    static template = "ptt_super_dashboard.AssignedComments";
     static props = {
         comments: { type: Array },
     };

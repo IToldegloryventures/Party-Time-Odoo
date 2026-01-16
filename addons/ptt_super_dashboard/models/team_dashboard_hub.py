@@ -3,11 +3,11 @@ from odoo import models, fields
 
 class TeamDashboardHub(models.Model):
     """Team Dashboard Hub - unified view of tasks, calendars, and dashboards"""
-    _name = 'ppt.team.dashboard.hub'
+    _name = 'ptt.team.dashboard.hub'
     _description = 'Team Dashboard Hub'
 
     user_id = fields.Many2one('res.users', 'User', required=True, default=lambda self: self.env.user)
-    dashboard_ids = fields.Many2many('ppt.team.dashboard.config', 'hub_dashboard_rel', 'hub_id', 'dashboard_id', 'Active Dashboards')
+    dashboard_ids = fields.Many2many('ptt.team.dashboard.config', 'hub_dashboard_rel', 'hub_id', 'dashboard_id', 'Active Dashboards')
     
     # View Preferences
     show_tasks = fields.Boolean('Show Tasks', default=True)

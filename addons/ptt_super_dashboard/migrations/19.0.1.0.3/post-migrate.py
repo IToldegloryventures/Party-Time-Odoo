@@ -91,7 +91,7 @@ def migrate(cr, version):
         cr.execute("""
             SELECT COUNT(1) FROM ir_model_data
             WHERE (name LIKE '%metric.config%' OR name LIKE '%layout.config%')
-              AND module = 'ptt_operational_dashboard'
+              AND module = 'ptt_super_dashboard'
         """)
         data_count = cr.fetchone()[0]
         if data_count:
@@ -99,7 +99,7 @@ def migrate(cr, version):
             cr.execute("""
                 DELETE FROM ir_model_data
                 WHERE (name LIKE '%metric.config%' OR name LIKE '%layout.config%')
-                  AND module = 'ptt_operational_dashboard'
+                  AND module = 'ptt_super_dashboard'
             """)
 
         # 0.a) Views linked to removed models (scoped to this module)
@@ -109,7 +109,7 @@ def migrate(cr, version):
             JOIN ir_model_data d
               ON d.model = 'ir.ui.view'
              AND d.res_id = v.id
-            WHERE d.module = 'ptt_operational_dashboard'
+            WHERE d.module = 'ptt_super_dashboard'
               AND v.model = ANY(%s)
         """, (list(removed_models),))
         view_count = cr.fetchone()[0]
@@ -120,7 +120,7 @@ def migrate(cr, version):
                 USING ir_ui_view v
                 WHERE d.model = 'ir.ui.view'
                   AND d.res_id = v.id
-                  AND d.module = 'ptt_operational_dashboard'
+                  AND d.module = 'ptt_super_dashboard'
                   AND v.model = ANY(%s)
             """, (list(removed_models),))
             cr.execute("""
@@ -139,7 +139,7 @@ def migrate(cr, version):
             JOIN ir_model_data d
               ON d.model = 'ir.actions.act_window'
              AND d.res_id = w.id
-            WHERE d.module = 'ptt_operational_dashboard'
+            WHERE d.module = 'ptt_super_dashboard'
               AND w.res_model = ANY(%s)
         """, (list(removed_models),))
         act_count = cr.fetchone()[0]
@@ -150,7 +150,7 @@ def migrate(cr, version):
                 USING ir_act_window w
                 WHERE d.model = 'ir.actions.act_window'
                   AND d.res_id = w.id
-                  AND d.module = 'ptt_operational_dashboard'
+                  AND d.module = 'ptt_super_dashboard'
                   AND w.res_model = ANY(%s)
             """, (list(removed_models),))
             cr.execute("""
@@ -176,7 +176,7 @@ def migrate(cr, version):
               ON a.id = m.action
             LEFT JOIN ir_act_window w
               ON w.id = a.id
-            WHERE dm.module = 'ptt_operational_dashboard'
+            WHERE dm.module = 'ptt_super_dashboard'
               AND w.res_model = ANY(%s)
         """, (list(removed_models),))
         menu_count = cr.fetchone()[0]
@@ -188,7 +188,7 @@ def migrate(cr, version):
                 USING ir_ui_menu m, ir_actions_actions a, ir_act_window w
                 WHERE d.model = 'ir.ui.menu'
                   AND d.res_id = m.id
-                  AND d.module = 'ptt_operational_dashboard'
+                  AND d.module = 'ptt_super_dashboard'
                   AND a.id = m.action
                   AND w.id = a.id
                   AND w.res_model = ANY(%s)
@@ -216,7 +216,7 @@ def migrate(cr, version):
     # Find the PTT home hub action
     cr.execute("""
         SELECT res_id FROM ir_model_data 
-        WHERE module = 'ptt_operational_dashboard' 
+        WHERE module = 'ptt_super_dashboard' 
         AND name = 'action_ptt_home_hub'
     """)
     result = cr.fetchone()

@@ -2,7 +2,7 @@
 import { Component } from "@odoo/owl";
 
 export class KpiCard extends Component {
-    static template = "ptt_operational_dashboard.KpiCard";
+    static template = "ptt_super_dashboard.KpiCard";
     static props = {
         title: String,
         value: [String, Number],

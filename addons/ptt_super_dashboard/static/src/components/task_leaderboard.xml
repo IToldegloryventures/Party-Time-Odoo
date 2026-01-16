@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.TaskLeaderboard">
+    <t t-name="ptt_super_dashboard.TaskLeaderboard">
         <!-- This component is now deprecated - use SalesLeaderboard on Sales tab instead -->
     </t>
 </templates>

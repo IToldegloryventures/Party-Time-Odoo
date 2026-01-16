@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.AssignedComments">
+    <t t-name="ptt_super_dashboard.AssignedComments">
         <div class="ptt-section">
             <div class="ptt-section-header">
                 <h2><i class="fa fa-comments"/> Assigned Comments</h2>

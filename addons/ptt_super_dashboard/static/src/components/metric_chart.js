@@ -10,7 +10,7 @@ import { loadJS } from "@web/core/assets";
  * Supports bar, line, pie/donut charts, and data tables.
  */
 export class MetricChart extends Component {
-    static template = "ptt_operational_dashboard.MetricChart";
+    static template = "ptt_super_dashboard.MetricChart";
     static props = {
         type: { type: String }, // 'bar', 'line', 'pie', 'donut', 'table'
         data: { type: Object },

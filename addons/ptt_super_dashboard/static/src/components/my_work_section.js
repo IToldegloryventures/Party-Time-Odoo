@@ -15,7 +15,7 @@ import { useService } from "@web/core/utils/hooks";
  * Each task is clickable and opens the project.task form in the Project app.
  */
 export class MyWorkSection extends Component {
-    static template = "ptt_operational_dashboard.MyWorkSection";
+    static template = "ptt_super_dashboard.MyWorkSection";
     static props = {
         tasks: { type: Object },
     };

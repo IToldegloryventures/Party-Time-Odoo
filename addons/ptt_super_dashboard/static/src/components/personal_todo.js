@@ -10,7 +10,7 @@ import { useService } from "@web/core/utils/hooks";
  * This is the only component that manages its own data (ptt.personal.todo).
  */
 export class PersonalTodo extends Component {
-    static template = "ptt_operational_dashboard.PersonalTodo";
+    static template = "ptt_super_dashboard.PersonalTodo";
     static props = {
         todos: { type: Object },
         onRefresh: { type: Function },

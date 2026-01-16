@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.PersonalTodo">
+    <t t-name="ptt_super_dashboard.PersonalTodo">
         <div class="ptt-section ptt-personal-todo">
             <div class="ptt-section-header">
                 <h2><i class="fa fa-check-square-o"/> Personal To-Do</h2>

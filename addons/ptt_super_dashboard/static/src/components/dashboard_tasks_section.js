@@ -16,7 +16,7 @@ import { user } from "@web/core/user";
  * - All Service + Event + CRM Tasks Combined
  */
 export class DashboardTasksSection extends Component {
-    static template = "ptt_operational_dashboard.DashboardTasksSection";
+    static template = "ptt_super_dashboard.DashboardTasksSection";
     static props = {
         tasks: { type: Object },
     };

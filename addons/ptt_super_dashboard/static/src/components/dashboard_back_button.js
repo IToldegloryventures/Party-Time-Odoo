@@ -15,7 +15,7 @@ import { useService } from "@web/core/utils/hooks";
  * defensive about service availability.
  */
 export class DashboardBackButton extends Component {
-    static template = "ptt_operational_dashboard.DashboardBackButton";
+    static template = "ptt_super_dashboard.DashboardBackButton";
     static props = {};
 
     setup() {
@@ -70,7 +70,7 @@ export class DashboardBackButton extends Component {
         
         const isDashboard = currentUrl.includes("ptt_home_hub") || 
                            hash.includes("action=ptt_home_hub") ||
-                           hash.includes("ptt_operational_dashboard");
+                           hash.includes("ptt_super_dashboard");
         
         // Also check if we're in the main menu (shouldn't show button there)
         const isMainMenu = hash === "" || hash === "#" || hash.includes("action=menu");

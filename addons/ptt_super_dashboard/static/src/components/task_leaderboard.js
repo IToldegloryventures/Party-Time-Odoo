@@ -10,7 +10,7 @@ import { useService } from "@web/core/utils/hooks";
  * Shows total tasks, completed tasks, overdue count, and completion rate.
  */
 export class TaskLeaderboard extends Component {
-    static template = "ptt_operational_dashboard.TaskLeaderboard";
+    static template = "ptt_super_dashboard.TaskLeaderboard";
     static props = {
         leaderboard: { type: Array },
     };

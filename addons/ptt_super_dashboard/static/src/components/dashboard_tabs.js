@@ -3,7 +3,7 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 export class DashboardTabs extends Component {
-    static template = "ptt_operational_dashboard.DashboardTabs";
+    static template = "ptt_super_dashboard.DashboardTabs";
     static props = {
         onTabChange: Function,
     };

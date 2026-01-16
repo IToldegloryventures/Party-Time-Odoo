@@ -16,7 +16,7 @@ import { user } from "@web/core/user";
  * Also includes a button to go back to Odoo's main apps menu.
  */
 export class HomeNavigation extends Component {
-    static template = "ptt_operational_dashboard.HomeNavigation";
+    static template = "ptt_super_dashboard.HomeNavigation";
     static props = {
         activeTab: { type: String },
         onTabChange: { type: Function },

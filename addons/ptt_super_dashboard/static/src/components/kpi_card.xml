@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.KpiCard">
+    <t t-name="ptt_super_dashboard.KpiCard">
         <div class="ptt_kpi_card card position-relative" 
              t-att-style="'border-left-color: ' + (props.color || '#CC0000')"
              t-att-class="props.clickable ? 'cursor-pointer' : ''"

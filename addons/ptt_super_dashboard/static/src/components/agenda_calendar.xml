@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="ptt_operational_dashboard.AgendaCalendar">
+    <t t-name="ptt_super_dashboard.AgendaCalendar">
         <div class="ptt-section">
             <div class="ptt-section-header">
                 <h2><i class="fa fa-calendar"/> My Agenda</h2>

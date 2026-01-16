@@ -15,7 +15,7 @@ import { useService } from "@web/core/utils/hooks";
  * Company total at top, all users broken out below.
  */
 export class CommunicationDashboard extends Component {
-    static template = "ptt_operational_dashboard.CommunicationDashboard";
+    static template = "ptt_super_dashboard.CommunicationDashboard";
     static props = {};
 
     setup() {
