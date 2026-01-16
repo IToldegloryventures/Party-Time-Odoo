@@ -53,29 +53,15 @@
               sequence="2"
               action="action_ptt_native_task_calendar"/>
     
-    <!-- Native Kanban Views Submenu -->
-    <menuitem id="menu_ptt_native_kanban_views"
-              name="Native Kanban Boards (Compare)"
-              parent="menu_ptt_home_root"
-              sequence="57"/>
-    
-    <menuitem id="menu_ptt_native_event_kanban"
-              name="Event Kanban (Native Odoo)"
-              parent="menu_ptt_native_kanban_views"
-              sequence="1"
-              action="action_ptt_native_event_kanban"/>
-    
-    <menuitem id="menu_ptt_native_task_kanban"
-              name="Task Kanban (Native Odoo)"
-              parent="menu_ptt_native_kanban_views"
-              sequence="2"
-              action="action_ptt_native_task_kanban"/>
-    
-    <menuitem id="menu_ptt_native_lead_kanban"
-              name="Lead Kanban (Native Odoo)"
-              parent="menu_ptt_native_kanban_views"
-              sequence="3"
-              action="action_ptt_native_lead_kanban"/>
+    <!-- 
+        NOTE: Native Kanban menus REMOVED
+        
+        The actions action_ptt_native_event_kanban, action_ptt_native_task_kanban, 
+        action_ptt_native_lead_kanban were in ptt_native_kanban_views.xml which was DELETED
+        because standalone kanban views can override native Odoo views.
+        
+        Use the standard Odoo apps (CRM, Project) for native kanban views.
+    -->
     
     <menuitem id="menu_ptt_personal_todo"
               name="Personal To-Do"
