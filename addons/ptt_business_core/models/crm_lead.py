@@ -59,6 +59,29 @@ class CrmLead(models.Model):
         help="Email address of the secondary point of contact."
     )
 
+    # === CFO/FINANCE CONTACT ===
+    ptt_cfo_name = fields.Char(
+        string="CFO/Finance Contact",
+        help="Name of the CFO or finance contact for billing and payment matters."
+    )
+    ptt_cfo_phone = fields.Char(
+        string="CFO Phone",
+        help="Phone number of the CFO or finance contact."
+    )
+    ptt_cfo_email = fields.Char(
+        string="CFO Email",
+        help="Email address of the CFO or finance contact."
+    )
+    ptt_cfo_contact_method = fields.Selection(
+        [
+            ("call", "Phone Call"),
+            ("text", "Text Message"),
+            ("email", "Email"),
+        ],
+        string="CFO Preferred Contact",
+        help="CFO's preferred method of communication for billing and payment matters."
+    )
+
     # === EVENT ID (Manual Entry - Links CRM, SO, Project, Tasks) ===
     ptt_event_id = fields.Char(
         string="Event ID",
