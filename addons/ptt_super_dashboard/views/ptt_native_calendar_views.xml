@@ -5,6 +5,10 @@
 
     <!-- ====== NATIVE EVENT CALENDAR VIEW ====== -->
     <!-- Full-featured native calendar for event scheduling with drag-drop, quick create, filters -->
+    <!-- DISABLED: This calendar view was causing OwlError on project.project
+         Error: Cannot read properties of undefined (reading 'type')
+         The stage_id color binding may be incompatible with Odoo 19 calendar widget.
+         
     <record id="view_ptt_native_project_event_calendar" model="ir.ui.view">
         <field name="name">project.project.ptt.native.event.calendar</field>
         <field name="model">project.project</field>
@@ -18,7 +22,6 @@
                       quick_create="0"
                       show_unusual_days="True"
                       scales="day,week,month,year">
-                <!-- Display fields in calendar event popups -->
                 <field name="name" widget="text"/>
                 <field name="partner_id" widget="many2one"/>
                 <field name="user_id" widget="many2one_avatar_user"/>
@@ -29,8 +32,9 @@
             </calendar>
         </field>
     </record>
+    -->
 
-    <!-- Native Event Calendar Action with multiple view modes -->
+    <!-- DISABLED: Action disabled because the calendar view was causing OwlError
     <record id="action_ptt_native_event_calendar" model="ir.actions.act_window">
         <field name="name">Event Calendar (Native Odoo)</field>
         <field name="res_model">project.project</field>
@@ -46,15 +50,14 @@
                 No events scheduled
             </p>
             <p>
-                <strong>Native Odoo Calendar View</strong><br/>
-                This is the native Odoo calendar view for comparison with the custom JavaScript calendar.
-                Features: Drag-drop rescheduling, multiple time scales (day/week/month/year), 
-                quick switch to kanban/list/form views, built-in search and filters.
+                Native Odoo calendar view for project events.
             </p>
         </field>
     </record>
+    -->
 
     <!-- ====== NATIVE TASK CALENDAR VIEW ====== -->
+    <!-- DISABLED: Same OwlError as project calendar - color="stage_id" may be incompatible
     <record id="view_ptt_native_task_calendar" model="ir.ui.view">
         <field name="name">project.task.ptt.native.calendar</field>
         <field name="model">project.task</field>
@@ -87,5 +90,6 @@
             "search_default_my_tasks": 1
         }</field>
     </record>
+    -->
 
 </odoo>

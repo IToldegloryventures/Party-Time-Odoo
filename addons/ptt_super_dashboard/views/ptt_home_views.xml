@@ -13,7 +13,10 @@
         <field name="target">current</field>
     </record>
 
-    <!-- Calendar view backing action_ptt_event_calendar (keeps calendar view_mode Studio-safe) -->
+    <!-- DISABLED: Calendar views were causing OwlError when Project app loads
+         Error: Cannot read properties of undefined (reading 'type')
+         Standalone views without inherit_id can interfere with native Odoo views.
+         
     <record id="view_ptt_project_project_event_calendar" model="ir.ui.view">
         <field name="name">project.project.ptt.event.calendar</field>
         <field name="model">project.project</field>
@@ -25,7 +28,6 @@
         </field>
     </record>
     
-    <!-- Event Calendar Action (for direct access) -->
     <record id="action_ptt_event_calendar" model="ir.actions.act_window">
         <field name="name">Event Calendar</field>
         <field name="res_model">project.project</field>
@@ -41,6 +43,7 @@
             </p>
         </field>
     </record>
+    -->
     
     <!-- My Tasks Action (filtered to current user) -->
     <record id="action_ptt_my_tasks" model="ir.actions.act_window">

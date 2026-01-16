@@ -30,6 +30,7 @@
               sequence="40"
               action="action_ptt_my_quotes"/>
     
+    <!-- DISABLED: Calendar views causing OwlError - menus disabled to match
     <menuitem id="menu_ptt_event_calendar"
               name="Event Calendar (Custom JS)"
               parent="menu_ptt_home_root"
@@ -52,6 +53,7 @@
               parent="menu_ptt_native_calendars"
               sequence="2"
               action="action_ptt_native_task_calendar"/>
+    -->
     
     <!-- 
         NOTE: Native Kanban menus REMOVED
