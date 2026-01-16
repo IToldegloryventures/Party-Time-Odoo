@@ -14,7 +14,19 @@
         belongs in ptt.project.vendor.assignment views, NOT here.
     -->
 
-    <!-- SAFE Project Vendor Display -->
+    <!-- 
+        DISABLED - This view was causing OwlError when opening Project app
+        
+        When ANY view inherits project.edit_project, Odoo loads ALL project views
+        including Enterprise kanban views that use record.planned_hours which
+        doesn't exist in our database, causing Owl crash.
+        
+        The vendor assignments can still be accessed from:
+        - ptt.project.vendor.assignment standalone views (ptt_business_core)
+        - Direct navigation to vendor assignments
+        
+        To re-enable: Set active="True" ONLY after Enterprise view 1763 is disabled
+    -->
     <record id="project_project_form_inherit_ptt_vendor_safe"
             model="ir.ui.view">
 
@@ -23,6 +35,7 @@
 
         <!-- ALWAYS inherit core project - NEVER a custom parent view -->
         <field name="inherit_id" ref="project.edit_project"/>
+        <field name="active" eval="False"/>
 
         <field name="arch" type="xml">
             <!-- SAFE: //notebook always exists in project.edit_project -->
