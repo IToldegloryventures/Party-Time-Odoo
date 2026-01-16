@@ -77,125 +77,45 @@ def _configure_all_service_variants(env):
     Configure variant pricing (price_extra) for services with Event Type and Service Tier attributes.
     This runs automatically on module install/upgrade.
     
-    Each service can have different pricing. Only services with explicit configuration are set.
-    For other services, pricing defaults to 0.0 and can be configured via the wizard.
+    Uses the same logic as the staging branch: directly sets price_extra on attribute values
+    by matching attribute value names (Social, Corporate, Wedding, Essentials, Classic, Premier).
     """
     # =============================================================
-    # Service-Specific Pricing Configuration
-    # Each service can have different Event Type and Service Tier pricing
-    # Format: {service_name_or_id: {'Event Type': {value: extra}, 'Service Tier': {value: extra}}}
+    # Price Extras Configuration (from staging branch logic)
+    # Matches attribute value names directly - works for all services with these attributes
     # =============================================================
-    
-    SERVICE_PRICING = {
-        # DJ Services - Only service with confirmed variant pricing
-        'DJ Services [UPDATED]': {
-            'Event Type': {
-                'Social': 0.0,
-                'Corporate': 0.0,
-                'Wedding': 50.0,
-            },
-            'Service Tier': {
-                'Essentials': 0.0,
-                'Classic': 125.0,
-                'Premier': 300.0,
-            }
-        },
-        # Add other service pricing here as needed
-        # Example:
-        # 'Photography [UPDATED]': {
-        #     'Event Type': {'Social': 0.0, 'Corporate': 0.0, 'Wedding': 75.0},
-        #     'Service Tier': {'Essentials': 0.0, 'Classic': 150.0, 'Premier': 350.0},
-        # },
+    PRICE_EXTRAS = {
+        # Event Type extras (from Social base)
+        'Social': 0.0,
+        'Corporate': 0.0,
+        'Wedding': 50.0,
+        # Service Tier extras (from Essential base)
+        'Essentials': 0.0,
+        'Classic': 125.0,
+        'Premier': 300.0,
     }
-
-    # Find Event Type and Service Tier attributes
-    event_type_attr = env['product.attribute'].search([('name', '=', 'Event Type')], limit=1)
-    service_tier_attr = env['product.attribute'].search([('name', '=', 'Service Tier')], limit=1)
     
-    if not event_type_attr or not service_tier_attr:
-        _logger.warning("PTT Business Core: ⚠️ Event Type or Service Tier attributes not found - skipping variant pricing setup")
-        return
-    
-    # Find ALL templates with both attributes
-    all_templates = env['product.template'].search([
-        ('attribute_line_ids.attribute_id', 'in', [event_type_attr.id, service_tier_attr.id])
-    ])
-    
-    # Filter to only those with BOTH attributes
-    services = env['product.template']
-    for template in all_templates:
-        has_event_type = any(line.attribute_id.id == event_type_attr.id for line in template.attribute_line_ids)
-        has_service_tier = any(line.attribute_id.id == service_tier_attr.id for line in template.attribute_line_ids)
-        if has_event_type and has_service_tier:
-            services |= template
-    
-    if not services:
-        _logger.warning("PTT Business Core: ⚠️ No services found with Event Type and Service Tier attributes")
-        return
-    
-    _logger.info(f"PTT Business Core: Configuring variant pricing for services with explicit configuration")
+    # Find DJ Services [UPDATED] template by XML ID (same as staging branch)
+    dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
     
     total_updated = 0
-    services_configured = []
     
-    for service in services.sorted('name'):
-        service_name = service.name
-        # Match by exact name first
-        service_config = SERVICE_PRICING.get(service_name)
-        
-        # If not found and product has [UPDATED] suffix, try matching without it
-        if not service_config and '[UPDATED]' in service_name:
-            base_name = service_name.replace(' [UPDATED]', '')
-            service_config = SERVICE_PRICING.get(f"{base_name} [UPDATED]") or SERVICE_PRICING.get(base_name)
-        
-        # If still not found, try by XML ID
-        if not service_config:
-            try:
-                xmlid_obj = env['ir.model.data'].search([
-                    ('model', '=', 'product.template'),
-                    ('res_id', '=', service.id),
-                    ('module', '=', 'ptt_business_core')
-                ], limit=1)
-                if xmlid_obj and xmlid_obj.name:
-                    # Try matching by XML ID name pattern (e.g., product_template_dj_services -> DJ Services)
-                    if 'dj_services' in xmlid_obj.name.lower():
-                        service_config = SERVICE_PRICING.get('DJ Services [UPDATED]')
-            except Exception:
-                pass
-        
-        # Skip if no explicit configuration (will default to 0.0, can be set via wizard)
-        if not service_config:
-            continue
-        
-        service_updated = 0
-        
-        # Update Event Type pricing
-        if 'Event Type' in service_config:
-            event_type_line = service.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Event Type')
-            if event_type_line:
-                for ptav in event_type_line.product_template_value_ids:
-                    attr_value_name = ptav.product_attribute_value_id.name
-                    if attr_value_name in service_config['Event Type']:
-                        expected_extra = service_config['Event Type'][attr_value_name]
-                        ptav.write({'price_extra': expected_extra})
-                        service_updated += 1
-                        _logger.info(f"PTT Business Core: Set {service_name} - Event Type {attr_value_name}: ${expected_extra}")
-        
-        # Update Service Tier pricing
-        if 'Service Tier' in service_config:
-            service_tier_line = service.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Service Tier')
-            if service_tier_line:
-                for ptav in service_tier_line.product_template_value_ids:
-                    attr_value_name = ptav.product_attribute_value_id.name
-                    if attr_value_name in service_config['Service Tier']:
-                        expected_extra = service_config['Service Tier'][attr_value_name]
-                        ptav.write({'price_extra': expected_extra})
-                        service_updated += 1
-                        _logger.info(f"PTT Business Core: Set {service_name} - Service Tier {attr_value_name}: ${expected_extra}")
-        
-        if service_updated > 0:
-            total_updated += service_updated
-            services_configured.append(service_name)
+    if dj_template:
+        # Update price_extra on product.template.attribute.value records (staging branch logic)
+        _logger.info(f"PTT Business Core: Configuring pricing for {dj_template.name}")
+        for ptav in dj_template.attribute_line_ids.product_template_value_ids:
+            attr_value_name = ptav.product_attribute_value_id.name
+            if attr_value_name in PRICE_EXTRAS:
+                expected_extra = PRICE_EXTRAS[attr_value_name]
+                if ptav.price_extra != expected_extra:
+                    ptav.write({'price_extra': expected_extra})
+                    total_updated += 1
+                    _logger.info(f"PTT Business Core: Set {dj_template.name} - {attr_value_name}: ${expected_extra}")
+    
+    if total_updated > 0:
+        _logger.info(f"PTT Business Core: ✅ Updated {total_updated} price_extra values for DJ Services")
+    else:
+        _logger.info("PTT Business Core: ℹ️ DJ Services pricing already configured or not found")
     
     if total_updated > 0:
         _logger.info(f"PTT Business Core: ✅ Configured pricing for {len(services_configured)} service(s): {', '.join(services_configured)}")
