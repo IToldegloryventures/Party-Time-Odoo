@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        PTT Project Vendor Assignment Views
+        PTT Project Vendor Assignment Views - BASIC VERSION
+        
+        NOTE: These are basic views for when ptt_vendor_management is NOT installed.
+        If ptt_vendor_management IS installed, its views (with workflow buttons) take priority.
+        
+        IMPORTANT: View names must be UNIQUE to avoid conflicts:
+        - This file: ptt.project.vendor.assignment.list.basic / .form.basic
+        - ptt_vendor_management: ptt.project.vendor.assignment.tree / .form
         
         FIELD NAMING:
         - All custom fields use ptt_ prefix (Party Time Texas)
-        - This follows Odoo best practice: x_ is reserved for Studio fields
     -->
     <record id="view_ptt_project_vendor_assignment_list" model="ir.ui.view">
-        <field name="name">ptt.project.vendor.assignment.list</field>
+        <field name="name">ptt.project.vendor.assignment.list.basic</field>
         <field name="model">ptt.project.vendor.assignment</field>
+        <field name="priority">50</field>
         <field name="arch" type="xml">
             <list>
                 <field name="service_type"/>
@@ -23,8 +30,9 @@
     </record>
 
     <record id="view_ptt_project_vendor_assignment_form" model="ir.ui.view">
-        <field name="name">ptt.project.vendor.assignment.form</field>
+        <field name="name">ptt.project.vendor.assignment.form.basic</field>
         <field name="model">ptt.project.vendor.assignment</field>
+        <field name="priority">50</field>
         <field name="arch" type="xml">
             <form>
                 <header>
