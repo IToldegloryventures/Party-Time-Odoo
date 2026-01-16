@@ -60,18 +60,6 @@
                             <field name="ptt_venue_name"/>
                         </group>
                     </group>
-
-                    <!-- Finance Contact (for corporate clients) -->
-                    <group string="Finance Contact">
-                        <group>
-                            <field name="ptt_cfo_name"/>
-                            <field name="ptt_cfo_phone"/>
-                        </group>
-                        <group>
-                            <field name="ptt_cfo_email"/>
-                            <field name="ptt_cfo_contact_method"/>
-                        </group>
-                    </group>
                 </page>
             </xpath>
         </field>

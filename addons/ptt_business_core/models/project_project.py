@@ -91,35 +91,6 @@ class ProjectProject(models.Model):
         string="Venue Booked?",
         store=False,
     )
-    ptt_cfo_name = fields.Char(
-        compute="_compute_crm_related_fields",
-        readonly=True,
-        string="Finance Contact",
-        store=False,
-    )
-    ptt_cfo_phone = fields.Char(
-        compute="_compute_crm_related_fields",
-        readonly=True,
-        string="Finance Contact Phone",
-        store=False,
-    )
-    ptt_cfo_email = fields.Char(
-        compute="_compute_crm_related_fields",
-        readonly=True,
-        string="Finance Contact Email",
-        store=False,
-    )
-    ptt_cfo_contact_method = fields.Selection(
-        selection=[
-            ("call", "Phone Call"),
-            ("text", "Text Message"),
-            ("email", "Email"),
-        ],
-        compute="_compute_crm_related_fields",
-        readonly=True,
-        string="Finance Preferred Contact Method",
-        store=False,
-    )
 
     # === COMPUTE METHOD FOR CRM RELATED FIELDS ===
     # Safely computes CRM lead fields when ptt_crm_lead_id exists, returns False/empty when missing
@@ -140,35 +111,32 @@ class ProjectProject(models.Model):
     def _compute_crm_related_fields(self):
         """Compute CRM-related fields safely when ptt_crm_lead_id is False.
         
+        CRITICAL: This method MUST always set all fields to valid values (False, "", or 0)
+        to prevent OwlError when Owl tries to render fields with undefined metadata.
+        
         This prevents OwlError when Owl tries to render Selection fields
         that have undefined metadata when the related record doesn't exist.
         """
+        # CRITICAL: Initialize all fields first to ensure they always have valid metadata
+        # This prevents Owl from encountering undefined field metadata during view rendering
         for project in self:
+            # Always initialize all fields first (prevents undefined metadata errors)
+            project.ptt_preferred_contact_method = False
+            project.ptt_date_of_call = False
+            project.ptt_second_poc_name = ""
+            project.ptt_second_poc_phone = ""
+            project.ptt_second_poc_email = ""
+            project.ptt_venue_booked = False
+            
+            # Then populate from CRM lead if it exists
             if project.ptt_crm_lead_id:
-                # CRM lead exists - copy values safely
                 lead = project.ptt_crm_lead_id
                 project.ptt_preferred_contact_method = lead.ptt_preferred_contact_method or False
                 project.ptt_date_of_call = lead.ptt_date_of_call or False
-                project.ptt_second_poc_name = lead.ptt_second_poc_name or False
-                project.ptt_second_poc_phone = lead.ptt_second_poc_phone or False
-                project.ptt_second_poc_email = lead.ptt_second_poc_email or False
+                project.ptt_second_poc_name = lead.ptt_second_poc_name or ""
+                project.ptt_second_poc_phone = lead.ptt_second_poc_phone or ""
+                project.ptt_second_poc_email = lead.ptt_second_poc_email or ""
                 project.ptt_venue_booked = lead.ptt_venue_booked or False
-                project.ptt_cfo_name = lead.ptt_cfo_name or False
-                project.ptt_cfo_phone = lead.ptt_cfo_phone or False
-                project.ptt_cfo_email = lead.ptt_cfo_email or False
-                project.ptt_cfo_contact_method = lead.ptt_cfo_contact_method or False
-            else:
-                # No CRM lead - set all to False/empty to prevent OwlError
-                project.ptt_preferred_contact_method = False
-                project.ptt_date_of_call = False
-                project.ptt_second_poc_name = False
-                project.ptt_second_poc_phone = False
-                project.ptt_second_poc_email = False
-                project.ptt_venue_booked = False
-                project.ptt_cfo_name = False
-                project.ptt_cfo_phone = False
-                project.ptt_cfo_email = False
-                project.ptt_cfo_contact_method = False
 
     # === FINANCIALS TAB - Profitability Fields ===
     # These computed fields calculate event profitability for the FINANCIALS tab.
