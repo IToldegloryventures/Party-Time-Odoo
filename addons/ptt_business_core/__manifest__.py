@@ -57,8 +57,7 @@
         "views/ptt_project_project_view.xml",
         "views/ptt_project_task_view.xml",
         "views/sale_order_views.xml",  # Price Per Person + Event Details on quotes
-        "views/ptt_variant_pricing_config_views.xml",  # Variant Pricing Configuration Wizard (defines action_ptt_variant_pricing_config)
-        "data/variant_pricing_menu.xml",  # Menu for variant pricing config (must load AFTER views that define the action)
+        "views/ptt_variant_pricing_config_views.xml",  # Variant Pricing Configuration Wizard (defines action + menu)
     ],
     # Demo data disabled - was causing test failures on Odoo.sh
     # "demo": [
