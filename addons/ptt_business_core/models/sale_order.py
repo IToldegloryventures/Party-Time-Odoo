@@ -288,20 +288,24 @@ class SaleOrder(models.Model):
             if not project.company_id:
                 project_vals['company_id'] = order.company_id.id if order.company_id else self.env.company.id
             
+            # CRITICAL: partner_id must be set to prevent OwlError
+            # Use sale order partner first, then CRM lead partner, then fallback to any existing partner
             if order.partner_id:
                 project_vals['partner_id'] = order.partner_id.id
+            elif lead.partner_id:
+                project_vals['partner_id'] = lead.partner_id.id
             elif not project.partner_id:
-                # Ensure partner_id is set (even if False) to prevent OwlError
-                project_vals['partner_id'] = False
+                # Use any existing partner as fallback (safer than setting False or XML ID reference)
+                fallback_partner = self.env['res.partner'].search([], limit=1)
+                if fallback_partner:
+                    project_vals['partner_id'] = fallback_partner.id
             
             # Set project assignee from CRM Lead Salesperson (user_id)
             # This should auto-populate from contact card if salesperson exists there
             # Reference: CRM Lead user_id = Salesperson field
             if lead.user_id:
                 project_vals['user_id'] = lead.user_id.id
-            elif not project.user_id:
-                # Ensure user_id is set (even if False) to prevent OwlError
-                project_vals['user_id'] = False
+            # Note: user_id is optional, so we don't set a fallback if it doesn't exist
                 
             if order.ptt_event_date:
                 project_vals['date_start'] = order.ptt_event_date  # Standard project field
