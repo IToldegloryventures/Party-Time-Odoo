@@ -54,8 +54,8 @@
         # Views
         "views/ptt_project_vendor_assignment_view.xml",
         "views/ptt_crm_lead_view.xml",
-        "views/ptt_project_project_view.xml",
-        "views/ptt_project_task_view.xml",
+        # DELETED: ptt_project_project_view.xml - broken Enterprise conflicts
+        # DELETED: ptt_project_task_view.xml - empty/disabled
         "views/sale_order_views.xml",  # Price Per Person + Event Details on quotes
         "views/ptt_variant_pricing_config_views.xml",  # Variant Pricing Configuration Wizard (defines action + menu)
     ],

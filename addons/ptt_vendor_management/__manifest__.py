@@ -44,14 +44,13 @@
         "views/ptt_document_type_view.xml",
         "views/ptt_vendor_document_view.xml",
         "views/ptt_vendor_service_tag_view.xml",
-        "views/ptt_res_partner_view.xml",
+        # DELETED: ptt_res_partner_view.xml - embedded list causing OwlError
         "views/ptt_vendor_list_view.xml",
         "views/ptt_vendor_menus.xml",
         "views/vendor_portal_templates.xml",
         # Vendor assignment views (workflow buttons live HERE, not in Project)
         "views/ptt_vendor_assignment_view.xml",
-        # SAFE Project extension - only adds One2many display, no buttons/logic
-        "views/ptt_project_vendor_portal_view.xml",
+        # DELETED: ptt_project_vendor_portal_view.xml - Enterprise conflicts
     ],
     "installable": True,
     "application": True,

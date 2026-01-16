@@ -48,7 +48,7 @@
                         </p>
                     </div>
                     
-                    <field name="service_line_ids" nolabel="1" context="{'default_config_id': id}" options="{'no_create': True, 'no_create_edit': True}"/>
+                    <field name="service_line_ids" nolabel="1" options="{'no_create': True, 'no_create_edit': True}"/>
                 </sheet>
                 <footer>
                     <button name="action_save" string="Save Pricing" type="object" class="btn-primary"/>

@@ -25,8 +25,7 @@
         <field name="arch" type="xml">
             <!-- Add Event Details group after partner info -->
             <xpath expr="//field[@name='partner_id']/.." position="after">
-                <group string="Event Details" name="ptt_event_details" 
-                       invisible="not opportunity_id">
+                <group string="Event Details" name="ptt_event_details">
                     <group>
                         <field name="ptt_event_date"/>
                         <field name="ptt_event_type"/>
