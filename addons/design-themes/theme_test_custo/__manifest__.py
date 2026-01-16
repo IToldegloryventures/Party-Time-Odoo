@@ -1,5 +1,6 @@
 {
     'name': 'Custom Theme (Testing suite)',
+    'version': '19.0.1.0.0',
     # Remove the `/Hidden` part to make it selectable for tests purpose
     'category': 'Theme/Hidden',
     'depends': ['website'],
