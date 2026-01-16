@@ -19,10 +19,9 @@ class PttVariantPricingConfig(models.TransientModel):
         help='Configure pricing for each service'
     )
 
+    @api.model
     def _get_all_services_with_variants(self):
         """Find all product templates with Event Type and Service Tier attributes."""
-        self.ensure_one()
-        
         # Find Event Type and Service Tier attribute IDs
         event_type_attr = self.env['product.attribute'].search([
             ('name', '=', 'Event Type')
