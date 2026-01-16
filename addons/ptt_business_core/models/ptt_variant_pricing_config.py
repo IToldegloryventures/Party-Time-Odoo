@@ -81,7 +81,10 @@ class PttVariantPricingConfig(models.TransientModel):
             # Helper to get price_extra safely
             def get_price_extra(values, attr_name):
                 matched = values.filtered(lambda v: v.product_attribute_value_id.name == attr_name)
-                return matched.price_extra if matched else 0.0
+                if matched:
+                    # Get price_extra from first matched record
+                    return matched[0].price_extra
+                return 0.0
             
             lines.append((0, 0, {
                 'service_id': service.id,
