@@ -140,21 +140,26 @@ def _configure_all_service_variants(env):
     
     for service in services.sorted('name'):
         service_name = service.name
-        # Match by exact name OR by XML ID (for products with [UPDATED] suffix)
+        # Match by exact name first
         service_config = SERVICE_PRICING.get(service_name)
+        
+        # If not found and product has [UPDATED] suffix, try matching without it
+        if not service_config and '[UPDATED]' in service_name:
+            base_name = service_name.replace(' [UPDATED]', '')
+            service_config = SERVICE_PRICING.get(f"{base_name} [UPDATED]") or SERVICE_PRICING.get(base_name)
+        
+        # If still not found, try by XML ID
         if not service_config:
-            # Try to match by XML ID - get the XML ID for this product
             try:
                 xmlid_obj = env['ir.model.data'].search([
                     ('model', '=', 'product.template'),
                     ('res_id', '=', service.id),
                     ('module', '=', 'ptt_business_core')
                 ], limit=1)
-                if xmlid_obj:
-                    # Match service name without [UPDATED] for lookup
-                    base_name = service_name.replace(' [UPDATED]', '')
-                    # Try matching with [UPDATED] suffix
-                    service_config = SERVICE_PRICING.get(f"{base_name} [UPDATED]") or SERVICE_PRICING.get(base_name)
+                if xmlid_obj and xmlid_obj.name:
+                    # Try matching by XML ID name pattern (e.g., product_template_dj_services -> DJ Services)
+                    if 'dj_services' in xmlid_obj.name.lower():
+                        service_config = SERVICE_PRICING.get('DJ Services [UPDATED]')
             except Exception:
                 pass
         

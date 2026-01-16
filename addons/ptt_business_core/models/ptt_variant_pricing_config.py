@@ -78,27 +78,20 @@ class PttVariantPricingConfig(models.TransientModel):
             event_type_values = event_type_line.product_template_value_ids
             service_tier_values = service_tier_line.product_template_value_ids
             
+            # Helper to get price_extra safely
+            def get_price_extra(values, attr_name):
+                matched = values.filtered(lambda v: v.product_attribute_value_id.name == attr_name)
+                return matched.price_extra if matched else 0.0
+            
             lines.append((0, 0, {
                 'service_id': service.id,
                 'service_name': service.name,
-                'event_type_social_extra': event_type_values.filtered(
-                    lambda v: v.product_attribute_value_id.name == 'Social'
-                ).price_extra or 0.0,
-                'event_type_corporate_extra': event_type_values.filtered(
-                    lambda v: v.product_attribute_value_id.name == 'Corporate'
-                ).price_extra or 0.0,
-                'event_type_wedding_extra': event_type_values.filtered(
-                    lambda v: v.product_attribute_value_id.name == 'Wedding'
-                ).price_extra or 0.0,
-                'tier_essentials_extra': service_tier_values.filtered(
-                    lambda v: v.product_attribute_value_id.name == 'Essentials'
-                ).price_extra or 0.0,
-                'tier_classic_extra': service_tier_values.filtered(
-                    lambda v: v.product_attribute_value_id.name == 'Classic'
-                ).price_extra or 0.0,
-                'tier_premier_extra': service_tier_values.filtered(
-                    lambda v: v.product_attribute_value_id.name == 'Premier'
-                ).price_extra or 0.0,
+                'event_type_social_extra': get_price_extra(event_type_values, 'Social'),
+                'event_type_corporate_extra': get_price_extra(event_type_values, 'Corporate'),
+                'event_type_wedding_extra': get_price_extra(event_type_values, 'Wedding'),
+                'tier_essentials_extra': get_price_extra(service_tier_values, 'Essentials'),
+                'tier_classic_extra': get_price_extra(service_tier_values, 'Classic'),
+                'tier_premier_extra': get_price_extra(service_tier_values, 'Premier'),
             }))
         
         res['service_line_ids'] = lines
