@@ -64,10 +64,10 @@
                                 <field name="user_id" readonly="1" widget="many2one"/>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4" groups="project.group_project_stages">
                             <div class="o_form_label" style="font-weight: bold; margin-bottom: 5px;">Project Stage:</div>
                             <div>
-                                <field name="stage_id" readonly="1" widget="many2one"/>
+                                <field name="stage_id" readonly="1" widget="many2one" groups="project.group_project_stages"/>
                             </div>
                         </div>
                         <div class="col-md-4">
