@@ -45,59 +45,130 @@ class ProjectProject(models.Model):
         help="Original CRM lead/opportunity that created this project.",
     )
 
-    # === CLIENT TAB - Related Fields from CRM Lead ===
+    # === CLIENT TAB - Computed Fields from CRM Lead ===
     # These fields pull data from the linked CRM lead for the CLIENT tab.
-    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#related-fields
+    # CRITICAL: Using computed fields instead of related fields to prevent OwlError
+    # when ptt_crm_lead_id is False. Related fields fail when the relation is empty.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#compute-methods
     ptt_preferred_contact_method = fields.Selection(
-        related="ptt_crm_lead_id.ptt_preferred_contact_method",
+        selection=[
+            ("call", "Phone Call"),
+            ("text", "Text Message"),
+            ("email", "Email"),
+        ],
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Preferred Contact Method",
+        store=False,
     )
     ptt_date_of_call = fields.Date(
-        related="ptt_crm_lead_id.ptt_date_of_call",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Date of Call",
+        store=False,
     )
     ptt_second_poc_name = fields.Char(
-        related="ptt_crm_lead_id.ptt_second_poc_name",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="2nd POC Name",
+        store=False,
     )
     ptt_second_poc_phone = fields.Char(
-        related="ptt_crm_lead_id.ptt_second_poc_phone",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="2nd POC Phone",
+        store=False,
     )
     ptt_second_poc_email = fields.Char(
-        related="ptt_crm_lead_id.ptt_second_poc_email",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="2nd POC Email",
+        store=False,
     )
     ptt_venue_booked = fields.Boolean(
-        related="ptt_crm_lead_id.ptt_venue_booked",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Venue Booked?",
+        store=False,
     )
     ptt_cfo_name = fields.Char(
-        related="ptt_crm_lead_id.ptt_cfo_name",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Finance Contact",
+        store=False,
     )
     ptt_cfo_phone = fields.Char(
-        related="ptt_crm_lead_id.ptt_cfo_phone",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Finance Contact Phone",
+        store=False,
     )
     ptt_cfo_email = fields.Char(
-        related="ptt_crm_lead_id.ptt_cfo_email",
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Finance Contact Email",
+        store=False,
     )
     ptt_cfo_contact_method = fields.Selection(
-        related="ptt_crm_lead_id.ptt_cfo_contact_method",
+        selection=[
+            ("call", "Phone Call"),
+            ("text", "Text Message"),
+            ("email", "Email"),
+        ],
+        compute="_compute_crm_related_fields",
         readonly=True,
         string="Finance Preferred Contact Method",
+        store=False,
     )
+
+    # === COMPUTE METHOD FOR CRM RELATED FIELDS ===
+    # Safely computes CRM lead fields when ptt_crm_lead_id exists, returns False/empty when missing
+    # This prevents OwlError when projects don't have a linked CRM lead
+    @api.depends(
+        'ptt_crm_lead_id',
+        'ptt_crm_lead_id.ptt_preferred_contact_method',
+        'ptt_crm_lead_id.ptt_date_of_call',
+        'ptt_crm_lead_id.ptt_second_poc_name',
+        'ptt_crm_lead_id.ptt_second_poc_phone',
+        'ptt_crm_lead_id.ptt_second_poc_email',
+        'ptt_crm_lead_id.ptt_venue_booked',
+        'ptt_crm_lead_id.ptt_cfo_name',
+        'ptt_crm_lead_id.ptt_cfo_phone',
+        'ptt_crm_lead_id.ptt_cfo_email',
+        'ptt_crm_lead_id.ptt_cfo_contact_method',
+    )
+    def _compute_crm_related_fields(self):
+        """Compute CRM-related fields safely when ptt_crm_lead_id is False.
+        
+        This prevents OwlError when Owl tries to render Selection fields
+        that have undefined metadata when the related record doesn't exist.
+        """
+        for project in self:
+            if project.ptt_crm_lead_id:
+                # CRM lead exists - copy values safely
+                lead = project.ptt_crm_lead_id
+                project.ptt_preferred_contact_method = lead.ptt_preferred_contact_method or False
+                project.ptt_date_of_call = lead.ptt_date_of_call or False
+                project.ptt_second_poc_name = lead.ptt_second_poc_name or False
+                project.ptt_second_poc_phone = lead.ptt_second_poc_phone or False
+                project.ptt_second_poc_email = lead.ptt_second_poc_email or False
+                project.ptt_venue_booked = lead.ptt_venue_booked or False
+                project.ptt_cfo_name = lead.ptt_cfo_name or False
+                project.ptt_cfo_phone = lead.ptt_cfo_phone or False
+                project.ptt_cfo_email = lead.ptt_cfo_email or False
+                project.ptt_cfo_contact_method = lead.ptt_cfo_contact_method or False
+            else:
+                # No CRM lead - set all to False/empty to prevent OwlError
+                project.ptt_preferred_contact_method = False
+                project.ptt_date_of_call = False
+                project.ptt_second_poc_name = False
+                project.ptt_second_poc_phone = False
+                project.ptt_second_poc_email = False
+                project.ptt_venue_booked = False
+                project.ptt_cfo_name = False
+                project.ptt_cfo_phone = False
+                project.ptt_cfo_email = False
+                project.ptt_cfo_contact_method = False
 
     # === FINANCIALS TAB - Profitability Fields ===
     # These computed fields calculate event profitability for the FINANCIALS tab.
