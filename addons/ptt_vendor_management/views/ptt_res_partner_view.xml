@@ -3,14 +3,19 @@
     <!--
         PTT Res Partner Form View Extension
         
-        Adds vendor-specific tabs visible when supplier_rank > 0.
-        Uses native Odoo supplier_rank field for vendor identification.
-        All custom fields use ptt_ prefix (Odoo best practice).
+        DISABLED - Embedded <list> views inside inherited forms cause OwlError in Odoo 19:
+        "Cannot read properties of undefined (reading 'type')"
+        
+        This view adds vendor-specific tabs but the embedded list for documents
+        can cause view rendering crashes.
+        
+        To re-enable: Set active="True" and test carefully
     -->
     <record id="view_partner_form_ptt" model="ir.ui.view">
         <field name="name">res.partner.form.ptt</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="active" eval="False"/>
         <field name="arch" type="xml">
             
             <!-- Add Vendor Toggle under Person/Company selector using supplier_rank -->
