@@ -103,10 +103,6 @@ class ProjectProject(models.Model):
         'ptt_crm_lead_id.ptt_second_poc_phone',
         'ptt_crm_lead_id.ptt_second_poc_email',
         'ptt_crm_lead_id.ptt_venue_booked',
-        'ptt_crm_lead_id.ptt_cfo_name',
-        'ptt_crm_lead_id.ptt_cfo_phone',
-        'ptt_crm_lead_id.ptt_cfo_email',
-        'ptt_crm_lead_id.ptt_cfo_contact_method',
     )
     def _compute_crm_related_fields(self):
         """Compute CRM-related fields safely when ptt_crm_lead_id is False.
