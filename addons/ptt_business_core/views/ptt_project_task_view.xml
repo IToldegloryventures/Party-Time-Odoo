@@ -10,22 +10,28 @@
         - task.project_id.user_id (project manager)
         
         No redundant related fields needed on task.
+        
+        REMOVED: action_view_project button - method doesn't exist on project.task
+        Users can click the project_id field directly to navigate.
     -->
     
+    <!-- 
+        VIEW INTENTIONALLY EMPTY
+        
+        This view exists to maintain the XML ID but adds no modifications.
+        The original button referenced action_view_project which doesn't exist,
+        causing OwlError: Cannot read properties of undefined (reading 'type')
+        
+        If you need to extend project.task form in the future, add safe xpaths here.
+    -->
     <record id="view_task_form_ptt" model="ir.ui.view">
         <field name="name">project.task.form.ptt</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <!-- Add navigation button to project -->
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_project" type="object"
-                    class="oe_stat_button" icon="fa-folder-open"
-                    invisible="not project_id">
-                    <div class="o_stat_info">
-                        <span class="o_stat_text">Project</span>
-                    </div>
-                </button>
+            <!-- No modifications - placeholder for future safe extensions -->
+            <xpath expr="//form" position="attributes">
+                <!-- Empty xpath to make view valid but add nothing -->
             </xpath>
         </field>
     </record>
