@@ -134,23 +134,6 @@ class ProjectProject(models.Model):
                 project.ptt_second_poc_phone = lead.ptt_second_poc_phone or ""
                 project.ptt_second_poc_email = lead.ptt_second_poc_email or ""
                 project.ptt_venue_booked = lead.ptt_venue_booked or False
-    
-    @api.model
-    def _read_group_process_groupby(self, gb, query, context):
-        """Override to ensure computed fields are available in groupby operations."""
-        # Ensure computed fields are computed before groupby
-        return super()._read_group_process_groupby(gb, query, context)
-    
-    def read(self, fields=None, load='_classic_read'):
-        """Override read to ensure computed fields are always computed."""
-        # Force computation of CRM-related fields before read
-        if fields is None or any(f in fields for f in [
-            'ptt_preferred_contact_method', 'ptt_date_of_call', 
-            'ptt_second_poc_name', 'ptt_second_poc_phone', 
-            'ptt_second_poc_email', 'ptt_venue_booked'
-        ]):
-            self._compute_crm_related_fields()
-        return super().read(fields=fields, load=load)
 
     # === FINANCIALS TAB - Profitability Fields ===
     # These computed fields calculate event profitability for the FINANCIALS tab.
