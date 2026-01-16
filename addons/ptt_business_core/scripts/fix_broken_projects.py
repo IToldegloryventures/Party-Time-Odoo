@@ -32,6 +32,20 @@ if projects_to_fix:
         project.partner_id = project.sale_order_id.partner_id.id
         print(f"  ✅ Set partner_id for {project.name} (from sale order)")
 
+# Fix any remaining projects without partner_id by using a fallback partner
+projects_still_no_partner = env['project.project'].search([('partner_id', '=', False)])
+if projects_still_no_partner:
+    # Use any existing partner as fallback (safer than XML ID reference)
+    default_partner = env['res.partner'].search([], limit=1)
+    if default_partner:
+        print(f"\nFound {len(projects_still_no_partner)} projects still without partner_id")
+        print(f"Using fallback partner: {default_partner.name}")
+        for project in projects_still_no_partner:
+            project.partner_id = default_partner.id
+            print(f"  ✅ Set partner_id for {project.name} (fallback: {default_partner.name})")
+    else:
+        print(f"\n⚠️  {len(projects_still_no_partner)} projects still without partner_id (no partners exist in database)")
+
 # Fix projects missing user_id (set to False if not assigned)
 projects_no_user = env['project.project'].search([('user_id', '=', False)])
 print(f"\nFound {len(projects_no_user)} projects without user_id")
