@@ -47,8 +47,8 @@
         "data/crm_lost_reasons.xml",
         "data/mail_activity_type.xml",
         "data/task_types.xml",
-        # Project stages removed - use Odoo defaults to avoid duplicates
-        # "data/project_stages.xml",
+        # Project stages for PTT events (required for stage_id field in views)
+        "data/project_stages.xml",
         "data/sale_order_templates.xml",
         "data/ir_cron.xml",
         # Views
