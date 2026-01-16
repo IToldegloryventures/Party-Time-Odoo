@@ -98,20 +98,20 @@
                             <field name="partner_id" string="Client"/>
                             <field name="ptt_crm_lead_id" string="CRM Lead"/>
                         </group>
-                        <group>
-                            <field name="ptt_preferred_contact_method"/>
-                            <field name="ptt_date_of_call"/>
+                        <group invisible="not ptt_crm_lead_id">
+                            <field name="ptt_preferred_contact_method" invisible="not ptt_crm_lead_id"/>
+                            <field name="ptt_date_of_call" invisible="not ptt_crm_lead_id"/>
                         </group>
                     </group>
                     
                     <!-- 2nd POC (Signing Authority) - from CRM Lead Intake -->
-                    <group string="2nd POC (Signing Authority)">
+                    <group string="2nd POC (Signing Authority)" invisible="not ptt_crm_lead_id">
                         <group>
-                            <field name="ptt_second_poc_name"/>
-                            <field name="ptt_second_poc_phone"/>
+                            <field name="ptt_second_poc_name" invisible="not ptt_crm_lead_id"/>
+                            <field name="ptt_second_poc_phone" invisible="not ptt_crm_lead_id"/>
                         </group>
                         <group>
-                            <field name="ptt_second_poc_email"/>
+                            <field name="ptt_second_poc_email" invisible="not ptt_crm_lead_id"/>
                         </group>
                     </group>
                     
@@ -126,20 +126,20 @@
                         <group>
                             <field name="ptt_guest_count"/>
                             <field name="ptt_total_hours"/>
-                            <field name="ptt_venue_booked"/>
+                            <field name="ptt_venue_booked" invisible="not ptt_crm_lead_id"/>
                             <field name="ptt_venue_name"/>
                         </group>
                     </group>
                     
                     <!-- Finance Contact (for corporate clients) -->
-                    <group string="Finance Contact (Corporate)">
+                    <group string="Finance Contact (Corporate)" invisible="not ptt_crm_lead_id">
                         <group>
-                            <field name="ptt_cfo_name"/>
-                            <field name="ptt_cfo_phone"/>
+                            <field name="ptt_cfo_name" invisible="not ptt_crm_lead_id"/>
+                            <field name="ptt_cfo_phone" invisible="not ptt_crm_lead_id"/>
                         </group>
                         <group>
-                            <field name="ptt_cfo_email"/>
-                            <field name="ptt_cfo_contact_method"/>
+                            <field name="ptt_cfo_email" invisible="not ptt_crm_lead_id"/>
+                            <field name="ptt_cfo_contact_method" invisible="not ptt_crm_lead_id"/>
                         </group>
                     </group>
                 </page>

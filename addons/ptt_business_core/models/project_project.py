@@ -451,12 +451,14 @@ class ProjectProject(models.Model):
             # Revenue from sale orders
             revenue = 0.0
             if project.sale_order_id and project.sale_order_id.state == "sale":
-                revenue = project.sale_order_id.amount_total
+                revenue = project.sale_order_id.amount_total or 0.0
             
             # Vendor costs from assignments
-            vendor_cost = sum(
-                project.ptt_vendor_assignment_ids.mapped("actual_cost")
-            ) if project.ptt_vendor_assignment_ids else 0.0
+            vendor_cost = 0.0
+            if project.ptt_vendor_assignment_ids:
+                vendor_cost = sum(
+                    project.ptt_vendor_assignment_ids.mapped("actual_cost") or [0.0]
+                )
             
             # Profit calculations
             gross_profit = revenue - vendor_cost
@@ -467,14 +469,13 @@ class ProjectProject(models.Model):
             cost_per_guest = vendor_cost / guest_count if guest_count > 0 else 0.0
             revenue_per_guest = revenue / guest_count if guest_count > 0 else 0.0
             
-            project.update({
-                "ptt_total_revenue": revenue,
-                "ptt_total_vendor_cost": vendor_cost,
-                "ptt_gross_profit": gross_profit,
-                "ptt_profit_margin": margin,
-                "ptt_cost_per_guest": cost_per_guest,
-                "ptt_revenue_per_guest": revenue_per_guest,
-            })
+            # CRITICAL: Always set all fields to ensure proper field metadata for Owl
+            project.ptt_total_revenue = revenue
+            project.ptt_total_vendor_cost = vendor_cost
+            project.ptt_gross_profit = gross_profit
+            project.ptt_profit_margin = margin
+            project.ptt_cost_per_guest = cost_per_guest
+            project.ptt_revenue_per_guest = revenue_per_guest
 
     # === TASK CREATION ===
     
