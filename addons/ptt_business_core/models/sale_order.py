@@ -283,13 +283,26 @@ class SaleOrder(models.Model):
                 project_vals['ptt_event_time'] = lead.ptt_event_time
             
             # Also set standard project fields from sales order and CRM
+            # CRITICAL: company_id must be set for Odoo 19 to prevent frontend OwlError
+            # Odoo 19 requires company_id for multi-company safety
+            if not project.company_id:
+                project_vals['company_id'] = order.company_id.id if order.company_id else self.env.company.id
+            
             if order.partner_id:
                 project_vals['partner_id'] = order.partner_id.id
+            elif not project.partner_id:
+                # Ensure partner_id is set (even if False) to prevent OwlError
+                project_vals['partner_id'] = False
+            
             # Set project assignee from CRM Lead Salesperson (user_id)
             # This should auto-populate from contact card if salesperson exists there
             # Reference: CRM Lead user_id = Salesperson field
             if lead.user_id:
                 project_vals['user_id'] = lead.user_id.id
+            elif not project.user_id:
+                # Ensure user_id is set (even if False) to prevent OwlError
+                project_vals['user_id'] = False
+                
             if order.ptt_event_date:
                 project_vals['date_start'] = order.ptt_event_date  # Standard project field
             

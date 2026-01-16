@@ -21,6 +21,9 @@
             <field name="privacy_visibility">followers</field>
             <field name="active" eval="True"/>
             <field name="is_template" eval="True"/>
+            <!-- CRITICAL: company_id must be set to prevent frontend OwlError in Odoo 19 -->
+            <!-- Odoo 19 requires company_id for multi-company safety -->
+            <!-- This is set via env.company.id when template is copied -->
             <!-- CRITICAL: type_ids (task stages) must be set to prevent frontend OwlError -->
             <!-- Odoo will create default stages if none exist, but we ensure they're present -->
             <!-- Note: We use search instead of direct refs to avoid dependency on task_types.xml order -->
