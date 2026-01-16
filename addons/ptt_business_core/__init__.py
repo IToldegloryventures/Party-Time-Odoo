@@ -197,8 +197,9 @@ def _configure_all_service_variants(env):
     else:
         _logger.info("PTT Business Core: ℹ️ No services with explicit pricing configuration found. Use the wizard to configure pricing.")
     
-    # Log services without configuration
-    services_without_config = [s.name for s in services if s.name not in SERVICE_PRICING]
+    # Log services without configuration (check all services, not just those with config)
+    services_with_config = set(services_configured)
+    services_without_config = [s.name for s in services if s.name not in services_with_config]
     if services_without_config:
         _logger.info(f"PTT Business Core: ℹ️ {len(services_without_config)} service(s) without explicit pricing (defaults to $0.00): {', '.join(services_without_config)}")
         _logger.info("PTT Business Core: 💡 Use Products > Configuration > 'Configure Variant Pricing' to set pricing for these services")
