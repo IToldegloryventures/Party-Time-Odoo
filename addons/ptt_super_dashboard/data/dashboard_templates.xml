@@ -25,7 +25,7 @@
         <field name="data_source_config">{
             "model": "crm.lead",
             "fields": ["expected_revenue"],
-            "domain": [["type", "=", "opportunity"], ["probability", "<", 100]],
+            "domain": [["type", "=", "opportunity"], ["probability", "&lt;", 100]],
             "aggregation": "sum",
             "field_to_aggregate": "expected_revenue"
         }</field>
@@ -50,7 +50,7 @@
         <field name="data_source_config">{
             "model": "crm.lead",
             "fields": ["id"],
-            "domain": [["type", "=", "opportunity"], ["probability", "<", 100]],
+            "domain": [["type", "=", "opportunity"], ["probability", "&lt;", 100]],
             "aggregation": "count"
         }</field>
         <field name="widget_config">{
@@ -168,7 +168,7 @@
         <field name="data_source_config">{
             "model": "account.move",
             "fields": ["id"],
-            "domain": [["move_type", "=", "out_invoice"], ["state", "=", "posted"], ["invoice_date_due", "<", "TODAY"]],
+            "domain": [["move_type", "=", "out_invoice"], ["state", "=", "posted"], ["invoice_date_due", "&lt;", "TODAY"]],
             "aggregation": "count"
         }</field>
         <field name="widget_config">{
