@@ -1,78 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <!--
-        PTT Vendor Management - Project Form Extension
+        PTT Vendor Management - SAFE Project View Extension
         
-        Extends the VENDORS tab in project form to add work order features:
-        - Send Work Order button
-        - Resend button
-        - Signature date
-        - Decline reason
+        DESIGN RULES (non-negotiable):
+        1. inherit ONLY project.edit_project (core Odoo)
+        2. No replace operations
+        3. No object buttons in Project view
+        4. No workflow logic in Project view
+        5. One isolated page with One2many only
         
-        NOTE: Uses ptt_status field from base model (not 'state')
+        All vendor workflow (Send WO, Resend, signatures, decline) 
+        belongs in ptt.project.vendor.assignment views, NOT here.
     -->
-    
-    <!-- DISABLED: Parent view is disabled, this would cause cascade error -->
-    <record id="view_project_form_vendor_portal" model="ir.ui.view">
-        <field name="name">project.project.form.vendor.portal</field>
+
+    <!-- SAFE Project Vendor Display -->
+    <record id="project_project_form_inherit_ptt_vendor_safe"
+            model="ir.ui.view">
+
+        <field name="name">project.project.form.inherit.ptt.vendor.safe</field>
         <field name="model">project.project</field>
-        <field name="inherit_id" ref="ptt_business_core.view_project_form_ptt"/>
-        <field name="active" eval="False"/>
-        <field name="priority">100</field>
+
+        <!-- ALWAYS inherit core project - NEVER a custom parent view -->
+        <field name="inherit_id" ref="project.edit_project"/>
+
         <field name="arch" type="xml">
-            <!-- Replace the basic vendor assignment list with portal-enabled version -->
-            <xpath expr="//page[@name='ptt_vendors_tab']//field[@name='ptt_vendor_assignment_ids']" position="replace">
-                <field name="ptt_vendor_assignment_ids" nolabel="1">
-                    <list editable="bottom">
-                        <field name="service_type"/>
-                        <field name="vendor_id"/>
-                        <field name="ptt_status" widget="badge" 
-                               decoration-warning="ptt_status == 'pending'"
-                               decoration-success="ptt_status in ('confirmed', 'completed')"
-                               decoration-danger="ptt_status == 'cancelled'"/>
-                        <field name="actual_cost" widget="monetary"/>
-                        <field name="vendor_signature_date" string="Signed" optional="show"/>
-                        <button name="action_send_work_order" type="object" 
-                                string="Send WO" class="btn-primary btn-sm"
-                                invisible="ptt_status != 'pending' or not vendor_id"/>
-                        <button name="action_resend_work_order" type="object" 
-                                string="Resend" class="btn-secondary btn-sm"
-                                invisible="ptt_status == 'completed'"
-                                optional="hide"/>
-                    </list>
-                    <form>
-                        <sheet>
-                            <group>
-                                <group>
-                                    <field name="service_type"/>
-                                    <field name="vendor_id"/>
-                                    <field name="ptt_status" widget="badge"/>
-                                </group>
-                                <group>
-                                    <field name="actual_cost" widget="monetary"/>
-                                    <field name="ptt_arrival_time"/>
-                                    <field name="vendor_signature_date" readonly="1"/>
-                                </group>
-                            </group>
-                            <group string="Vendor Contact">
-                                <group>
-                                    <field name="ptt_contact_person"/>
-                                    <field name="ptt_contact_phone"/>
-                                </group>
-                            </group>
-                            <group string="Notes">
-                                <field name="notes" nolabel="1"/>
-                                <field name="ptt_equipment_notes" nolabel="1"/>
-                            </group>
-                            <group string="Vendor Response" invisible="ptt_status == 'pending'">
-                                <field name="vendor_decline_reason" readonly="1" 
-                                       invisible="ptt_status != 'cancelled'"/>
-                            </group>
-                        </sheet>
-                    </form>
-                </field>
+            <!-- SAFE: //notebook always exists in project.edit_project -->
+            <xpath expr="//notebook" position="inside">
+
+                <page name="ptt_vendors"
+                      string="Vendors"
+                      groups="ptt_vendor_management.group_vendor_user">
+
+                    <!-- 
+                        SAFE: Only display the One2many relation
+                        All buttons/workflow live in the assignment's own form view
+                    -->
+                    <field name="ptt_vendor_assignment_ids"
+                           nolabel="1"
+                           mode="tree,form"
+                           context="{'default_project_id': active_id}"/>
+
+                </page>
+
             </xpath>
         </field>
     </record>
-    
+
 </odoo>

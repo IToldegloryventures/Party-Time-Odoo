@@ -92,21 +92,28 @@ class ProjectVendorAssignment(models.Model):
             'ptt_confirmed_date': fields.Date.today(),
         })
         
-        # Get service type display name
-        service_type_label = dict(self._fields['service_type'].selection).get(
-            self.service_type, self.service_type
-        )
+        # Get service type display name (defensive - selection may not exist)
+        service_type_label = self.service_type
+        if 'service_type' in self._fields and hasattr(self._fields['service_type'], 'selection'):
+            selection = self._fields['service_type'].selection
+            if callable(selection):
+                try:
+                    selection = selection(self)
+                except Exception:
+                    selection = []
+            service_type_label = dict(selection).get(self.service_type, self.service_type)
         
-        # Notify project manager
-        self.project_id.message_post(
-            body=_("✅ %s accepted %s assignment for %s") % (
-                self.vendor_id.name,
-                service_type_label,
-                self.project_id.ptt_event_date or 'TBD'
-            ),
-            subject=_("Vendor Accepted: %s") % service_type_label,
-            message_type='notification',
-        )
+        # Notify project manager (defensive - project_id may be unset)
+        if self.project_id:
+            self.project_id.message_post(
+                body=_("✅ %s accepted %s assignment for %s") % (
+                    self.vendor_id.name if self.vendor_id else _("Unknown"),
+                    service_type_label,
+                    self.project_id.ptt_event_date or 'TBD'
+                ),
+                subject=_("Vendor Accepted: %s") % service_type_label,
+                message_type='notification',
+            )
         
         return True
     
@@ -123,21 +130,28 @@ class ProjectVendorAssignment(models.Model):
             'vendor_decline_reason': reason or _("No reason provided"),
         })
         
-        # Get service type display name
-        service_type_label = dict(self._fields['service_type'].selection).get(
-            self.service_type, self.service_type
-        )
+        # Get service type display name (defensive - selection may not exist)
+        service_type_label = self.service_type
+        if 'service_type' in self._fields and hasattr(self._fields['service_type'], 'selection'):
+            selection = self._fields['service_type'].selection
+            if callable(selection):
+                try:
+                    selection = selection(self)
+                except Exception:
+                    selection = []
+            service_type_label = dict(selection).get(self.service_type, self.service_type)
         
-        # URGENT notification to project manager
-        self.project_id.message_post(
-            body=_("❌ URGENT: %s declined %s assignment!<br/>Reason: %s") % (
-                self.vendor_id.name,
-                service_type_label,
-                reason or _("Not specified")
-            ),
-            subject=_("URGENT: Vendor Declined - %s") % service_type_label,
-            message_type='notification',
-        )
+        # URGENT notification to project manager (defensive - project_id may be unset)
+        if self.project_id:
+            self.project_id.message_post(
+                body=_("❌ URGENT: %s declined %s assignment!<br/>Reason: %s") % (
+                    self.vendor_id.name if self.vendor_id else _("Unknown"),
+                    service_type_label,
+                    reason or _("Not specified")
+                ),
+                subject=_("URGENT: Vendor Declined - %s") % service_type_label,
+                message_type='notification',
+            )
         
         return True
     

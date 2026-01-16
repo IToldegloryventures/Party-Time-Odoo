@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--
+        PTT Vendor Assignment Views
+        
+        This is where ALL vendor workflow logic belongs:
+        - Send Work Order button
+        - Resend button
+        - Status badges
+        - Signature dates
+        - Decline reasons
+        
+        These views are used when:
+        1. Editing an assignment inline from Project's Vendors tab
+        2. Opening assignment in a popup/dialog
+        3. Direct navigation to assignment record
+        
+        NEVER put these buttons/logic directly in Project views.
+    -->
+
+    <!-- ================================================== -->
+    <!-- TREE VIEW - Shown in Project's Vendors tab         -->
+    <!-- ================================================== -->
+    <record id="ptt_project_vendor_assignment_tree" model="ir.ui.view">
+        <field name="name">ptt.project.vendor.assignment.tree</field>
+        <field name="model">ptt.project.vendor.assignment</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="service_type"/>
+                <field name="vendor_id"/>
+                <field name="ptt_status" widget="badge" 
+                       decoration-warning="ptt_status == 'pending'"
+                       decoration-success="ptt_status in ('confirmed', 'completed')"
+                       decoration-danger="ptt_status == 'cancelled'"/>
+                <field name="actual_cost" widget="monetary"/>
+                <field name="vendor_signature_date" string="Signed" optional="show"/>
+                <field name="ptt_confirmed_date" optional="show"/>
+                <!-- Workflow buttons belong HERE, not in Project view -->
+                <button name="action_send_work_order" type="object" 
+                        string="Send WO" class="btn-primary btn-sm"
+                        invisible="ptt_status != 'pending' or not vendor_id"
+                        groups="ptt_vendor_management.group_vendor_user"/>
+                <button name="action_resend_work_order" type="object" 
+                        string="Resend" class="btn-secondary btn-sm"
+                        invisible="ptt_status == 'completed'"
+                        optional="hide"
+                        groups="ptt_vendor_management.group_vendor_user"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================== -->
+    <!-- FORM VIEW - Popup when opening assignment detail   -->
+    <!-- ================================================== -->
+    <record id="ptt_project_vendor_assignment_form" model="ir.ui.view">
+        <field name="name">ptt.project.vendor.assignment.form</field>
+        <field name="model">ptt.project.vendor.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Vendor Assignment">
+                <header>
+                    <!-- Workflow buttons in header -->
+                    <button name="action_send_work_order" type="object"
+                            string="Send Work Order" class="btn-primary"
+                            invisible="ptt_status != 'pending' or not vendor_id"
+                            groups="ptt_vendor_management.group_vendor_user"/>
+                    <button name="action_resend_work_order" type="object"
+                            string="Resend Work Order" class="btn-secondary"
+                            invisible="ptt_status in ('pending', 'completed')"
+                            groups="ptt_vendor_management.group_vendor_user"/>
+                    <button name="action_mark_completed" type="object"
+                            string="Mark Completed" class="btn-success"
+                            invisible="ptt_status != 'confirmed'"
+                            groups="ptt_vendor_management.group_vendor_manager"/>
+                    <field name="ptt_status" widget="statusbar"
+                           statusbar_visible="pending,confirmed,completed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Assignment">
+                            <field name="project_id" readonly="1"/>
+                            <field name="service_type"/>
+                            <field name="vendor_id"/>
+                            <field name="actual_cost" widget="monetary"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="ptt_arrival_time"/>
+                            <field name="ptt_confirmed_date"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Vendor Contact">
+                        <group>
+                            <field name="ptt_contact_person"/>
+                            <field name="ptt_contact_phone"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="notes" nolabel="1" placeholder="General notes..."/>
+                            </group>
+                            <group>
+                                <field name="ptt_equipment_notes" nolabel="1" placeholder="Equipment notes..."/>
+                            </group>
+                        </page>
+                        
+                        <page string="Vendor Response" name="vendor_response"
+                              invisible="ptt_status == 'pending'">
+                            <group>
+                                <group string="Acceptance">
+                                    <field name="vendor_signature_date" readonly="1"/>
+                                    <field name="vendor_signature" widget="image" readonly="1"
+                                           invisible="not vendor_signature"/>
+                                </group>
+                                <group string="Decline" invisible="ptt_status != 'cancelled'">
+                                    <field name="vendor_decline_reason" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Portal Access" name="portal_access"
+                              groups="ptt_vendor_management.group_vendor_manager">
+                            <group>
+                                <field name="access_token" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>
