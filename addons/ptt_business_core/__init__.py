@@ -47,15 +47,6 @@ def post_init_hook(env):
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error in post_init_hook: {e}")
     
-    # === RENAME PRODUCTS WITH [UPDATED] SUFFIX ===
-    # Rename existing products to include [UPDATED] suffix for migration identification
-    try:
-        _logger.info("PTT Business Core: Renaming products with [UPDATED] suffix")
-        _rename_products_with_updated_suffix(env)
-    except Exception as e:
-        _logger.warning(f"PTT Business Core: Error renaming products: {e}")
-        _logger.exception("PTT Business Core: Product renaming failed")
-    
     # === CONFIGURE VARIANT PRICING FOR ALL SERVICES ===
     # Automatically configure price_extra for all services with Event Type/Service Tier attributes
     try:
@@ -79,58 +70,6 @@ def post_init_hook(env):
     # Accounting team should verify mappings after migration
     
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
-
-
-def _rename_products_with_updated_suffix(env):
-    """
-    Rename products to include [UPDATED] suffix for migration identification.
-    This ensures products created in this branch can be easily identified after migration.
-    """
-    # Products that should have [UPDATED] suffix
-    products_to_rename = [
-        {'xmlid': 'ptt_business_core.product_template_dj_services', 'name': 'DJ Services [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_band_services', 'name': 'Band Services [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_dancers_characters', 'name': 'Dancers & Characters [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_casino_services', 'name': 'Casino Services [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_photography', 'name': 'Photography [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_videography', 'name': 'Videography [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_photo_booth', 'name': 'Photo Booth [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_caricature_artist', 'name': 'Caricature Artist [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_balloon_face_painters', 'name': 'Balloon & Face Painters [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_catering_bartender', 'name': 'Catering & Bartender Services [UPDATED]'},
-        {'xmlid': 'ptt_business_core.product_template_event_planning', 'name': 'Event Planning Service [UPDATED]'},
-    ]
-    
-    renamed_count = 0
-    for product_info in products_to_rename:
-        try:
-            # Try to find by XML ID first
-            xmlid = product_info['xmlid']
-            module, xml_id = xmlid.split('.', 1)
-            try:
-                product = env.ref(xmlid, raise_if_not_found=False)
-                if product and product.name != product_info['name']:
-                    product.write({'name': product_info['name']})
-                    renamed_count += 1
-                    _logger.info(f"PTT Business Core: Renamed {product_info['name']} (XML ID: {xmlid})")
-            except Exception:
-                # If XML ID not found, try to find by name pattern
-                old_name = product_info['name'].replace(' [UPDATED]', '')
-                product = env['product.template'].search([
-                    ('name', '=ilike', old_name),
-                    ('name', 'not ilike', '%[UPDATED]%')
-                ], limit=1)
-                if product:
-                    product.write({'name': product_info['name']})
-                    renamed_count += 1
-                    _logger.info(f"PTT Business Core: Renamed {old_name} → {product_info['name']}")
-        except Exception as e:
-            _logger.warning(f"PTT Business Core: Error renaming product {product_info.get('xmlid', 'unknown')}: {e}")
-    
-    if renamed_count > 0:
-        _logger.info(f"PTT Business Core: ✅ Renamed {renamed_count} product(s) with [UPDATED] suffix")
-    else:
-        _logger.info("PTT Business Core: All products already have [UPDATED] suffix or not found")
 
 
 def _configure_all_service_variants(env):
@@ -201,7 +140,23 @@ def _configure_all_service_variants(env):
     
     for service in services.sorted('name'):
         service_name = service.name
+        # Match by exact name OR by XML ID (for products with [UPDATED] suffix)
         service_config = SERVICE_PRICING.get(service_name)
+        if not service_config:
+            # Try to match by XML ID - get the XML ID for this product
+            try:
+                xmlid_obj = env['ir.model.data'].search([
+                    ('model', '=', 'product.template'),
+                    ('res_id', '=', service.id),
+                    ('module', '=', 'ptt_business_core')
+                ], limit=1)
+                if xmlid_obj:
+                    # Match service name without [UPDATED] for lookup
+                    base_name = service_name.replace(' [UPDATED]', '')
+                    # Try matching with [UPDATED] suffix
+                    service_config = SERVICE_PRICING.get(f"{base_name} [UPDATED]") or SERVICE_PRICING.get(base_name)
+            except Exception:
+                pass
         
         # Skip if no explicit configuration (will default to 0.0, can be set via wizard)
         if not service_config:
