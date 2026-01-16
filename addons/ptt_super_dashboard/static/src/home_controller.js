@@ -23,7 +23,7 @@ import { CommunicationDashboard } from "./components/communication_dashboard";
  * Aggregates all home components and handles tab navigation.
  */
 export class HomeController extends Component {
-    static template = "ptt_operational_dashboard.HomeController";
+    static template = "ptt_super_dashboard.HomeController";
     static components = {
         HomeNavigation,
         MyWorkSection,
