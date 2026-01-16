@@ -47,6 +47,16 @@ def post_init_hook(env):
     except Exception as e:
         _logger.warning(f"PTT Business Core: Error in post_init_hook: {e}")
     
+    # === FIX BROKEN PROJECTS (Missing company_id or partner_id) ===
+    # CRITICAL: Odoo 19 requires company_id and partner_id to prevent frontend OwlError
+    # Projects without these fields will crash the Projects app
+    try:
+        _logger.info("PTT Business Core: Fixing projects with missing company_id or partner_id")
+        _fix_broken_projects(env)
+    except Exception as e:
+        _logger.warning(f"PTT Business Core: Error fixing broken projects: {e}")
+        _logger.exception("PTT Business Core: Project fix failed")
+    
     # === CONFIGURE VARIANT PRICING FOR ALL SERVICES ===
     # Automatically configure price_extra for all services with Event Type/Service Tier attributes
     try:
@@ -70,6 +80,41 @@ def post_init_hook(env):
     # Accounting team should verify mappings after migration
     
     _logger.info("PTT Business Core: post_init_hook cleanup completed")
+
+
+def _fix_broken_projects(env):
+    """
+    Fix project.project records with missing company_id or partner_id.
+    
+    Odoo 19 requires company_id and partner_id to prevent frontend OwlError.
+    Projects without these fields will crash the Projects app.
+    """
+    fixed_count = 0
+    
+    # Fix projects missing company_id
+    projects_no_company = env['project.project'].search([('company_id', '=', False)])
+    if projects_no_company:
+        for project in projects_no_company:
+            # Set company_id from template's company or default company
+            project.write({'company_id': env.company.id})
+            fixed_count += 1
+            _logger.info(f"PTT Business Core: Fixed project {project.name} (ID: {project.id}) - set company_id")
+    
+    # Fix projects missing partner_id (set to False if not available - prevents OwlError)
+    projects_no_partner = env['project.project'].search([
+        ('partner_id', '=', False),
+        ('is_template', '=', False)  # Templates don't need partner_id
+    ])
+    if projects_no_partner:
+        # Ensure partner_id is explicitly False (not None) for Odoo 19
+        projects_no_partner.write({'partner_id': False})
+        fixed_count += len(projects_no_partner)
+        _logger.info(f"PTT Business Core: Fixed {len(projects_no_partner)} projects - set partner_id to False")
+    
+    if fixed_count > 0:
+        _logger.info(f"PTT Business Core: ✅ Fixed {fixed_count} project(s) with missing company_id or partner_id")
+    else:
+        _logger.info("PTT Business Core: All projects already have company_id and partner_id set")
 
 
 def _configure_all_service_variants(env):
