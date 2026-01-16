@@ -1,0 +1,281 @@
+https://www.odoo.com/documentation/19.0/developer/reference.html
+
+Use the linnk above to access a subpage for each of the following topics: 
+
+
+Reference
+Server framework
+ORM API
+Changelog
+Models
+Fields
+Constraints and indexes
+Recordsets
+Method decorators
+Environment
+Common ORM methods
+Inheritance and extension
+Error management
+Data Files
+Structure
+Core operations
+Shortcuts
+CSV data files
+Actions
+Bindings
+Window Actions (ir.actions.act_window)
+URL Actions (ir.actions.act_url)
+Server Actions (ir.actions.server)
+Report Actions (ir.actions.report)
+Client Actions (ir.actions.client)
+Scheduled Actions (ir.cron)
+QWeb Reports
+Report template
+Paper Format
+Custom Reports
+Custom fonts
+Reports are web pages
+Module Manifests
+Manifest
+Security in Odoo
+Access Rights
+Record Rules
+Field Access
+Security Pitfalls
+Performance
+Profiling
+Good practices
+Testing Odoo
+Testing Python code
+Testing JS code
+Integration Testing
+Performance Testing
+Web Controllers
+Controllers
+API
+Mixins and Useful Classes
+Messaging features
+Website features
+Others
+Web framework
+Framework Overview
+Introduction
+Code structure
+WebClient Architecture
+Environment
+Building Blocks
+Context
+Python Interpreter
+Domains
+Bus
+Browser Object
+Debug mode
+Assets
+Asset types
+Bundles
+Lazy loading
+The asset model (ir.asset)
+Javascript Modules
+Plain Javascript files
+Native Javascript Modules
+Odoo Module System
+Owl components
+Using Owl components
+Best practices
+Reference List
+Registries
+Registry API
+Reference List
+Services
+Defining a service
+Using a service
+Reference List
+Hooks
+useAssets
+useAutofocus
+useBus
+usePager
+usePosition
+useSpellCheck
+Patching code
+Description
+Patching a simple object
+Patching a javascript class
+Patching a component
+Removing a patch
+Applying the same patch to multiple objects
+Error handling
+Errors in JavaScript
+Lifecycle of errors within the Odoo JS framework
+Avoid throwing errors as much as possible
+Catching errors
+Error free control flow
+When to throw errors
+Javascript Reference
+Overview
+Web client
+Loading Javascript Code
+Registries
+Services
+Notifications
+Systray
+Translation management
+Session
+Views
+Fields
+Client actions
+Mobile JavaScript
+Introduction
+How does it work?
+How to use it?
+QWeb Templates
+Data output
+Conditionals
+Loops
+attributes
+setting variables
+calling sub-templates
+Advanced Output
+Python
+Javascript
+Odoo Editor
+Powerbox
+JavaScript Unit Testing
+Testing Framework
+Setup
+Writing tests
+User interface
+View records
+Generic structure
+View types
+Fields
+Inheritance
+Model commons
+View architectures
+Generic architecture
+Python expression
+Form
+Settings
+List
+Search
+Kanban
+QWeb
+Graph
+Pivot
+Calendar
+Activity
+Cohort
+Grid
+Gantt
+Map
+SCSS inheritance
+Overview
+SCSS’s !default directive
+Odoo’s SCSS inheritance system
+UI icons
+Odoo UI icons
+Odoo Spreadsheet icons
+Standard modules
+Accounting
+Account Tag
+Account
+Fiscal Position
+Account Group
+Report
+Report Line
+Taxes
+Tax Repartitions
+Payment
+Payment Method
+Payment Provider
+Payment Token
+Payment Transaction
+Command-line interface (CLI)
+Version
+help - Show available commands
+server - Run the Server
+Testing
+Database
+Emails
+Internationalisation
+Advanced Options
+Configuration file
+shell - Open a Shell
+db - Manage a Database
+db init - Initialize a Database
+db dump - Save a Database Dump
+db load - Load a Database Dump
+db duplicate - Duplicate a Database
+db rename - Rename a Database
+db drop - Delete a Database
+i18n - Internationalization
+i18n import - Import i18n files
+i18n export - Export i18n files
+i18n loadlang - Load language
+module - Manage modules
+module install - Install modules
+module uninstall - Uninstall modules
+module upgrade - Upgrade modules
+module forcedemo - Force demo data install
+neutralize - Neutralize a Database
+scaffold - Scaffold a Module
+populate - Populate a Database
+cloc - Count Lines of Code
+Processed files
+Identifying Extra Modules
+Error Handling
+obfuscate - Obfuscate database
+deploy - Deploy module remotely
+upgrade_code - Rewrite source code
+Code upgrade scripts
+Upgrades
+Upgrade scripts
+Writing upgrade scripts
+Phases of upgrade scripts
+Upgrade utils
+Installation
+Using upgrade utils
+Util functions
+Testing upgrade scripts
+External JSON-2 API
+API
+Request
+Response
+Configuration
+API Key
+Access Rights
+Database
+Transaction
+Code Example
+Dynamic Documentation
+Migrating from XML-RPC / JSON-RPC
+Common service
+Database service
+Object service
+External RPC API
+Connection
+Configuration
+Logging in
+Calling methods
+List records
+Count records
+Read records
+List record fields
+Search and read
+Create records
+Update records
+Delete records
+Inspection and introspection
+Extract API
+Overview
+Version
+Flow
+Parse
+Routes
+Request
+Response
+Get results
+Routes
+Request
+Response
+Integration Testing

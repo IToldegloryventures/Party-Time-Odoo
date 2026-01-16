@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+"""
+Wrapper script to run Odoo from project root
+This allows running: ./odoo-bin -c odoo.conf
+from the project root directory
+"""
+import sys
+import os
+
+# Add odoo directory to Python path
+odoo_dir = os.path.join(os.path.dirname(__file__), 'odoo')
+sys.path.insert(0, odoo_dir)
+
+# Change to odoo directory to run odoo-bin
+os.chdir(odoo_dir)
+
+# Import and run Odoo CLI
+import odoo.cli
+
+if __name__ == "__main__":
+    odoo.cli.main()

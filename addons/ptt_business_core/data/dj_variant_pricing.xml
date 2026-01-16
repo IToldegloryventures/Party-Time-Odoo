@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        DJ Service Variant Pricing Configuration
+        
+        NOTE: product.template.attribute.value records are AUTO-CREATED by Odoo
+        when attributes are linked to a template. We cannot create them via XML.
+        
+        The price_extra values are set via the server action in dj_variant_data.xml
+        which updates the existing records.
+        
+        BASE PRICE: $300/hr (Social Essential MIN - set on product.template)
+        
+        PRICING STRATEGY:
+        - Store MIN price as base, sales reps can negotiate up to MAX
+        - price_extra on attribute values creates final variant price
+        - Final Price = Base ($300) + Event Type Extra + Tier Extra
+        
+        RESULTING PRICES (All match spreadsheet MIN values):
+        ┌─────────────┬───────────┬─────────┬─────────┐
+        │ Event Type  │ Essential │ Classic │ Premier │
+        ├─────────────┼───────────┼─────────┼─────────┤
+        │ Social      │ $300      │ $425    │ $600    │
+        │ Corporate   │ $300      │ $425    │ $600    │
+        │ Wedding     │ $350      │ $475    │ $650    │
+        └─────────────┴───────────┴─────────┴─────────┘
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
+    -->
+    <data noupdate="0">
+        <!-- 
+            Price extras are configured via server action "Configure DJ Service Variants"
+            in dj_variant_data.xml. This file is kept for documentation purposes.
+            
+            EVENT TYPE PRICE ADJUSTMENTS (from Social base):
+            - Social: +$0 (base pricing)
+            - Corporate: +$0 (same pricing structure as Social)
+            - Wedding: +$50 (Wedding Essential $350 vs Social Essential $300)
+            
+            SERVICE TIER PRICE ADJUSTMENTS (from Essential base):
+            - Essential: +$0 (base tier)
+            - Classic: +$125 ($425 - $300)
+            - Premier: +$300 ($600 - $300)
+        -->
+    </data>
+</odoo>

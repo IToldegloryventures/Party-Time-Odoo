@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+ptt_access_justcall_config_user,ptt.justcall.config.user,model_ptt_justcall_config,base.group_user,1,0,0,0
+ptt_access_justcall_config_manager,ptt.justcall.config.manager,model_ptt_justcall_config,base.group_system,1,1,1,1
+ptt_access_justcall_call_user,ptt.justcall.call.user,model_ptt_justcall_call,base.group_user,1,0,0,0
+ptt_access_justcall_call_manager,ptt.justcall.call.manager,model_ptt_justcall_call,base.group_system,1,1,1,1
+ptt_access_justcall_user_mapping_user,ptt.justcall.user.mapping.user,model_ptt_justcall_user_mapping,base.group_user,1,0,0,0
+ptt_access_justcall_user_mapping_manager,ptt.justcall.user.mapping.manager,model_ptt_justcall_user_mapping,base.group_system,1,1,1,1

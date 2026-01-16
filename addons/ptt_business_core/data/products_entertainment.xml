@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Entertainment Products & Services
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
+        
+        IMPORTANT: Standard Odoo fields used (DO NOT duplicate):
+        - categ_id: Many2one to product.category
+        - type: Selection (service/consu/product)
+        - list_price: Float (sale price) - HOURLY RATE for services
+        - standard_price: Float (cost) - HOURLY COST for services
+        - sale_ok: Boolean
+        - purchase_ok: Boolean
+        - description_sale: Text
+        - default_code: Char (SKU)
+        - uom_id: Unit of Measure (Hours for services)
+        
+        DJ PRICING MODEL (Jan 2026):
+        - list_price = BASE hourly rate ($300 = Social Essential MIN)
+        - Variant pricing via product.template.attribute.value price_extra
+        - See dj_variant_pricing.xml for tier adjustments
+    -->
+    <data noupdate="0">
+        <!-- ============================================ -->
+        <!-- DJ & MC SERVICES - PRODUCT TEMPLATE (PARENT) -->
+        <!-- Creates 9 variants via attributes            -->
+        <!-- Base price: $300/hr (Social Essential MIN)   -->
+        <!-- Variants adjust via price_extra              -->
+        <!-- ============================================ -->
+        <record id="product_template_dj_services" model="product.template">
+            <field name="name">DJ &amp; MC Services</field>
+            <field name="default_code">DJ-SVC</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">300.0</field>
+            <field name="standard_price">150.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional DJ services for your event. Pricing is per hour. Package inclusions and rates vary by Event Type and Service Tier selected. Minimum hours may apply based on tier.</field>
+        </record>
+
+        <!-- Link Event Type Attribute to DJ Template -->
+        <record id="dj_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_event_social'),
+                ref('pav_event_corporate'),
+                ref('pav_event_wedding'),
+            ])]"/>
+        </record>
+
+        <!-- Link Service Tier Attribute to DJ Template -->
+        <record id="dj_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_dj_services"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('pav_tier_essentials'),
+                ref('pav_tier_classic'),
+                ref('pav_tier_premier'),
+            ])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- OTHER ENTERTAINMENT - SINGLE PRODUCTS       -->
+        <!-- (No variants - simple product.product)      -->
+        <!-- ============================================ -->
+        <record id="product_band_services" model="product.product">
+            <field name="name">Band Services</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Live band performance for your event.</field>
+        </record>
+        
+        <record id="product_dancers_characters" model="product.product">
+            <field name="name">Dancers &amp; Characters</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        
+        <record id="product_casino_services" model="product.product">
+            <field name="name">Casino Services</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+    </data>
+</odoo>

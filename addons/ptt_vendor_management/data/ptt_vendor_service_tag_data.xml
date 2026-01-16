@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        PTT Vendor Service Tags - Seed Data
+        
+        These service tags categorize what services vendors provide.
+        Used for filtering vendors when assigning to events.
+        
+        Colors: 1=red, 2=orange, 3=yellow, 4=green, 5=aqua, 6=blue, 
+                7=purple, 8=pink, 9=gray, 10=olive, 11=teal
+    -->
+
+    <record id="service_tag_dj" model="ptt.vendor.service.tag">
+        <field name="name">DJ &amp; MC Services</field>
+        <field name="code">dj</field>
+        <field name="sequence">10</field>
+        <field name="color">6</field>
+        <field name="description">Disc jockey and master of ceremonies services for events.</field>
+    </record>
+
+    <record id="service_tag_photovideo" model="ptt.vendor.service.tag">
+        <field name="name">Photo/Video</field>
+        <field name="code">photovideo</field>
+        <field name="sequence">20</field>
+        <field name="color">8</field>
+        <field name="description">Photography and videography services.</field>
+    </record>
+
+    <record id="service_tag_live_entertainment" model="ptt.vendor.service.tag">
+        <field name="name">Live Entertainment</field>
+        <field name="code">live_entertainment</field>
+        <field name="sequence">30</field>
+        <field name="color">7</field>
+        <field name="description">Live bands, musicians, and performers.</field>
+    </record>
+
+    <record id="service_tag_lighting" model="ptt.vendor.service.tag">
+        <field name="name">Lighting/AV</field>
+        <field name="code">lighting</field>
+        <field name="sequence">40</field>
+        <field name="color">3</field>
+        <field name="description">Lighting design and audio/visual equipment services.</field>
+    </record>
+
+    <record id="service_tag_decor" model="ptt.vendor.service.tag">
+        <field name="name">Decor/Thematic Design</field>
+        <field name="code">decor</field>
+        <field name="sequence">50</field>
+        <field name="color">2</field>
+        <field name="description">Event decoration and thematic design services.</field>
+    </record>
+
+    <record id="service_tag_photobooth" model="ptt.vendor.service.tag">
+        <field name="name">Photo Booth</field>
+        <field name="code">photobooth</field>
+        <field name="sequence">60</field>
+        <field name="color">5</field>
+        <field name="description">Photo booth rental and operation services.</field>
+    </record>
+
+    <record id="service_tag_caricature" model="ptt.vendor.service.tag">
+        <field name="name">Caricature Artist</field>
+        <field name="code">caricature</field>
+        <field name="sequence">70</field>
+        <field name="color">10</field>
+        <field name="description">Caricature and sketch artist entertainment.</field>
+    </record>
+
+    <record id="service_tag_casino" model="ptt.vendor.service.tag">
+        <field name="name">Casino Services</field>
+        <field name="code">casino</field>
+        <field name="sequence">80</field>
+        <field name="color">1</field>
+        <field name="description">Casino game rentals and dealers for casino-themed events.</field>
+    </record>
+
+    <record id="service_tag_catering" model="ptt.vendor.service.tag">
+        <field name="name">Catering &amp; Bartender Services</field>
+        <field name="code">catering</field>
+        <field name="sequence">90</field>
+        <field name="color">4</field>
+        <field name="description">Food catering and bartending services.</field>
+    </record>
+
+    <record id="service_tag_transportation" model="ptt.vendor.service.tag">
+        <field name="name">Transportation</field>
+        <field name="code">transportation</field>
+        <field name="sequence">100</field>
+        <field name="color">9</field>
+        <field name="description">Shuttle, limo, and transportation services.</field>
+    </record>
+
+    <record id="service_tag_rentals" model="ptt.vendor.service.tag">
+        <field name="name">Rentals (Other)</field>
+        <field name="code">rentals</field>
+        <field name="sequence">110</field>
+        <field name="color">11</field>
+        <field name="description">Miscellaneous equipment and item rentals.</field>
+    </record>
+
+    <record id="service_tag_staffing" model="ptt.vendor.service.tag">
+        <field name="name">Staffing</field>
+        <field name="code">staffing</field>
+        <field name="sequence">120</field>
+        <field name="color">9</field>
+        <field name="description">Event staffing and personnel services.</field>
+    </record>
+
+    <record id="service_tag_venue_sourcing" model="ptt.vendor.service.tag">
+        <field name="name">Venue Sourcing</field>
+        <field name="code">venue_sourcing</field>
+        <field name="sequence">130</field>
+        <field name="color">11</field>
+        <field name="description">Venue finding and booking assistance services.</field>
+    </record>
+
+    <record id="service_tag_coordination" model="ptt.vendor.service.tag">
+        <field name="name">Event Planning Services</field>
+        <field name="code">coordination</field>
+        <field name="sequence">140</field>
+        <field name="color">7</field>
+        <field name="description">Event coordination and planning services.</field>
+    </record>
+
+</odoo>

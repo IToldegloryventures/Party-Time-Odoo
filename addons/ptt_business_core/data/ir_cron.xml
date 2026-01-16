@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        PTT Scheduled Actions (Cron Jobs)
+        Per Odoo 19 docs: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html#scheduled-actions
+    -->
+
+    <!-- 10-Day Event Reminder Check -->
+    <record id="ir_cron_10day_event_reminder" model="ir.cron">
+        <field name="name">PTT: 10-Day Event Reminder</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_10day_event_reminder()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- 3-Day Vendor Reminder Check -->
+    <record id="ir_cron_3day_vendor_reminder" model="ir.cron">
+        <field name="name">PTT: 3-Day Vendor Reminder</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_3day_vendor_reminder()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>

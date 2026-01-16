@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="1">
+    <!-- Event-Specific Task Types for Party Time Texas -->
+    
+    <!-- To Do -->
+    <record id="task_type_todo" model="project.task.type">
+        <field name="name">To Do</field>
+    </record>
+    
+    <!-- In Progress -->
+    <record id="task_type_in_progress" model="project.task.type">
+        <field name="name">In Progress</field>
+    </record>
+    
+    <!-- Waiting - Folded (not in active workflow) -->
+    <record id="task_type_waiting" model="project.task.type">
+        <field name="name">Waiting</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+    <!-- Done -->
+    <record id="task_type_done" model="project.task.type">
+        <field name="name">Done</field>
+    </record>
+    
+    <!-- Cancelled - Folded (not in active workflow) -->
+    <record id="task_type_cancelled" model="project.task.type">
+        <field name="name">Cancelled</field>
+        <field name="fold" eval="True"/>
+    </record>
+    
+</odoo>

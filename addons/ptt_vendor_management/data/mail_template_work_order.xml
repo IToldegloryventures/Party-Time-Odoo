@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- 
+            Email Template for Vendor Work Order Assignment
+            
+            Sent when internal staff clicks "Send Work Order" button.
+            Includes portal link for vendor to accept/decline.
+            
+            SECURITY: Only shows vendor's payment, NOT customer price.
+        -->
+        <record id="email_template_vendor_work_order" model="mail.template">
+            <field name="name">Vendor Work Order Assignment</field>
+            <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+            <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.vendor_id.email }}</field>
+            <field name="subject">New Event Assignment: {{ object.project_id.name }}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #875A7B; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+        <h2 style="margin: 0;">New Event Assignment</h2>
+    </div>
+    
+    <div style="background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none;">
+        <p style="font-size: 16px;">Hi <strong>{{ object.vendor_id.name }}</strong>,</p>
+        
+        <p>You have been assigned to provide <strong>{{ object.service_type }}</strong> services for an upcoming event.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0; background: white;">
+            <tr>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold; width: 35%;">Event</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.name }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Date</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.ptt_event_date or 'TBD' }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Venue</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.ptt_venue_name or 'TBD' }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Your Service</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.service_type }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Your Payment</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; font-size: 18px; color: #28a745;"><strong>${{ "%.2f"|format(object.actual_cost) }}</strong></td>
+            </tr>
+            % if object.ptt_arrival_time:
+            <tr>
+                <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Arrival/Setup Time</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.ptt_arrival_time }}</td>
+            </tr>
+            % endif
+        </table>
+        
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{ object.get_base_url() }}/my/work-orders/{{ object.id }}?access_token={{ object.access_token }}" 
+               style="background-color: #875A7B; color: white; padding: 15px 40px; 
+                      text-decoration: none; border-radius: 5px; font-weight: bold;
+                      display: inline-block; font-size: 16px;">
+                View Work Order &amp; Respond
+            </a>
+        </p>
+        
+        <p style="color: #666; font-size: 14px;">
+            <strong>Please respond within 24 hours.</strong><br/>
+            Click the button above to view full details and accept or decline this assignment.
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;"/>
+        
+        <p style="color: #999; font-size: 12px;">
+            Questions? Reply to this email or contact us at {{ object.project_id.company_id.phone or '' }}.
+        </p>
+    </div>
+    
+    <div style="background-color: #333; color: #ccc; padding: 15px; border-radius: 0 0 8px 8px; text-align: center; font-size: 12px;">
+        {{ object.project_id.company_id.name or 'Party Time Texas' }}
+    </div>
+</div>
+            ]]></field>
+        </record>
+        
+    </data>
+</odoo>

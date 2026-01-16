@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ptt_operational_dashboard.AssignedComments">
+        <div class="ptt-section">
+            <div class="ptt-section-header">
+                <h2><i class="fa fa-comments"/> Assigned Comments</h2>
+            </div>
+            
+            <div class="ptt-card">
+                <t t-if="props.comments.length === 0">
+                    <div class="ptt-empty-state">
+                        <i class="fa fa-comment-o"/>
+                        <p>No comments mentioning you</p>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-foreach="props.comments.slice(0, 10)" t-as="comment" t-key="comment.id">
+                        <div class="ptt-comment-item" t-on-click="() => this.onCommentClick(comment)">
+                            <div class="ptt-comment-avatar">
+                                <t t-esc="getAuthorInitials(comment.author_name)"/>
+                            </div>
+                            <div class="ptt-comment-content">
+                                <div class="ptt-comment-header">
+                                    <span class="ptt-comment-author" t-esc="comment.author_name"/>
+                                    <span class="ptt-comment-record">
+                                        on <t t-esc="getModelLabel(comment.model)"/>: 
+                                        <t t-esc="comment.record_name"/>
+                                    </span>
+                                    <span class="ptt-comment-date" t-esc="formatDate(comment.date)"/>
+                                </div>
+                                <div class="ptt-comment-body">
+                                    <t t-esc="truncateText(stripHtml(comment.body))"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
+

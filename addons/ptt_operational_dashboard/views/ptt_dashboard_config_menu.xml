@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Configuration Menu -->
+    <menuitem id="menu_ptt_dashboard_config"
+              name="Dashboard Configuration"
+              parent="base.menu_administration"
+              sequence="100"
+              action="action_ptt_dashboard_config"
+              groups="base.group_system"/>
+
+    <!-- NOTE: Dashboard Editor menu items (Metric Config, Layout Config, Editor) removed in v19.0.1.0.3 -->
+    <!-- Phase 2 feature - drag-and-drop editor will be reintroduced later -->
+</odoo>
+
+

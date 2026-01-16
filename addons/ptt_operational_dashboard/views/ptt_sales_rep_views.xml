@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sales Rep Form View -->
+    <record id="view_ptt_sales_rep_form" model="ir.ui.view">
+        <field name="name">ptt.sales.rep.form</field>
+        <field name="model">ptt.sales.rep</field>
+        <field name="arch" type="xml">
+            <form string="Sales Representative">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="name" readonly="1"/>
+                            <field name="active"/>
+                            <field name="show_in_dashboard"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group string="KPIs (Read-only)">
+                            <field name="leads_count" readonly="1"/>
+                            <field name="quotes_count" readonly="1"/>
+                            <field name="events_count" readonly="1"/>
+                            <field name="outstanding_amount" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Sales Rep List View -->
+    <record id="view_ptt_sales_rep_tree" model="ir.ui.view">
+        <field name="name">ptt.sales.rep.tree</field>
+        <field name="model">ptt.sales.rep</field>
+        <field name="arch" type="xml">
+            <list string="Sales Representatives">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="active"/>
+                <field name="show_in_dashboard"/>
+                <field name="leads_count"/>
+                <field name="quotes_count"/>
+                <field name="events_count"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Sales Rep Action -->
+    <record id="action_ptt_sales_rep" model="ir.actions.act_window">
+        <field name="name">Sales Representatives</field>
+        <field name="res_model">ptt.sales.rep</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Sales Representative!
+            </p>
+            <p>
+                Link Odoo users to sales rep functionality for dashboard tracking.
+            </p>
+        </field>
+    </record>
+</odoo>
+

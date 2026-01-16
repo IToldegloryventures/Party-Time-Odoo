@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PTT Operational Dashboard - Search Filters -->
+    <!-- 
+        NOTE: All pre-configured ir.filters records have been REMOVED.
+        
+        REASON: The ir.filters model changed in Odoo 19:
+        - 'user_id' field no longer exists (was used for filter ownership)
+        - Complex domain expressions caused compatibility issues
+        
+        Users can create their own saved filters through:
+        Settings > Technical > User Interface > Filters
+        
+        Or via the search bar in any list view:
+        1. Set your filters
+        2. Click "Favorites" dropdown
+        3. Click "Save current search"
+    -->
+</odoo>

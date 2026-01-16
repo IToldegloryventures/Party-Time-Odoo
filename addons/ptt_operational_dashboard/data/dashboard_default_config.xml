@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Create default dashboard configuration -->
+    <record id="ptt_dashboard_config_default" model="ptt.dashboard.config">
+        <field name="default_date_range">this_month</field>
+        <field name="show_all_users" eval="True"/>
+        <field name="min_events_to_show" eval="0"/>
+        <field name="enable_export" eval="True"/>
+    </record>
+
+    <!-- NOTE: Dashboard Editor default data (Metric Config, Layout Config) removed in v19.0.1.0.3 -->
+    <!-- Phase 2 feature - drag-and-drop editor will be reintroduced later -->
+</odoo>
+

@@ -1,0 +1,141 @@
+# PTT Vendor Management App - Implementation Plan
+
+**Created:** January 10, 2026  
+**Status:** Phase 1 Complete, Phases 2-5 Pending
+
+---
+
+## Overview
+
+Standalone Vendor Management app for internal use by the PTT sales team to:
+- Look up vendors by service and tier
+- Review vendor applications
+- Track vendor compliance (documents)
+- Manage vendor contacts
+
+---
+
+## Completed ✅
+
+### Phase 1: Foundation - Service Tags & Contact Roles
+
+| Task | Status |
+|------|--------|
+| Create `ptt.vendor.service.tag` model | ✅ Done |
+| Add `x_vendor_service_tag_ids` (Many2many) to `res.partner` | ✅ Done |
+| Add `x_vendor_tier` (Gold/Silver/Bronze) to `res.partner` | ✅ Done |
+| Add `x_vendor_contact_role` (Char) to `res.partner` | ✅ Done |
+| Create views/menus for service tag management | ✅ Done |
+| Add security access for `ptt.vendor.service.tag` | ✅ Done |
+| Create seed data for common service tags | ✅ Done |
+
+**Files Created:**
+- `models/ptt_vendor_service_tag.py`
+- `views/ptt_vendor_service_tag_view.xml`
+- `data/ptt_vendor_service_tag_data.xml`
+
+**Files Updated:**
+- `models/res_partner.py`
+- `models/__init__.py`
+- `views/ptt_res_partner_view.xml`
+- `views/ptt_vendor_config_menus.xml`
+- `security/ir.model.access.csv`
+- `__manifest__.py`
+
+---
+
+## Pending Phases 📋
+
+### Phase 2: Vendor Status Workflow
+
+**Goal:** Add status field and status-driven menu views
+
+| Task | Description |
+|------|-------------|
+| Add `x_vendor_status` field | Selection: Application, Verification Pending, Active, Inactive |
+| Create status change methods | `action_approve()`, `action_request_verification()`, etc. |
+| Add statusbar widget to vendor form | Visual status indicator |
+| Create filtered menu views | Active Vendors, Applications, Verification Pending tabs |
+
+---
+
+### Phase 3: Vendor App Menu Structure
+
+**Goal:** Standalone "Vendor Management" app with status-driven tabs
+
+| Menu Item | Filter | Description |
+|-----------|--------|-------------|
+| 🔵 Active Vendors | `status = 'active'` | Approved, compliant vendors |
+| 🟡 Applications | `status = 'application'` | New vendor submissions |
+| 🟠 Verification Pending | `status = 'verification_pending'` | Approved but missing documents |
+| ⚫ All Vendors | No filter | Master list with status filters |
+
+---
+
+### Phase 4: Document Management Integration
+
+**Goal:** Ensure documents tab is fully functional
+
+| Task | Description |
+|------|-------------|
+| Verify `ptt.vendor.document` works | Upload, view, expiry tracking |
+| Add document compliance warnings | Visual indicators for missing/expired docs |
+| Link compliance to status | Auto-move to Verification Pending if docs expire |
+
+---
+
+### Phase 5: Product-Tier Integration
+
+**Goal:** Link vendor tiers to Odoo products for quoting workflow
+
+| Task | Description |
+|------|-------------|
+| Add tier field to products | Optional: Link "Gold DJ Service" product to tier |
+| Create vendor assignment view | When assigning vendor to quote, filter by tier + service |
+| Document workflow | Quote → Accept → Assign vendor from matching tier |
+
+---
+
+## Key Design Decisions
+
+1. **Vendors have ONE overall tier** (Gold/Silver/Bronze) - not per-service
+2. **Products represent services at tier levels** (e.g., "Gold DJ Service", "Silver DJ Service")
+3. **Service tags are Many2many** - vendors can provide multiple services
+4. **Use standard Odoo parent/child for contacts** - vendor company = parent, people = children
+5. **`x_vendor_contact_role`** is a Char field for manual entry (Owner, Talent, Accounting, etc.)
+6. **`category_id`** is reserved for client classification (Corporate, Individual, etc.)
+
+---
+
+## Reference: User Requirements
+
+From conversation:
+- "Active Vendors" = approved, fully onboarded, compliant, verified vendors
+- "Applications" = incoming vendor applications, new submissions
+- "Verification Pending" = approved but missing required documentation
+- Vendors submit via website form, need portal access to upload documents
+- Internal vendor record needs: Company Info, Contacts tab, Services as tags, Payment Info, Documents tab, Notes tab
+
+---
+
+## Files Reference
+
+**Models:**
+- `models/ptt_vendor_service_tag.py` - Service tag model
+- `models/res_partner.py` - Vendor fields on partner
+- `models/ptt_vendor_document.py` - Document tracking
+- `models/ptt_document_type.py` - Document type configuration
+
+**Views:**
+- `views/ptt_vendor_service_tag_view.xml` - Service tag management
+- `views/ptt_res_partner_view.xml` - Vendor form extensions
+- `views/ptt_vendor_document_view.xml` - Document views
+- `views/ptt_document_type_view.xml` - Document type configuration
+- `views/ptt_vendor_config_menus.xml` - Configuration menus
+
+**Data:**
+- `data/ptt_vendor_service_tag_data.xml` - 14 pre-loaded service tags
+- `data/ptt_document_type_data.xml` - Required document types (W-9, COI, ACH, DWC, Price Sheet, Contract)
+
+**Security:**
+- `security/ir.model.access.csv` - Access rules for all vendor models

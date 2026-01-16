@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo noupdate="1">
+    <!-- 
+        Sale Order Templates for Party Time Texas Event Types
+        ====================================================
+        IMPORTANT: These are TEMPLATES ONLY - they do NOT create invoices, payments, or accounting entries.
+        Payment terms, invoicing, and all financial processing are handled by the finance implementation team.
+        These templates provide standard terms & conditions text for reference only.
+    -->
+    
+    <!-- Wedding Template -->
+    <record id="sale_order_template_wedding" model="sale.order.template">
+        <field name="name">Wedding Event Package</field>
+        <field name="number_of_days">30</field>
+        <field name="note"><![CDATA[
+            <div>
+                <h3>Wedding Event Terms & Conditions</h3>
+                <ul>
+                    <li><strong>Retainer:</strong> 10% of total or $500 minimum (whichever is greater) required upon contract signature to secure booking</li>
+                    <li><strong>Payment Terms:</strong> Remaining balance due in full before event date</li>
+                    <li><strong>Billing:</strong> Milestone-based billing structure</li>
+                    <li><strong>Cancellation Policy:</strong> Retainer is retained on cancellation. If expenses exceed retainer, the difference will be billed. A cancellation fee applies.</li>
+                    <li><strong>Postponement:</strong> Expenses incurred up to postponement date must be paid</li>
+                    <li><strong>Insurance:</strong> Liability coverage included in package</li>
+                    <li><strong>Setup/Teardown:</strong> Included in quoted price</li>
+                </ul>
+            </div>
+        ]]></field>
+    </record>
+    
+    <!-- Corporate Event Template -->
+    <record id="sale_order_template_corporate" model="sale.order.template">
+        <field name="name">Corporate Event Package</field>
+        <field name="number_of_days">45</field>
+        <field name="note"><![CDATA[
+            <div>
+                <h3>Corporate Event Terms & Conditions</h3>
+                <ul>
+                    <li><strong>Retainer:</strong> 10% of total or $500 minimum (whichever is greater) required upon contract signature to secure booking</li>
+                    <li><strong>Payment Terms:</strong> Net terms available (Net 7/10/15/30) - negotiated per client</li>
+                    <li><strong>Billing:</strong> Milestone-based billing structure</li>
+                    <li><strong>Cancellation Policy:</strong> Retainer is retained on cancellation. If expenses exceed retainer, the difference will be billed. A cancellation fee applies.</li>
+                    <li><strong>Postponement:</strong> Expenses incurred up to postponement date must be paid</li>
+                    <li><strong>Insurance:</strong> Liability coverage included</li>
+                    <li><strong>Modifications:</strong> Changes accepted up to 14 days before event</li>
+                    <li><strong>Invoice Approval:</strong> Client-specific terms apply</li>
+                </ul>
+            </div>
+        ]]></field>
+    </record>
+    
+    <!-- Private Party Template -->
+    <record id="sale_order_template_private" model="sale.order.template">
+        <field name="name">Private Party Package</field>
+        <field name="number_of_days">20</field>
+        <field name="note"><![CDATA[
+            <div>
+                <h3>Private Party Terms & Conditions</h3>
+                <ul>
+                    <li><strong>Retainer:</strong> 10% of total or $500 minimum (whichever is greater) required upon contract signature to secure booking</li>
+                    <li><strong>Payment Terms:</strong> Remaining balance due in full before event date</li>
+                    <li><strong>Billing:</strong> Milestone-based billing structure</li>
+                    <li><strong>Cancellation Policy:</strong> Retainer is retained on cancellation. If expenses exceed retainer, the difference will be billed. A cancellation fee applies.</li>
+                    <li><strong>Postponement:</strong> Expenses incurred up to postponement date must be paid</li>
+                    <li><strong>Insurance:</strong> Liability coverage included</li>
+                </ul>
+            </div>
+        ]]></field>
+    </record>
+    
+    <!-- Team Building Template -->
+    <record id="sale_order_template_team_building" model="sale.order.template">
+        <field name="name">Team Building Event Package</field>
+        <field name="number_of_days">30</field>
+        <field name="note"><![CDATA[
+            <div>
+                <h3>Team Building Event Terms & Conditions</h3>
+                <ul>
+                    <li><strong>Retainer:</strong> 10% of total or $500 minimum (whichever is greater) required upon contract signature to secure booking</li>
+                    <li><strong>Payment Terms:</strong> Net terms available for corporate clients (Net 7/10/15/30) - negotiated per client</li>
+                    <li><strong>Billing:</strong> Milestone-based billing structure</li>
+                    <li><strong>Cancellation Policy:</strong> Retainer is retained on cancellation. If expenses exceed retainer, the difference will be billed. A cancellation fee applies.</li>
+                    <li><strong>Postponement:</strong> Expenses incurred up to postponement date must be paid</li>
+                    <li><strong>Insurance:</strong> Liability coverage included</li>
+                    <li><strong>Equipment:</strong> All equipment included in package price</li>
+                </ul>
+            </div>
+        ]]></field>
+    </record>
+    
+    <!-- Community Event Template -->
+    <record id="sale_order_template_community" model="sale.order.template">
+        <field name="name">Community Event Package</field>
+        <field name="number_of_days">60</field>
+        <field name="note"><![CDATA[
+            <div>
+                <h3>Community Event Terms & Conditions</h3>
+                <ul>
+                    <li><strong>Retainer:</strong> 10% of total or $500 minimum (whichever is greater) required upon contract signature to secure booking</li>
+                    <li><strong>Payment Terms:</strong> Net 30 terms available for municipalities and non-profits (501(c)(3) certificate required for tax exemption)</li>
+                    <li><strong>Billing:</strong> Milestone-based billing structure</li>
+                    <li><strong>Cancellation Policy:</strong> Retainer is retained on cancellation. If expenses exceed retainer, the difference will be billed. A cancellation fee applies.</li>
+                    <li><strong>Postponement:</strong> Expenses incurred up to postponement date must be paid</li>
+                    <li><strong>Insurance:</strong> Liability coverage included</li>
+                    <li><strong>Permits:</strong> Client responsible for venue permits</li>
+                    <li><strong>Tax Exemption:</strong> 501(c)(3) certificate required for tax-exempt status</li>
+                </ul>
+            </div>
+        ]]></field>
+    </record>
+    
+</odoo>

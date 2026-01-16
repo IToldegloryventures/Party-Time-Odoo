@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PTT Operational Dashboard - Filter View Customizations -->
+    <!-- 
+        NOTE: All search view inheritance records have been REMOVED.
+        
+        REASON: External XML IDs for search views vary between Odoo versions/editions
+        and were causing deployment failures on Odoo.sh:
+        - sale.view_sale_order_search (doesn't exist)
+        - account.view_invoice_filter (doesn't exist)
+        - crm.view_crm_case_opportunities_filter (may not exist)
+        - project.view_project_project_filter (may not exist)
+        - project.view_task_search_form (may not exist)
+        
+        Odoo's native search views already provide:
+        - Quote status filters
+        - Date grouping
+        - Priority filters
+        - Probability filters
+        - Overdue invoice filters
+        
+        Custom filters can be added via Settings > Technical > User Interface > Filters
+        without requiring code changes.
+    -->
+</odoo>

@@ -1,45 +1,80 @@
+import re
+
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+
+# Time format pattern for HH:MM validation
+# Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#method-decorators
+TIME_PATTERN = re.compile(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
 
 
 class CrmLead(models.Model):
+    """Extend CRM Lead for PTT event management.
+    
+    NOTE: Use standard Odoo fields where possible:
+    - user_id = Sales Rep (standard)
+    - contact_name = Contact Name (standard)
+    - partner_name = Company Name (standard)
+    - phone = Phone Number (standard)
+    - email_from = Email Address (standard)
+    - description = Additional Notes (standard)
+    - source_id = Lead Source (standard - use instead of custom inquiry_source)
+    - expected_revenue = Budget (standard - use instead of custom budget_range)
+    - name = Opportunity Name / Event Name (standard)
+    
+    Use Activities for follow-ups instead of custom boolean fields.
+    Use Stages for tracking proposal/contract status.
+    
+    FIELD NAMING:
+    - All custom fields use ptt_ prefix (Party Time Texas)
+    - This follows Odoo best practice: x_ is reserved for Studio fields
+    - Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
+    """
     _inherit = "crm.lead"
 
-    # === TIER 1: LEAD CONTACT INFORMATION ===
-    # NOTE: user_id = Sales Rep (standard Odoo field - use that, not x_sales_rep_id)
-    # NOTE: contact_name = First/Last Name (standard Odoo field)
-    # NOTE: partner_name = Company Name (standard Odoo field)
-    # NOTE: phone = Phone Number (standard Odoo field)
-    # NOTE: email_from = Email Address (standard Odoo field)
-    # NOTE: description = Additional Notes (standard Odoo field - use that)
-    
-    x_date_of_call = fields.Date(
+    # === TIER 1: ADDITIONAL CONTACT INFORMATION ===
+    ptt_date_of_call = fields.Date(
         string="Date of Call",
         help="Date of the initial inquiry call.",
     )
-    x_preferred_contact_method = fields.Selection(
+    ptt_preferred_contact_method = fields.Selection(
         [
             ("call", "Phone Call"),
             ("text", "Text Message"),
             ("email", "Email"),
         ],
         string="Preferred Contact Method",
+        help="Client's preferred method of communication for follow-ups and updates."
     )
-    x_second_poc_name = fields.Char(string="2nd POC Name")
-    x_second_poc_phone = fields.Char(string="2nd POC Phone")
-    x_second_poc_email = fields.Char(string="2nd POC Email")
-
-    x_lead_type = fields.Selection(
-        [
-            ("individual", "Individual"),
-            ("business", "Business"),
-        ],
-        string="Lead Type",
-        help="Whether this lead is an individual or a business client.",
+    ptt_second_poc_name = fields.Char(
+        string="2nd POC Name",
+        help="Name of the secondary point of contact for this event."
+    )
+    ptt_second_poc_phone = fields.Char(
+        string="2nd POC Phone",
+        help="Phone number of the secondary point of contact."
+    )
+    ptt_second_poc_email = fields.Char(
+        string="2nd POC Email",
+        help="Email address of the secondary point of contact."
     )
 
-    # === TIER 1: EVENT OVERVIEW ===
-    x_event_type = fields.Selection(
+    # === EVENT ID (Manual Entry - Links CRM, SO, Project, Tasks) ===
+    ptt_event_id = fields.Char(
+        string="Event ID",
+        copy=False,
+        index=True,
+        tracking=True,
+        help="Unique event identifier. Enter manually to link this opportunity with its Project and Tasks.",
+    )
+
+    ptt_referral_source = fields.Char(
+        string="Referral Details",
+        help="If referral, who referred this client? (Use source_id for lead source type)",
+    )
+
+    # === EVENT OVERVIEW ===
+    ptt_event_type = fields.Selection(
         [
             # Corporate Events
             ("corporate_conference", "Corporate - Conferences & Conventions"),
@@ -80,537 +115,170 @@ class CrmLead(models.Model):
             ("themed_masquerade", "Themed - Masquerade Balls"),
             ("themed_cigar_whiskey", "Themed - Cigar & Whiskey Nights"),
         ],
-        string="Event Type",
+        string="Event Category",
+        help="Type of event being planned. Used for categorization, reporting, and template selection."
     )
-    x_event_name = fields.Char(string="Event Name (if known)")
-    x_event_specific_goal = fields.Char(string="Specific Goal")
-    x_event_date = fields.Date(string="Event Date")
-    x_event_time = fields.Char(string="Event Time")
-    x_total_hours = fields.Float(string="Total Hours")
-    x_estimated_guest_count = fields.Integer(string="Estimated Guest Count")
-    x_venue_booked = fields.Boolean(string="Event Venue (if booked)")
-    x_venue_name = fields.Char(string="Venue")
-    x_event_location_type = fields.Selection(
+    ptt_event_specific_goal = fields.Char(
+        string="Specific Goal",
+        help="Primary objective or goal for this event (e.g., celebration, corporate meeting, fundraiser, team building)."
+    )
+    ptt_event_date = fields.Date(
+        string="Event Date",
+        index=True,
+        help="Scheduled date for the event. Used for calendar views and event planning."
+    )
+    ptt_event_time = fields.Char(
+        string="Event Time",
+        help="Scheduled start time for the event in HH:MM format (e.g., 14:00 for 2:00 PM)."
+    )
+    ptt_total_hours = fields.Float(
+        string="Total Hours",
+        default=0.0,
+        help="Total duration of the event in hours (e.g., 4.5 for 4 hours 30 minutes). Used for pricing and scheduling."
+    )
+    ptt_estimated_guest_count = fields.Integer(
+        string="Estimated Guest Count",
+        default=0,
+        help="Expected number of guests/attendees for the event. Used to calculate per-person pricing and resource planning."
+    )
+    ptt_venue_booked = fields.Boolean(
+        string="Venue Booked?",
+        default=False,
+        help="Indicates whether a specific venue has already been booked for this event."
+    )
+    ptt_venue_name = fields.Char(
+        string="Venue",
+        help="Name of the venue where the event will be held (if known or booked)."
+    )
+    ptt_event_location_type = fields.Selection(
         [
             ("indoor", "Indoor"),
             ("outdoor", "Outdoor"),
             ("combination", "Combination"),
         ],
         string="Event Location",
+        help="Type of location for the event. Affects equipment needs and weather contingency planning."
     )
 
-    # === TIER 2: SERVICES REQUESTED (CHECKBOXES) ===
-    x_service_dj = fields.Boolean(string="DJ/MC Services")
-    x_service_photovideo = fields.Boolean(string="Photo/Video")
-    
-    # === TIER 2: DJ/MC SERVICE QUESTIONS (visible when x_service_dj = True) ===
-    x_dj_event_type = fields.Selection(
-        [
-            ("wedding", "Wedding"),
-            ("corporate", "Corporate"),
-            ("birthday", "Birthday"),
-            ("anniversary", "Anniversary"),
-            ("graduation", "Graduation"),
-            ("holiday", "Holiday"),
-            ("other", "Other"),
-        ],
-        string="DJ Event Type",
+    # === CFO/FINANCE CONTACT (for corporate clients) ===
+    ptt_cfo_name = fields.Char(
+        string="CFO/Finance Contact Name",
+        help="Name of the Chief Financial Officer or finance contact person for approval and payment processing."
     )
-    x_dj_guest_age_range = fields.Char(string="DJ Guest Age Range")
-    x_dj_guest_count = fields.Integer(string="DJ Expected Guest Count")
-    x_dj_music_styles = fields.Text(string="Desired Music Styles")
-    x_dj_family_friendly = fields.Boolean(string="Family-Friendly Event?")
-    x_dj_multi_part_event = fields.Boolean(string="DJ Multi-Part Event? (e.g. Ceremony + Reception)")
-    x_dj_multi_location = fields.Boolean(string="Multi-Location Event?")
-    x_dj_split_time = fields.Boolean(string="DJ Split Time?")
-    x_dj_split_equipment = fields.Boolean(string="DJ Split Equipment?")
-    x_dj_mc_needed = fields.Boolean(string="MC Needed? (vs. DJ as music-only)")
-    x_dj_karaoke_desired = fields.Boolean(string="Karaoke Desired?")
-    x_dj_karaoke_duration = fields.Char(string="Karaoke Duration (if yes)")
-    x_dj_karaoke_separate_system = fields.Boolean(string="Karaoke Separate System?")
-    x_dj_karaoke_song_list_options = fields.Text(string="Karaoke Song List Options")
-    x_dj_lighting_included = fields.Boolean(string="Lighting Included or Needed?")
-    x_dj_mic_required = fields.Boolean(string="Microphone Required for Speakers/Toasts?")
-    x_dj_venue_setup = fields.Selection(
-        [
-            ("indoor", "Indoors"),
-            ("outdoor", "Outdoors"),
-            ("mixed", "Mixed"),
-        ],
-        string="DJ Venue Setup",
+    ptt_cfo_phone = fields.Char(
+        string="CFO/Finance Contact Phone",
+        help="Phone number of the CFO or finance contact person."
     )
-    x_service_live_entertainment = fields.Boolean(string="Live Entertainment")
-    x_service_lighting = fields.Boolean(string="Lighting/AV")
-    x_service_decor = fields.Boolean(string="Decor/Thematic Design")
-    x_service_venue_sourcing = fields.Boolean(string="Venue Sourcing")
-    x_service_catering = fields.Boolean(string="Catering")
-    x_service_transportation = fields.Boolean(string="Transportation")
-    x_service_rentals = fields.Boolean(string="Rentals (General)")
-    x_service_photobooth = fields.Boolean(string="Photo Booth Rentals")
-    x_service_caricature = fields.Boolean(string="Caricature Artists")
-    x_service_casino = fields.Boolean(string="Casino Services")
-    x_service_staffing = fields.Boolean(
-        string="Staffing (hosts, bartenders, security)"
+    ptt_cfo_email = fields.Char(
+        string="CFO/Finance Contact Email",
+        help="Email address of the CFO or finance contact person for invoicing and payment communications."
     )
-
-    # === TIER 2: AUDIO/VISUAL SERVICES QUESTIONS (visible when x_service_lighting = True) ===
-    x_av_event_type = fields.Char(string="Type of Event (AV)")
-    x_av_purpose = fields.Selection(
-        [
-            ("presentation", "Presentation"),
-            ("entertainment", "Entertainment"),
-            ("ambiance", "Ambiance"),
-            ("combination", "Combination"),
-        ],
-        string="Purpose of AV Services",
-    )
-    x_av_media_format = fields.Selection(
-        [
-            ("powerpoint", "PowerPoint"),
-            ("video", "Video"),
-            ("livestream", "Livestream"),
-            ("other", "Other"),
-        ],
-        string="Format of Media",
-    )
-    x_av_venue_size = fields.Char(string="Size of Venue")
-    x_av_attendee_count = fields.Integer(string="Number of Attendees (AV)")
-    x_av_projection_led_needed = fields.Selection(
-        [
-            ("projection", "Projection"),
-            ("led_screen", "LED Screen"),
-            ("both", "Both"),
-            ("neither", "Neither"),
-        ],
-        string="Projection or LED Screen Needed?",
-    )
-    x_av_microphones_needed = fields.Boolean(string="Microphones Needed?")
-    x_av_mic_count = fields.Integer(string="How Many Microphones?")
-    x_av_lighting_type = fields.Selection(
-        [
-            ("stage", "Stage Lighting"),
-            ("ambient", "Ambient Lighting"),
-            ("both", "Both"),
-            ("neither", "Neither"),
-        ],
-        string="Stage Lighting or Ambient Lighting?",
-    )
-    x_av_content_type = fields.Selection(
-        [
-            ("logos", "Logos"),
-            ("video_montage", "Video Montage"),
-            ("realtime_feed", "Real-Time Feed"),
-            ("other", "Other"),
-        ],
-        string="Type of Content to Display",
-    )
-    x_av_technical_support_needed = fields.Boolean(string="Technical Support Needed On-Site?")
-    x_av_support_type = fields.Text(string="What Type of Support Does Vendor Provide?")
-    x_av_livestream_needed = fields.Boolean(string="Live Streaming Needed?")
-    x_av_location_type = fields.Selection(
-        [
-            ("indoor", "Indoor"),
-            ("outdoor", "Outdoor"),
-        ],
-        string="Indoor or Outdoor (AV)?",
-    )
-    x_av_integrated_stage_band = fields.Boolean(string="Will This Be Integrated with Stage or Band?")
-
-    # === TIER 2: FACE PAINTERS/AIRBRUSH TATTOOS QUESTIONS (visible when service selected) ===
-    x_facepaint_event_type = fields.Char(string="Type of Event (Face Paint)")
-    x_facepaint_guest_age_range = fields.Char(string="Face Paint Guest Age Range")
-    x_facepaint_total_attendees = fields.Integer(string="Total Expected Attendees")
-    x_facepaint_location_type = fields.Selection(
-        [
-            ("indoor", "Indoor"),
-            ("outdoor", "Outdoor"),
-        ],
-        string="Indoor or Outdoor (Face Paint)?",
-    )
-    x_facepaint_style = fields.Selection(
-        [
-            ("face_paint", "Face Paint"),
-            ("airbrush_tattoos", "Airbrush Tattoos"),
-            ("henna", "Henna"),
-            ("combo", "Combo"),
-        ],
-        string="Desired Style",
-    )
-    x_facepaint_artist_count = fields.Integer(string="How Many Artists Needed?")
-    x_facepaint_theme_based = fields.Boolean(string="Theme-Based Design Requested?")
-    x_facepaint_duration = fields.Char(string="Duration of Service")
-
-    # === TIER 2: PHOTO BOOTH RENTALS QUESTIONS (visible when service selected) ===
-    x_photobooth_type = fields.Selection(
-        [
-            ("360", "360 Booth"),
-            ("standard", "Standard Booth"),
-            ("ai", "AI Booth"),
-            ("green_screen", "Green Screen"),
-            ("other", "Other"),
-        ],
-        string="Type of Booth Desired",
-    )
-    x_photobooth_event_type = fields.Char(string="Event Type (Photo Booth)")
-    x_photobooth_theme = fields.Char(string="Theme")
-    x_photobooth_guest_count = fields.Integer(string="Number of Expected Guests (Photo Booth)")
-    x_photobooth_location_type = fields.Selection(
-        [
-            ("indoor", "Indoor"),
-            ("outdoor", "Outdoor"),
-        ],
-        string="Indoor or Outdoor Setup?",
-    )
-    x_photobooth_delivery_method = fields.Selection(
-        [
-            ("print", "Print"),
-            ("digital_text", "Digital - Text"),
-            ("digital_email", "Digital - Email"),
-            ("both", "Both"),
-        ],
-        string="Print or Digital Delivery?",
-    )
-    x_photobooth_runtime_duration = fields.Char(string="Duration of Booth Runtime")
-    x_photobooth_custom_branding = fields.Boolean(string="Photo Booth Custom Branding or Overlay Graphics?")
-    x_photobooth_attendant_required = fields.Boolean(string="Will an Attendant Be Required?")
-    x_photobooth_wifi_access = fields.Boolean(string="Wi-Fi Access (for Instant Sharing)?")
-
-    # === TIER 2: CARICATURE ARTISTS QUESTIONS (visible when service selected) ===
-    x_caricature_event_type = fields.Char(string="Event Type (Caricature)")
-    x_caricature_location = fields.Char(string="Location")
-    x_caricature_drawing_type = fields.Selection(
-        [
-            ("hand_drawn", "Hand-Drawn"),
-            ("digital", "Digital"),
-        ],
-        string="Hand-Drawn or Digital?",
-    )
-    x_caricature_wifi_availability = fields.Boolean(string="WiFi Availability?")
-    x_caricature_power_availability = fields.Boolean(string="Power Availability?")
-    x_caricature_style_preference = fields.Selection(
-        [
-            ("humorous", "Humorous"),
-            ("realistic", "Realistic"),
-            ("themed", "Themed"),
-        ],
-        string="Style Preference",
-    )
-    x_caricature_guest_count = fields.Integer(string="Number of Guests Expected (Caricature)")
-    x_caricature_drawing_hours = fields.Float(string="Hours of Drawing Time Needed")
-    x_caricature_artist_count = fields.Integer(string="Number of Artists Requested")
-    x_caricature_location_type = fields.Selection(
-        [
-            ("indoor", "Indoor"),
-            ("outdoor", "Outdoor"),
-        ],
-        string="Indoor or Outdoor (Caricature)?",
-    )
-    x_caricature_custom_branding = fields.Boolean(string="Caricature Custom Branding or Overlay Graphics?")
-
-    # === TIER 2: CASINO-THEMED EVENTS QUESTIONS (visible when service selected) ===
-    x_casino_event_type = fields.Char(string="Event Type (Casino)")
-    x_casino_player_count = fields.Integer(string="Number of Players Expected")
-    x_casino_desired_games = fields.Text(string="Desired Games (Blackjack, Roulette, Craps, etc.)")
-    x_casino_chip_redemption = fields.Selection(
-        [
-            ("prizes", "Chips Redeemed for Prizes"),
-            ("play_for_fun", "Play-for-Fun Only"),
-        ],
-        string="Will Chips Be Redeemed for Prizes or Play-for-Fun?",
-    )
-    x_casino_funny_money_provider = fields.Selection(
-        [
-            ("customer", "Customer Providing"),
-            ("vendor", "Vendor Providing"),
-        ],
-        string="Is Customer Providing or Vendor Providing FUNNY Money?",
-    )
-    x_casino_duration = fields.Char(string="Duration of Play")
-    x_casino_location_type = fields.Selection(
-        [
-            ("indoor", "Indoors"),
-            ("outdoor", "Outdoors"),
-        ],
-        string="Indoors or Outdoors?",
-    )
-
-    # === TIER 2: BANDS/MUSICIANS QUESTIONS (visible when x_service_live_entertainment = True) ===
-    x_band_type = fields.Char(string="Type of Band or Musical Act")
-    x_band_event_type = fields.Char(string="Event Type (Band)")
-    x_band_guest_demographic = fields.Char(string="Guest Demographic")
-    x_band_music_style = fields.Text(string="Style of Music")
-    x_band_location_type = fields.Selection(
-        [
-            ("indoor", "Indoor"),
-            ("outdoor", "Outdoor"),
-        ],
-        string="Indoor or Outdoor (Band)?",
-    )
-    x_band_multi_part_event = fields.Boolean(string="Band Multi-Part Event? (e.g. Ceremony + Reception)")
-    x_band_multi_location = fields.Boolean(string="Multi Location Event?")
-    x_band_split_time = fields.Boolean(string="Band Split Time?")
-    x_band_split_equipment = fields.Boolean(string="Band Split Equipment?")
-    x_band_sets_hours = fields.Char(string="How Many Sets or Hours Needed?")
-    x_band_performance_area_size = fields.Char(string="Size of Performance Area")
-    x_band_stage_required = fields.Boolean(string="Stage Required?")
-    x_band_stage_size = fields.Text(string="What Size Stage, etc.?")
-    x_band_dressing_room_available = fields.Boolean(string="Is a Dressing Room Available?")
-
-    # === TIER 2: EVENT COORDINATION SERVICES QUESTIONS (visible when service selected) ===
-    x_coordination_event_type = fields.Char(string="Type of Event (Coordination)")
-    x_coordination_event_dates = fields.Char(string="Event Date(s)")
-    x_coordination_event_locations = fields.Text(string="Event Location(s)")
-    x_coordination_service_level = fields.Selection(
-        [
-            ("day_of", "Day-of"),
-            ("full_planning", "Full Planning"),
-            ("partial", "Partial"),
-        ],
-        string="What Level of Service Is Needed?",
-    )
-    x_coordination_services_booked = fields.Text(string="What Services Are Already Booked vs Still Needed?")
-    x_coordination_venue_vendor_contracts = fields.Boolean(string="Are Venue/Vendor Contracts Already in Place?")
-    x_coordination_contract_details = fields.Text(string="If Yes - Provide Contract Details")
-    x_coordination_vendor_count = fields.Integer(string="Expected Number of Vendors to Manage?")
-    x_coordination_responsibilities = fields.Text(string="High Level List of Responsibilities for Coordinator")
-
-    # === FOLLOW-UP INFORMATION ===
-    x_followup_email_sent = fields.Boolean(string="Follow-up Email Sent?")
-    x_proposal_sent = fields.Boolean(string="Proposal Sent?")
-    x_next_contact_date = fields.Date(string="Next Scheduled Contact Date")
-    # NOTE: Additional Notes uses standard 'description' field (Html field on Notes tab)
-
-    # === BUDGET & FINANCIAL ===
-    x_budget_range = fields.Char(string="Total Event Budget (range)")
-    x_services_already_booked = fields.Text(string="Services Already Booked (if any)")
-    x_cfo_name = fields.Char(string="CFO/Finance Contact Name")
-    x_cfo_phone = fields.Char(string="CFO/Finance Contact Phone")
-    x_cfo_email = fields.Char(string="CFO/Finance Contact Email")
-    x_cfo_contact_method = fields.Selection(
+    ptt_cfo_contact_method = fields.Selection(
         [
             ("call", "Phone Call"),
             ("text", "Text Message"),
             ("email", "Email"),
         ],
         string="CFO Preferred Contact Method",
+        help="Preferred method of communication for the CFO/finance contact regarding billing and payments."
     )
 
-    # === EVENT PRICING (ESTIMATED) ===
-    x_vendor_estimate_ids = fields.One2many(
-        "ptt.crm.vendor.estimate",
-        "crm_lead_id",
-        string="Vendor Cost Estimates",
-        help="Estimated vendor costs for this opportunity.",
-    )
-    x_estimated_total_vendor_costs = fields.Monetary(
-        string="Total Estimated Vendor Costs",
-        compute="_compute_pricing_totals",
-        currency_field="company_currency",
-        store=True,
-        help="Sum of all estimated vendor costs.",
-    )
-    x_estimated_client_total = fields.Monetary(
-        string="Estimated Client Total",
-        currency_field="company_currency",
-        help="Total amount client will pay (estimated).",
-    )
-    x_estimated_margin = fields.Monetary(
-        string="Estimated Margin",
-        compute="_compute_pricing_totals",
-        currency_field="company_currency",
-        store=True,
-        help="Estimated margin = Client Total - Vendor Costs.",
-    )
-    x_estimated_margin_percent = fields.Float(
-        string="Estimated Margin %",
-        compute="_compute_pricing_totals",
-        store=True,
-        help="Estimated margin percentage.",
+
+    # === SERVICE LINES (Vendor Tab) ===
+    ptt_service_line_ids = fields.One2many(
+        "ptt.crm.service.line",
+        "lead_id",
+        string="Service Lines",
+        help="Services requested for this event with tier selection",
     )
 
-    @api.depends("x_vendor_estimate_ids.estimated_cost", "x_estimated_client_total")
-    def _compute_pricing_totals(self):
-        """Compute estimated vendor costs, margin, and margin percentage."""
-        for lead in self:
-            total_vendor_costs = sum(lead.x_vendor_estimate_ids.mapped("estimated_cost"))
-            lead.x_estimated_total_vendor_costs = total_vendor_costs
-            lead.x_estimated_margin = lead.x_estimated_client_total - total_vendor_costs
-            if lead.x_estimated_client_total > 0:
-                lead.x_estimated_margin_percent = (lead.x_estimated_margin / lead.x_estimated_client_total) * 100
-            else:
-                lead.x_estimated_margin_percent = 0.0
+    # === VENDOR ASSIGNMENTS (Vendor Tab) ===
+    ptt_vendor_assignment_ids = fields.One2many(
+        "ptt.crm.vendor.assignment",
+        "lead_id",
+        string="Vendor Assignments",
+        help="Vendors assigned to provide services for this event",
+    )
 
-    # Link to related project (if created)
-    x_project_id = fields.Many2one(
+    # === PROJECT LINK (Bidirectional CRM↔Project) ===
+    # When SO is confirmed, Odoo creates project via service_tracking.
+    # Our custom code links the project back to this CRM lead.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#relational-fields
+    ptt_project_id = fields.Many2one(
         "project.project",
-        string="Related Project",
-        help="Project created from this opportunity.",
-        index=True,
-    )
-    project_count = fields.Integer(
-        string="# Projects",
-        compute="_compute_project_count",
-        help="Counter for the project linked to this lead",
+        string="Event Project",
+        copy=False,
+        help="Project created when this opportunity is booked (SO confirmed).",
     )
 
-    @api.depends("x_project_id")
-    def _compute_project_count(self):
+    # === CONSTRAINTS ===
+    
+    @api.constrains('ptt_event_time')
+    def _check_event_time_format(self):
+        """Validate event time is in HH:MM format.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#method-decorators
+        Pattern matches Odoo core examples in res_lang.py, res_country.py.
+        """
         for record in self:
-            record.project_count = 1 if record.x_project_id else 0
+            if record.ptt_event_time and not TIME_PATTERN.match(record.ptt_event_time):
+                raise ValidationError(
+                    _("Event Time must be in HH:MM format (e.g., 09:30, 14:00). Got: %s") % record.ptt_event_time
+                )
+    
+    @api.constrains('ptt_estimated_guest_count')
+    def _check_guest_count_positive(self):
+        """Ensure guest count is not negative.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#constraints-and-indexes
+        """
+        for record in self:
+            if record.ptt_estimated_guest_count < 0:
+                raise ValidationError(
+                    _("Guest count cannot be negative. Got: %s. Please enter 0 or a positive number.") 
+                    % record.ptt_estimated_guest_count
+                )
+    
+    @api.constrains('ptt_total_hours')
+    def _check_total_hours_positive(self):
+        """Ensure event duration is positive.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#constraints-and-indexes
+        """
+        for record in self:
+            if record.ptt_total_hours and record.ptt_total_hours <= 0:
+                raise ValidationError(
+                    _("Event duration must be greater than 0 hours. Got: %s hours. Please enter a positive number.") 
+                    % record.ptt_total_hours
+                )
 
-    def action_create_project_from_lead(self):
-        """Create a project from this CRM Lead and copy all relevant fields."""
-        self.ensure_one()
-        
-        if self.x_project_id:
-            raise UserError(_("A project has already been created from this opportunity."))
-        
-        # Generate Event ID (000001 format)
-        last_project = self.env["project.project"].search(
-            [("x_event_id", "!=", False)], order="x_event_id desc", limit=1
-        )
-        if last_project and last_project.x_event_id:
-            try:
-                next_id = int(last_project.x_event_id) + 1
-            except ValueError:
-                next_id = 1
-        else:
-            next_id = 1
-        event_id = f"{next_id:06d}"
-        
-        # Build project name: PartnerName-EventID
-        project_name = self.partner_name or self.contact_name or "Unknown"
-        project_name = f"{project_name}-{event_id}"
-        
-        # Map CRM Lead fields to Project fields
-        project_vals = {
-            "name": project_name,
-            "partner_id": self.partner_id.id if self.partner_id else False,
-            "user_id": self.user_id.id if self.user_id else False,
-            "x_crm_lead_id": self.id,
-            "x_event_id": event_id,
-            "x_event_type": self.x_event_type,
-            "x_event_name": self.x_event_name,
-            "x_event_date": self.x_event_date,
-            "x_event_time": self.x_event_time,
-            "x_guest_count": self.x_estimated_guest_count,
-            "x_venue_name": self.x_venue_name,
-            "x_total_hours": self.x_total_hours,
-            "date_start": self.x_event_date,  # Project start date
-        }
-        
-        # Create project
-        project = self.env["project.project"].create(project_vals)
-        
-        # Link project back to lead
-        self.write({"x_project_id": project.id})
-        
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Project Created"),
-            "res_model": "project.project",
-            "res_id": project.id,
-            "view_mode": "form",
-            "target": "current",
-        }
+    # === ACTION METHODS ===
 
-    def action_view_project(self):
-        """Open the related project."""
+    def action_view_sale_orders(self):
+        """Open linked Sale Orders."""
         self.ensure_one()
-        if not self.x_project_id:
+        if not self.order_ids:
             return False
+        if len(self.order_ids) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Sale Order"),
+                "res_model": "sale.order",
+                "res_id": self.order_ids.id,
+                "view_mode": "form",
+                "target": "current",
+            }
         return {
             "type": "ir.actions.act_window",
-            "name": _("Project"),
-            "res_model": "project.project",
-            "res_id": self.x_project_id.id,
-            "view_mode": "form",
+            "name": _("Sale Orders"),
+            "res_model": "sale.order",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", self.order_ids.ids)],
             "target": "current",
         }
-
-    # === INVOICE PAYMENT TRACKING ===
-    x_invoice_count = fields.Integer(
-        string="# Invoices",
-        compute="_compute_invoice_payment_data",
-        help="Number of invoices linked to this opportunity via sale orders.",
-    )
-    x_invoice_total = fields.Monetary(
-        string="Total Invoice Amount",
-        compute="_compute_invoice_payment_data",
-        currency_field="company_currency",
-        help="Total amount of all invoices.",
-    )
-    x_invoice_paid = fields.Monetary(
-        string="Amount Paid",
-        compute="_compute_invoice_payment_data",
-        currency_field="company_currency",
-        help="Total amount paid across all invoices.",
-    )
-    x_invoice_remaining = fields.Monetary(
-        string="Remaining Balance",
-        compute="_compute_invoice_payment_data",
-        currency_field="company_currency",
-        help="Outstanding balance across all invoices.",
-    )
-    x_invoice_payment_status = fields.Selection(
-        [
-            ("not_paid", "Not Paid"),
-            ("partial", "Partially Paid"),
-            ("paid", "Paid"),
-            ("overdue", "Overdue"),
-        ],
-        string="Payment Status",
-        compute="_compute_invoice_payment_data",
-        help="Overall payment status based on linked invoices.",
-    )
-
-    @api.depends("order_ids.invoice_ids.payment_state", "order_ids.invoice_ids.amount_total", 
-                 "order_ids.invoice_ids.amount_residual", "order_ids.invoice_ids.invoice_date_due",
-                 "order_ids.invoice_ids.state")
-    def _compute_invoice_payment_data(self):
-        """Compute invoice payment tracking data from linked sale orders.
-        Only includes invoices that have been sent (posted state)."""
-        for lead in self:
-            # Get all SENT invoices from linked sale orders (posted = sent to customer)
-            invoices = self.env["account.move"]
-            for order in lead.order_ids:
-                invoices |= order.invoice_ids.filtered(
-                    lambda inv: inv.state == "posted" and inv.move_type == "out_invoice"
-                )
-            
-            lead.x_invoice_count = len(invoices)
-            # Convert to company currency for accurate totals
-            company_currency = lead.company_currency or self.env.company.currency_id
-            invoice_total = 0.0
-            invoice_remaining = 0.0
-            for inv in invoices:
-                inv_total = inv.currency_id._convert(
-                    inv.amount_total, company_currency, inv.company_id, inv.date or fields.Date.today()
-                )
-                inv_residual = inv.currency_id._convert(
-                    inv.amount_residual, company_currency, inv.company_id, inv.date or fields.Date.today()
-                )
-                invoice_total += inv_total
-                invoice_remaining += inv_residual
-            
-            lead.x_invoice_total = invoice_total
-            lead.x_invoice_remaining = invoice_remaining
-            lead.x_invoice_paid = invoice_total - invoice_remaining
-            
-            # Determine payment status
-            if not invoices:
-                lead.x_invoice_payment_status = False
-            elif all(inv.payment_state == "paid" for inv in invoices):
-                lead.x_invoice_payment_status = "paid"
-            elif any(inv.payment_state == "paid" for inv in invoices) and any(inv.payment_state != "paid" for inv in invoices):
-                lead.x_invoice_payment_status = "partial"
-            elif any(inv.invoice_date_due and inv.invoice_date_due < fields.Date.today() and inv.payment_state != "paid" for inv in invoices):
-                lead.x_invoice_payment_status = "overdue"
-            else:
-                lead.x_invoice_payment_status = "not_paid"
 
     def action_view_invoices(self):
-        """Action to view linked invoices (only sent invoices)."""
+        """Action to view linked invoices (via sale orders)."""
         self.ensure_one()
         invoices = self.env["account.move"]
         for order in self.order_ids:
@@ -618,15 +286,62 @@ class CrmLead(models.Model):
                 lambda inv: inv.state == "posted" and inv.move_type == "out_invoice"
             )
         
+        if not invoices:
+            return False
+        
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_invoice_type")
         action["domain"] = [("id", "in", invoices.ids)]
         if len(invoices) == 1:
             action["views"] = [(self.env.ref("account.view_move_form").id, "form")]
             action["res_id"] = invoices.id
         return action
-
-    def _merge_get_fields(self):
-        """Include x_project_id in merge dependencies."""
-        merge_fields = super()._merge_get_fields()
-        return merge_fields + ["x_project_id"]
-
+    
+    def action_suggest_sale_template(self):
+        """Suggest appropriate sale order template based on event type."""
+        self.ensure_one()
+        if not self.ptt_event_type:
+            return False
+        
+        template_mapping = {
+            "private_wedding": "ptt_business_core.sale_order_template_wedding",
+            "corporate_conference": "ptt_business_core.sale_order_template_corporate",
+            "corporate_groundbreaking": "ptt_business_core.sale_order_template_corporate",
+            "corporate_ribbon_cutting": "ptt_business_core.sale_order_template_corporate",
+            "corporate_product_launch": "ptt_business_core.sale_order_template_corporate",
+            "corporate_awards": "ptt_business_core.sale_order_template_corporate",
+            "corporate_team_building": "ptt_business_core.sale_order_template_team_building",
+            "corporate_holiday": "ptt_business_core.sale_order_template_corporate",
+            "private_luxury": "ptt_business_core.sale_order_template_private",
+            "private_graduation": "ptt_business_core.sale_order_template_private",
+            "private_reunion": "ptt_business_core.sale_order_template_private",
+            "private_cultural": "ptt_business_core.sale_order_template_private",
+            "private_barmitzvah": "ptt_business_core.sale_order_template_private",
+            "private_desi": "ptt_business_core.sale_order_template_private",
+            "private_quinceanera": "ptt_business_core.sale_order_template_private",
+            "private_birthday": "ptt_business_core.sale_order_template_private",
+            "community_hoa": "ptt_business_core.sale_order_template_community",
+            "community_cities_schools": "ptt_business_core.sale_order_template_community",
+            "community_festivals": "ptt_business_core.sale_order_template_community",
+            "community_pool_party": "ptt_business_core.sale_order_template_community",
+            "community_holiday": "ptt_business_core.sale_order_template_community",
+            "community_movie_night": "ptt_business_core.sale_order_template_community",
+            "community_vendor_fair": "ptt_business_core.sale_order_template_community",
+            "charity_banquet": "ptt_business_core.sale_order_template_community",
+            "charity_race": "ptt_business_core.sale_order_template_community",
+            "charity_awareness": "ptt_business_core.sale_order_template_community",
+            "charity_donor": "ptt_business_core.sale_order_template_community",
+            "themed_casino": "ptt_business_core.sale_order_template_private",
+            "themed_watch_party": "ptt_business_core.sale_order_template_private",
+            "themed_sports": "ptt_business_core.sale_order_template_private",
+            "themed_decade": "ptt_business_core.sale_order_template_private",
+            "themed_masquerade": "ptt_business_core.sale_order_template_private",
+            "themed_cigar_whiskey": "ptt_business_core.sale_order_template_private",
+        }
+        
+        template_xmlid = template_mapping.get(self.ptt_event_type)
+        if template_xmlid:
+            template = self.env.ref(template_xmlid, raise_if_not_found=False)
+            if template:
+                return template.id
+        
+        return False

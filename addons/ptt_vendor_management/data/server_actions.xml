@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Server Actions for Vendor Management
+        
+        These can be run from Settings > Technical > Server Actions
+        or triggered manually when needed.
+    -->
+    
+    <!-- Server Action: Populate Document Lines for All Vendors -->
+    <record id="action_populate_all_vendor_documents" model="ir.actions.server">
+        <field name="name">Populate Document Lines for All Vendors</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+# Populate document lines for selected vendors or all vendors if none selected
+vendors = records if records else env['res.partner'].search([('supplier_rank', '>', 0)])
+vendors = vendors.filtered(lambda v: v.supplier_rank > 0)
+count = 0
+for vendor in vendors:
+    existing_count = len(vendor.ptt_vendor_document_ids)
+    vendor._populate_vendor_document_lines()
+    if len(vendor.ptt_vendor_document_ids) > existing_count:
+        count += 1
+action = {
+    "type": "ir.actions.client",
+    "tag": "display_notification",
+    "params": {
+        "title": "Document Lines Populated",
+        "message": "Populated document lines for %d vendors." % count,
+        "sticky": False,
+        "type": "success",
+    }
+}
+        </field>
+    </record>
+    
+</odoo>
