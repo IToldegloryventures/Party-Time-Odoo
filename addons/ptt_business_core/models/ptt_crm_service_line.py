@@ -20,10 +20,11 @@ class PttCrmServiceLine(models.Model):
     
     # Service Selection - linked to Sales products
     # Exclude addon products (ADDON-%) - addons should not be selectable as main services
+    # NOTE: Domain handles null default_code to prevent addons without codes from slipping through
     product_id = fields.Many2one(
         "product.product",
         string="Service/Product",
-        domain="[('sale_ok', '=', True), ('default_code', 'not ilike', 'ADDON-%')]",
+        domain="[('sale_ok', '=', True), '|', ('default_code', '=', False), ('default_code', 'not ilike', 'ADDON-%')]",
         help="Select a service from the Sales product catalog (addon products are excluded)",
     )
     

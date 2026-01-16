@@ -1,4 +1,8 @@
+import logging
+
 from odoo import models, fields, api, _
+
+_logger = logging.getLogger(__name__)
 
 
 class SaleOrder(models.Model):
@@ -69,7 +73,7 @@ class SaleOrder(models.Model):
         help="Quote total divided by guest count. Shows value proposition to client.",
     )
 
-    @api.depends("amount_total", "ptt_guest_count")
+    @api.depends("amount_total", "opportunity_id.ptt_estimated_guest_count")
     def _compute_price_per_person(self):
         """Calculate price per person from quote total and guest count.
         
@@ -135,6 +139,11 @@ class SaleOrder(models.Model):
         # Find Event Kickoff product
         kickoff_product = self.env.ref('ptt_business_core.product_event_kickoff', raise_if_not_found=False)
         if not kickoff_product:
+            _logger.warning(
+                "Event Kickoff product (ptt_business_core.product_event_kickoff) not found for Sale Order %s. "
+                "Auto-project creation features will not work. Please ensure the product data is loaded.",
+                order.name
+            )
             return
         
         # Check if Event Kickoff is already in the order

@@ -245,10 +245,14 @@ class ProjectProject(models.Model):
                         vals['partner_id'] = lead.partner_id.id
                         continue
                 
-                # Fallback to any existing partner (safer than False or XML ID reference)
-                fallback_partner = self.env['res.partner'].search([], limit=1)
-                if fallback_partner:
-                    vals['partner_id'] = fallback_partner.id
+                # NO FALLBACK - Don't assign to random partner (security risk)
+                # Log warning but allow project creation without partner
+                import logging
+                _logger = logging.getLogger(__name__)
+                _logger.warning(
+                    "Project created without partner_id. No partner found from sale_order_id or ptt_crm_lead_id. "
+                    "Project name: %s", vals.get('name', 'Unknown')
+                )
         
         return super().create(vals_list)
     

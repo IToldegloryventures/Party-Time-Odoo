@@ -86,33 +86,50 @@ class VendorPortal(CustomerPortal):
         """
         assignment = request.env['ptt.project.vendor.assignment'].sudo().browse(assignment_id)
         
-        # Verify access token
-        if not assignment.exists() or assignment.access_token != access_token:
+        # Verify access token (includes expiry check if available)
+        if not assignment.exists():
+            return request.render("website.404")
+        
+        # Use enhanced token validation if available
+        if hasattr(assignment, '_is_token_valid'):
+            if not assignment._is_token_valid(access_token):
+                return request.render("website.404")
+        elif assignment.access_token != access_token:
             return request.render("website.404")
         
         # SECURITY: Only expose limited project info
         project = assignment.project_id
         
-        # Get service type display name
-        service_type_label = dict(assignment._fields['service_type'].selection).get(
-            assignment.service_type, assignment.service_type
-        )
+        # Defensive check: ensure project exists before accessing its fields
+        if not project:
+            return request.render("website.404")
+        
+        # Get service type display name (defensive - selection may not exist)
+        service_type_label = assignment.service_type or ''
+        if 'service_type' in assignment._fields and hasattr(assignment._fields['service_type'], 'selection'):
+            selection = assignment._fields['service_type'].selection
+            if callable(selection):
+                try:
+                    selection = selection(assignment)
+                except Exception:
+                    selection = []
+            service_type_label = dict(selection).get(assignment.service_type, assignment.service_type) or ''
         
         values = {
             'assignment': assignment,
             'token': access_token,
             # LIMITED event info - NO financials, NO other vendors
-            'event_name': project.name,
-            'event_date': project.ptt_event_date,
-            'event_time_start': project.ptt_event_start_time or '',
-            'event_time_end': project.ptt_event_end_time or '',
-            'venue_name': project.ptt_venue_name or '',
+            'event_name': project.name or 'TBD',
+            'event_date': project.ptt_event_date if hasattr(project, 'ptt_event_date') else False,
+            'event_time_start': getattr(project, 'ptt_event_start_time', '') or '',
+            'event_time_end': getattr(project, 'ptt_event_end_time', '') or '',
+            'venue_name': getattr(project, 'ptt_venue_name', '') or '',
             'venue_address': '',  # Only add if ptt_venue_address field exists
             # VENDOR'S assignment only
             'service_type': service_type_label,
-            'vendor_payment': assignment.actual_cost,
-            'arrival_time': assignment.ptt_arrival_time or '',
-            'special_instructions': assignment.notes or '',
+            'vendor_payment': assignment.actual_cost if hasattr(assignment, 'actual_cost') else 0.0,
+            'arrival_time': getattr(assignment, 'ptt_arrival_time', '') or '',
+            'special_instructions': assignment.notes or '' if hasattr(assignment, 'notes') else '',
         }
         
         return request.render("ptt_vendor_management.portal_work_order_detail", values)
@@ -123,7 +140,14 @@ class VendorPortal(CustomerPortal):
         """Vendor accepts work order via JSON endpoint."""
         assignment = request.env['ptt.project.vendor.assignment'].sudo().browse(assignment_id)
         
-        if not assignment.exists() or assignment.access_token != access_token:
+        if not assignment.exists():
+            return {'success': False, 'error': 'Invalid token'}
+        
+        # Use enhanced token validation if available
+        if hasattr(assignment, '_is_token_valid'):
+            if not assignment._is_token_valid(access_token):
+                return {'success': False, 'error': 'Token expired or invalid'}
+        elif assignment.access_token != access_token:
             return {'success': False, 'error': 'Invalid token'}
         
         try:
@@ -138,7 +162,14 @@ class VendorPortal(CustomerPortal):
         """Vendor declines work order via JSON endpoint."""
         assignment = request.env['ptt.project.vendor.assignment'].sudo().browse(assignment_id)
         
-        if not assignment.exists() or assignment.access_token != access_token:
+        if not assignment.exists():
+            return {'success': False, 'error': 'Invalid token'}
+        
+        # Use enhanced token validation if available
+        if hasattr(assignment, '_is_token_valid'):
+            if not assignment._is_token_valid(access_token):
+                return {'success': False, 'error': 'Token expired or invalid'}
+        elif assignment.access_token != access_token:
             return {'success': False, 'error': 'Invalid token'}
         
         try:

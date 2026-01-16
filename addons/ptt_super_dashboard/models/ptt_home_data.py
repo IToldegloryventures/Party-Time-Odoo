@@ -179,10 +179,13 @@ class PttHomeData(models.AbstractModel):
         Project = self.env["project.project"]
         
         # Get event project IDs (projects linked to CRM leads)
-        event_project_ids = []
+        # CRITICAL: Use [0] as sentinel to prevent empty list returning ALL records
+        # An empty list in domain [("field", "in", [])] returns ALL records in Odoo!
+        event_project_ids = [0]  # Sentinel value - no project has ID 0
         if "ptt_crm_lead_id" in Project._fields:
             event_projects = Project.search([("ptt_crm_lead_id", "!=", False)])
-            event_project_ids = event_projects.ids
+            if event_projects:
+                event_project_ids = event_projects.ids
         
         # Base domain: all active tasks (not in folded/done stages)
         base_domain = [("stage_id.fold", "=", False)]

@@ -1,6 +1,10 @@
+import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import timedelta
+
+_logger = logging.getLogger(__name__)
 
 
 class PttVendorDocument(models.Model):
@@ -106,6 +110,9 @@ class PttVendorDocument(models.Model):
     #         else:
     #             doc.status = "compliant"
     
+    # Allowed file extensions for document uploads (security)
+    ALLOWED_EXTENSIONS = {'.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp'}
+    
     @api.constrains("vendor_id", "document_type_id")
     def _check_unique_vendor_doctype(self):
         """Ensure each vendor can only have one document per type."""
@@ -119,6 +126,25 @@ class PttVendorDocument(models.Model):
                 raise ValidationError(
                     _("Each vendor can only have one document per type. Update the existing one.")
                 )
+    
+    @api.constrains("document_filename")
+    def _check_file_type(self):
+        """Validate uploaded file type for security.
+        
+        Prevents uploading potentially dangerous file types (executables, scripts, etc.)
+        Only allows common document and image formats.
+        """
+        for record in self:
+            if record.document_filename:
+                import os
+                _, ext = os.path.splitext(record.document_filename.lower())
+                if ext and ext not in self.ALLOWED_EXTENSIONS:
+                    raise ValidationError(
+                        _("File type '%s' is not allowed. Allowed types: %s") % (
+                            ext,
+                            ', '.join(sorted(self.ALLOWED_EXTENSIONS))
+                        )
+                    )
     
     @api.model
     def _cron_check_document_expiry_30day(self):
@@ -137,6 +163,11 @@ class PttVendorDocument(models.Model):
         ])
         
         todo_activity_type = self.env.ref("mail.mail_activity_type_todo", raise_if_not_found=False)
+        if not todo_activity_type:
+            _logger.warning(
+                "Activity type 'mail.mail_activity_type_todo' not found. "
+                "Skipping 30-day expiry notifications for %d documents.", len(expiring_docs)
+            )
         
         for doc in expiring_docs:
             # Auto-update status to expiring_soon
@@ -174,6 +205,11 @@ class PttVendorDocument(models.Model):
         ])
         
         todo_activity_type = self.env.ref("mail.mail_activity_type_todo", raise_if_not_found=False)
+        if not todo_activity_type:
+            _logger.warning(
+                "Activity type 'mail.mail_activity_type_todo' not found. "
+                "Skipping 7-day URGENT expiry notifications for %d documents.", len(expiring_docs)
+            )
         
         for doc in expiring_docs:
             # Auto-update status to expiring_soon

@@ -201,15 +201,11 @@ class PttVariantPricingConfigLine(models.TransientModel):
         help='Additional price for Premier tier. Base price + this = total.',
     )
     
-    @api.model
-    def _get_currency_id(self):
-        """Get currency from company."""
-        return self.env.company.currency_id.id
-    
+    # NOTE: For transient models, use lambda for defaults (method references don't bind correctly)
     currency_id = fields.Many2one(
         'res.currency',
         string='Currency',
-        default=_get_currency_id,
+        default=lambda self: self.env.company.currency_id,
         readonly=True,
         help='Company currency for monetary fields.',
     )

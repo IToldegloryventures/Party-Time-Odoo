@@ -36,13 +36,47 @@ class ProjectVendorAssignment(models.Model):
         copy=False,
         help="Token for portal access",
     )
+    access_token_expiry = fields.Datetime(
+        string="Token Expiry",
+        copy=False,
+        help="Date/time when the access token expires (default: 30 days from generation)",
+    )
     
     def _get_access_token(self):
-        """Generate access token for portal link."""
+        """Generate access token for portal link with expiration.
+        
+        Tokens expire after 30 days for security. Expired tokens are regenerated.
+        """
         import uuid
-        if not self.access_token:
-            self.access_token = str(uuid.uuid4())
+        from datetime import timedelta
+        
+        now = fields.Datetime.now()
+        
+        # Check if token exists and is not expired
+        if self.access_token and self.access_token_expiry:
+            if self.access_token_expiry > now:
+                return self.access_token
+            # Token expired - regenerate
+        
+        # Generate new token with 30-day expiry
+        self.access_token = str(uuid.uuid4())
+        self.access_token_expiry = now + timedelta(days=30)
         return self.access_token
+    
+    def _is_token_valid(self, token):
+        """Validate access token including expiry check.
+        
+        Returns True if token matches and is not expired.
+        """
+        if not self.access_token or self.access_token != token:
+            return False
+        
+        # Check expiry if set
+        if self.access_token_expiry:
+            if self.access_token_expiry < fields.Datetime.now():
+                return False
+        
+        return True
     
     # === ACTIONS ===
     
