@@ -16,10 +16,12 @@
         - All custom fields use ptt_ prefix (Party Time Texas)
         - Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
     -->
+    <!-- DISABLED: This view causes OwlError - embedded One2many fields issue -->
     <record id="view_project_form_ptt" model="ir.ui.view">
         <field name="name">project.project.form.ptt</field>
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
+        <field name="active" eval="False"/>
         <field name="arch" type="xml">
             <!-- HIDE problematic stage_id field in header that causes OwlError -->
             <!-- Base Odoo view has stage_id with statusbar_duration widget that fails when stages don't exist -->
