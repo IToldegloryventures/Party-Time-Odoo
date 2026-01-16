@@ -88,53 +88,12 @@
     </record>
     
     <!--
-        STANDALONE VENDOR ASSIGNMENT VIEWS
+        NOTE: Standalone vendor assignment views REMOVED
         
-        These views are used by Odoo when displaying ptt_vendor_assignment_ids
-        on the project form. They are SAFE because they're not embedded.
+        The views for ptt.project.vendor.assignment are defined in:
+        ptt_project_vendor_assignment_view.xml
+        
+        Having duplicate views caused conflicts and potential OwlError.
     -->
-    <record id="ptt_project_vendor_assignment_tree_simple" model="ir.ui.view">
-        <field name="name">ptt.project.vendor.assignment.tree.simple</field>
-        <field name="model">ptt.project.vendor.assignment</field>
-        <field name="arch" type="xml">
-            <list editable="bottom">
-                <field name="service_type"/>
-                <field name="vendor_id"/>
-                <field name="ptt_status" widget="badge"/>
-                <field name="actual_cost" widget="monetary"/>
-            </list>
-        </field>
-    </record>
-    
-    <record id="ptt_project_vendor_assignment_form_simple" model="ir.ui.view">
-        <field name="name">ptt.project.vendor.assignment.form.simple</field>
-        <field name="model">ptt.project.vendor.assignment</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="service_type"/>
-                            <field name="vendor_id"/>
-                            <field name="ptt_status"/>
-                        </group>
-                        <group>
-                            <field name="actual_cost" widget="monetary"/>
-                            <field name="ptt_confirmed_date"/>
-                        </group>
-                    </group>
-                    <group string="Contact">
-                        <field name="ptt_contact_person"/>
-                        <field name="ptt_contact_phone"/>
-                        <field name="ptt_arrival_time"/>
-                    </group>
-                    <group string="Notes">
-                        <field name="notes" nolabel="1"/>
-                        <field name="ptt_equipment_notes" nolabel="1"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
 
 </odoo>
