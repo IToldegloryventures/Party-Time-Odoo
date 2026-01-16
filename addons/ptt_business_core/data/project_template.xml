@@ -21,6 +21,10 @@
             <field name="privacy_visibility">followers</field>
             <field name="active" eval="True"/>
             <field name="is_template" eval="True"/>
+            <!-- CRITICAL: allow_billable must be True for Odoo 19 project templates -->
+            <!-- Odoo 19 requires templates to be billable to link to products via service_tracking -->
+            <!-- Reference: https://www.odoo.com/documentation/19.0/applications/services/project/project_management/project_templates.html -->
+            <field name="allow_billable" eval="True"/>
             <!-- CRITICAL: company_id must be set to prevent frontend OwlError in Odoo 19 -->
             <!-- Odoo 19 requires company_id for multi-company safety -->
             <!-- This is set via env.company.id when template is copied -->
