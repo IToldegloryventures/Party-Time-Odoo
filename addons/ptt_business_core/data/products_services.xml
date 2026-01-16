@@ -214,10 +214,8 @@
         
         <!-- ============================================ -->
         <!-- EVENT KICKOFF - Internal $0 Product         -->
-        <!-- Uses Odoo NATIVE project creation via       -->
-        <!-- service_tracking + project_template_id      -->
-        <!--                                             -->
-        <!-- Ref: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html -->
+        <!-- Auto project creation DISABLED - user will   -->
+        <!-- create projects manually                     -->
         <!-- ============================================ -->
         <record id="product_event_kickoff" model="product.product">
             <field name="name">Event Kickoff</field>
@@ -229,9 +227,8 @@
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
             <!-- description_sale removed - internal product, not visible to customers -->
-            <!-- NATIVE ODOO: Auto-create project on SO confirm -->
-            <field name="service_tracking">project_only</field>
-            <field name="project_template_id" ref="project_template_standard_event"/>
+            <!-- AUTO PROJECT CREATION DISABLED - user will create projects manually -->
+            <field name="service_tracking">no</field>
         </record>
     </data>
 </odoo>
