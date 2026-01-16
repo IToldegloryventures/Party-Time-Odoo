@@ -466,12 +466,14 @@ def pre_init_hook(cr):
                 _logger.warning(f"PTT Business Core: Unexpected error cleaning views for {field_name}: {e}")
     
     # === DELETE PTT VIEWS THAT MAY HAVE STALE REFERENCES ===
+    # NOTE: view_project_form_ptt REMOVED from this list - it's now safe (no embedded forms)
+    # NOTE: view_task_form_ptt REMOVED - it uses proper inherit_id pattern
     ptt_view_names = [
         ('ptt_business_core', 'view_sale_order_form_ptt'),
         ('ptt_business_core', 'view_sale_order_form_line_ptt'),
         ('ptt_business_core', 'view_crm_lead_form_ptt'),
-        ('ptt_business_core', 'view_project_form_ptt'),
-        ('ptt_business_core', 'view_task_form_ptt'),
+        # ('ptt_business_core', 'view_project_form_ptt'),  # KEEP - now safe, disabled by default
+        # ('ptt_business_core', 'view_task_form_ptt'),  # KEEP - uses inherit_id correctly
         ('ptt_business_core', 'view_partner_form_ptt'),
     ]
     
