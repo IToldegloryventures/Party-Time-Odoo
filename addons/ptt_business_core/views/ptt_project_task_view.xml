@@ -1,37 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        PTT Project Task Form View Extension
+        PTT Project Task Form View Extension - DISABLED
         
-        NOTE: Access event context via task.project_id:
-        - task.project_id.x_event_date
-        - task.project_id.x_venue_name
-        - task.project_id.partner_id (client)
-        - task.project_id.user_id (project manager)
+        This view is DISABLED (active=False) because:
+        1. The original button referenced action_view_project which doesn't exist
+        2. Empty xpaths with position="attributes" are INVALID in Odoo 19
         
-        No redundant related fields needed on task.
-        
-        REMOVED: action_view_project button - method doesn't exist on project.task
-        Users can click the project_id field directly to navigate.
-    -->
-    
-    <!-- 
-        VIEW INTENTIONALLY EMPTY
-        
-        This view exists to maintain the XML ID but adds no modifications.
-        The original button referenced action_view_project which doesn't exist,
-        causing OwlError: Cannot read properties of undefined (reading 'type')
-        
-        If you need to extend project.task form in the future, add safe xpaths here.
+        The view is kept to maintain the XML ID but won't be loaded.
+        If you need to extend project.task in the future, set active=True
+        and add proper xpaths with actual content.
     -->
     <record id="view_task_form_ptt" model="ir.ui.view">
         <field name="name">project.task.form.ptt</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="active" eval="False"/>
         <field name="arch" type="xml">
-            <!-- No modifications - placeholder for future safe extensions -->
-            <xpath expr="//form" position="attributes">
-                <!-- Empty xpath to make view valid but add nothing -->
+            <!-- 
+                IMPORTANT: This view is DISABLED via active=False
+                An empty view would cause OwlError in Odoo 19
+            -->
+            <xpath expr="//form" position="inside">
+                <!-- Placeholder - view is disabled so this won't load -->
             </xpath>
         </field>
     </record>
