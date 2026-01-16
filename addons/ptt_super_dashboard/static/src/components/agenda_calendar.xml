@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templates xml:space="preserve">
+<templates xml:space="preserve" owl="1">
     <t t-name="ptt_super_dashboard.AgendaCalendar">
         <div class="ptt-section">
             <div class="ptt-section-header">
