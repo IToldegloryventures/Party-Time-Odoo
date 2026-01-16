@@ -98,24 +98,9 @@
                             <field name="partner_id" string="Client"/>
                             <field name="ptt_crm_lead_id" string="CRM Lead"/>
                         </group>
-                        <group invisible="not ptt_crm_lead_id">
-                            <field name="ptt_preferred_contact_method" invisible="not ptt_crm_lead_id"/>
-                            <field name="ptt_date_of_call" invisible="not ptt_crm_lead_id"/>
-                        </group>
                     </group>
                     
-                    <!-- 2nd POC (Signing Authority) - from CRM Lead Intake -->
-                    <group string="2nd POC (Signing Authority)" invisible="not ptt_crm_lead_id">
-                        <group>
-                            <field name="ptt_second_poc_name" invisible="not ptt_crm_lead_id"/>
-                            <field name="ptt_second_poc_phone" invisible="not ptt_crm_lead_id"/>
-                        </group>
-                        <group>
-                            <field name="ptt_second_poc_email" invisible="not ptt_crm_lead_id"/>
-                        </group>
-                    </group>
-                    
-                    <!-- Event Overview - from CRM Lead Intake -->
+                    <!-- Event Overview -->
                     <group string="Event Overview">
                         <group>
                             <field name="ptt_event_id"/>
@@ -126,7 +111,6 @@
                         <group>
                             <field name="ptt_guest_count"/>
                             <field name="ptt_total_hours"/>
-                            <field name="ptt_venue_booked" invisible="not ptt_crm_lead_id"/>
                             <field name="ptt_venue_name"/>
                         </group>
                     </group>
