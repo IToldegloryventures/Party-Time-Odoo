@@ -60,7 +60,8 @@
         "views/ptt_dashboard_views.xml",
         "views/ptt_dashboard_config_views.xml",
         "views/ptt_native_calendar_views.xml",
-        "views/ptt_native_kanban_views.xml",
+        # NOTE: ptt_native_kanban_views.xml DELETED - was creating standalone kanbans
+        # that override native Odoo views. Use inherit_id pattern instead.
         "views/ptt_native_filter_views.xml",
         "data/ptt_search_filters.xml",
         # NOTE: ptt_dashboard_editor_views.xml removed in v19.0.1.0.3 - Phase 2 feature

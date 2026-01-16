@@ -1,107 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        PTT Vendor List View
-        Purpose: Easy-to-use vendor list for sales team to search and filter vendors
-        All custom fields use ptt_ prefix (Odoo best practice).
+        PTT Vendor List View - SAFE VERSION
+        
+        IMPORTANT: This file only contains:
+        1. Search view (safe - search views don't override native views)
+        2. Action with vendor domain filter
+        
+        The standalone kanban and list views were REMOVED because:
+        - Views without inherit_id can override native Odoo views
+        - Even with action binding, they can leak into other contexts
+        - The correct pattern is to use inherit_id to extend native views
+        
+        The action now uses native res.partner views with a vendor filter.
     -->
 
-    <!-- Vendor List/Tree View -->
-    <record id="view_ptt_vendor_tree" model="ir.ui.view">
-        <field name="name">res.partner.vendor.tree.ptt</field>
-        <field name="model">res.partner</field>
-        <field name="priority">99</field>
-        <field name="arch" type="xml">
-            <list string="Vendors" 
-                  decoration-success="ptt_vendor_compliance_status == 'compliant'"
-                  decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
-                  decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')">
-                <field name="name" string="Vendor Name"/>
-                <field name="ptt_vendor_tier" string="Tier" widget="badge"
-                       decoration-success="ptt_vendor_tier == 'premier'"
-                       decoration-info="ptt_vendor_tier == 'classic'"
-                       decoration-muted="ptt_vendor_tier == 'essentials'"/>
-                <field name="ptt_vendor_service_tag_ids" string="Services" widget="many2many_tags" 
-                       options="{'color_field': 'color'}"/>
-                <field name="ptt_vendor_compliance_status" string="Compliance" widget="badge"
-                       decoration-success="ptt_vendor_compliance_status == 'compliant'"
-                       decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
-                       decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')"/>
-                <field name="ptt_vendor_rating" string="Rating" widget="badge"
-                       decoration-success="ptt_vendor_rating in ('4', '5')"
-                       decoration-warning="ptt_vendor_rating == '3'"
-                       decoration-danger="ptt_vendor_rating in ('1', '2')"
-                       optional="show"/>
-                <field name="phone" string="Phone"/>
-                <field name="email" string="Email"/>
-                <field name="ptt_vendor_notes" string="Notes" optional="show" widget="text"/>
-                <field name="ptt_vendor_document_count" string="Docs" optional="show"/>
-                <field name="city" optional="hide"/>
-                <field name="state_id" optional="hide"/>
-            </list>
-        </field>
-    </record>
-
-    <!-- Vendor Kanban View -->
-    <record id="view_ptt_vendor_kanban" model="ir.ui.view">
-        <field name="name">res.partner.vendor.kanban.ptt</field>
-        <field name="model">res.partner</field>
-        <field name="priority">99</field>
-        <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile">
-                <field name="name"/>
-                <field name="ptt_vendor_tier"/>
-                <field name="ptt_vendor_service_tag_ids"/>
-                <field name="ptt_vendor_compliance_status"/>
-                <field name="city"/>
-                <field name="state_id"/>
-                <field name="phone"/>
-                <field name="email"/>
-                <field name="image_128"/>
-                <templates>
-                    <t t-name="card">
-                        <aside>
-                            <img class="rounded" t-att-src="kanban_image('res.partner', 'image_128', record.id.raw_value)" alt="Vendor"/>
-                        </aside>
-                        <main>
-                            <div class="d-flex align-items-center gap-1">
-                                <field name="name" class="fw-bold fs-5 text-truncate"/>
-                                <field name="ptt_vendor_tier" widget="badge"
-                                       decoration-success="ptt_vendor_tier == 'premier'"
-                                       decoration-info="ptt_vendor_tier == 'classic'"
-                                       decoration-muted="ptt_vendor_tier == 'essentials'"/>
-                            </div>
-                            <field name="ptt_vendor_service_tag_ids" widget="many2many_tags" 
-                                   options="{'color_field': 'color'}"/>
-                            <field name="ptt_vendor_compliance_status" widget="badge"
-                                   decoration-success="ptt_vendor_compliance_status == 'compliant'"
-                                   decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
-                                   decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')"/>
-                            <div class="d-flex gap-2 mt-1">
-                                <span t-if="record.phone.value" class="text-muted small">
-                                    <i class="fa fa-phone"/> <t t-esc="record.phone.value"/>
-                                </span>
-                                <span t-if="record.email.value" class="text-muted small">
-                                    <i class="fa fa-envelope"/> <t t-esc="record.email.value"/>
-                                </span>
-                            </div>
-                            <div class="d-flex gap-2 mt-1" t-if="record.ptt_vendor_rating.value">
-                                <span class="text-muted small">
-                                    <i class="fa fa-star"/> <t t-esc="record.ptt_vendor_rating.value"/> Stars
-                                </span>
-                            </div>
-                        </main>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
-    <!-- Vendor Search View -->
+    <!-- Vendor Search View - SAFE (search views don't override native views) -->
     <record id="view_ptt_vendor_search" model="ir.ui.view">
         <field name="name">res.partner.vendor.search.ptt</field>
         <field name="model">res.partner</field>
-        <field name="priority">99</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name" string="Vendor" 
@@ -109,8 +26,8 @@
                 <field name="ptt_vendor_service_tag_ids" string="Service"/>
                 <field name="phone"/>
                 <field name="email"/>
-                <field name="city" string="City" optional="hide"/>
-                <field name="state_id" string="State" optional="hide"/>
+                <field name="city" string="City"/>
+                <field name="state_id" string="State"/>
                 <separator/>
                 <filter string="Compliant" name="compliant" domain="[('ptt_vendor_compliance_status', '=', 'compliant')]"/>
                 <filter string="Missing Documents" name="missing_docs" domain="[('ptt_vendor_compliance_status', '=', 'missing_required')]"/>
@@ -125,11 +42,18 @@
                 <filter string="4-5 Stars" name="rating_high" domain="[('ptt_vendor_rating', 'in', ['4', '5'])]"/>
                 <filter string="3 Stars" name="rating_medium" domain="[('ptt_vendor_rating', '=', '3')]"/>
                 <filter string="1-2 Stars" name="rating_low" domain="[('ptt_vendor_rating', 'in', ['1', '2'])]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Tier" name="group_tier" context="{'group_by': 'ptt_vendor_tier'}"/>
+                    <filter string="Compliance" name="group_compliance" context="{'group_by': 'ptt_vendor_compliance_status'}"/>
+                    <filter string="Rating" name="group_rating" context="{'group_by': 'ptt_vendor_rating'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state_id'}"/>
+                </group>
             </search>
         </field>
     </record>
 
-    <!-- Vendor List Action -->
+    <!-- Vendor List Action - Uses native res.partner views with vendor filter -->
     <record id="action_ptt_vendor_list" model="ir.actions.act_window">
         <field name="name">Vendors</field>
         <field name="res_model">res.partner</field>
@@ -150,21 +74,22 @@
         </field>
     </record>
 
-    <!-- Bind custom views to the action -->
-    <record id="action_ptt_vendor_list_tree" model="ir.actions.act_window.view">
-        <field name="sequence">1</field>
-        <field name="view_mode">list</field>
-        <field name="view_id" ref="view_ptt_vendor_tree"/>
-        <field name="act_window_id" ref="action_ptt_vendor_list"/>
-    </record>
-
-    <record id="action_ptt_vendor_list_kanban" model="ir.actions.act_window.view">
-        <field name="sequence">2</field>
-        <field name="view_mode">kanban</field>
-        <field name="view_id" ref="view_ptt_vendor_kanban"/>
-        <field name="act_window_id" ref="action_ptt_vendor_list"/>
-    </record>
-
-    <!-- Menu item is in ptt_vendor_menus.xml -->
+    <!-- 
+        NOTE: Custom list/kanban views REMOVED
+        
+        The action now uses native res.partner views.
+        To add custom fields to the vendor list, use inherit_id:
+        
+        <record id="view_partner_tree_inherit_vendor" model="ir.ui.view">
+            <field name="name">res.partner.tree.inherit.vendor</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='email']" position="after">
+                    <field name="ptt_vendor_tier" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+    -->
 
 </odoo>
