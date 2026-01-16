@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Personal To-Do List View -->
+    <record id="view_ptt_personal_todo_list" model="ir.ui.view">
+        <field name="name">ptt.personal.todo.list</field>
+        <field name="model">ptt.personal.todo</field>
+        <field name="arch" type="xml">
+            <list string="Personal To-Do" editable="bottom" default_order="sequence, due_date">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="due_date"/>
+                <field name="priority" widget="priority"/>
+                <field name="is_done" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Personal To-Do Form View -->
+    <record id="view_ptt_personal_todo_form" model="ir.ui.view">
+        <field name="name">ptt.personal.todo.form</field>
+        <field name="model">ptt.personal.todo</field>
+        <field name="arch" type="xml">
+            <form string="Personal To-Do">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="What needs to be done?"/>
+                            <field name="due_date"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group>
+                            <field name="is_done"/>
+                            <field name="user_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <group>
+                                <field name="description" placeholder="Add any additional notes..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Personal To-Do Search View -->
+    <record id="view_ptt_personal_todo_search" model="ir.ui.view">
+        <field name="name">ptt.personal.todo.search</field>
+        <field name="model">ptt.personal.todo</field>
+        <field name="arch" type="xml">
+            <search string="Search To-Do">
+                <field name="name"/>
+                <separator/>
+                <filter name="filter_not_done" string="Active" domain="[('is_done', '=', False)]"/>
+                <filter name="filter_done" string="Completed" domain="[('is_done', '=', True)]"/>
+                <separator/>
+                <filter name="filter_has_date" string="Has Due Date" domain="[('due_date', '!=', False)]"/>
+                <filter name="filter_unscheduled" string="Unscheduled" domain="[('due_date', '=', False)]"/>
+                <separator/>
+                <filter name="group_priority" string="Priority" context="{'group_by': 'priority'}"/>
+                <filter name="group_due_date" string="Due Date" context="{'group_by': 'due_date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Personal To-Do Action -->
+    <record id="action_ptt_personal_todo" model="ir.actions.act_window">
+        <field name="name">My Personal To-Do</field>
+        <field name="res_model">ptt.personal.todo</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'search_default_filter_not_done': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first personal to-do item!
+            </p>
+            <p>
+                Personal to-do items are private and only visible to you.
+            </p>
+        </field>
+    </record>
+</odoo>
+
