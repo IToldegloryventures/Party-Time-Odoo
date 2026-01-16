@@ -1,6 +1,5 @@
 import logging
 import re
-import traceback
 from . import models
 
 _logger = logging.getLogger(__name__)
@@ -36,9 +35,9 @@ def post_init_hook(env):
                 try:
                     if view.arch_db:
                         new_arch = view.arch_db
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
                         if new_arch != view.arch_db:
                             view.sudo().write({'arch_db': new_arch})
                             _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view.id}")
@@ -161,18 +160,6 @@ def _configure_all_service_variants(env):
         _logger.info(f"PTT Business Core: ✅ Updated {total_updated} price_extra values for DJ Services")
     else:
         _logger.info("PTT Business Core: ℹ️ DJ Services pricing already configured or not found")
-    
-    if total_updated > 0:
-        _logger.info(f"PTT Business Core: ✅ Configured pricing for {len(services_configured)} service(s): {', '.join(services_configured)}")
-    else:
-        _logger.info("PTT Business Core: ℹ️ No services with explicit pricing configuration found. Use the wizard to configure pricing.")
-    
-    # Log services without configuration (check all services, not just those with config)
-    services_with_config = set(services_configured)
-    services_without_config = [s.name for s in services if s.name not in services_with_config]
-    if services_without_config:
-        _logger.info(f"PTT Business Core: ℹ️ {len(services_without_config)} service(s) without explicit pricing (defaults to $0.00): {', '.join(services_without_config)}")
-        _logger.info("PTT Business Core: 💡 Use Products > Configuration > 'Configure Variant Pricing' to set pricing for these services")
 
 
 def _configure_dj_variants(env):
@@ -182,10 +169,8 @@ def _configure_dj_variants(env):
     
     NOTE: Pricing (price_extra) is now handled by _configure_all_service_variants().
     """
-
-    # =============================================================
-    # STEP 2: Configure variant-specific fields
-    # =============================================================
+    # Find DJ Services template by XML ID
+    dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
 
     # DJ Variant Configuration Data (from PTT_Event Pricing spreadsheet)
     # Each key is (event_type_name, tier_name) tuple
@@ -449,11 +434,11 @@ def pre_init_hook(cr):
                 for view_id, arch_db in views_to_fix:
                     if arch_db:
                         new_arch = str(arch_db)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
                         if new_arch != str(arch_db):
                             cr.execute("UPDATE ir_ui_view SET arch_db = %s WHERE id = %s", (new_arch, view_id))
                             _logger.info(f"PTT Business Core: Cleaned {field_name} from view {view_id}")
@@ -467,11 +452,11 @@ def pre_init_hook(cr):
                 for view_id, arch in custom_views_to_fix:
                     if arch:
                         new_arch = str(arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<field[^>]*name=["\']{ field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<label[^>]*for=["\']{ field_name}["\'][^/>]*/?>', '', new_arch)
-                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
-                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{ field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<field[^>]*name=["\']{field_name}["\'][^>]*>.*?</field>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<label[^>]*for=["\']{field_name}["\'][^/>]*/?>', '', new_arch)
+                        new_arch = re.sub(rf'<button[^>]*invisible="[^"]*{field_name}[^"]*"[^>]*>.*?</button>', '', new_arch, flags=re.DOTALL)
+                        new_arch = re.sub(rf'<div[^>]*invisible="[^"]*{field_name}[^"]*"[^>]*>.*?</div>', '', new_arch, flags=re.DOTALL)
                         if new_arch != str(arch):
                             cr.execute("UPDATE ir_ui_view_custom SET arch = %s WHERE id = %s", (new_arch, view_id))
                             _logger.info(f"PTT Business Core: Cleaned {field_name} from custom view {view_id}")
