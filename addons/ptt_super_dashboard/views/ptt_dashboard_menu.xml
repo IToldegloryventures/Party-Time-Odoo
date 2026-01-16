@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Home Menu (Top Level App) - NO ACTION, just a container -->
+    <menuitem id="menu_ptt_home_root"
+              name="Home"
+              sequence="999"/>
+    
+    <!-- Submenu Items under Home -->
+    <menuitem id="menu_ptt_home_dashboard"
+              name="Dashboard"
+              parent="menu_ptt_home_root"
+              sequence="10"
+              action="action_ptt_home_hub"/>
+    
+    <menuitem id="menu_ptt_my_tasks"
+              name="My Tasks"
+              parent="menu_ptt_home_root"
+              sequence="20"
+              action="action_ptt_my_tasks"/>
+    
+    <menuitem id="menu_ptt_my_leads"
+              name="My Leads"
+              parent="menu_ptt_home_root"
+              sequence="30"
+              action="action_ptt_my_leads"/>
+    
+    <menuitem id="menu_ptt_my_quotes"
+              name="My Quotes"
+              parent="menu_ptt_home_root"
+              sequence="40"
+              action="action_ptt_my_quotes"/>
+    
+    <!-- DISABLED: Calendar views causing OwlError - menus disabled to match
+    <menuitem id="menu_ptt_event_calendar"
+              name="Event Calendar (Custom JS)"
+              parent="menu_ptt_home_root"
+              sequence="50"
+              action="action_ptt_event_calendar"/>
+    
+    <menuitem id="menu_ptt_native_calendars"
+              name="Native Calendars (Compare)"
+              parent="menu_ptt_home_root"
+              sequence="55"/>
+    
+    <menuitem id="menu_ptt_native_event_calendar"
+              name="Event Calendar (Native Odoo)"
+              parent="menu_ptt_native_calendars"
+              sequence="1"
+              action="action_ptt_native_event_calendar"/>
+    
+    <menuitem id="menu_ptt_native_task_calendar"
+              name="Task Calendar (Native Odoo)"
+              parent="menu_ptt_native_calendars"
+              sequence="2"
+              action="action_ptt_native_task_calendar"/>
+    -->
+    
+    <!-- 
+        NOTE: Native Kanban menus REMOVED
+        
+        The actions action_ptt_native_event_kanban, action_ptt_native_task_kanban, 
+        action_ptt_native_lead_kanban were in ptt_native_kanban_views.xml which was DELETED
+        because standalone kanban views can override native Odoo views.
+        
+        Use the standard Odoo apps (CRM, Project) for native kanban views.
+    -->
+    
+    <menuitem id="menu_ptt_personal_todo"
+              name="Personal To-Do"
+              parent="menu_ptt_home_root"
+              sequence="60"
+              action="action_ptt_personal_todo"/>
+</odoo>

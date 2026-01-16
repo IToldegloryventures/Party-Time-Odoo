@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.MyWorkSection">
+        <div class="ptt-section">
+            <div class="ptt-section-header">
+                <h2><i class="fa fa-calendar-check-o"/> Event Tasks</h2>
+                <small class="text-muted ms-2">Tasks from your event projects</small>
+            </div>
+            
+            <div class="ptt-my-work">
+                <t t-foreach="categories" t-as="category" t-key="category.id">
+                    <div t-att-class="'ptt-category-card ' + category.id">
+                        <div class="ptt-category-header">
+                            <span class="ptt-category-title">
+                                <i t-att-class="'fa ' + category.icon + ' me-1'"/>
+                                <t t-esc="category.label"/>
+                            </span>
+                            <span class="ptt-category-count">
+                                <t t-esc="getCategoryCount(category.id)"/>
+                            </span>
+                        </div>
+                        
+                        <div class="ptt-category-tasks">
+                            <t t-if="getCategoryTasks(category.id).length === 0">
+                                <div class="ptt-empty-state small">
+                                    <i class="fa fa-check-circle"/>
+                                    <p>No tasks</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="getCategoryTasks(category.id).slice(0, 5)" t-as="task" t-key="task.id">
+                                    <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                        <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                        <div class="ptt-task-content">
+                                            <div class="ptt-task-name" t-esc="task.name"/>
+                                            <div class="ptt-task-meta">
+                                                <span 
+                                                    t-if="task.project_name" 
+                                                    class="ptt-task-project"
+                                                    t-on-click="(ev) => this.onProjectClick(ev, task)">
+                                                    <i class="fa fa-folder-o me-1"/>
+                                                    <t t-esc="task.project_name"/>
+                                                </span>
+                                                <span 
+                                                    t-if="task.date_deadline" 
+                                                    t-att-class="'ptt-task-date' + (isOverdue(task.date_deadline) ? ' overdue' : '')">
+                                                    <i class="fa fa-clock-o me-1"/>
+                                                    <t t-esc="formatDate(task.date_deadline)"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="ptt-task-action">
+                                            <button title="Open Task">
+                                                <i class="fa fa-external-link"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </t>
+                                <t t-if="getCategoryTasks(category.id).length > 5">
+                                    <a 
+                                        class="ptt-section-action d-block text-center mt-2" 
+                                        href="#"
+                                        t-on-click.prevent="() => this.onViewAllClick(category.id)">
+                                        View all <t t-esc="getCategoryCount(category.id)"/> tasks
+                                    </a>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
+

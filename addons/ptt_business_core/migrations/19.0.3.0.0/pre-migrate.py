@@ -59,11 +59,7 @@ def migrate(cr, version):
         ('x_service_caricature', 'ptt_service_caricature'),
         ('x_service_casino', 'ptt_service_casino'),
         ('x_service_staffing', 'ptt_service_staffing'),
-        # CFO contact
-        ('x_cfo_name', 'ptt_cfo_name'),
-        ('x_cfo_phone', 'ptt_cfo_phone'),
-        ('x_cfo_email', 'ptt_cfo_email'),
-        ('x_cfo_contact_method', 'ptt_cfo_contact_method'),
+        # CFO contact fields removed - no longer used
         # Relational fields (One2many inverse fields stored on related model, not here)
         # These are just virtual fields, actual columns don't exist on crm_lead
         # ('x_service_line_ids', 'ptt_service_line_ids'),  # One2many - no column

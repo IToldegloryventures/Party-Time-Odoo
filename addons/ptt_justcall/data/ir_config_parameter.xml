@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="ptt_ir_config_parameter_justcall_webhook_url" model="ir.config_parameter">
-        <field name="key">ptt.justcall.webhook_url</field>
-        <field name="value"></field>
-    </record>
-</odoo>

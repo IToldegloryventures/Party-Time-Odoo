@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.CommunicationDashboard">
+        <div class="ptt-communication-dashboard">
+            <!-- Date Range Filter -->
+            <div class="ptt-date-filter mb-4">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('today')">Today</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_week')">This Week</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_month')">This Month</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('last_month')">Last Month</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_quarter')">This Quarter</button>
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="() => this.setDateRange('this_year')">This Year</button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                            t-model="state.startDate" t-on-change="onDateChange"/>
+                        <span class="text-muted">to</span>
+                        <input type="date" class="form-control form-control-sm" style="width: 140px;"
+                            t-model="state.endDate" t-on-change="onDateChange"/>
+                    </div>
+                    <span class="badge bg-secondary" t-esc="dateRangeLabel"/>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="ptt-loading">
+                    <div class="ptt-spinner"/>
+                </div>
+            </t>
+            
+            <t t-elif="state.data">
+                <!-- Company Total Section -->
+                <div class="ptt-section-header mb-3">
+                    <h2><i class="fa fa-building"/> Company Total</h2>
+                </div>
+                
+                <!-- Main KPI Cards - Company Total -->
+                <div class="ptt-kpi-grid mb-4">
+                    <!-- Total Calls -->
+                    <div class="ptt-kpi-card" t-if="state.data.total_calls !== undefined">
+                        <div class="ptt-kpi-icon" style="background: #DBEAFE; color: #2563EB;">
+                            <i class="fa fa-phone"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.total_calls"/>
+                        <div class="ptt-kpi-label">Total Calls</div>
+                        <div class="ptt-kpi-count">
+                            All company
+                        </div>
+                    </div>
+                    
+                    <!-- Total Emails -->
+                    <div class="ptt-kpi-card" t-if="state.data.total_emails !== undefined">
+                        <div class="ptt-kpi-icon" style="background: #DCFCE7; color: #16A34A;">
+                            <i class="fa fa-envelope"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="state.data.total_emails"/>
+                        <div class="ptt-kpi-label">Total Emails</div>
+                        <div class="ptt-kpi-count">
+                            All company
+                        </div>
+                    </div>
+                    
+                    <!-- Avg Response Time - Calls -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_response_time_calls !== undefined">
+                        <div class="ptt-kpi-icon" style="background: #FEF3C7; color: #D97706;">
+                            <i class="fa fa-clock-o"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatTime(state.data.avg_response_time_calls)"/>
+                        <div class="ptt-kpi-label">Avg Response Time (Calls)</div>
+                        <div class="ptt-kpi-count">
+                            Company average
+                        </div>
+                    </div>
+                    
+                    <!-- Avg Response Time - Emails -->
+                    <div class="ptt-kpi-card" t-if="state.data.avg_response_time_emails !== undefined">
+                        <div class="ptt-kpi-icon" style="background: #E0E7FF; color: #6366F1;">
+                            <i class="fa fa-clock-o"/>
+                        </div>
+                        <div class="ptt-kpi-value" t-esc="formatTime(state.data.avg_response_time_emails)"/>
+                        <div class="ptt-kpi-label">Avg Response Time (Emails)</div>
+                        <div class="ptt-kpi-count">
+                            Company average
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- All Users Section -->
+                <div class="ptt-section-header mb-3 mt-4">
+                    <h2><i class="fa fa-users"/> All Users Performance</h2>
+                </div>
+                
+                <div class="ptt-rep-grid" t-if="state.data.users">
+                    <t t-foreach="state.data.users" t-as="user" t-key="user.id">
+                        <div class="ptt-rep-card">
+                            <div class="ptt-rep-header">
+                                <div class="ptt-rep-avatar" style="background-color: #6366F1;">
+                                    <t t-esc="user.initials"/>
+                                </div>
+                                <div class="ptt-rep-name" t-esc="user.name"/>
+                            </div>
+                            <div class="ptt-rep-stats">
+                                <div class="ptt-rep-stat" t-if="user.calls_count !== undefined">
+                                    <span class="label">Calls</span>
+                                    <span class="value" t-esc="user.calls_count"/>
+                                    <span class="label small" t-if="state.data.total_calls > 0">
+                                        (<t t-esc="((user.calls_count / state.data.total_calls) * 100).toFixed(1)"/>% of total)
+                                    </span>
+                                </div>
+                                <div class="ptt-rep-stat" t-if="user.emails_count !== undefined">
+                                    <span class="label">Emails</span>
+                                    <span class="value" t-esc="user.emails_count"/>
+                                    <span class="label small" t-if="state.data.total_emails > 0">
+                                        (<t t-esc="((user.emails_count / state.data.total_emails) * 100).toFixed(1)"/>% of total)
+                                    </span>
+                                </div>
+                                <div class="ptt-rep-stat" t-if="user.response_time_calls !== undefined">
+                                    <span class="label">Response (Calls)</span>
+                                    <span class="value" t-esc="formatTime(user.response_time_calls)"/>
+                                </div>
+                                <div class="ptt-rep-stat" t-if="user.response_time_emails !== undefined">
+                                    <span class="label">Response (Emails)</span>
+                                    <span class="value" t-esc="formatTime(user.response_time_emails)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
+

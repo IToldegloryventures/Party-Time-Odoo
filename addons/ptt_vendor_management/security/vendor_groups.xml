@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Vendor Management Security Groups
+        
+        These groups control access to vendor management features.
+        Using groups allows views to fail silently for unauthorized users.
+        
+        NOTE: category_id field does NOT exist on res.groups in Odoo 19
+        Groups are organized without module categories in this version.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/security.html
+    -->
+    
+    <!-- User group: Can view and manage their own vendor assignments -->
+    <record id="group_vendor_user" model="res.groups">
+        <field name="name">Vendor Management / User</field>
+        <field name="comment">Can view vendor assignments and send work orders for their projects.</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    
+    <!-- Manager group: Can manage all vendor data and settings -->
+    <record id="group_vendor_manager" model="res.groups">
+        <field name="name">Vendor Management / Manager</field>
+        <field name="comment">Full access to vendor management, including document types, tags, and all assignments.</field>
+        <field name="implied_ids" eval="[(4, ref('ptt_vendor_management.group_vendor_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+    
+</odoo>

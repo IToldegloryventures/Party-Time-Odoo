@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.ExportMenu">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fa fa-download me-1"/> Export
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="#" t-on-click.prevent="exportToExcel">
+                        <i class="fa fa-file-excel-o me-2"/> Export to Excel
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" t-on-click.prevent="exportToPDF">
+                        <i class="fa fa-file-pdf-o me-2"/> Export to PDF
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </t>
+</templates>
+

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Pre-built Dashboard Templates -->
+
+    <!-- Sales Performance Dashboard -->
+    <record id="dashboard_sales_performance" model="ptt.team.dashboard.config">
+        <field name="name">Sales Performance</field>
+        <field name="description">Team sales metrics, pipeline, and forecasts</field>
+        <field name="is_public">True</field>
+        <field name="is_active">True</field>
+        <field name="auto_refresh_interval">300</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Sales Dashboard - Total Pipeline Widget -->
+    <record id="dashboard_widget_sales_pipeline" model="ptt.team.dashboard.widget">
+        <field name="name">Total Pipeline</field>
+        <field name="dashboard_id" ref="dashboard_sales_performance"/>
+        <field name="widget_type">kpi</field>
+        <field name="position_x">0</field>
+        <field name="position_y">0</field>
+        <field name="width">3</field>
+        <field name="height">2</field>
+        <field name="data_source_type">model</field>
+        <field name="data_source_config">{
+            "model": "crm.lead",
+            "fields": ["expected_revenue"],
+            "domain": [["type", "=", "opportunity"], ["probability", "&lt;", 100]],
+            "aggregation": "sum",
+            "field_to_aggregate": "expected_revenue"
+        }</field>
+        <field name="widget_config">{
+            "title": "Total Pipeline",
+            "format": "currency",
+            "color": "blue"
+        }</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Sales Dashboard - Active Deals Widget -->
+    <record id="dashboard_widget_sales_active" model="ptt.team.dashboard.widget">
+        <field name="name">Active Deals</field>
+        <field name="dashboard_id" ref="dashboard_sales_performance"/>
+        <field name="widget_type">kpi</field>
+        <field name="position_x">3</field>
+        <field name="position_y">0</field>
+        <field name="width">3</field>
+        <field name="height">2</field>
+        <field name="data_source_type">model</field>
+        <field name="data_source_config">{
+            "model": "crm.lead",
+            "fields": ["id"],
+            "domain": [["type", "=", "opportunity"], ["probability", "&lt;", 100]],
+            "aggregation": "count"
+        }</field>
+        <field name="widget_config">{
+            "title": "Active Deals",
+            "format": "number",
+            "color": "green"
+        }</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Sales Dashboard - Won This Month Widget -->
+    <record id="dashboard_widget_sales_won" model="ptt.team.dashboard.widget">
+        <field name="name">Won This Month</field>
+        <field name="dashboard_id" ref="dashboard_sales_performance"/>
+        <field name="widget_type">kpi</field>
+        <field name="position_x">6</field>
+        <field name="position_y">0</field>
+        <field name="width">3</field>
+        <field name="height">2</field>
+        <field name="data_source_type">model</field>
+        <field name="data_source_config">{
+            "model": "sale.order",
+            "fields": ["amount_total"],
+            "domain": [["state", "in", ["sale", "done"]]],
+            "aggregation": "sum",
+            "field_to_aggregate": "amount_total"
+        }</field>
+        <field name="widget_config">{
+            "title": "Won This Month",
+            "format": "currency",
+            "color": "success"
+        }</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Project Status Dashboard -->
+    <record id="dashboard_project_status" model="ptt.team.dashboard.config">
+        <field name="name">Project Status</field>
+        <field name="description">Active projects, tasks, and team workload</field>
+        <field name="is_public">True</field>
+        <field name="is_active">True</field>
+        <field name="auto_refresh_interval">300</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Project Dashboard - Active Projects Widget -->
+    <record id="dashboard_widget_project_active" model="ptt.team.dashboard.widget">
+        <field name="name">Active Projects</field>
+        <field name="dashboard_id" ref="dashboard_project_status"/>
+        <field name="widget_type">kpi</field>
+        <field name="position_x">0</field>
+        <field name="position_y">0</field>
+        <field name="width">3</field>
+        <field name="height">2</field>
+        <field name="data_source_type">model</field>
+        <field name="data_source_config">{
+            "model": "project.project",
+            "fields": ["id"],
+            "domain": [["state", "=", "open"]],
+            "aggregation": "count"
+        }</field>
+        <field name="widget_config">{
+            "title": "Active Projects",
+            "format": "number",
+            "color": "blue"
+        }</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Accounts Receivable Dashboard -->
+    <record id="dashboard_accounts_receivable" model="ptt.team.dashboard.config">
+        <field name="name">Accounts Receivable</field>
+        <field name="description">Outstanding invoices and collection metrics</field>
+        <field name="is_public">True</field>
+        <field name="is_active">True</field>
+        <field name="auto_refresh_interval">300</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- AR Dashboard - Outstanding Amount Widget -->
+    <record id="dashboard_widget_ar_outstanding" model="ptt.team.dashboard.widget">
+        <field name="name">Outstanding Amount</field>
+        <field name="dashboard_id" ref="dashboard_accounts_receivable"/>
+        <field name="widget_type">kpi</field>
+        <field name="position_x">0</field>
+        <field name="position_y">0</field>
+        <field name="width">3</field>
+        <field name="height">2</field>
+        <field name="data_source_type">model</field>
+        <field name="data_source_config">{
+            "model": "account.move",
+            "fields": ["amount_residual"],
+            "domain": [["move_type", "=", "out_invoice"], ["state", "=", "posted"]],
+            "aggregation": "sum",
+            "field_to_aggregate": "amount_residual"
+        }</field>
+        <field name="widget_config">{
+            "title": "Outstanding Amount",
+            "format": "currency",
+            "color": "warning"
+        }</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- AR Dashboard - Overdue Invoices Widget -->
+    <record id="dashboard_widget_ar_overdue" model="ptt.team.dashboard.widget">
+        <field name="name">Overdue Invoices</field>
+        <field name="dashboard_id" ref="dashboard_accounts_receivable"/>
+        <field name="widget_type">kpi</field>
+        <field name="position_x">3</field>
+        <field name="position_y">0</field>
+        <field name="width">3</field>
+        <field name="height">2</field>
+        <field name="data_source_type">model</field>
+        <field name="data_source_config">{
+            "model": "account.move",
+            "fields": ["id"],
+            "domain": [["move_type", "=", "out_invoice"], ["state", "=", "posted"], ["invoice_date_due", "&lt;", "TODAY"]],
+            "aggregation": "count"
+        }</field>
+        <field name="widget_config">{
+            "title": "Overdue Invoices",
+            "format": "number",
+            "color": "danger"
+        }</field>
+        <field name="sequence">20</field>
+    </record>
+</odoo>

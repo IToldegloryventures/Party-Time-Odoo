@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.EventCalendarFull">
+        <div class="ptt-full-calendar d-flex" style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #E5E7EB;">
+            <!-- Main Calendar Section -->
+            <div class="ptt-calendar-main flex-grow-1" style="background: white;">
+                <!-- Calendar Header -->
+                <div class="ptt-calendar-header d-flex justify-content-between align-items-center p-3 border-bottom" style="background: #F9FAFB;">
+                    <div class="d-flex align-items-center gap-3">
+                        <h4 class="mb-0 fw-bold" style="color: #1F2937; font-size: 1.5rem;">
+                            <t t-esc="currentMonthYear"/>
+                        </h4>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onPrevMonth" title="Previous Month" style="border-radius: 8px 0 0 8px;">
+                                <i class="fa fa-chevron-left"/>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onToday" style="border-radius: 0;">Today</button>
+                            <button class="btn btn-outline-secondary btn-sm" t-on-click="onNextMonth" title="Next Month" style="border-radius: 0 8px 8px 0;">
+                                <i class="fa fa-chevron-right"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <!-- Date Range Filters - Segmented Control -->
+                        <div class="btn-group" role="group">
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'this_week' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('this_week')">
+                                This Week
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'this_month' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('this_month')">
+                                This Month
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'last_month' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('last_month')">
+                                Last Month
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'ytd' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('ytd')">
+                                YTD
+                            </button>
+                            <button 
+                                t-att-class="'btn btn-sm btn-outline-secondary' + (state.dateRange === 'custom' ? ' active' : '')"
+                                t-on-click="() => this.setDateRange('custom')">
+                                Custom
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2" t-if="state.dateRange === 'custom'">
+                            <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
+                                t-model="state.startDate" t-on-change="onDateChange"/>
+                            <span class="text-muted small">to</span>
+                            <input type="date" class="form-control form-control-sm" style="width: 140px; border-radius: 8px;"
+                                t-model="state.endDate" t-on-change="onDateChange"/>
+                        </div>
+                        <!-- My Events Toggle -->
+                        <div class="form-check form-switch">
+                            <input 
+                                type="checkbox" 
+                                class="form-check-input" 
+                                id="myEventsToggle"
+                                t-att-checked="state.myEventsOnly"
+                                t-on-change="onToggleMyEvents"/>
+                            <label class="form-check-label" for="myEventsToggle">
+                                My Events Only
+                            </label>
+                        </div>
+                        <!-- Event Count Badge -->
+                        <span class="badge bg-secondary">
+                            <t t-esc="eventCounts.total"/> events
+                            <t t-if="eventCounts.myEvents > 0">
+                                (<t t-esc="eventCounts.myEvents"/> mine)
+                            </t>
+                        </span>
+                        <!-- Open in CRM Button -->
+                        <button class="btn btn-outline-primary btn-sm" t-on-click="onViewInCRM" title="Open in CRM">
+                            <i class="fa fa-external-link me-1"/>
+                            Open in CRM
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Loading State -->
+                <t t-if="state.loading">
+                    <div class="d-flex justify-content-center align-items-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </t>
+                
+                <!-- Calendar Grid -->
+                <t t-else="">
+                    <div class="ptt-calendar-grid" style="background: white;">
+                        <!-- Week Day Headers -->
+                        <t t-foreach="weekDays" t-as="day" t-key="day">
+                            <div class="ptt-calendar-day-header text-center fw-semibold py-2 border-bottom" style="background: #F9FAFB; color: #6B7280;" t-esc="day"/>
+                        </t>
+                        
+                        <!-- Calendar Days -->
+                        <t t-foreach="calendarDays" t-as="day" t-key="day.dateStr">
+                            <div 
+                                t-att-class="'ptt-calendar-day border position-relative' + 
+                                    (day.isToday ? ' ptt-today' : '') +
+                                    (day.isSelected ? ' ptt-selected' : '')"
+                                t-att-style="'cursor: pointer; min-height: 100px; background: ' + (!day.isCurrentMonth ? '#F9FAFB' : 'white') + ';' + (!day.isCurrentMonth ? ' color: #9CA3AF;' : '')"
+                                t-on-click="() => this.onDayClick(day)">
+                                <div class="ptt-day-number p-1">
+                                    <span t-att-class="day.isToday ? 'badge bg-primary rounded-circle' : ''">
+                                        <t t-esc="day.day"/>
+                                    </span>
+                                </div>
+                                <div class="ptt-day-events px-1 pb-1">
+                                    <t t-foreach="day.events.slice(0, 3)" t-as="event" t-key="event.id">
+                                        <div 
+                                            class="ptt-day-event small rounded px-1 mb-1 text-white text-truncate"
+                                            t-att-style="'background-color: ' + event.color"
+                                            t-att-title="event.name + (event.partner_name ? ' - ' + event.partner_name : '') + ' [' + event.stage_name + ']'"
+                                            t-on-click.stop="() => this.onEventClick(event)">
+                                            <t t-if="event.is_mine">
+                                                <i class="fa fa-star me-1" style="font-size: 8px;"/>
+                                            </t>
+                                            <t t-esc="event.name"/>
+                                        </div>
+                                    </t>
+                                    <t t-if="day.events.length > 3">
+                                        <div class="ptt-day-event small rounded px-1 text-white text-center" style="background-color: #6B7280;">
+                                            +<t t-esc="day.events.length - 3"/> more
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    
+                    <!-- Stage Legend / Filters -->
+                    <div class="ptt-calendar-legend d-flex flex-wrap align-items-center gap-3 p-3 border-top" style="background: #F9FAFB;">
+                        <span class="fw-semibold me-2" style="color: #4B5563;">Filter by Stage:</span>
+                        <t t-foreach="state.stages" t-as="stage" t-key="stage.id">
+                            <div class="form-check form-check-inline mb-0">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input"
+                                    t-att-id="'stage_' + stage.id"
+                                    t-att-checked="state.visibleStages[stage.id] !== false"
+                                    t-on-change="() => this.onToggleStage(stage.id)"
+                                    style="cursor: pointer;"/>
+                                <label t-att-for="'stage_' + stage.id" class="form-check-label d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 500; color: #374151;">
+                                    <span class="ptt-legend-dot" t-att-style="'background-color: ' + stage.color + '; width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: 0 1px 3px rgba(0,0,0,0.2);'"/>
+                                    <t t-esc="stage.name"/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+            
+            <!-- Day Panel (Right Sidebar) -->
+            <div class="ptt-day-panel border-start" style="width: 320px; min-width: 320px; background: white;">
+                <div class="p-3 border-bottom" style="background: #F9FAFB;">
+                    <h5 class="mb-0 fw-bold">
+                        <t t-if="state.selectedDate">
+                            <t t-esc="selectedDateDisplay"/>
+                        </t>
+                        <t t-else="">
+                            Select a Date
+                        </t>
+                    </h5>
+                </div>
+                
+                <div class="ptt-day-panel-content p-3" style="max-height: calc(100vh - 250px); overflow-y: auto;">
+                    <t t-if="state.selectedDate">
+                        <t t-if="state.selectedDateEvents.length === 0">
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-calendar-o fa-3x mb-3 d-block"/>
+                                <p>No events scheduled for this date</p>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <t t-foreach="state.selectedDateEvents" t-as="event" t-key="event.id">
+                                <div 
+                                    class="ptt-panel-event card mb-2 border-start border-4"
+                                    t-att-style="'border-left-color: ' + event.color + ' !important;'"
+                                    t-on-click="() => this.onEventClick(event)"
+                                    style="cursor: pointer;">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="card-title mb-1 fw-semibold">
+                                                <t t-if="event.is_mine">
+                                                    <i class="fa fa-star text-warning me-1" title="Assigned to you"/>
+                                                </t>
+                                                <t t-esc="event.name"/>
+                                            </h6>
+                                            <span class="badge" t-att-style="'background-color: ' + event.color">
+                                                <t t-esc="event.stage_name"/>
+                                            </span>
+                                        </div>
+                                        <t t-if="event.partner_name">
+                                            <p class="card-text small text-muted mb-1">
+                                                <i class="fa fa-user me-1"/>
+                                                <t t-esc="event.partner_name"/>
+                                                <t t-if="event.contact_name and event.contact_name !== event.partner_name">
+                                                    (<t t-esc="event.contact_name"/>)
+                                                </t>
+                                            </p>
+                                        </t>
+                                        <t t-if="event.event_time">
+                                            <p class="card-text small text-muted mb-1">
+                                                <i class="fa fa-clock-o me-1"/>
+                                                <t t-esc="event.event_time"/>
+                                            </p>
+                                        </t>
+                                        <t t-if="event.venue_name">
+                                            <p class="card-text small text-muted mb-1">
+                                                <i class="fa fa-map-marker me-1"/>
+                                                <t t-esc="event.venue_name"/>
+                                            </p>
+                                        </t>
+                                        <t t-if="event.guest_count">
+                                            <p class="card-text small text-muted mb-1">
+                                                <i class="fa fa-users me-1"/>
+                                                <t t-esc="event.guest_count"/> guests
+                                            </p>
+                                        </t>
+                                        <t t-if="event.assignee_name">
+                                            <p class="card-text small mb-0">
+                                                <i class="fa fa-id-badge me-1"/>
+                                                <span t-att-class="event.is_mine ? 'fw-semibold text-primary' : 'text-muted'">
+                                                    <t t-esc="event.assignee_name"/>
+                                                </span>
+                                            </p>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <div class="text-center text-muted py-4">
+                            <i class="fa fa-hand-pointer-o fa-3x mb-3 d-block"/>
+                            <p>Click on a date to see events</p>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

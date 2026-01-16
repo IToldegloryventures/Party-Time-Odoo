@@ -36,13 +36,47 @@ class ProjectVendorAssignment(models.Model):
         copy=False,
         help="Token for portal access",
     )
+    access_token_expiry = fields.Datetime(
+        string="Token Expiry",
+        copy=False,
+        help="Date/time when the access token expires (default: 30 days from generation)",
+    )
     
     def _get_access_token(self):
-        """Generate access token for portal link."""
+        """Generate access token for portal link with expiration.
+        
+        Tokens expire after 30 days for security. Expired tokens are regenerated.
+        """
         import uuid
-        if not self.access_token:
-            self.access_token = str(uuid.uuid4())
+        from datetime import timedelta
+        
+        now = fields.Datetime.now()
+        
+        # Check if token exists and is not expired
+        if self.access_token and self.access_token_expiry:
+            if self.access_token_expiry > now:
+                return self.access_token
+            # Token expired - regenerate
+        
+        # Generate new token with 30-day expiry
+        self.access_token = str(uuid.uuid4())
+        self.access_token_expiry = now + timedelta(days=30)
         return self.access_token
+    
+    def _is_token_valid(self, token):
+        """Validate access token including expiry check.
+        
+        Returns True if token matches and is not expired.
+        """
+        if not self.access_token or self.access_token != token:
+            return False
+        
+        # Check expiry if set
+        if self.access_token_expiry:
+            if self.access_token_expiry < fields.Datetime.now():
+                return False
+        
+        return True
     
     # === ACTIONS ===
     
@@ -92,21 +126,28 @@ class ProjectVendorAssignment(models.Model):
             'ptt_confirmed_date': fields.Date.today(),
         })
         
-        # Get service type display name
-        service_type_label = dict(self._fields['service_type'].selection).get(
-            self.service_type, self.service_type
-        )
+        # Get service type display name (defensive - selection may not exist)
+        service_type_label = self.service_type
+        if 'service_type' in self._fields and hasattr(self._fields['service_type'], 'selection'):
+            selection = self._fields['service_type'].selection
+            if callable(selection):
+                try:
+                    selection = selection(self)
+                except Exception:
+                    selection = []
+            service_type_label = dict(selection).get(self.service_type, self.service_type)
         
-        # Notify project manager
-        self.project_id.message_post(
-            body=_("✅ %s accepted %s assignment for %s") % (
-                self.vendor_id.name,
-                service_type_label,
-                self.project_id.ptt_event_date or 'TBD'
-            ),
-            subject=_("Vendor Accepted: %s") % service_type_label,
-            message_type='notification',
-        )
+        # Notify project manager (defensive - project_id may be unset)
+        if self.project_id:
+            self.project_id.message_post(
+                body=_("✅ %s accepted %s assignment for %s") % (
+                    self.vendor_id.name if self.vendor_id else _("Unknown"),
+                    service_type_label,
+                    self.project_id.ptt_event_date or 'TBD'
+                ),
+                subject=_("Vendor Accepted: %s") % service_type_label,
+                message_type='notification',
+            )
         
         return True
     
@@ -123,21 +164,28 @@ class ProjectVendorAssignment(models.Model):
             'vendor_decline_reason': reason or _("No reason provided"),
         })
         
-        # Get service type display name
-        service_type_label = dict(self._fields['service_type'].selection).get(
-            self.service_type, self.service_type
-        )
+        # Get service type display name (defensive - selection may not exist)
+        service_type_label = self.service_type
+        if 'service_type' in self._fields and hasattr(self._fields['service_type'], 'selection'):
+            selection = self._fields['service_type'].selection
+            if callable(selection):
+                try:
+                    selection = selection(self)
+                except Exception:
+                    selection = []
+            service_type_label = dict(selection).get(self.service_type, self.service_type)
         
-        # URGENT notification to project manager
-        self.project_id.message_post(
-            body=_("❌ URGENT: %s declined %s assignment!<br/>Reason: %s") % (
-                self.vendor_id.name,
-                service_type_label,
-                reason or _("Not specified")
-            ),
-            subject=_("URGENT: Vendor Declined - %s") % service_type_label,
-            message_type='notification',
-        )
+        # URGENT notification to project manager (defensive - project_id may be unset)
+        if self.project_id:
+            self.project_id.message_post(
+                body=_("❌ URGENT: %s declined %s assignment!<br/>Reason: %s") % (
+                    self.vendor_id.name if self.vendor_id else _("Unknown"),
+                    service_type_label,
+                    reason or _("Not specified")
+                ),
+                subject=_("URGENT: Vendor Declined - %s") % service_type_label,
+                message_type='notification',
+            )
         
         return True
     

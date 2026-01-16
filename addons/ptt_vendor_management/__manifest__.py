@@ -31,24 +31,26 @@
         "ptt_business_core",  # Has ptt.project.vendor.assignment model
     ],
     "data": [
-        # Security (load first)
+        # Security (MUST load first - groups before views that reference them)
+        "security/vendor_groups.xml",  # Groups for vendor management access control
         "security/ir.model.access.csv",
         "security/vendor_portal_rules.xml",
         # Data (seed data)
         "data/ptt_document_type_data.xml",
         "data/ptt_vendor_service_tag_data.xml",
         "data/mail_template_work_order.xml",
-      "data/server_actions.xml",
+        "data/server_actions.xml",
         # Views (configuration views first, then main views)
         "views/ptt_document_type_view.xml",
         "views/ptt_vendor_document_view.xml",
         "views/ptt_vendor_service_tag_view.xml",
-        "views/ptt_res_partner_view.xml",
+        # DELETED: ptt_res_partner_view.xml - embedded list causing OwlError
         "views/ptt_vendor_list_view.xml",
         "views/ptt_vendor_menus.xml",
         "views/vendor_portal_templates.xml",
-        # Portal view extensions (extends ptt_business_core project form)
-        "views/ptt_project_vendor_portal_view.xml",
+        # Vendor assignment views (workflow buttons live HERE, not in Project)
+        "views/ptt_vendor_assignment_view.xml",
+        # DELETED: ptt_project_vendor_portal_view.xml - Enterprise conflicts
     ],
     "installable": True,
     "application": True,

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PTT Home Hub Client Action -->
+    <!-- 
+        IMPORTANT: This is NOT a default homepage action. 
+        It is ONLY accessible via the menu: Home > Dashboard
+        Users must explicitly click into the app to access this dashboard.
+        The standard Odoo homepage (Apps menu) remains the default.
+    -->
+    <record id="action_ptt_home_hub" model="ir.actions.client">
+        <field name="name">PTT Dashboard</field>
+        <field name="tag">ptt_home_hub</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- DISABLED: Calendar views were causing OwlError when Project app loads
+         Error: Cannot read properties of undefined (reading 'type')
+         Standalone views without inherit_id can interfere with native Odoo views.
+         
+    <record id="view_ptt_project_project_event_calendar" model="ir.ui.view">
+        <field name="name">project.project.ptt.event.calendar</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <calendar string="Events" date_start="ptt_event_date" mode="month">
+                <field name="name"/>
+                <field name="user_id"/>
+            </calendar>
+        </field>
+    </record>
+    
+    <record id="action_ptt_event_calendar" model="ir.actions.act_window">
+        <field name="name">Event Calendar</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">calendar,tree,form</field>
+        <field name="domain">[('ptt_event_date', '!=', False)]</field>
+        <field name="context">{'search_default_my_projects': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No events scheduled
+            </p>
+            <p>
+                Events are created from CRM leads when a project is generated.
+            </p>
+        </field>
+    </record>
+    -->
+    
+    <!-- My Tasks Action (filtered to current user) -->
+    <record id="action_ptt_my_tasks" model="ir.actions.act_window">
+        <field name="name">My Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('stage_id.fold', '=', False)]</field>
+        <field name="context">{'search_default_my_tasks': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tasks assigned to you
+            </p>
+        </field>
+    </record>
+    
+    <!-- My Leads Action -->
+    <record id="action_ptt_my_leads" model="ir.actions.act_window">
+        <field name="name">My Leads</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('type', '=', 'lead')]</field>
+        <field name="context">{'search_default_assigned_to_me': 1}</field>
+    </record>
+    
+    <!-- My Quotes Action -->
+    <record id="action_ptt_my_quotes" model="ir.actions.act_window">
+        <field name="name">My Quotes</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', 'in', ['draft', 'sent'])]</field>
+        <field name="context">{'search_default_my_quotations': 1}</field>
+    </record>
+</odoo>
+

@@ -101,7 +101,17 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id', 'product_uom_qty')
     def _onchange_check_minimums(self):
-        """Warn sales rep if hours are below minimum for this variant."""
+        """Set price and check minimum hours when variant is selected."""
+        # Auto-set price from variant's minimum hourly rate when variant is selected
+        if self.product_id and self.product_id.ptt_price_per_hour_min:
+            # Set price to minimum hourly rate (sales rep can adjust up to max)
+            self.price_unit = self.product_id.ptt_price_per_hour_min
+            
+        # Set default quantity to minimum hours if not set
+        if self.product_id and self.product_id.ptt_min_hours and not self.product_uom_qty:
+            self.product_uom_qty = self.product_id.ptt_min_hours
+        
+        # Warn sales rep if hours are below minimum for this variant
         if self.ptt_min_hours and self.product_uom_qty < self.ptt_min_hours:
             return {
                 'warning': {

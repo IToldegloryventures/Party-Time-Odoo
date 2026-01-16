@@ -57,17 +57,16 @@
                                     </td>
                                     <td class="text-center">
                                         <span t-attf-class="badge rounded-pill #{
-                                            'bg-warning text-dark' if wo.state == 'sent' else
-                                            'bg-success' if wo.state == 'accepted' else
-                                            'bg-danger' if wo.state == 'declined' else
-                                            'bg-info' if wo.state == 'completed' else
+                                            'bg-warning text-dark' if wo.ptt_status == 'pending' else
+                                            'bg-success' if wo.ptt_status == 'confirmed' else
+                                            'bg-danger' if wo.ptt_status == 'cancelled' else
+                                            'bg-info' if wo.ptt_status == 'completed' else
                                             'bg-secondary'
                                         }">
-                                            <t t-if="wo.state == 'sent'">Pending Response</t>
-                                            <t t-elif="wo.state == 'accepted'">Accepted</t>
-                                            <t t-elif="wo.state == 'declined'">Declined</t>
-                                            <t t-elif="wo.state == 'completed'">Completed</t>
-                                            <t t-elif="wo.state == 'cancelled'">Cancelled</t>
+                                            <t t-if="wo.ptt_status == 'pending'">Pending Response</t>
+                                            <t t-elif="wo.ptt_status == 'confirmed'">Confirmed</t>
+                                            <t t-elif="wo.ptt_status == 'cancelled'">Declined</t>
+                                            <t t-elif="wo.ptt_status == 'completed'">Completed</t>
                                             <t t-else="">Draft</t>
                                         </span>
                                     </td>
@@ -104,16 +103,16 @@
                                 <i class="fa fa-clipboard me-2"/>Work Order
                             </h3>
                             <span t-attf-class="badge fs-6 #{
-                                'bg-warning text-dark' if assignment.state == 'sent' else
-                                'bg-success' if assignment.state == 'accepted' else
-                                'bg-danger' if assignment.state == 'declined' else
-                                'bg-info' if assignment.state == 'completed' else
+                                'bg-warning text-dark' if assignment.ptt_status == 'pending' else
+                                'bg-success' if assignment.ptt_status == 'confirmed' else
+                                'bg-danger' if assignment.ptt_status == 'cancelled' else
+                                'bg-info' if assignment.ptt_status == 'completed' else
                                 'bg-light text-dark'
                             }">
-                                <t t-if="assignment.state == 'sent'">ACTION REQUIRED</t>
-                                <t t-elif="assignment.state == 'accepted'">ACCEPTED</t>
-                                <t t-elif="assignment.state == 'declined'">DECLINED</t>
-                                <t t-elif="assignment.state == 'completed'">COMPLETED</t>
+                                <t t-if="assignment.ptt_status == 'pending'">ACTION REQUIRED</t>
+                                <t t-elif="assignment.ptt_status == 'confirmed'">ACCEPTED</t>
+                                <t t-elif="assignment.ptt_status == 'cancelled'">DECLINED</t>
+                                <t t-elif="assignment.ptt_status == 'completed'">COMPLETED</t>
                                 <t t-else="">DRAFT</t>
                             </span>
                         </div>
@@ -209,7 +208,7 @@
                         </div>
                         
                         <!-- Action Buttons (only if pending) -->
-                        <t t-if="assignment.state == 'sent'">
+                        <t t-if="assignment.ptt_status == 'pending'">
                             <hr class="my-4"/>
                             <div class="text-center py-4 bg-light rounded">
                                 <h5 class="mb-4">
@@ -233,7 +232,7 @@
                         </t>
                         
                         <!-- Status Messages -->
-                        <t t-if="assignment.state == 'accepted'">
+                        <t t-if="assignment.ptt_status == 'confirmed'">
                             <div class="alert alert-success d-flex align-items-center mt-4" role="alert">
                                 <i class="fa fa-check-circle fa-2x me-3"/>
                                 <div>
@@ -248,7 +247,7 @@
                             </div>
                         </t>
                         
-                        <t t-if="assignment.state == 'declined'">
+                        <t t-if="assignment.ptt_status == 'cancelled'">
                             <div class="alert alert-danger d-flex align-items-center mt-4" role="alert">
                                 <i class="fa fa-times-circle fa-2x me-3"/>
                                 <div>
@@ -261,7 +260,7 @@
                             </div>
                         </t>
                         
-                        <t t-if="assignment.state == 'completed'">
+                        <t t-if="assignment.ptt_status == 'completed'">
                             <div class="alert alert-info d-flex align-items-center mt-4" role="alert">
                                 <i class="fa fa-check-double fa-2x me-3"/>
                                 <div>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.HomeController">
+        <div class="ptt-home-hub">
+            <!-- Top Navigation -->
+            <HomeNavigation 
+                activeTab="state.activeTab"
+                onTabChange.bind="onTabChange"
+                onRefresh.bind="onRefresh"
+                refreshing="state.refreshing"/>
+            
+            <!-- Main Content -->
+            <div class="ptt-home-content">
+                <!-- Error State -->
+                <t t-if="state.error">
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fa fa-exclamation-circle fa-2x me-3"/>
+                        <div class="flex-grow-1">
+                            <strong>Error</strong>
+                            <div t-esc="state.error"/>
+                        </div>
+                        <button class="btn btn-outline-danger" t-on-click="onRefresh">
+                            <i class="fa fa-refresh me-1"/> Retry
+                        </button>
+                    </div>
+                </t>
+                
+                <!-- Loading State -->
+                <t t-elif="state.loading">
+                    <div class="ptt-loading" style="min-height: 400px;">
+                        <div class="ptt-spinner"/>
+                    </div>
+                </t>
+                
+                <!-- Tab Content -->
+                <t t-else="">
+                    <!-- HOME TAB - Clean Grid Layout -->
+                    <t t-if="state.activeTab === 'home'">
+                        <div class="ptt-dashboard-grid">
+                            <!-- Row 1: Event Tasks (full width) -->
+                            <div class="ptt-grid-item ptt-grid-full">
+                                <MyWorkSection tasks="myWorkTasks"/>
+                            </div>
+                            
+                            <!-- Row 2: Other Tasks | Personal To-Do | Assigned Comments -->
+                            <div class="ptt-grid-item">
+                                <AssignedTasks tasks="assignedTasks" onRefresh.bind="loadHomeData"/>
+                            </div>
+                            
+                            <div class="ptt-grid-item">
+                                <PersonalTodo 
+                                    todos="personalTodos"
+                                    onRefresh.bind="loadHomeData"/>
+                            </div>
+                            
+                            <div class="ptt-grid-item">
+                                <AssignedComments comments="assignedComments"/>
+                            </div>
+                            
+                            <!-- Row 3: Agenda Calendar (full width at bottom) -->
+                            <div class="ptt-grid-item ptt-grid-full">
+                                <AgendaCalendar events="agendaEvents"/>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <!-- SALES DASHBOARD TAB -->
+                    <t t-if="state.activeTab === 'sales'">
+                        <SalesDashboard/>
+                    </t>
+                    
+                    <!-- OPERATIONS TAB -->
+                    <t t-if="state.activeTab === 'operations'">
+                        <OperationsDashboard/>
+                    </t>
+                    
+                    <!-- CALENDAR TAB -->
+                    <t t-if="state.activeTab === 'calendar'">
+                        <EventCalendarFull/>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

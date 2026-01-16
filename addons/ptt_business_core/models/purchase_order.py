@@ -1,10 +1,27 @@
+import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class PurchaseOrder(models.Model):
     """Inherit purchase.order to validate vendor documents before confirmation."""
     _inherit = "purchase.order"
+
+    @api.model
+    def _is_vendor_management_installed(self):
+        """Check if ptt_vendor_management module is installed.
+        
+        More reliable than checking if model exists in registry.
+        """
+        IrModule = self.env['ir.module.module'].sudo()
+        module = IrModule.search([
+            ('name', '=', 'ptt_vendor_management'),
+            ('state', '=', 'installed'),
+        ], limit=1)
+        return bool(module)
 
     @api.model
     def _check_vendor_documents(self, vendor):
@@ -13,6 +30,10 @@ class PurchaseOrder(models.Model):
         Returns: (is_valid, error_message)
         """
         if not vendor or vendor.supplier_rank == 0:
+            return True, None
+        
+        # Defensive check - ensure ptt.document.type model exists
+        if 'ptt.document.type' not in self.env:
             return True, None
         
         # Get required document types
@@ -55,15 +76,19 @@ class PurchaseOrder(models.Model):
         Note: Document validation only works if ptt_vendor_management is installed.
         If not installed, PO confirmation proceeds without validation.
         """
-        # Only validate if ptt_vendor_management is installed
-        if 'ptt.document.type' in self.env:
-            for order in self:
-                if order.partner_id:
-                    is_valid, error_msg = self._check_vendor_documents(order.partner_id)
-                    if not is_valid:
-                        raise UserError(
-                            _("Cannot confirm Purchase Order: Vendor document compliance issue.\n\n%s")
-                            % error_msg
-                        )
+        # Only validate if ptt_vendor_management is installed AND model exists
+        try:
+            if 'ptt.document.type' in self.env and self._is_vendor_management_installed():
+                for order in self:
+                    if order.partner_id:
+                        is_valid, error_msg = self._check_vendor_documents(order.partner_id)
+                        if not is_valid:
+                            raise UserError(
+                                _("Cannot confirm Purchase Order: Vendor document compliance issue.\n\n%s")
+                                % error_msg
+                            )
+        except Exception as e:
+            # Log but don't block PO confirmation if vendor check fails
+            _logger.warning("Vendor document check failed: %s. Proceeding with PO confirmation.", e)
         
         return super().button_confirm()

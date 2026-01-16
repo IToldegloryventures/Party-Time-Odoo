@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.MetricChart">
+        <t t-if="isTable">
+            <div class="ptt-chart-table">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <t t-foreach="props.data.headers" t-as="header" t-key="header_index">
+                                <th t-esc="header"/>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="props.data.rows" t-as="row" t-key="row_index">
+                            <tr>
+                                <t t-foreach="row" t-as="cell" t-key="cell_index">
+                                    <td t-esc="cell"/>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="ptt-chart-container" style="position: relative; height: 300px;">
+                <canvas t-ref="canvas"/>
+            </div>
+        </t>
+    </t>
+</templates>
+

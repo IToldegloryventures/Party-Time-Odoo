@@ -160,28 +160,6 @@ class CrmLead(models.Model):
         help="Type of location for the event. Affects equipment needs and weather contingency planning."
     )
 
-    # === CFO/FINANCE CONTACT (for corporate clients) ===
-    ptt_cfo_name = fields.Char(
-        string="CFO/Finance Contact Name",
-        help="Name of the Chief Financial Officer or finance contact person for approval and payment processing."
-    )
-    ptt_cfo_phone = fields.Char(
-        string="CFO/Finance Contact Phone",
-        help="Phone number of the CFO or finance contact person."
-    )
-    ptt_cfo_email = fields.Char(
-        string="CFO/Finance Contact Email",
-        help="Email address of the CFO or finance contact person for invoicing and payment communications."
-    )
-    ptt_cfo_contact_method = fields.Selection(
-        [
-            ("call", "Phone Call"),
-            ("text", "Text Message"),
-            ("email", "Email"),
-        ],
-        string="CFO Preferred Contact Method",
-        help="Preferred method of communication for the CFO/finance contact regarding billing and payments."
-    )
 
 
     # === SERVICE LINES (Vendor Tab) ===
@@ -201,14 +179,14 @@ class CrmLead(models.Model):
     )
 
     # === PROJECT LINK (Bidirectional CRM↔Project) ===
-    # When SO is confirmed, Odoo creates project via service_tracking.
-    # Our custom code links the project back to this CRM lead.
+    # NOTE: Auto project creation is DISABLED - user will create projects manually.
+    # This field allows manual linking of projects to CRM leads.
     # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#relational-fields
     ptt_project_id = fields.Many2one(
         "project.project",
         string="Event Project",
         copy=False,
-        help="Project created when this opportunity is booked (SO confirmed).",
+        help="Manually linked project for this opportunity. Auto-creation is disabled.",
     )
 
     # === CONSTRAINTS ===

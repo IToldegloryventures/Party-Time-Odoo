@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve" owl="1">
+    <t t-name="ptt_super_dashboard.AssignedTasks">
+        <div class="ptt-section ptt-other-tasks">
+            <div class="ptt-section-header">
+                <h2><i class="fa fa-clipboard"/> Other Tasks</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-primary" t-on-click="onAddTaskClick">
+                        <i class="fa fa-plus me-1"/> Add Task
+                    </button>
+                    <a class="ptt-section-action" href="#" t-on-click.prevent="onViewAllClick">
+                        View All →
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Add Task Form (shown when adding) -->
+            <t t-if="state.showAddForm">
+                <div class="ptt-quick-add-form mb-3">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    placeholder="Task name..."
+                                    t-model="state.newTaskName"
+                                    t-on-keyup="onTaskNameKeyup"/>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <select class="form-select form-select-sm" t-model="state.newTaskUserId">
+                                        <option value="">Assign to me</option>
+                                        <t t-foreach="state.users" t-as="user" t-key="user.id">
+                                            <option t-att-value="user.id" t-esc="user.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <input 
+                                        type="date" 
+                                        class="form-control form-control-sm" 
+                                        placeholder="Due date"
+                                        t-model="state.newTaskDueDate"/>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary btn-sm" t-on-click="onCreateTask">
+                                    <i class="fa fa-check me-1"/> Create
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" t-on-click="onCancelAdd">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            
+            <div class="ptt-card">
+                <t t-if="props.tasks.length === 0 and !state.showAddForm">
+                    <div class="ptt-empty-state">
+                        <i class="fa fa-check-circle"/>
+                        <p>No other tasks</p>
+                        <small class="text-muted">One-off tasks and non-event tasks appear here</small>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="ptt-task-list">
+                        <t t-foreach="props.tasks.slice(0, 8)" t-as="task" t-key="task.id">
+                            <div class="ptt-task-item" t-on-click="() => this.onTaskClick(task)">
+                                <div t-att-class="'ptt-task-priority priority-' + (task.priority || '1')"/>
+                                <div class="ptt-task-content">
+                                    <div class="ptt-task-name">
+                                        <t t-esc="task.name"/>
+                                        <span t-if="task.is_overdue" class="badge bg-danger ms-2">Overdue</span>
+                                    </div>
+                                    <div class="ptt-task-meta">
+                                        <span 
+                                            t-if="task.project_name" 
+                                            class="ptt-task-project"
+                                            t-on-click.stop="(ev) => this.onProjectClick(ev, task)"
+                                            title="Open Project">
+                                            <i class="fa fa-folder-o me-1"/>
+                                            <t t-esc="task.project_name"/>
+                                        </span>
+                                        <span t-att-class="'ptt-task-date' + (task.is_overdue ? ' overdue' : '')">
+                                            <i class="fa fa-clock-o me-1"/>
+                                            <t t-esc="formatDate(task.date_deadline)"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ptt-task-action">
+                                    <button title="Open Task">
+                                        <i class="fa fa-external-link"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    
+                    <t t-if="props.tasks.length > 8">
+                        <div class="text-center mt-2">
+                            <a class="ptt-section-action small" href="#" t-on-click.prevent="onViewAllClick">
+                                View all <t t-esc="props.tasks.length"/> tasks →
+                            </a>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PTT Operational Dashboard - Native Calendar Views (for comparison) -->
+    <!-- Native Odoo 19 calendar views - added separately to compare with custom JS components -->
+
+    <!-- ====== NATIVE EVENT CALENDAR VIEW ====== -->
+    <!-- Full-featured native calendar for event scheduling with drag-drop, quick create, filters -->
+    <!-- DISABLED: This calendar view was causing OwlError on project.project
+         Error: Cannot read properties of undefined (reading 'type')
+         The stage_id color binding may be incompatible with Odoo 19 calendar widget.
+         
+    <record id="view_ptt_native_project_event_calendar" model="ir.ui.view">
+        <field name="name">project.project.ptt.native.event.calendar</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <calendar string="Events Calendar (Native)"
+                      date_start="ptt_event_date"
+                      mode="month"
+                      color="stage_id"
+                      event_limit="8"
+                      event_open_popup="true"
+                      quick_create="0"
+                      show_unusual_days="True"
+                      scales="day,week,month,year">
+                <field name="name" widget="text"/>
+                <field name="partner_id" widget="many2one"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="stage_id" widget="badge" options="{'color_field': 'color'}"/>
+                <field name="ptt_event_type"/>
+                <field name="ptt_total_revenue" widget="monetary"/>
+                <field name="ptt_guest_count"/>
+            </calendar>
+        </field>
+    </record>
+    -->
+
+    <!-- DISABLED: Action disabled because the calendar view was causing OwlError
+    <record id="action_ptt_native_event_calendar" model="ir.actions.act_window">
+        <field name="name">Event Calendar (Native Odoo)</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_ptt_native_project_event_calendar"/>
+        <field name="domain">[("ptt_event_date", "!=", False)]</field>
+        <field name="context">{
+            "search_default_my_events": 1,
+            "default_is_template": False
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No events scheduled
+            </p>
+            <p>
+                Native Odoo calendar view for project events.
+            </p>
+        </field>
+    </record>
+    -->
+
+    <!-- ====== NATIVE TASK CALENDAR VIEW ====== -->
+    <!-- DISABLED: Same OwlError as project calendar - color="stage_id" may be incompatible
+    <record id="view_ptt_native_task_calendar" model="ir.ui.view">
+        <field name="name">project.task.ptt.native.calendar</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <calendar string="Task Calendar (Native)"
+                      date_start="date_deadline"
+                      mode="month"
+                      color="stage_id"
+                      event_limit="8"
+                      event_open_popup="true"
+                      quick_create="1"
+                      show_unusual_days="True"
+                      scales="day,week,month,year">
+                <field name="name" widget="text"/>
+                <field name="user_ids" widget="many2many_avatar_user"/>
+                <field name="project_id" widget="many2one"/>
+                <field name="stage_id" widget="badge"/>
+                <field name="priority" widget="priority"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="action_ptt_native_task_calendar" model="ir.actions.act_window">
+        <field name="name">Task Calendar (Native Odoo)</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_ptt_native_task_calendar"/>
+        <field name="domain">[("stage_id.fold", "=", False)]</field>
+        <field name="context">{
+            "search_default_my_tasks": 1
+        }</field>
+    </record>
+    -->
+
+</odoo>

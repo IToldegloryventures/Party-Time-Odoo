@@ -1,4 +1,8 @@
+import logging
+
 from odoo import models, fields, api, _
+
+_logger = logging.getLogger(__name__)
 
 
 class SaleOrder(models.Model):
@@ -69,7 +73,7 @@ class SaleOrder(models.Model):
         help="Quote total divided by guest count. Shows value proposition to client.",
     )
 
-    @api.depends("amount_total", "ptt_guest_count")
+    @api.depends("amount_total", "opportunity_id.ptt_estimated_guest_count")
     def _compute_price_per_person(self):
         """Calculate price per person from quote total and guest count.
         
@@ -83,6 +87,81 @@ class SaleOrder(models.Model):
             else:
                 order.ptt_price_per_person = 0.0
 
+    # === CREATE ORDER LINES FROM SERVICE LINES ===
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to auto-add Event Kickoff product.
+        
+        When a quotation is created from a CRM lead,
+        automatically adds Event Kickoff product if not already present.
+        
+        NOTE: Services should be added directly in the quotation (not from CRM service lines)
+        to support product variants properly (Event Type + Tier attributes).
+        """
+        orders = super().create(vals_list)
+        
+        # Auto-add Event Kickoff for orders with opportunities
+        for order in orders:
+            if order.opportunity_id:
+                # Auto-add Event Kickoff if not already in order
+                self._ensure_event_kickoff(order)
+        
+        return orders
+    
+    def write(self, vals):
+        """Override write to auto-add Event Kickoff when opportunity_id is set.
+        
+        Handles cases where:
+        - Quotation is created without opportunity_id, then opportunity_id is set later
+        - Services are added via "Generate Quote" button or other actions
+        
+        NOTE: Services should be added directly in the quotation (not from CRM service lines)
+        to support product variants properly (Event Type + Tier attributes).
+        """
+        result = super().write(vals)
+        
+        # If opportunity_id was just set, auto-add Event Kickoff
+        if 'opportunity_id' in vals and vals['opportunity_id']:
+            for order in self:
+                if order.opportunity_id and order.state in ('draft', 'sent'):
+                    # Auto-add Event Kickoff if not already in order
+                    self._ensure_event_kickoff(order)
+        
+        return result
+    
+    def _ensure_event_kickoff(self, order):
+        """Ensure Event Kickoff product is added to the order.
+        
+        Event Kickoff is a $0 product that triggers project creation
+        with standard tasks when the sales order is confirmed.
+        """
+        # Find Event Kickoff product
+        kickoff_product = self.env.ref('ptt_business_core.product_event_kickoff', raise_if_not_found=False)
+        if not kickoff_product:
+            _logger.warning(
+                "Event Kickoff product (ptt_business_core.product_event_kickoff) not found for Sale Order %s. "
+                "Auto-project creation features will not work. Please ensure the product data is loaded.",
+                order.name
+            )
+            return
+        
+        # Check if Event Kickoff is already in the order
+        existing_product_ids = set(order.order_line.mapped('product_id').ids)
+        if kickoff_product.id in existing_product_ids:
+            return
+        
+        # Add Event Kickoff as first line (sequence -99 to ensure it's first)
+        self.env['sale.order.line'].create({
+            'order_id': order.id,
+            'product_id': kickoff_product.id,
+            'product_uom_qty': 1.0,
+            'product_uom_id': kickoff_product.uom_id.id,
+            'name': kickoff_product.name,
+            'price_unit': 0.0,  # $0 price
+            'sequence': -99,  # Put it first
+        })
+    
     # === CRM STAGE AUTOMATION ===
     
     def _update_crm_stage(self, stage_name, message=None):
@@ -118,19 +197,17 @@ class SaleOrder(models.Model):
         return res
 
     def action_confirm(self):
-        """Override SO confirmation to update CRM stage and link project.
+        """Override SO confirmation to update CRM stage.
         
         When SO is confirmed (customer accepts):
         - Move CRM to 'Booked' stage
-        - Link CRM lead to project (bidirectional)
-        - Copy CRM event fields to project
         
-        IMPORTANT: Odoo creates the project via service_tracking on Event Kickoff product.
-        We do NOT create it manually - we just link CRM after Odoo creates it.
+        NOTE: Auto project creation has been DISABLED.
+        User will create projects manually and link them as needed.
         
         Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
         """
-        res = super().action_confirm()  # Odoo creates project here via service_tracking
+        res = super().action_confirm()
         
         for order in self:
             if order.state == 'sale':
@@ -139,46 +216,16 @@ class SaleOrder(models.Model):
                     message_type="notification",
                 )
                 
-                # Move CRM to Booked stage and link to project (if linked to opportunity)
+                # Move CRM to Booked stage (if linked to opportunity)
                 if order.opportunity_id:
                     self._update_crm_stage(
                         "Booked",
                         _("CRM stage updated to Booked: Customer confirmed order.")
                     )
-                    # Link CRM to project that Odoo created
-                    self._link_crm_to_project(order)
         
         return res
 
-    def _link_crm_to_project(self, order):
-        """Link CRM lead to project that Odoo created via service_tracking.
-        
-        This method:
-        1. Finds the project Odoo created (via sale_order_id)
-        2. Links project to CRM lead (ptt_crm_lead_id)
-        3. Copies CRM event fields to project
-        4. Backlinks CRM to project (ptt_project_id)
-        
-        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html
-        """
-        if not order.opportunity_id:
-            return
-        
-        lead = order.opportunity_id
-        
-        # Find project that Odoo created via service_tracking
-        project = self.env['project.project'].search([
-            ('sale_order_id', '=', order.id),
-        ], limit=1)
-        
-        if project:
-            # Link project to CRM and copy event fields
-            project.write({
-                'ptt_crm_lead_id': lead.id,
-                'ptt_event_type': lead.ptt_event_type,
-                'ptt_event_date': lead.ptt_event_date,
-                'ptt_guest_count': lead.ptt_estimated_guest_count,
-                'ptt_venue_name': lead.ptt_venue_name,
-            })
-            # Backlink CRM to project
-            lead.write({'ptt_project_id': project.id})
+    # AUTO PROJECT CREATION DISABLED - User will create projects manually
+    # The following methods are commented out but kept for reference:
+    # - _link_crm_to_project()
+    # - _create_service_specific_tasks()
