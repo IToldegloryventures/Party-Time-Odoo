@@ -21,6 +21,12 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
+            <!-- HIDE problematic stage_id field in header that causes OwlError -->
+            <!-- Base Odoo view has stage_id with statusbar_duration widget that fails when stages don't exist -->
+            <xpath expr="//header/field[@name='stage_id']" position="replace">
+                <field name="stage_id" invisible="1"/>
+            </xpath>
+            
             <!-- Add Project Header/Banner with key event information -->
             <xpath expr="//sheet" position="before">
                 <div class="oe_title_header" style="background-color: #f8f9fa; padding: 20px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #dee2e6;">
