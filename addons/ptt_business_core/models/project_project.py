@@ -45,8 +45,59 @@ class ProjectProject(models.Model):
         help="Original CRM lead/opportunity that created this project.",
     )
 
-    # NOTE: CRM-related computed fields removed to prevent OwlError
-    # View CRM lead details directly via the ptt_crm_lead_id link
+    # === CLIENT TAB - Related Fields from CRM Lead ===
+    # These fields pull data from the linked CRM lead for the CLIENT tab.
+    # Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#related-fields
+    ptt_preferred_contact_method = fields.Selection(
+        related="ptt_crm_lead_id.ptt_preferred_contact_method",
+        readonly=True,
+        string="Preferred Contact Method",
+    )
+    ptt_date_of_call = fields.Date(
+        related="ptt_crm_lead_id.ptt_date_of_call",
+        readonly=True,
+        string="Date of Call",
+    )
+    ptt_second_poc_name = fields.Char(
+        related="ptt_crm_lead_id.ptt_second_poc_name",
+        readonly=True,
+        string="2nd POC Name",
+    )
+    ptt_second_poc_phone = fields.Char(
+        related="ptt_crm_lead_id.ptt_second_poc_phone",
+        readonly=True,
+        string="2nd POC Phone",
+    )
+    ptt_second_poc_email = fields.Char(
+        related="ptt_crm_lead_id.ptt_second_poc_email",
+        readonly=True,
+        string="2nd POC Email",
+    )
+    ptt_venue_booked = fields.Boolean(
+        related="ptt_crm_lead_id.ptt_venue_booked",
+        readonly=True,
+        string="Venue Booked?",
+    )
+    ptt_cfo_name = fields.Char(
+        related="ptt_crm_lead_id.ptt_cfo_name",
+        readonly=True,
+        string="CFO/Finance Contact",
+    )
+    ptt_cfo_phone = fields.Char(
+        related="ptt_crm_lead_id.ptt_cfo_phone",
+        readonly=True,
+        string="CFO Phone",
+    )
+    ptt_cfo_email = fields.Char(
+        related="ptt_crm_lead_id.ptt_cfo_email",
+        readonly=True,
+        string="CFO Email",
+    )
+    ptt_cfo_contact_method = fields.Selection(
+        related="ptt_crm_lead_id.ptt_cfo_contact_method",
+        readonly=True,
+        string="CFO Preferred Contact",
+    )
 
     # === FINANCIALS TAB - Profitability Fields ===
     # These computed fields calculate event profitability for the FINANCIALS tab.
@@ -212,50 +263,43 @@ class ProjectProject(models.Model):
         help="Parking availability, restrictions, or delivery instructions for vendors. Includes loading dock locations, access times, and parking passes required."
     )
 
-    # === CREATE OVERRIDE (Safety Guard) ===
-    
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Override create to ensure company_id and partner_id are always set.
-        
-        CRITICAL: Prevents frontend OwlError by ensuring required fields are populated.
-        Odoo 19 requires company_id for multi-company safety, and partner_id should
-        never be undefined (even if set to a fallback value).
-        
-        Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#creating-records
-        """
-        # Ensure company_id is set for all records
-        for vals in vals_list:
-            if not vals.get('company_id'):
-                vals['company_id'] = self.env.company.id
-            
-            # Ensure partner_id is set (use sale order partner, then fallback)
-            if not vals.get('partner_id'):
-                # Try to get from sale_order_id if provided
-                if vals.get('sale_order_id'):
-                    sale_order = self.env['sale.order'].browse(vals['sale_order_id'])
-                    if sale_order.exists() and sale_order.partner_id:
-                        vals['partner_id'] = sale_order.partner_id.id
-                        continue
-                
-                # Try to get from CRM lead if provided
-                if vals.get('ptt_crm_lead_id'):
-                    lead = self.env['crm.lead'].browse(vals['ptt_crm_lead_id'])
-                    if lead.exists() and lead.partner_id:
-                        vals['partner_id'] = lead.partner_id.id
-                        continue
-                
-                # NO FALLBACK - Don't assign to random partner (security risk)
-                # Log warning but allow project creation without partner
-                import logging
-                _logger = logging.getLogger(__name__)
-                _logger.warning(
-                    "Project created without partner_id. No partner found from sale_order_id or ptt_crm_lead_id. "
-                    "Project name: %s", vals.get('name', 'Unknown')
-                )
-        
-        return super().create(vals_list)
-    
+    # === SALE_TIMESHEET PLACEHOLDER FIELDS ===
+    # Some databases include the sale_timesheet project form view, which references
+    # these fields. If that view loads before sale_timesheet defines them, the
+    # kanban/calendar parser can crash (missing field type). We define lightweight
+    # placeholders to keep the client render-safe. Remove once sale_timesheet
+    # (or the proper enterprise module) is installed and fields exist upstream.
+    cost_currency_id = fields.Many2one(
+        "res.currency",
+        string="Cost Currency",
+        help="Placeholder for sale_timesheet cost currency."
+    )
+    price_unit = fields.Monetary(
+        string="Internal Cost Rate",
+        currency_field="cost_currency_id",
+        help="Placeholder for sale_timesheet cost rate."
+    )
+    display_cost = fields.Monetary(
+        string="Display Cost",
+        currency_field="cost_currency_id",
+        help="Placeholder for sale_timesheet computed cost display."
+    )
+    employee_id = fields.Many2one(
+        "hr.employee",
+        string="Employee (Timesheet)",
+        help="Placeholder for sale_timesheet employee link."
+    )
+    existing_employee_ids = fields.Many2many(
+        "hr.employee",
+        string="Existing Employees (Timesheet)",
+        help="Placeholder for sale_timesheet existing employees list."
+    )
+    is_cost_changed = fields.Boolean(
+        string="Is Cost Changed",
+        help="Placeholder flag to match sale_timesheet view expectations.",
+        default=False,
+    )
+
     # === CONSTRAINTS ===
     
     @api.constrains('ptt_guest_count')
@@ -333,14 +377,12 @@ class ProjectProject(models.Model):
             # Revenue from sale orders
             revenue = 0.0
             if project.sale_order_id and project.sale_order_id.state == "sale":
-                revenue = project.sale_order_id.amount_total or 0.0
+                revenue = project.sale_order_id.amount_total
             
             # Vendor costs from assignments
-            vendor_cost = 0.0
-            if project.ptt_vendor_assignment_ids:
-                vendor_cost = sum(
-                    project.ptt_vendor_assignment_ids.mapped("actual_cost") or [0.0]
-                )
+            vendor_cost = sum(
+                project.ptt_vendor_assignment_ids.mapped("actual_cost")
+            ) if project.ptt_vendor_assignment_ids else 0.0
             
             # Profit calculations
             gross_profit = revenue - vendor_cost
@@ -351,13 +393,14 @@ class ProjectProject(models.Model):
             cost_per_guest = vendor_cost / guest_count if guest_count > 0 else 0.0
             revenue_per_guest = revenue / guest_count if guest_count > 0 else 0.0
             
-            # CRITICAL: Always set all fields to ensure proper field metadata for Owl
-            project.ptt_total_revenue = revenue
-            project.ptt_total_vendor_cost = vendor_cost
-            project.ptt_gross_profit = gross_profit
-            project.ptt_profit_margin = margin
-            project.ptt_cost_per_guest = cost_per_guest
-            project.ptt_revenue_per_guest = revenue_per_guest
+            project.update({
+                "ptt_total_revenue": revenue,
+                "ptt_total_vendor_cost": vendor_cost,
+                "ptt_gross_profit": gross_profit,
+                "ptt_profit_margin": margin,
+                "ptt_cost_per_guest": cost_per_guest,
+                "ptt_revenue_per_guest": revenue_per_guest,
+            })
 
     # === TASK CREATION ===
     
