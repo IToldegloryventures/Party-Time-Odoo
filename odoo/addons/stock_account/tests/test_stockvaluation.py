@@ -2280,7 +2280,7 @@ class TestStockValuation(TestStockValuationCommon):
 
         warehouse_3 = self.env['stock.warehouse'].create({'code': 'WH-neg'})
         self._make_out_move(product=product, quantity=20.0, location_id=warehouse_3.lot_stock_id.id)
-        self.assertRecordValues(product, [{'avg_cost': 20.0, 'total_value': 0.0, 'qty_available': 0.0}])
+        self.assertRecordValues(product, [{'avg_cost': 0.0, 'total_value': 0.0, 'qty_available': 0.0}])
         self.assertRecordValues(product.with_context(warehouse_id=warehouse_1.id), [{'avg_cost': 20.0, 'total_value': 300, 'qty_available': 15}])
         self.assertRecordValues(product.with_context(warehouse_id=warehouse_2.id), [{'avg_cost': 20.0, 'total_value': 100, 'qty_available': 5}])
         self.assertRecordValues(product.with_context(warehouse_id=warehouse_3.id), [{'avg_cost': 20.0, 'total_value': -400, 'qty_available': -20}])
@@ -2303,7 +2303,7 @@ class TestStockValuation(TestStockValuationCommon):
 
         warehouse_3 = self.env['stock.warehouse'].create({'code': 'WH-neg'})
         self._make_out_move(product=product, quantity=20.0, location_id=warehouse_3.lot_stock_id.id)
-        self.assertRecordValues(product, [{'avg_cost': 30.0, 'total_value': 0.0, 'qty_available': 0.0}])
+        self.assertRecordValues(product, [{'avg_cost': 0.0, 'total_value': 0.0, 'qty_available': 0.0}])
         self.assertRecordValues(product.with_context(warehouse_id=warehouse_1.id), [{'avg_cost': 30.0, 'total_value': 450, 'qty_available': 15}])
         self.assertRecordValues(product.with_context(warehouse_id=warehouse_2.id), [{'avg_cost': 30.0, 'total_value': 150, 'qty_available': 5}])
         self.assertRecordValues(product.with_context(warehouse_id=warehouse_3.id), [{'avg_cost': 30.0, 'total_value': -600, 'qty_available': -20}])
@@ -2370,6 +2370,7 @@ class TestStockValuation(TestStockValuationCommon):
         This test check that the value of this SVL is correct and does result in new_std_price * quantity.
         To do so, we create 2 In moves, which result in a standard price rounded at $5.29, the non-rounded value ≃ 5.2857.
         Then we update the standard price to $7
+        We will then do one more In move to ensure that the most recent value information is used when both sources are present.
         """
         product = self.product_avco
         self._make_in_move(product, 5, unit_cost=5)
@@ -2388,6 +2389,13 @@ class TestStockValuation(TestStockValuationCommon):
         with freeze_time(Datetime.now() + timedelta(minutes=1)):
             product.standard_price = 7
         self.assertEqual(product.total_value, 49)
+
+        with freeze_time(Datetime.now() + timedelta(minutes=2)):
+            move = self._make_in_move(product, 5, unit_cost=5)
+            # We force the sequence here to simulate moves that are not ordered by date
+            move.sequence = -1
+
+        self.assertEqual(product.total_value, 74)  # 49 + (5 * 5) = 74
 
     def test_average_manual_revaluation(self):
         product = self.product_avco
@@ -2935,3 +2943,65 @@ class TestStockValuation(TestStockValuationCommon):
         move.picked = True
         move.with_user(self.inventory_user)._action_done()
         self.assertEqual(move.state, 'done')
+
+    def test_product_value_details_computation_with_move_zero_quantity(self):
+        """Test that the current value details computation is skipped when the move quantity is zero."""
+        move = self._make_in_move(self.product_avco, 0.0)
+        self.assertEqual(move.quantity, 0.0)
+
+        product_value = self.env['product.value'].create({
+            'move_id': move.id,
+            'value': move.value_manual,
+        })
+        product_value_form = Form(product_value)
+
+        self.assertFalse(product_value_form.current_value_details)
+
+    def test_average_cost_in_negative_quantity(self):
+        self.product_avco.standard_price = 10
+
+        self._make_out_move(self.product_avco, 10)
+        self.assertEqual(self.product_avco.qty_available, -10)
+        self.assertEqual(self.product_avco.standard_price, 10)
+
+        # New IN cost while staying in negative ==>> standard_price updated to last IN cost (current move)
+        self._make_in_move(self.product_avco, 5, unit_cost=15)
+        self.assertEqual(self.product_avco.qty_available, -5)
+        self.assertEqual(self.product_avco.standard_price, 15)
+
+        # New IN cost while reaching 0 quantity ==>> standard_price updated to last IN cost (current move)
+        self._make_in_move(self.product_avco, 5, unit_cost=20)
+        self.assertEqual(self.product_avco.qty_available, 0)
+        self.assertEqual(self.product_avco.standard_price, 20)
+
+        # Going back to negative for last test
+        self._make_out_move(self.product_avco, 5)
+        self.assertEqual(self.product_avco.qty_available, -5)
+        self.assertEqual(self.product_avco.standard_price, 20)
+
+        # New IN cost while going back to positive ==>> standard_price updated to last IN cost (current move)
+        self._make_in_move(self.product_avco, 10, unit_cost=25)
+        self.assertEqual(self.product_avco.qty_available, 5)
+        self.assertEqual(self.product_avco.standard_price, 25)
+
+    def test_average_cost_dropship_in_negative_quantity(self):
+        self.product_avco.standard_price = 10
+
+        self._make_out_move(self.product_avco, 10)
+        self.assertEqual(self.product_avco.qty_available, -10)
+        self.assertEqual(self.product_avco.standard_price, 10)
+
+        # Make dropship move, where the quantity stay in negative
+        self._make_dropship_move(self.product_avco, 5, unit_cost=15)
+        self.assertEqual(self.product_avco.qty_available, -10)
+        self.assertEqual(self.product_avco.standard_price, 10)
+
+        # Make dropship move, where the quantity reach 0
+        self._make_dropship_move(self.product_avco, 10, unit_cost=15)
+        self.assertEqual(self.product_avco.qty_available, -10)
+        self.assertEqual(self.product_avco.standard_price, 10)
+
+        # Make dropship move, where the quantity do not go in positive
+        self._make_dropship_move(self.product_avco, 15, unit_cost=15)
+        self.assertEqual(self.product_avco.qty_available, -10)
+        self.assertEqual(self.product_avco.standard_price, 10)

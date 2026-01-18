@@ -60,7 +60,7 @@ class ResCompany(models.Model):
         help='Primary contact email for Peppol connection related communications and notifications.\n'
              'In particular, this email is used by Odoo to reconnect your Peppol account in case of database change.',
     )
-    account_peppol_migration_key = fields.Char(string="Migration Key")
+    account_peppol_migration_key = fields.Char(string="Migration Key", groups="base.group_system")
     account_peppol_phone_number = fields.Char(
         string='Mobile number',
         compute='_compute_account_peppol_phone_number', store=True, readonly=False,
@@ -98,10 +98,12 @@ class ResCompany(models.Model):
     peppol_metadata = fields.Json(string='Peppol Metadata')
     peppol_metadata_updated_at = fields.Datetime(string='Peppol meta updated at')
 
+    # Deprecated
     peppol_activate_self_billing_sending = fields.Boolean(
         string="Activate self-billing sending",
         help="If activated, you will be able to send vendor bills as self-billed invoices via Peppol.",
     )
+    # Deprecated
     peppol_self_billing_reception_journal_id = fields.Many2one(
         comodel_name='account.journal',
         string='Self-Billing reception journal',
@@ -238,12 +240,16 @@ class ResCompany(models.Model):
         self.peppol_parent_company_id = False
         for company in self:
             for parent_company in company.parent_ids[::-1][1:]:
-                if all((
-                    company.peppol_eas,
-                    company.peppol_endpoint,
-                    company.peppol_eas == parent_company.peppol_eas,
-                    company.peppol_endpoint == parent_company.peppol_endpoint,
-                )):
+                if (
+                    company.peppol_eas
+                    and company.peppol_endpoint
+                    and company.peppol_eas == parent_company.peppol_eas
+                    and company.peppol_endpoint == parent_company.peppol_endpoint
+                ) or (
+                    not company.peppol_endpoint
+                    and parent_company.peppol_eas
+                    and parent_company.peppol_endpoint
+                ):
                     company.peppol_parent_company_id = parent_company
                     break
 

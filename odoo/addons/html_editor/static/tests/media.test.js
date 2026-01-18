@@ -87,10 +87,9 @@ test("Replace an image by icon should remove invalid classes", async () => {
     await click("span.fa-envelope-o");
     await animationFrame();
     expect("img[src='/web/static/img/logo.png']").toHaveCount(0);
-    expect("span").toHaveCount(1);
-    expect("span").toHaveClass("fa fa-envelope-o");
-    expect("span").not.toHaveClass("img-fluid");
-    expect("span").not.toHaveClass("w-100");
+    expect("p > span.fa-envelope-o").toHaveCount(1);
+    expect("p > span.fa-envelope-o").not.toHaveClass("img-fluid");
+    expect("p > span.fa-envelope-o").not.toHaveClass("w-100");
 });
 
 test.tags("focus required");
@@ -118,6 +117,27 @@ test("Selection is collapsed after the image after replacing it", async () => {
     await click(".o_existing_attachment_cell .o_button_area");
     await animationFrame();
     expect(getContent(el).replace(/<img.*?>/, "<img>")).toBe("<p>abc<img>[]def</p>");
+});
+
+test("should not preserve image styles when replacing an image with an icon", async () => {
+    onRpc("ir.attachment", "search_read", () => []);
+    const { el } = await setupEditor(
+        `<p><img class="img-fluid" src="/web/static/img/logo.png" style="width: 25%; transform: scaleX(2) scaleY(1);"></p>`
+    );
+    expect("img[src='/web/static/img/logo.png']").toHaveCount(1);
+    await click("img");
+    await tick(); // selectionchange
+    await waitFor(".o-we-toolbar");
+    expect("button[name='replace_image']").toHaveCount(1);
+    await click("button[name='replace_image']");
+    await animationFrame();
+    await click(".nav-link:contains('Icons')");
+    await animationFrame();
+    await click(".fa-glass");
+    await animationFrame();
+    expect(getContent(el).replace(/<img.*?>/, "<img>")).toBe(
+        `<p>\ufeff[<span class="fa fa-glass" style="" contenteditable="false">\u200b</span>]\ufeff</p>`
+    );
 });
 
 test.tags("focus required");
@@ -220,7 +240,7 @@ describe("(non-)editable media", () => {
         });
     });
     describe("delete", () => {
-        test("delete should remove an image in an editable context", async () => {
+        test("delete should remove an image in an editable context (1)", async () => {
             const contentBefore = `<div contenteditable="true"><img src="${base64Img}"></div>`;
             const contentAfter = `<div contenteditable="true">[]<br></div>`;
             // Forward
@@ -232,6 +252,10 @@ describe("(non-)editable media", () => {
                 },
                 contentAfter,
             });
+        });
+        test("delete should remove an image in an editable context (2)", async () => {
+            const contentBefore = `<div contenteditable="true"><img src="${base64Img}"></div>`;
+            const contentAfter = `<div contenteditable="true">[]<br></div>`;
             // Backward
             await testEditor({
                 contentBefore,
@@ -242,7 +266,7 @@ describe("(non-)editable media", () => {
                 contentAfter,
             });
         });
-        test("delete should not remove an image in an non-editable context", async () => {
+        test("delete should not remove an image in an non-editable context (1)", async () => {
             const contentBefore = `<div contenteditable="false"><img src="${base64Img}"></div>`;
             // Forward
             await testEditor({
@@ -253,6 +277,9 @@ describe("(non-)editable media", () => {
                 },
                 contentAfter: `<div contenteditable="false">[<img src="${base64Img}">]</div>`,
             });
+        });
+        test("delete should not remove an image in an non-editable context (2)", async () => {
+            const contentBefore = `<div contenteditable="false"><img src="${base64Img}"></div>`;
             // Backward
             await testEditor({
                 contentBefore,
@@ -263,7 +290,7 @@ describe("(non-)editable media", () => {
                 contentAfter: `<div contenteditable="false">[<img src="${base64Img}">]</div>`,
             });
         });
-        test("delete should remove an editable image in a non-editable context", async () => {
+        test("delete should remove an editable image in a non-editable context (1)", async () => {
             const contentBefore = `<div contenteditable="false"><img src="${base64Img}" class="${EDITABLE_MEDIA_CLASS}"></div>`;
             const contentAfter = `<div contenteditable="false">[]<br></div>`;
             // Forward
@@ -275,6 +302,10 @@ describe("(non-)editable media", () => {
                 },
                 contentAfter,
             });
+        });
+        test("delete should remove an editable image in a non-editable context (2)", async () => {
+            const contentBefore = `<div contenteditable="false"><img src="${base64Img}" class="${EDITABLE_MEDIA_CLASS}"></div>`;
+            const contentAfter = `<div contenteditable="false">[]<br></div>`;
             // Backward
             await testEditor({
                 contentBefore,

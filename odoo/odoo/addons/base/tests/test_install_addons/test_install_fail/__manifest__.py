@@ -7,7 +7,7 @@
     'data': [
         'views/res_currency_views.xml',
     ],
-    'installable': False,
+    'installable': True,
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

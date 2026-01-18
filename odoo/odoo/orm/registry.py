@@ -58,7 +58,7 @@ _REGISTRY_CACHES = {
     'routing': 1024,  # 2 entries per website
     'routing.rewrites': 8192,  # url_rewrite entries
     'templates.cached_values': 2048, # arbitrary
-    'groups': 8,  # see res.groups
+    'groups': 64,  # see res.groups
 }
 
 # cache invalidation dependencies, as follows:
@@ -783,7 +783,7 @@ class Registry(Mapping[str, type["BaseModel"]]):
             FROM pg_attribute a
             JOIN pg_class c ON a.attrelid = c.oid
             JOIN pg_namespace n ON c.relnamespace = n.oid
-            WHERE n.nspname = 'public'
+            WHERE n.nspname = current_schema
             AND a.attnotnull = true
             AND a.attnum > 0
             AND a.attname != 'id';
@@ -987,7 +987,7 @@ class Registry(Mapping[str, type["BaseModel"]]):
                   JOIN pg_namespace n ON (n.oid = c.relnamespace)
                  WHERE c.relname IN %s
                    AND c.relkind = 'r'
-                   AND n.nspname = 'public'
+                   AND n.nspname = current_schema
             """
             tables = tuple(m._table for m in self.models.values())
             cr.execute(query, [tables])

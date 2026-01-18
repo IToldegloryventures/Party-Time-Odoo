@@ -82,6 +82,12 @@ def initialize(cr: Cursor) -> None:
                 (module_id, d, d in (info['auto_install'] or ()))
             )
 
+    from odoo.tools import config  # noqa: PLC0415
+    if config.get('skip_auto_install'):
+        # even if skip_auto_install is enabled we still want to have base
+        cr.execute("""UPDATE ir_module_module SET state='to install' WHERE name = 'base'""")
+        return
+
     # Install recursively all auto-installing modules
     while True:
         # this selects all the auto_install modules whose auto_install_required
@@ -171,7 +177,7 @@ def has_unaccent(cr: BaseCursor) -> FunctionStatus:
             LEFT JOIN pg_catalog.pg_namespace ns ON p.pronamespace = ns.oid
         WHERE p.proname = 'unaccent'
               AND p.pronargs = 1
-              AND ns.nspname = 'public'
+              AND ns.nspname = current_schema
     """)
     result = cr.fetchone()
     if not result:
