@@ -30,6 +30,15 @@
                             <field name="ptt_cost_per_hour_max"/>
                         </group>
                     </group>
+                    <group>
+                        <group string="Transition Pricing (FY26)">
+                            <field name="ptt_transition_price"/>
+                            <field name="ptt_transition_price_valid_until"/>
+                        </group>
+                        <group string="Suggested Add-ons">
+                            <field name="ptt_addon_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
                     <group string="Package Description">
                         <field name="ptt_package_includes" nolabel="1"/>
                     </group>
