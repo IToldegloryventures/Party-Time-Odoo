@@ -3,15 +3,20 @@
     <data noupdate="0">
         
         <!-- Update Sale Order Types to link with Project Templates -->
-        <record id="ptt_enhanced_sales.event_type_corporate_conference" model="sale.order.type">
+        <!-- Maps to the 3 event types defined in ptt_enhanced_sales/data/event_types_data.xml -->
+        
+        <!-- Corporate -> Corporate Conference Template -->
+        <record id="ptt_enhanced_sales.event_type_corporate" model="sale.order.type">
             <field name="project_template_id" ref="template_corporate_conference"/>
         </record>
 
+        <!-- Wedding -> Wedding Template -->
         <record id="ptt_enhanced_sales.event_type_wedding" model="sale.order.type">
             <field name="project_template_id" ref="template_wedding"/>
         </record>
 
-        <record id="ptt_enhanced_sales.event_type_casino_night" model="sale.order.type">
+        <!-- Social -> Casino Night Template (Social events) -->
+        <record id="ptt_enhanced_sales.event_type_social" model="sale.order.type">
             <field name="project_template_id" ref="template_casino_night"/>
         </record>
 
