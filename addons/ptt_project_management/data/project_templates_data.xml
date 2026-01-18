@@ -22,7 +22,7 @@
         <record id="template_wedding" model="project.template">
             <field name="name">Wedding Template</field>
             <field name="code">WEDDING_TMPL</field>
-            <field name="category">private</field>
+            <field name="category">wedding</field>
             <field name="sequence">20</field>
             <field name="description">Template for wedding ceremonies and receptions</field>
             <field name="default_project_name">Wedding - [CLIENT_NAME] - [EVENT_DATE]</field>
@@ -39,7 +39,7 @@
         <record id="template_casino_night" model="project.template">
             <field name="name">Casino Night Template</field>
             <field name="code">CASINO_TMPL</field>
-            <field name="category">themed</field>
+            <field name="category">social</field>
             <field name="sequence">30</field>
             <field name="description">Template for casino themed events</field>
             <field name="default_project_name">Casino Night - [CLIENT_NAME] - [EVENT_DATE]</field>
