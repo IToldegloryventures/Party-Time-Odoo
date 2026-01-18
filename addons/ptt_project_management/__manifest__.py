@@ -34,6 +34,6 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
         "views/sale_order_type_views.xml",
     ],
     "installable": True,
-    "application": False,
+    "application": True,
     "auto_install": False,
 }

@@ -32,6 +32,6 @@ Designed specifically for Party Time Texas event management workflow.
         "views/crm_lead_views.xml",
     ],
     "installable": True,
-    "application": False,
+    "application": True,
     "auto_install": False,
 }

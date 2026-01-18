@@ -45,6 +45,6 @@ adapted for Party Time Texas event management workflow.
         ],
     },
     "installable": True,
-    "application": False,
+    "application": True,
     "auto_install": False,
 }
