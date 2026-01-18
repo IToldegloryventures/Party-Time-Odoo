@@ -89,3 +89,31 @@ class ProductProduct(models.Model):
              "Displayed on customer quotations.",
         sanitize=True,
     )
+
+    # =====================================================
+    # TRANSITION PRICING - FY26 Promotional Rates
+    # Special pricing for existing/early clients
+    # =====================================================
+    ptt_transition_price = fields.Float(
+        string="Transition Starting Price",
+        help="Special promotional starting price valid through FY26. "
+             "Use this rate for existing clients or early bookings.",
+        default=0.0,
+    )
+    ptt_transition_price_valid_until = fields.Date(
+        string="Transition Price Valid Until",
+        help="Date until which the transition price is valid.",
+        default="2026-12-31",
+    )
+
+    # =====================================================
+    # ADD-ONS - Suggested upsells for this variant
+    # =====================================================
+    ptt_addon_ids = fields.Many2many(
+        'product.product',
+        'ptt_product_addon_rel',
+        'product_id',
+        'addon_id',
+        string="Suggested Add-ons",
+        help="Products that can be offered as add-ons when this variant is selected.",
+    )

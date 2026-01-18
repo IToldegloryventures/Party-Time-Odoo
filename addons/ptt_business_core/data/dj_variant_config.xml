@@ -86,7 +86,7 @@ if dj_template:
     
     # DJ Variant configurations from pricing spreadsheet
     variant_configs = {
-        # (Event Type, Tier): {min_hours, guest_min, guest_max, price_min, price_max, cost_min, cost_max}
+        # (Event Type, Tier): {min_hours, guest ranges, prices, costs, package_includes, transition_price}
         # SOCIAL EVENTS
         (social.id if social else 0, essentials.id if essentials else 0): {
             'ptt_min_hours': 2.0,
@@ -96,6 +96,14 @@ if dj_template:
             'ptt_price_per_hour_max': 400.0,
             'ptt_cost_per_hour_min': 150.0,
             'ptt_cost_per_hour_max': 225.0,
+            'ptt_transition_price': 225.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;2 hours of music&lt;/li&gt;
+                &lt;li&gt;Curated playlist&lt;/li&gt;
+                &lt;li&gt;Basic audio setup (1-2 speakers)&lt;/li&gt;
+                &lt;li&gt;DJ controller&lt;/li&gt;
+                &lt;li&gt;Microphone for announcements&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         (social.id if social else 0, classic.id if classic else 0): {
             'ptt_min_hours': 2.0,
@@ -105,6 +113,12 @@ if dj_template:
             'ptt_price_per_hour_max': 600.0,
             'ptt_cost_per_hour_min': 200.0,
             'ptt_cost_per_hour_max': 325.0,
+            'ptt_transition_price': 0.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;2 hours of music&lt;/li&gt;
+                &lt;li&gt;Dance floor lighting&lt;/li&gt;
+                &lt;li&gt;Intro announcements&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         (social.id if social else 0, premier.id if premier else 0): {
             'ptt_min_hours': 2.0,
@@ -114,6 +128,13 @@ if dj_template:
             'ptt_price_per_hour_max': 675.0,
             'ptt_cost_per_hour_min': 300.0,
             'ptt_cost_per_hour_max': 425.0,
+            'ptt_transition_price': 0.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;2 hours of music&lt;/li&gt;
+                &lt;li&gt;Dance floor lighting&lt;/li&gt;
+                &lt;li&gt;Scripted MC services&lt;/li&gt;
+                &lt;li&gt;Crowd engagement activities&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         # CORPORATE EVENTS
         (corporate.id if corporate else 0, essentials.id if essentials else 0): {
@@ -124,6 +145,13 @@ if dj_template:
             'ptt_price_per_hour_max': 400.0,
             'ptt_cost_per_hour_min': 150.0,
             'ptt_cost_per_hour_max': 225.0,
+            'ptt_transition_price': 225.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;2 hours background/dance music&lt;/li&gt;
+                &lt;li&gt;Event announcements&lt;/li&gt;
+                &lt;li&gt;1-2 speakers&lt;/li&gt;
+                &lt;li&gt;Wireless microphone&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         (corporate.id if corporate else 0, classic.id if classic else 0): {
             'ptt_min_hours': 2.0,
@@ -133,6 +161,12 @@ if dj_template:
             'ptt_price_per_hour_max': 600.0,
             'ptt_cost_per_hour_min': 200.0,
             'ptt_cost_per_hour_max': 325.0,
+            'ptt_transition_price': 0.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;2 hours networking + dance mix&lt;/li&gt;
+                &lt;li&gt;Dance floor lights&lt;/li&gt;
+                &lt;li&gt;DJ/MC combo&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         (corporate.id if corporate else 0, premier.id if premier else 0): {
             'ptt_min_hours': 2.0,
@@ -142,6 +176,13 @@ if dj_template:
             'ptt_price_per_hour_max': 675.0,
             'ptt_cost_per_hour_min': 300.0,
             'ptt_cost_per_hour_max': 425.0,
+            'ptt_transition_price': 0.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;2 hours DJ performance&lt;/li&gt;
+                &lt;li&gt;Scripted MC services&lt;/li&gt;
+                &lt;li&gt;Stage presence&lt;/li&gt;
+                &lt;li&gt;Walk-on music for VIPs&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         # WEDDING EVENTS
         (wedding.id if wedding else 0, essentials.id if essentials else 0): {
@@ -152,6 +193,12 @@ if dj_template:
             'ptt_price_per_hour_max': 450.0,
             'ptt_cost_per_hour_min': 200.0,
             'ptt_cost_per_hour_max': 300.0,
+            'ptt_transition_price': 300.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;3 hours ceremony or reception&lt;/li&gt;
+                &lt;li&gt;Curated wedding music&lt;/li&gt;
+                &lt;li&gt;Lav/handheld microphone&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         (wedding.id if wedding else 0, classic.id if classic else 0): {
             'ptt_min_hours': 4.0,
@@ -161,6 +208,12 @@ if dj_template:
             'ptt_price_per_hour_max': 625.0,
             'ptt_cost_per_hour_min': 250.0,
             'ptt_cost_per_hour_max': 350.0,
+            'ptt_transition_price': 0.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;Reception DJ + MC&lt;/li&gt;
+                &lt;li&gt;Dance floor lights&lt;/li&gt;
+                &lt;li&gt;Wireless microphone&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
         (wedding.id if wedding else 0, premier.id if premier else 0): {
             'ptt_min_hours': 5.0,
@@ -170,6 +223,13 @@ if dj_template:
             'ptt_price_per_hour_max': 700.0,
             'ptt_cost_per_hour_min': 300.0,
             'ptt_cost_per_hour_max': 450.0,
+            'ptt_transition_price': 0.0,
+            'ptt_package_includes': '''&lt;ul&gt;
+                &lt;li&gt;Scripted MC services&lt;/li&gt;
+                &lt;li&gt;Dance floor lighting&lt;/li&gt;
+                &lt;li&gt;Subwoofer for bass&lt;/li&gt;
+                &lt;li&gt;Wireless microphone&lt;/li&gt;
+            &lt;/ul&gt;''',
         },
     }
     
