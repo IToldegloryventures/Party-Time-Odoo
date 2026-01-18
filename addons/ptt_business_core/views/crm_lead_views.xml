@@ -46,8 +46,10 @@
                 <!-- Add PTT Event Pages -->
                 <xpath expr="//notebook" position="inside">
                     
-                    <!-- Contact Information -->
-                    <page string="Contact Info" name="ptt_contact">
+                    <!-- Event Details - Consolidated Tab -->
+                    <page string="Event Details" name="ptt_event">
+                        <!-- Contact Information Section -->
+                        <separator string="Contact Information"/>
                         <group>
                             <group>
                                 <field name="ptt_date_of_call"/>
@@ -60,10 +62,9 @@
                                 <field name="ptt_secondary_contact_email"/>
                             </group>
                         </group>
-                    </page>
-
-                    <!-- Event Overview -->
-                    <page string="Event Details" name="ptt_event">
+                        
+                        <!-- Event Information Section -->
+                        <separator string="Event Information"/>
                         <group>
                             <group>
                                 <field name="ptt_event_name"/>
@@ -80,10 +81,31 @@
                                 <field name="ptt_venue_address"/>
                             </group>
                         </group>
+                        
+                        <!-- Follow-up Section -->
+                        <separator string="Follow-up"/>
+                        <group>
+                            <group>
+                                <field name="ptt_followup_email_sent"/>
+                                <field name="ptt_proposal_sent"/>
+                                <field name="ptt_next_contact_date"/>
+                            </group>
+                            <group>
+                                <field name="ptt_project_id" readonly="1"/>
+                                <field name="ptt_payment_status"/>
+                            </group>
+                        </group>
                     </page>
 
-                    <!-- Services -->
-                    <page string="Services" name="ptt_services">
+                    <!-- Service Notes - For sales rep notes about client needs -->
+                    <page string="Service Notes" name="ptt_services">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Service Notes</strong> - 
+                            Record notes about the client's specific needs, preferences, and requirements for each service category.
+                        </div>
+                        
+                        <!-- Services Requested Checkboxes -->
+                        <separator string="Services Requested"/>
                         <group>
                             <group string="Entertainment">
                                 <field name="ptt_service_dj"/>
@@ -106,20 +128,24 @@
                             </group>
                         </group>
                         
-                        <!-- Service Details (conditional) -->
-                        <group string="DJ Details" invisible="not ptt_service_dj">
+                        <!-- Service-Specific Notes (conditional) -->
+                        <group string="DJ Notes" invisible="not ptt_service_dj">
                             <field name="ptt_dj_music_styles"/>
                             <field name="ptt_dj_mc_needed"/>
                             <field name="ptt_dj_karaoke"/>
                         </group>
-                        <group string="Photo Booth Details" invisible="not ptt_service_photobooth">
+                        <group string="Photo Booth Notes" invisible="not ptt_service_photobooth">
                             <field name="ptt_photobooth_type"/>
                             <field name="ptt_photobooth_branding"/>
                         </group>
-                        <group string="Casino Details" invisible="not ptt_service_casino">
+                        <group string="Casino Notes" invisible="not ptt_service_casino">
                             <field name="ptt_casino_games"/>
                             <field name="ptt_casino_player_count"/>
                         </group>
+                        
+                        <!-- General Service Notes Text Area -->
+                        <separator string="Additional Notes"/>
+                        <field name="ptt_service_notes" placeholder="Enter any additional notes about the client's service needs, special requests, or important details..." nolabel="1"/>
                     </page>
 
                     <!-- Service Lines (Structured Quote Building) -->
@@ -223,21 +249,6 @@
                             <group>
                                 <field name="ptt_estimated_margin"/>
                                 <field name="ptt_margin_percent"/>
-                            </group>
-                        </group>
-                    </page>
-
-                    <!-- Follow-up -->
-                    <page string="Follow-up" name="ptt_followup">
-                        <group>
-                            <group>
-                                <field name="ptt_followup_email_sent"/>
-                                <field name="ptt_proposal_sent"/>
-                                <field name="ptt_next_contact_date"/>
-                            </group>
-                            <group>
-                                <field name="ptt_project_id" readonly="1"/>
-                                <field name="ptt_payment_status"/>
                             </group>
                         </group>
                     </page>

@@ -114,6 +114,12 @@ class CrmLead(models.Model):
     # Casino Details
     ptt_casino_games = fields.Text(string="Desired Games")
     ptt_casino_player_count = fields.Integer(string="Expected Players")
+    
+    # General Service Notes
+    ptt_service_notes = fields.Text(
+        string="Service Notes",
+        help="Additional notes about the client's service needs, special requests, or important details."
+    )
 
     # =========================================================================
     # BUDGET & FINANCIAL
