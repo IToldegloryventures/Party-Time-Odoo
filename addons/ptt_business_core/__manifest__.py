@@ -51,6 +51,7 @@ Other PTT modules depend on this one.
         "data/products_rentals.xml",
         "data/products_adjustments.xml",
         "data/products_addons.xml",
+        "data/products_administrative.xml",
         "data/dj_variant_config.xml",
         # Views
         "views/res_partner_views.xml",

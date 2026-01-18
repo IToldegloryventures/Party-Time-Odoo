@@ -5,9 +5,9 @@
         <!-- Update Sale Order Types to link with Project Templates -->
         <!-- Maps to the 3 event types defined in ptt_enhanced_sales/data/event_types_data.xml -->
         
-        <!-- Corporate -> Corporate Conference Template -->
+        <!-- Corporate -> Corporate Template -->
         <record id="ptt_enhanced_sales.event_type_corporate" model="sale.order.type">
-            <field name="project_template_id" ref="template_corporate_conference"/>
+            <field name="project_template_id" ref="template_corporate"/>
         </record>
 
         <!-- Wedding -> Wedding Template -->
@@ -15,9 +15,9 @@
             <field name="project_template_id" ref="template_wedding"/>
         </record>
 
-        <!-- Social -> Casino Night Template (Social events) -->
+        <!-- Social -> Social Template -->
         <record id="ptt_enhanced_sales.event_type_social" model="sale.order.type">
-            <field name="project_template_id" ref="template_casino_night"/>
+            <field name="project_template_id" ref="template_social"/>
         </record>
 
     </data>

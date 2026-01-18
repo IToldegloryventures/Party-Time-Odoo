@@ -58,8 +58,10 @@
         <!-- ============================================ -->
         <!-- MC SERVICES - Separate Product (Add-on)     -->
         <!-- ============================================ -->
+        <!-- MC SERVICES (Event Type × Tier: Classic/Premier only) -->
+        <!-- ============================================ -->
         <record id="product_template_mc_services" model="product.template">
-            <field name="name">MC Services (Add-on)</field>
+            <field name="name">MC Services</field>
             <field name="default_code">MC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -68,7 +70,17 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional MC/Host services. Add-on to DJ Services or standalone.</field>
+            <field name="description_sale">Professional MC/Host services. Classic and Premier tiers available.</field>
+        </record>
+        <record id="mc_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_mc_services"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="mc_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_mc_services"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
         <!-- ============================================ -->
@@ -98,8 +110,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- MUSICIAN SERVICES (Solo, Duet, Quartet, Trio, Band) -->
-        <!-- Single product - variants added later       -->
+        <!-- MUSICIAN SERVICES (Solo, Duet, Trio, Quartet, Band) -->
         <!-- ============================================ -->
         <record id="product_template_musician_services" model="product.template">
             <field name="name">Musician Services</field>
@@ -110,26 +121,16 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional musician services. Solo, Duet, Quartet, Trio, or Band available.</field>
+            <field name="description_sale">Professional musician services. Solo, Duet, Trio, Quartet, or Band available.</field>
+        </record>
+        <record id="musician_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_musician_services"/>
+            <field name="attribute_id" ref="pa_musician_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_musician_solo'), ref('pav_musician_duet'), ref('pav_musician_trio'), ref('pav_musician_quartet'), ref('pav_musician_band')])]"/>
         </record>
 
         <!-- ============================================ -->
-        <!-- DANCERS & CHARACTERS                        -->
-        <!-- ============================================ -->
-        <record id="product_template_dancers_characters" model="product.template">
-            <field name="name">Dancers &amp; Characters</field>
-            <field name="default_code">DANCE-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Dancers and character entertainment (Stilt walkers, Santa, etc.).</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- CASINO SERVICES                             -->
+        <!-- CASINO SERVICES (Package/Single variants)   -->
         <!-- ============================================ -->
         <record id="product_template_casino_services" model="product.template">
             <field name="name">Casino Services</field>
@@ -142,9 +143,14 @@
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Casino services for your event. Package and single table options.</field>
         </record>
+        <record id="casino_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_casino_services"/>
+            <field name="attribute_id" ref="pa_casino_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_casino_package'), ref('pav_casino_single')])]"/>
+        </record>
 
         <!-- ============================================ -->
-        <!-- MAGICIANS                                   -->
+        <!-- MAGICIANS (Stage, Walk Around, Card)        -->
         <!-- ============================================ -->
         <record id="product_template_magicians" model="product.template">
             <field name="name">Magician Services</field>
@@ -157,9 +163,14 @@
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Professional magic entertainment. Stage Magic, Walk Around, or Card options.</field>
         </record>
+        <record id="magician_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_magicians"/>
+            <field name="attribute_id" ref="pa_magician_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_magician_stage'), ref('pav_magician_walkaround'), ref('pav_magician_card')])]"/>
+        </record>
 
         <!-- ============================================ -->
-        <!-- PSYCHICS                                    -->
+        <!-- PSYCHICS (Tarot, Hypnotist, Mentalist, Palm)-->
         <!-- ============================================ -->
         <record id="product_template_psychics" model="product.template">
             <field name="name">Psychic Services</field>
@@ -172,9 +183,14 @@
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Psychic entertainment. Tarot, Hypnotist, Mentalist, Palm Reader options.</field>
         </record>
+        <record id="psychic_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_psychics"/>
+            <field name="attribute_id" ref="pa_psychic_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_psychic_tarot'), ref('pav_psychic_hypnotist'), ref('pav_psychic_mentalist'), ref('pav_psychic_palm')])]"/>
+        </record>
 
         <!-- ============================================ -->
-        <!-- COMEDIAN                                    -->
+        <!-- COMEDIAN (Single - no variants)             -->
         <!-- ============================================ -->
         <record id="product_template_comedian" model="product.template">
             <field name="name">Comedian</field>
@@ -189,7 +205,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- OFFICIANT SERVICES                          -->
+        <!-- OFFICIANT SERVICES (Single - no variants)   -->
         <!-- ============================================ -->
         <record id="product_template_officiant" model="product.template">
             <field name="name">Officiant Services</field>
@@ -204,7 +220,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- CARICATURE ARTISTS                          -->
+        <!-- CARICATURE (Traditional/Digital variants)   -->
         <!-- ============================================ -->
         <record id="product_template_caricature" model="product.template">
             <field name="name">Caricature Artist</field>
@@ -217,9 +233,14 @@
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Traditional or Digital Caricature Artist services.</field>
         </record>
+        <record id="caricature_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_caricature"/>
+            <field name="attribute_id" ref="pa_caricature_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_caricature_traditional'), ref('pav_caricature_digital')])]"/>
+        </record>
 
         <!-- ============================================ -->
-        <!-- BALLOON ARTIST                              -->
+        <!-- BALLOON ARTIST (Single - no variants)       -->
         <!-- ============================================ -->
         <record id="product_template_balloon_artist" model="product.template">
             <field name="name">Balloon Artist</field>
@@ -234,7 +255,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- FACE PAINTERS                               -->
+        <!-- FACE PAINTERS (Single - no variants)        -->
         <!-- ============================================ -->
         <record id="product_template_face_painters" model="product.template">
             <field name="name">Face Painters</field>
@@ -249,7 +270,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- AIRBRUSH TATTOO                             -->
+        <!-- AIRBRUSH TATTOO (Single - no variants)      -->
         <!-- ============================================ -->
         <record id="product_template_airbrush_tattoo" model="product.template">
             <field name="name">Airbrush Tattoo</field>
@@ -264,7 +285,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- PETTING ZOO                                 -->
+        <!-- PETTING ZOO (Package/Individual variants)   -->
         <!-- ============================================ -->
         <record id="product_template_petting_zoo" model="product.template">
             <field name="name">Petting Zoo</field>
@@ -276,6 +297,171 @@
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Petting zoo services. Package or Individual animal options.</field>
+        </record>
+        <record id="petting_zoo_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_petting_zoo"/>
+            <field name="attribute_id" ref="pa_petting_zoo_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_zoo_package'), ref('pav_zoo_individual')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- DANCERS (Line, Aerial, Other variants)      -->
+        <!-- ============================================ -->
+        <record id="product_template_dancers" model="product.template">
+            <field name="name">Dancers</field>
+            <field name="default_code">DANCER-SVC</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional dancers. Line dancers, Aerial performers, and more.</field>
+        </record>
+        <record id="dancer_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_dancers"/>
+            <field name="attribute_id" ref="pa_dancer_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_dancer_line'), ref('pav_dancer_aerial'), ref('pav_dancer_other')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CHARACTERS (Stilt, Santa, Other variants)   -->
+        <!-- ============================================ -->
+        <record id="product_template_characters" model="product.template">
+            <field name="name">Characters</field>
+            <field name="default_code">CHAR-SVC</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Character performers. Stilt walkers, Santa, and other characters.</field>
+        </record>
+        <record id="character_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_characters"/>
+            <field name="attribute_id" ref="pa_character_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_char_stilt'), ref('pav_char_santa'), ref('pav_char_other')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- BALLOON DECOR (Single - no variants)        -->
+        <!-- ============================================ -->
+        <record id="product_template_balloon_decor" model="product.template">
+            <field name="name">Balloon Decor</field>
+            <field name="default_code">BALLOON-DECOR</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Balloon decor and installations for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- BED DECOR (Single - Non-Inventory)          -->
+        <!-- ============================================ -->
+        <record id="product_template_bed_decor" model="product.template">
+            <field name="name">Bed Decor</field>
+            <field name="default_code">BED-DECOR</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Bed decor services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- TIPS GIVEN (Single - no variants)           -->
+        <!-- ============================================ -->
+        <record id="product_template_tips_given" model="product.template">
+            <field name="name">Tips Given</field>
+            <field name="default_code">TIPS</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="description_sale">Tips and gratuities.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- FACE PAINTERS (Single)                      -->
+        <!-- ============================================ -->
+        <record id="product_template_face_painters" model="product.template">
+            <field name="name">Face Painters</field>
+            <field name="default_code">FACE-PAINT</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional face painting services for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- BALLOON ARTIST (Single)                     -->
+        <!-- ============================================ -->
+        <record id="product_template_balloon_artist" model="product.template">
+            <field name="name">Balloon Artist</field>
+            <field name="default_code">BALLOON-ART</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional balloon artist for balloon twisting and sculptures.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- AIRBRUSH TATTOO (Single)                    -->
+        <!-- ============================================ -->
+        <record id="product_template_airbrush_tattoo" model="product.template">
+            <field name="name">Airbrush Tattoo</field>
+            <field name="default_code">AIRBRUSH</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Airbrush temporary tattoo services for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- COMEDIAN (Single)                           -->
+        <!-- ============================================ -->
+        <record id="product_template_comedian" model="product.template">
+            <field name="name">Comedian</field>
+            <field name="default_code">COMEDIAN</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional comedian for event entertainment.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- OFFICIANT SERVICES (Single)                 -->
+        <!-- ============================================ -->
+        <record id="product_template_officiant" model="product.template">
+            <field name="name">Officiant Services</field>
+            <field name="default_code">OFFICIANT</field>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Wedding officiant services.</field>
         </record>
     </data>
 </odoo>

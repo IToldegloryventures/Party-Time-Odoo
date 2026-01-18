@@ -93,7 +93,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- A/V TECHNICIAN                              -->
+        <!-- A/V TECHNICIAN (Setup, Camera, Audio)       -->
         <!-- ============================================ -->
         <record id="product_template_av_technician" model="product.template">
             <field name="name">A/V Technician</field>
@@ -106,9 +106,44 @@
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">A/V Technician services. Setup Tech, Camera Operator, Audio Engineer.</field>
         </record>
+        <record id="av_tech_role_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_av_technician"/>
+            <field name="attribute_id" ref="pa_av_tech_role"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tech_setup'), ref('pav_tech_camera'), ref('pav_tech_audio')])]"/>
+        </record>
 
         <!-- ============================================ -->
-        <!-- PHOTO BOOTH RENTALS                         -->
+        <!-- A/V PRODUCTION MANAGER (Single)             -->
+        <!-- ============================================ -->
+        <record id="product_template_av_production_manager" model="product.template">
+            <field name="name">A/V Production Manager</field>
+            <field name="default_code">AV-PM</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">A/V Production Manager services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- A/V TECHNICAL DIRECTOR (Single)             -->
+        <!-- ============================================ -->
+        <record id="product_template_av_technical_director" model="product.template">
+            <field name="name">A/V Technical Director</field>
+            <field name="default_code">AV-TD</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">A/V Technical Director services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- PHOTO BOOTH RENTALS (4 booth types)         -->
         <!-- ============================================ -->
         <record id="product_template_photo_booth" model="product.template">
             <field name="name">Photo Booth Rentals</field>
@@ -119,7 +154,12 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Photo booth rental services. Standard, Green Screen/AI, 360 Photo Booth options.</field>
+            <field name="description_sale">Photo booth rental services. Standard, Green Screen/AI, 360 options with or without attendant.</field>
+        </record>
+        <record id="photo_booth_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photo_booth"/>
+            <field name="attribute_id" ref="pa_booth_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_booth_standard'), ref('pav_booth_greenscreen'), ref('pav_booth_greenscreen_printouts'), ref('pav_booth_360')])]"/>
         </record>
 
         <!-- ============================================ -->
@@ -183,7 +223,7 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- EQUIPMENT RENTAL                            -->
+        <!-- EQUIPMENT RENTAL (Generator/Tents/Furniture)-->
         <!-- ============================================ -->
         <record id="product_template_equipment_rental" model="product.template">
             <field name="name">Equipment Rental</field>
@@ -196,9 +236,14 @@
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">General equipment rental. Generator, Tents, Furniture Rentals available.</field>
         </record>
+        <record id="equipment_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_equipment_rental"/>
+            <field name="attribute_id" ref="pa_equipment_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_equip_generator'), ref('pav_equip_tents'), ref('pav_equip_furniture')])]"/>
+        </record>
 
         <!-- ============================================ -->
-        <!-- FURNITURE RENTALS                           -->
+        <!-- FURNITURE RENTALS (Single)                  -->
         <!-- ============================================ -->
         <record id="product_template_furniture" model="product.template">
             <field name="name">Furniture Rentals</field>

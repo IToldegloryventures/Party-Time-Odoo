@@ -26,6 +26,7 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
     "data": [
         "security/ir.model.access.csv",
         "data/project_templates_data.xml",
+        "data/template_id_aliases.xml",
         "data/link_event_types_data.xml",
         "views/project_template_views.xml",
         "views/project_stakeholder_views.xml",

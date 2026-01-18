@@ -27,6 +27,7 @@ Designed specifically for Party Time Texas event management workflow.
     "data": [
         "security/ir.model.access.csv",
         "data/event_types_data.xml",
+        "data/legacy_event_type_aliases.xml",
         "views/sale_order_type_views.xml",
         "views/sale_order_views.xml",
         "views/crm_lead_views.xml",
