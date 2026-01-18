@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Event Services Products
+        Photography, Videography, Event Planning, Catering, etc.
+    -->
+    <data noupdate="0">
+        <!-- ============================================ -->
+        <!-- PHOTOGRAPHY SERVICES                        -->
+        <!-- ============================================ -->
+        <record id="product_template_photography" model="product.template">
+            <field name="name">Photography Services</field>
+            <field name="default_code">PHOTO-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional photography services. Head Shots or Event Photography.</field>
+        </record>
+        
+        <record id="photography_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photography"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="photography_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_photography"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- VIDEOGRAPHY SERVICES                        -->
+        <!-- ============================================ -->
+        <record id="product_template_videography" model="product.template">
+            <field name="name">Videography Services</field>
+            <field name="default_code">VIDEO-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional videography services. Event Videography, Highlight Reel, Content Collection, Promotional Reel.</field>
+        </record>
+        
+        <record id="videography_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_videography"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="videography_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_videography"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- EVENT PLANNING SERVICES                     -->
+        <!-- ============================================ -->
+        <record id="product_template_event_planning" model="product.template">
+            <field name="name">Event Planning Services</field>
+            <field name="default_code">PLAN-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional event planning and coordination services. Onsite Coordinator and additional variants available.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CATERING SERVICES                           -->
+        <!-- ============================================ -->
+        <record id="product_template_catering" model="product.template">
+            <field name="name">Catering Services</field>
+            <field name="default_code">CATER-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional catering services for your event.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- BARTENDER SERVICES                          -->
+        <!-- ============================================ -->
+        <record id="product_template_bartender" model="product.template">
+            <field name="name">Bartender Services</field>
+            <field name="default_code">BAR-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional bartender services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- WAIT STAFF                                  -->
+        <!-- ============================================ -->
+        <record id="product_template_wait_staff" model="product.template">
+            <field name="name">Wait Staff</field>
+            <field name="default_code">WAIT-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Professional wait staff services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- DELIVER, SETUP, STRIKE                      -->
+        <!-- ============================================ -->
+        <record id="product_template_delivery_setup" model="product.template">
+            <field name="name">Deliver, Setup, Strike</field>
+            <field name="default_code">SETUP-SVC</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Equipment delivery, setup, and strike services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- TRAVEL AND EXPENSES                         -->
+        <!-- ============================================ -->
+        <record id="product_template_travel_expenses" model="product.template">
+            <field name="name">Travel and Expenses</field>
+            <field name="default_code">TRAVEL</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Travel and expense reimbursement.</field>
+        </record>
+    </data>
+</odoo>

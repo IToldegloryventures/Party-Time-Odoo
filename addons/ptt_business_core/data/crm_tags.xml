@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+        PTT CRM Tags
+        ============
+        Categorization tags for leads and opportunities.
+        Organized by category for easy filtering and reporting.
+        
+        Color Reference (Odoo 19):
+        1=Red, 2=Orange, 3=Yellow, 4=Light Blue, 5=Purple,
+        6=Pink, 7=Teal, 8=Cyan, 9=Fuschia, 10=Green, 11=Gray
+        -->
+
+        <!-- Event Type Tags -->
+        <record id="tag_wedding" model="crm.tag">
+            <field name="name">Wedding</field>
+            <field name="color" eval="6"/>
+        </record>
+
+        <record id="tag_corporate" model="crm.tag">
+            <field name="name">Corporate</field>
+            <field name="color" eval="4"/>
+        </record>
+
+        <record id="tag_social" model="crm.tag">
+            <field name="name">Social Event</field>
+            <field name="color" eval="5"/>
+        </record>
+
+        <record id="tag_birthday" model="crm.tag">
+            <field name="name">Birthday Party</field>
+            <field name="color" eval="3"/>
+        </record>
+
+        <record id="tag_quinceañera" model="crm.tag">
+            <field name="name">Quinceañera</field>
+            <field name="color" eval="9"/>
+        </record>
+
+        <record id="tag_reunion" model="crm.tag">
+            <field name="name">Reunion</field>
+            <field name="color" eval="7"/>
+        </record>
+
+        <record id="tag_holiday_party" model="crm.tag">
+            <field name="name">Holiday Party</field>
+            <field name="color" eval="1"/>
+        </record>
+
+        <!-- Service Type Tags -->
+        <record id="tag_dj_services" model="crm.tag">
+            <field name="name">DJ Services</field>
+            <field name="color" eval="10"/>
+        </record>
+
+        <record id="tag_photo_video" model="crm.tag">
+            <field name="name">Photo/Video</field>
+            <field name="color" eval="8"/>
+        </record>
+
+        <record id="tag_lighting" model="crm.tag">
+            <field name="name">Lighting</field>
+            <field name="color" eval="3"/>
+        </record>
+
+        <record id="tag_photo_booth" model="crm.tag">
+            <field name="name">Photo Booth</field>
+            <field name="color" eval="2"/>
+        </record>
+
+        <record id="tag_rentals" model="crm.tag">
+            <field name="name">Equipment Rentals</field>
+            <field name="color" eval="11"/>
+        </record>
+
+        <record id="tag_decor" model="crm.tag">
+            <field name="name">Décor</field>
+            <field name="color" eval="9"/>
+        </record>
+
+        <!-- Lead Quality Tags -->
+        <record id="tag_referral" model="crm.tag">
+            <field name="name">Referral</field>
+            <field name="color" eval="10"/>
+        </record>
+
+        <record id="tag_repeat_client" model="crm.tag">
+            <field name="name">Repeat Client</field>
+            <field name="color" eval="10"/>
+        </record>
+
+        <record id="tag_vip" model="crm.tag">
+            <field name="name">VIP</field>
+            <field name="color" eval="1"/>
+        </record>
+
+        <record id="tag_high_priority" model="crm.tag">
+            <field name="name">High Priority</field>
+            <field name="color" eval="1"/>
+        </record>
+
+        <record id="tag_rush" model="crm.tag">
+            <field name="name">Rush (Short Lead Time)</field>
+            <field name="color" eval="2"/>
+        </record>
+
+        <!-- Lead Source Tags -->
+        <record id="tag_website" model="crm.tag">
+            <field name="name">Website Inquiry</field>
+            <field name="color" eval="4"/>
+        </record>
+
+        <record id="tag_wedding_wire" model="crm.tag">
+            <field name="name">WeddingWire</field>
+            <field name="color" eval="6"/>
+        </record>
+
+        <record id="tag_the_knot" model="crm.tag">
+            <field name="name">The Knot</field>
+            <field name="color" eval="6"/>
+        </record>
+
+        <record id="tag_google" model="crm.tag">
+            <field name="name">Google</field>
+            <field name="color" eval="4"/>
+        </record>
+
+        <record id="tag_social_media" model="crm.tag">
+            <field name="name">Social Media</field>
+            <field name="color" eval="8"/>
+        </record>
+
+    </data>
+</odoo>

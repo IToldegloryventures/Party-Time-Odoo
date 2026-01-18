@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Vendor RFQ Tree View -->
+        <record id="view_ptt_vendor_rfq_tree" model="ir.ui.view">
+            <field name="name">ptt.vendor.rfq.tree</field>
+            <field name="model">ptt.vendor.rfq</field>
+            <field name="arch" type="xml">
+                <list string="Vendor RFQs" decoration-info="state == 'draft'"
+                      decoration-warning="state in ('sent', 'in_progress')"
+                      decoration-success="state in ('done', 'assigned')"
+                      decoration-muted="state == 'cancel'">
+                    <field name="name"/>
+                    <field name="service_type"/>
+                    <field name="event_name"/>
+                    <field name="event_date"/>
+                    <field name="estimated_budget"/>
+                    <field name="closing_date"/>
+                    <field name="quote_count"/>
+                    <field name="approved_vendor_id"/>
+                    <field name="approved_price"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'draft'"
+                           decoration-warning="state in ('sent', 'in_progress')"
+                           decoration-success="state in ('done', 'assigned')"/>
+                    <field name="user_id" widget="many2one_avatar_user"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Vendor RFQ Form View -->
+        <record id="view_ptt_vendor_rfq_form" model="ir.ui.view">
+            <field name="name">ptt.vendor.rfq.form</field>
+            <field name="model">ptt.vendor.rfq</field>
+            <field name="arch" type="xml">
+                <form string="Vendor RFQ">
+                    <header>
+                        <button name="action_pending" string="Submit for Approval"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"/>
+                        <button name="action_send_to_vendors" string="Send to Vendors"
+                                type="object" class="btn-primary"
+                                invisible="state not in ('draft', 'pending')"/>
+                        <button name="action_select_vendor" string="Select Vendor"
+                                type="object" class="btn-primary"
+                                invisible="state != 'in_progress' or quote_count == 0"/>
+                        <button name="action_create_assignment" string="Create Assignment"
+                                type="object" class="btn-success"
+                                invisible="state != 'done' or not project_id"/>
+                        <button name="action_cancel" string="Cancel"
+                                type="object"
+                                invisible="state in ('done', 'assigned', 'cancel')"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft"
+                                type="object"
+                                invisible="state != 'cancel'"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,sent,in_progress,done,assigned"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_quotes" type="object"
+                                    class="oe_stat_button" icon="fa-list"
+                                    invisible="quote_count == 0">
+                                <field name="quote_count" widget="statinfo" string="Quotes"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group string="Service Request">
+                                <field name="service_type"/>
+                                <field name="estimated_budget"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="service_date"/>
+                            </group>
+                            <group string="Timing">
+                                <field name="quote_date"/>
+                                <field name="closing_date"/>
+                                <field name="user_id"/>
+                                <field name="company_id" invisible="1"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group string="Linked Records">
+                                <field name="crm_lead_id"/>
+                                <field name="project_id"/>
+                            </group>
+                            <group string="Event Details" invisible="not event_name">
+                                <field name="event_name" readonly="1"/>
+                                <field name="event_date" readonly="1"/>
+                                <field name="event_venue" readonly="1"/>
+                                <field name="guest_count" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Vendors" name="vendors">
+                                <group string="Invited Vendors">
+                                    <field name="vendor_ids" widget="many2many_tags"
+                                           readonly="state in ('done', 'assigned', 'cancel')"/>
+                                </group>
+                                
+                                <group string="Approved Vendor" 
+                                       invisible="state not in ('done', 'assigned')">
+                                    <field name="approved_vendor_id"/>
+                                    <field name="approved_quote_id"/>
+                                    <field name="approved_price"/>
+                                </group>
+                                
+                                <group string="Assignment" invisible="not vendor_assignment_id">
+                                    <field name="vendor_assignment_id"/>
+                                </group>
+                            </page>
+                            
+                            <page string="Quotes Received" name="quotes">
+                                <field name="quote_history_ids" readonly="1">
+                                    <list>
+                                        <field name="vendor_id"/>
+                                        <field name="quoted_price"/>
+                                        <field name="estimated_delivery_date"/>
+                                        <field name="quote_date"/>
+                                        <field name="is_approved" widget="boolean_toggle"/>
+                                        <field name="notes"/>
+                                    </list>
+                                </field>
+                            </page>
+                            
+                            <page string="Description" name="description">
+                                <field name="service_description" 
+                                       placeholder="Describe the service requirements in detail..."/>
+                            </page>
+                            
+                            <page string="Notes" name="notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Vendor Quote History Tree View -->
+        <record id="view_ptt_vendor_quote_history_tree" model="ir.ui.view">
+            <field name="name">ptt.vendor.quote.history.tree</field>
+            <field name="model">ptt.vendor.quote.history</field>
+            <field name="arch" type="xml">
+                <list string="Vendor Quotes">
+                    <field name="rfq_id"/>
+                    <field name="vendor_id"/>
+                    <field name="quoted_price"/>
+                    <field name="estimated_delivery_date"/>
+                    <field name="quote_date"/>
+                    <field name="is_approved" widget="boolean_toggle"/>
+                    <field name="notes"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Vendor Quote History Form View -->
+        <record id="view_ptt_vendor_quote_history_form" model="ir.ui.view">
+            <field name="name">ptt.vendor.quote.history.form</field>
+            <field name="model">ptt.vendor.quote.history</field>
+            <field name="arch" type="xml">
+                <form string="Vendor Quote">
+                    <header>
+                        <button name="action_approve" string="Approve This Quote"
+                                type="object" class="btn-primary"
+                                invisible="is_approved"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="rfq_id"/>
+                                <field name="vendor_id"/>
+                                <field name="quote_date"/>
+                            </group>
+                            <group>
+                                <field name="quoted_price"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="estimated_delivery_date"/>
+                                <field name="is_approved"/>
+                            </group>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Actions -->
+        <record id="action_ptt_vendor_rfq" model="ir.actions.act_window">
+            <field name="name">Vendor RFQs</field>
+            <field name="res_model">ptt.vendor.rfq</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first Vendor RFQ
+                </p>
+                <p>
+                    Request quotes from multiple vendors for event services.
+                    Compare pricing and select the best vendor for each service.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_ptt_vendor_quote_history" model="ir.actions.act_window">
+            <field name="name">Vendor Quotes</field>
+            <field name="res_model">ptt.vendor.quote.history</field>
+            <field name="view_mode">list,form</field>
+        </record>
+        
+        <!-- Menu Items -->
+        <menuitem id="menu_vendor_management_root"
+                  name="Vendor Management"
+                  sequence="45"
+                  web_icon="ptt_vendor_management,static/description/icon.png"/>
+        
+        <menuitem id="menu_vendor_rfq"
+                  name="Vendor RFQs"
+                  parent="menu_vendor_management_root"
+                  action="action_ptt_vendor_rfq"
+                  sequence="10"/>
+        
+        <menuitem id="menu_vendor_quotes"
+                  name="Vendor Quotes"
+                  parent="menu_vendor_management_root"
+                  action="action_ptt_vendor_quote_history"
+                  sequence="20"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- Update Sale Order Types to link with Project Templates -->
+        <record id="ptt_enhanced_sales.event_type_corporate_conference" model="sale.order.type">
+            <field name="project_template_id" ref="template_corporate_conference"/>
+        </record>
+
+        <record id="ptt_enhanced_sales.event_type_wedding" model="sale.order.type">
+            <field name="project_template_id" ref="template_wedding"/>
+        </record>
+
+        <record id="ptt_enhanced_sales.event_type_casino_night" model="sale.order.type">
+            <field name="project_template_id" ref="template_casino_night"/>
+        </record>
+
+    </data>
+</odoo>

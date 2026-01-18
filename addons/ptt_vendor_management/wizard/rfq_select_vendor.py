@@ -1,0 +1,6 @@
+# Part of Party Time Texas Event Management System
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
+"""
+RFQ Select Vendor Wizard - placeholder for proper import.
+Actual implementation is in register_vendor.py.
+"""

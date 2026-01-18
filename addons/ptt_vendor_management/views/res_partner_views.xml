@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Extend Partner Form with Register Vendor button -->
+        <record id="view_partner_form_vendor_management" model="ir.ui.view">
+            <field name="name">res.partner.form.vendor.management</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="ptt_business_core.view_partner_form_ptt"/>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                
+                <!-- Add Register as Vendor button -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="%(action_register_vendor_wizard)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-user-plus"
+                            invisible="ptt_is_vendor">
+                        <span>Register as Vendor</span>
+                    </button>
+                    <button name="action_view_vendor_assignments"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-calendar-check-o"
+                            invisible="not ptt_is_vendor">
+                        <field name="ptt_active_assignment_count" widget="statinfo" string="Assignments"/>
+                    </button>
+                </xpath>
+                
+                <!-- Add Portal Access field -->
+                <xpath expr="//field[@name='ptt_vendor_rating']" position="after">
+                    <field name="ptt_vendor_portal_access"/>
+                </xpath>
+                
+            </field>
+        </record>
+        
+        <!-- Vendor List View for RFQ selection -->
+        <record id="view_partner_tree_vendor_selection" model="ir.ui.view">
+            <field name="name">res.partner.tree.vendor.selection</field>
+            <field name="model">res.partner</field>
+            <field name="priority">100</field>
+            <field name="arch" type="xml">
+                <list string="Vendors">
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="ptt_vendor_service_types" widget="many2many_tags"/>
+                    <field name="ptt_vendor_rating" widget="priority"/>
+                    <field name="ptt_active_assignment_count"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Action to view registered vendors -->
+        <record id="action_registered_vendors" model="ir.actions.act_window">
+            <field name="name">Registered Vendors</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('ptt_is_vendor', '=', True)]</field>
+            <field name="context">{'default_ptt_is_vendor': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No registered vendors yet
+                </p>
+                <p>
+                    Register partners as vendors to invite them to RFQs
+                    and assign them to event services.
+                </p>
+            </field>
+        </record>
+        
+        <!-- Menu item for vendors -->
+        <menuitem id="menu_registered_vendors"
+                  name="Registered Vendors"
+                  parent="menu_vendor_management_root"
+                  action="action_registered_vendors"
+                  sequence="5"/>
+
+    </data>
+</odoo>

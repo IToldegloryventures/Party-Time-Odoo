@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Sale Order Views - PTT Extensions
+        - Pricing Reference tab (internal only)
+        - Min hours warning on order lines
+    -->
+    
+    <!-- ============================================ -->
+    <!-- SALE.ORDER.LINE FORM - Min Hours Warning    -->
+    <!-- Shows warning when qty < min_hours          -->
+    <!-- ============================================ -->
+    <record id="sale_order_line_form_view_ptt" model="ir.ui.view">
+        <field name="name">sale.order.line.form.ptt</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_uom_qty']" position="after">
+                <field name="ptt_min_hours_warning" 
+                       invisible="not ptt_min_hours_warning"
+                       readonly="1"
+                       class="text-warning"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- SALE.ORDER FORM - Pricing Reference Tab     -->
+    <!-- Internal only - not shown to customers      -->
+    <!-- ============================================ -->
+    <record id="sale_order_form_view_ptt" model="ir.ui.view">
+        <field name="name">sale.order.form.ptt</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page string="Pricing Reference" name="ptt_pricing_reference"
+                      groups="base.group_user">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Internal Pricing Guide</strong> - 
+                        This tab shows pricing ranges, minimum hours, and tier details for sales rep reference. 
+                        This information is NOT shown on customer quotes.
+                    </div>
+                    <field name="order_line" nolabel="1" readonly="1">
+                        <list editable="bottom" 
+                              decoration-warning="product_uom_qty &lt; ptt_min_hours"
+                              decoration-danger="ptt_min_hours_warning">
+                            <field name="product_id" readonly="1"/>
+                            <field name="product_uom_qty" string="Hours" readonly="1"/>
+                            <field name="ptt_min_hours" string="Min Hrs" readonly="1"/>
+                            <field name="price_unit" readonly="1"/>
+                            <field name="ptt_price_per_hour_min" string="$/Hr (Low)" readonly="1" optional="show"/>
+                            <field name="ptt_price_per_hour_max" string="$/Hr (High)" readonly="1" optional="show"/>
+                            <field name="ptt_cost_per_hour_min" string="Cost (Low)" readonly="1" optional="hide"/>
+                            <field name="ptt_cost_per_hour_max" string="Cost (High)" readonly="1" optional="hide"/>
+                            <field name="ptt_guest_count_min" string="Guests Min" readonly="1" optional="hide"/>
+                            <field name="ptt_guest_count_max" string="Guests Max" readonly="1" optional="hide"/>
+                            <field name="ptt_min_hours_warning" 
+                                   string="Warning"
+                                   invisible="not ptt_min_hours_warning"/>
+                        </list>
+                    </field>
+                    <group string="Rate Adjustment Notes" col="1">
+                        <p>
+                            <strong>Long Event Rate:</strong> Events 6+ hours may have 1.5x rate adjustment applied to quoted rates.<br/>
+                            <strong>Vendor Steady Rate:</strong> After 3-5 hours, vendor rate may be adjusted by 0.9x factor.<br/>
+                            <strong>Wedding Premium:</strong> Wedding events include +$50/hr premium on base rates.<br/>
+                            <strong>Tier Price Extras:</strong> Classic +$125, Premier +$300 added to base price.
+                        </p>
+                    </group>
+                </page>
+            </xpath>
+            
+            <!-- Add min hours warning to main order lines -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+                <field name="ptt_min_hours_warning" 
+                       column_invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- SALE.ORDER.LINE IN TREE - Visual Warning    -->
+    <!-- Row highlights if below minimum             -->
+    <!-- ============================================ -->
+    <record id="sale_order_line_tree_ptt" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.ptt</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-warning">ptt_min_hours_warning</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_qty']" position="after">
+                <field name="ptt_min_hours_warning" column_invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

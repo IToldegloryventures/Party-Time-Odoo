@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Price Extras for DJ Service Variants
+        
+        Base Price: $300/hr (Social + Essentials)
+        
+        Price Extras (added to base):
+        - Event Type:
+          - Social: $0
+          - Corporate: $0  
+          - Wedding: +$50
+        
+        - Service Tier:
+          - Essentials: $0
+          - Classic: +$125
+          - Premier: +$300
+        
+        Example combinations:
+        - Social Essential: $300 + 0 + 0 = $300
+        - Social Classic: $300 + 0 + 125 = $425
+        - Social Premier: $300 + 0 + 300 = $600
+        - Corporate Essential: $300 + 0 + 0 = $300
+        - Corporate Classic: $300 + 0 + 125 = $425
+        - Corporate Premier: $300 + 0 + 300 = $600
+        - Wedding Essential: $300 + 50 + 0 = $350
+        - Wedding Classic: $300 + 50 + 125 = $475
+        - Wedding Premier: $300 + 50 + 300 = $650
+        
+        Note: price_extra is set on product.template.attribute.value (PTAV)
+        which links attribute values to specific templates.
+    -->
+    <data noupdate="0">
+        <!-- 
+            DJ Services - Set price_extra on the PTAVs
+            We need to search and update the auto-created PTAVs
+        -->
+        
+        <!-- ============================================ -->
+        <!-- SERVER ACTION: Configure DJ Variant Pricing -->
+        <!-- Run after module install to set price_extra -->
+        <!-- ============================================ -->
+        <record id="action_configure_dj_pricing" model="ir.actions.server">
+            <field name="name">Configure DJ Service Pricing</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="code">
+# Find DJ Services template
+dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
+if dj_template:
+    # Get attribute values
+    wedding_val = env.ref('ptt_business_core.pav_event_wedding', raise_if_not_found=False)
+    classic_val = env.ref('ptt_business_core.pav_tier_classic', raise_if_not_found=False)
+    premier_val = env.ref('ptt_business_core.pav_tier_premier', raise_if_not_found=False)
+    
+    # Find and update PTAVs for DJ template using write() method
+    for ptav in dj_template.attribute_line_ids.product_template_value_ids:
+        if wedding_val and ptav.product_attribute_value_id == wedding_val:
+            ptav.write({'price_extra': 50.0})
+        elif classic_val and ptav.product_attribute_value_id == classic_val:
+            ptav.write({'price_extra': 125.0})
+        elif premier_val and ptav.product_attribute_value_id == premier_val:
+            ptav.write({'price_extra': 300.0})
+</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- SERVER ACTION: Configure DJ Variant Fields  -->
+        <!-- Sets ptt_min_hours etc on each variant      -->
+        <!-- ============================================ -->
+        <record id="action_configure_dj_variants" model="ir.actions.server">
+            <field name="name">Configure DJ Variant Details</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="code">
+# Find DJ Services template
+dj_template = env.ref('ptt_business_core.product_template_dj_services', raise_if_not_found=False)
+if dj_template:
+    # Get attribute value references
+    social = env.ref('ptt_business_core.pav_event_social', raise_if_not_found=False)
+    corporate = env.ref('ptt_business_core.pav_event_corporate', raise_if_not_found=False)
+    wedding = env.ref('ptt_business_core.pav_event_wedding', raise_if_not_found=False)
+    essentials = env.ref('ptt_business_core.pav_tier_essentials', raise_if_not_found=False)
+    classic = env.ref('ptt_business_core.pav_tier_classic', raise_if_not_found=False)
+    premier = env.ref('ptt_business_core.pav_tier_premier', raise_if_not_found=False)
+    
+    # DJ Variant configurations from pricing spreadsheet
+    variant_configs = {
+        # (Event Type, Tier): {min_hours, guest_min, guest_max, price_min, price_max, cost_min, cost_max}
+        (social.id if social else 0, essentials.id if essentials else 0): {
+            'ptt_min_hours': 2.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 100,
+            'ptt_price_per_hour_min': 300.0,
+            'ptt_price_per_hour_max': 400.0,
+            'ptt_cost_per_hour_min': 150.0,
+            'ptt_cost_per_hour_max': 200.0,
+        },
+        (social.id if social else 0, classic.id if classic else 0): {
+            'ptt_min_hours': 2.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 200,
+            'ptt_price_per_hour_min': 425.0,
+            'ptt_price_per_hour_max': 500.0,
+            'ptt_cost_per_hour_min': 225.0,
+            'ptt_cost_per_hour_max': 300.0,
+        },
+        (social.id if social else 0, premier.id if premier else 0): {
+            'ptt_min_hours': 3.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 500,
+            'ptt_price_per_hour_min': 600.0,
+            'ptt_price_per_hour_max': 700.0,
+            'ptt_cost_per_hour_min': 350.0,
+            'ptt_cost_per_hour_max': 450.0,
+        },
+        (corporate.id if corporate else 0, essentials.id if essentials else 0): {
+            'ptt_min_hours': 2.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 100,
+            'ptt_price_per_hour_min': 300.0,
+            'ptt_price_per_hour_max': 400.0,
+            'ptt_cost_per_hour_min': 150.0,
+            'ptt_cost_per_hour_max': 200.0,
+        },
+        (corporate.id if corporate else 0, classic.id if classic else 0): {
+            'ptt_min_hours': 2.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 200,
+            'ptt_price_per_hour_min': 425.0,
+            'ptt_price_per_hour_max': 500.0,
+            'ptt_cost_per_hour_min': 225.0,
+            'ptt_cost_per_hour_max': 300.0,
+        },
+        (corporate.id if corporate else 0, premier.id if premier else 0): {
+            'ptt_min_hours': 3.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 500,
+            'ptt_price_per_hour_min': 600.0,
+            'ptt_price_per_hour_max': 700.0,
+            'ptt_cost_per_hour_min': 350.0,
+            'ptt_cost_per_hour_max': 450.0,
+        },
+        (wedding.id if wedding else 0, essentials.id if essentials else 0): {
+            'ptt_min_hours': 3.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 100,
+            'ptt_price_per_hour_min': 350.0,
+            'ptt_price_per_hour_max': 450.0,
+            'ptt_cost_per_hour_min': 175.0,
+            'ptt_cost_per_hour_max': 225.0,
+        },
+        (wedding.id if wedding else 0, classic.id if classic else 0): {
+            'ptt_min_hours': 4.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 200,
+            'ptt_price_per_hour_min': 475.0,
+            'ptt_price_per_hour_max': 550.0,
+            'ptt_cost_per_hour_min': 275.0,
+            'ptt_cost_per_hour_max': 350.0,
+        },
+        (wedding.id if wedding else 0, premier.id if premier else 0): {
+            'ptt_min_hours': 5.0,
+            'ptt_guest_count_min': 0,
+            'ptt_guest_count_max': 500,
+            'ptt_price_per_hour_min': 650.0,
+            'ptt_price_per_hour_max': 750.0,
+            'ptt_cost_per_hour_min': 400.0,
+            'ptt_cost_per_hour_max': 500.0,
+        },
+    }
+    
+    # Update each variant
+    for variant in dj_template.product_variant_ids:
+        # Get the attribute value IDs for this variant
+        attr_value_ids = variant.product_template_attribute_value_ids.mapped('product_attribute_value_id').ids
+        
+        # Find matching config
+        for (event_id, tier_id), config in variant_configs.items():
+            if event_id in attr_value_ids and tier_id in attr_value_ids:
+                variant.write(config)
+                break
+</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CRON/DATA TRIGGER: Run on module install    -->
+        <!-- ============================================ -->
+        <function model="ir.actions.server" name="run">
+            <value eval="[ref('ptt_business_core.action_configure_dj_pricing')]"/>
+        </function>
+        <function model="ir.actions.server" name="run">
+            <value eval="[ref('ptt_business_core.action_configure_dj_variants')]"/>
+        </function>
+    </data>
+</odoo>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+        PTT Event Types
+        ===============
+        Only 3 event types matching product variant attributes:
+        - Corporate
+        - Social  
+        - Wedding
+        
+        These map to the Event Type product attribute values in product_attributes.xml
+        -->
+
+        <!-- Corporate Event Type -->
+        <record id="event_type_corporate" model="sale.order.type">
+            <field name="name">Corporate</field>
+            <field name="code">CORP</field>
+            <field name="sequence">10</field>
+            <field name="description">Corporate events including conferences, product launches, team building, holiday parties, and awards ceremonies.</field>
+            <field name="default_service_dj">True</field>
+            <field name="default_service_lighting">True</field>
+            <field name="default_service_photo">True</field>
+            <field name="default_duration_hours">6</field>
+            <field name="default_setup_hours">2</field>
+            <field name="default_breakdown_hours">1</field>
+            <field name="color">1</field>
+        </record>
+
+        <!-- Social Event Type -->
+        <record id="event_type_social" model="sale.order.type">
+            <field name="name">Social</field>
+            <field name="code">SOCIAL</field>
+            <field name="sequence">20</field>
+            <field name="description">Social events including birthday parties, anniversaries, reunions, graduations, and community gatherings.</field>
+            <field name="default_service_dj">True</field>
+            <field name="default_service_photo">True</field>
+            <field name="default_service_photobooth">True</field>
+            <field name="default_service_decor">True</field>
+            <field name="default_duration_hours">4</field>
+            <field name="default_setup_hours">2</field>
+            <field name="default_breakdown_hours">1</field>
+            <field name="color">3</field>
+        </record>
+
+        <!-- Wedding Event Type -->
+        <record id="event_type_wedding" model="sale.order.type">
+            <field name="name">Wedding</field>
+            <field name="code">WEDDING</field>
+            <field name="sequence">30</field>
+            <field name="description">Wedding ceremonies and receptions including engagement parties, rehearsal dinners, and wedding celebrations.</field>
+            <field name="default_service_dj">True</field>
+            <field name="default_service_photo">True</field>
+            <field name="default_service_lighting">True</field>
+            <field name="default_service_decor">True</field>
+            <field name="default_service_photobooth">True</field>
+            <field name="default_duration_hours">8</field>
+            <field name="default_setup_hours">4</field>
+            <field name="default_breakdown_hours">2</field>
+            <field name="color">6</field>
+        </record>
+
+    </data>
+</odoo>

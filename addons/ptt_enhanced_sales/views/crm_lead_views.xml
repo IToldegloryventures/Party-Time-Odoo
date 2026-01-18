@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- CRM Lead Form Extension for Enhanced Sales -->
+        <record id="view_crm_lead_form_enhanced_sales" model="ir.ui.view">
+            <field name="name">crm.lead.form.enhanced.sales</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="ptt_business_core.view_crm_lead_form_ptt"/>
+            <field name="priority">25</field>
+            <field name="arch" type="xml">
+                
+                <!-- Add Event Type Template near event info -->
+                <xpath expr="//field[@name='ptt_event_name']" position="before">
+                    <field name="ptt_event_type_id" 
+                           options="{'no_create': True}"
+                           placeholder="Select event template..."/>
+                </xpath>
+
+            </field>
+        </record>
+        
+        <!-- CRM Lead Tree Extension -->
+        <record id="view_crm_lead_tree_enhanced_sales" model="ir.ui.view">
+            <field name="name">crm.lead.tree.enhanced.sales</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="ptt_business_core.view_crm_lead_tree_ptt"/>
+            <field name="priority">25</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ptt_event_date']" position="after">
+                    <field name="ptt_event_type_id" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

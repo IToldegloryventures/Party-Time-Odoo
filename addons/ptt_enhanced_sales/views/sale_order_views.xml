@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Sale Order Form Extension -->
+        <record id="view_sale_order_form_ptt" model="ir.ui.view">
+            <field name="name">sale.order.form.ptt</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                
+                <!-- Add Event Type after partner -->
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="event_type_id"/>
+                </xpath>
+
+                <!-- Add Event Information Page -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Event Information" name="event_info">
+                        <group>
+                            <group string="Event Details">
+                                <field name="event_name"/>
+                                <field name="event_date"/>
+                                <field name="event_duration"/>
+                                <field name="event_guest_count"/>
+                                <field name="event_venue"/>
+                                <field name="event_venue_type"/>
+                            </group>
+                            <group string="Timing">
+                                <field name="setup_time"/>
+                                <field name="breakdown_time"/>
+                            </group>
+                        </group>
+                        
+                        <separator string="Requested Services"/>
+                        <group>
+                            <group>
+                                <field name="service_dj"/>
+                                <field name="service_photo"/>
+                                <field name="service_live"/>
+                                <field name="service_lighting"/>
+                            </group>
+                            <group>
+                                <field name="service_decor"/>
+                                <field name="service_photobooth"/>
+                                <field name="service_casino"/>
+                                <field name="service_staffing"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Service Lines (from CRM Opportunity) -->
+                    <page string="Service Lines" name="ptt_service_lines" invisible="not opportunity_id">
+                        <group>
+                            <field name="ptt_service_line_ids" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="sequence" optional="hide"/>
+                                    <field name="service_type"/>
+                                    <field name="service_tier"/>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="hours"/>
+                                    <field name="unit_price"/>
+                                    <field name="subtotal"/>
+                                    <field name="notes" optional="hide"/>
+                                </list>
+                            </field>
+                            <field name="ptt_service_lines_total" widget="monetary" readonly="1"/>
+                        </group>
+                    </page>
+
+                    <!-- Quote Revisions Page -->
+                    <page string="Revisions" name="revisions" invisible="not revision_ids">
+                        <field name="revision_ids">
+                            <list>
+                                <field name="name"/>
+                                <field name="revision_date"/>
+                                <field name="user_id"/>
+                                <field name="revision_reason"/>
+                            </list>
+                        </field>
+                        <group>
+                            <field name="is_revision"/>
+                            <field name="revision_count"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Sale Order Tree Extension -->
+        <record id="view_sale_order_tree_ptt" model="ir.ui.view">
+            <field name="name">sale.order.tree.ptt</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="event_type_id" optional="show"/>
+                    <field name="event_date" optional="show"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

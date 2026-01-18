@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+        PTT CRM Lost Reasons
+        ====================
+        Standard lost reasons for event service opportunities.
+        Used for analytics and pipeline reporting.
+        -->
+
+        <!-- Price/Budget Reasons -->
+        <record id="lost_reason_price_high" model="crm.lost.reason">
+            <field name="name">Price Too High</field>
+        </record>
+
+        <record id="lost_reason_budget" model="crm.lost.reason">
+            <field name="name">Client Budget Constraints</field>
+        </record>
+
+        <!-- Competition Reasons -->
+        <record id="lost_reason_competitor" model="crm.lost.reason">
+            <field name="name">Booked Competitor</field>
+        </record>
+
+        <record id="lost_reason_competitor_price" model="crm.lost.reason">
+            <field name="name">Competitor Lower Price</field>
+        </record>
+
+        <record id="lost_reason_competitor_package" model="crm.lost.reason">
+            <field name="name">Competitor Better Package</field>
+        </record>
+
+        <!-- Timing/Availability Reasons -->
+        <record id="lost_reason_date_unavailable" model="crm.lost.reason">
+            <field name="name">Date Not Available</field>
+        </record>
+
+        <record id="lost_reason_short_notice" model="crm.lost.reason">
+            <field name="name">Too Short Notice</field>
+        </record>
+
+        <record id="lost_reason_timing_mismatch" model="crm.lost.reason">
+            <field name="name">Timing/Scheduling Issues</field>
+        </record>
+
+        <!-- Event Changes -->
+        <record id="lost_reason_event_cancelled" model="crm.lost.reason">
+            <field name="name">Event Cancelled</field>
+        </record>
+
+        <record id="lost_reason_event_postponed" model="crm.lost.reason">
+            <field name="name">Event Postponed Indefinitely</field>
+        </record>
+
+        <record id="lost_reason_event_downsized" model="crm.lost.reason">
+            <field name="name">Event Downsized/DIY</field>
+        </record>
+
+        <!-- Service Fit -->
+        <record id="lost_reason_service_mismatch" model="crm.lost.reason">
+            <field name="name">Services Don't Match Needs</field>
+        </record>
+
+        <record id="lost_reason_location" model="crm.lost.reason">
+            <field name="name">Location Outside Service Area</field>
+        </record>
+
+        <record id="lost_reason_style_preference" model="crm.lost.reason">
+            <field name="name">Style/Vibe Preference</field>
+        </record>
+
+        <!-- Communication/Response -->
+        <record id="lost_reason_no_response" model="crm.lost.reason">
+            <field name="name">Client Non-Responsive</field>
+        </record>
+
+        <record id="lost_reason_went_silent" model="crm.lost.reason">
+            <field name="name">Client Went Silent</field>
+        </record>
+
+        <record id="lost_reason_slow_response" model="crm.lost.reason">
+            <field name="name">Our Response Too Slow</field>
+        </record>
+
+        <!-- Other -->
+        <record id="lost_reason_other" model="crm.lost.reason">
+            <field name="name">Other (See Notes)</field>
+        </record>
+
+    </data>
+</odoo>

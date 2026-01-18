@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Extend Vendor Assignment Tree View with project management fields -->
+        <record id="view_vendor_assignment_tree_pm" model="ir.ui.view">
+            <field name="name">ptt.project.vendor.assignment.tree.pm</field>
+            <field name="model">ptt.project.vendor.assignment</field>
+            <field name="inherit_id" ref="ptt_business_core.view_project_vendor_assignment_tree"/>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='status']" position="after">
+                    <field name="scheduled_start" optional="show"/>
+                    <field name="scheduled_end" optional="show"/>
+                    <field name="task_count" optional="hide"/>
+                    <field name="performance_rating" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Extend Vendor Assignment Form View with project management fields -->
+        <record id="view_vendor_assignment_form_pm" model="ir.ui.view">
+            <field name="name">ptt.project.vendor.assignment.form.pm</field>
+            <field name="model">ptt.project.vendor.assignment</field>
+            <field name="inherit_id" ref="ptt_business_core.view_project_vendor_assignment_form"/>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                
+                <!-- Add smart button for tasks -->
+                <xpath expr="//sheet" position="before">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_tasks" type="object"
+                                class="oe_stat_button" icon="fa-tasks">
+                            <field name="task_count" widget="statinfo" string="Tasks"/>
+                        </button>
+                    </div>
+                </xpath>
+                
+                <!-- Add scheduling group -->
+                <xpath expr="//field[@name='service_date']" position="after">
+                    <field name="scheduled_start"/>
+                    <field name="scheduled_end"/>
+                </xpath>
+                
+                <!-- Add performance page -->
+                <xpath expr="//page[@name='notes']" position="after">
+                    <page string="Performance" name="performance">
+                        <group>
+                            <group>
+                                <field name="performance_rating" widget="priority"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                        <field name="performance_notes" placeholder="Performance notes and feedback..."/>
+                    </page>
+                    <page string="Related Tasks" name="tasks">
+                        <field name="task_ids" readonly="1">
+                            <list>
+                                <field name="name"/>
+                                <field name="stage_id"/>
+                                <field name="user_ids" widget="many2many_tags"/>
+                                <field name="date_deadline"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+                
+            </field>
+        </record>
+
+    </data>
+</odoo>

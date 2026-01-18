@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Rental Products & Equipment
+        A/V Rentals, Photo Booths, Inflatables, Decor, etc.
+    -->
+    <data noupdate="0">
+        <!-- ============================================ -->
+        <!-- A/V RENTALS - PROJECTOR AND SCREEN          -->
+        <!-- ============================================ -->
+        <record id="product_template_av_projector_screen" model="product.template">
+            <field name="name">A/V Rentals - Projector and Screen</field>
+            <field name="default_code">AV-PROJ</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Projector and screen rental for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- A/V RENTALS - MONITOR                       -->
+        <!-- ============================================ -->
+        <record id="product_template_av_monitor" model="product.template">
+            <field name="name">A/V Rentals - Monitor</field>
+            <field name="default_code">AV-MON</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Monitor rental for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- A/V RENTALS - LED WALL PANEL                -->
+        <!-- ============================================ -->
+        <record id="product_template_av_led_wall" model="product.template">
+            <field name="name">A/V Rentals - LED Wall Panel</field>
+            <field name="default_code">AV-LED</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">LED wall panel rental for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- A/V RENTALS - AUDIO                         -->
+        <!-- With Event Type and Tier variants           -->
+        <!-- ============================================ -->
+        <record id="product_template_av_audio" model="product.template">
+            <field name="name">A/V Rentals - Audio</field>
+            <field name="default_code">AV-AUDIO</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Audio equipment rental. Essentials, Classic, Premier tiers with add-ons.</field>
+        </record>
+        
+        <record id="av_audio_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_av_audio"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="av_audio_service_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_av_audio"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- A/V RENTALS - MISC                          -->
+        <!-- ============================================ -->
+        <record id="product_template_av_misc" model="product.template">
+            <field name="name">A/V Rentals - Misc</field>
+            <field name="default_code">AV-MISC</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Miscellaneous A/V equipment rental.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- A/V TECHNICIAN                              -->
+        <!-- ============================================ -->
+        <record id="product_template_av_technician" model="product.template">
+            <field name="name">A/V Technician</field>
+            <field name="default_code">AV-TECH</field>
+            <field name="categ_id" ref="product_category_av_rentals"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">A/V Technician services. Setup Tech, Camera Operator, Audio Engineer.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- PHOTO BOOTH RENTALS                         -->
+        <!-- ============================================ -->
+        <record id="product_template_photo_booth" model="product.template">
+            <field name="name">Photo Booth Rentals</field>
+            <field name="default_code">BOOTH-SVC</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Photo booth rental services. Standard, Green Screen/AI, 360 Photo Booth options.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- INFLATABLES RENTALS                         -->
+        <!-- ============================================ -->
+        <record id="product_template_inflatables" model="product.template">
+            <field name="name">Inflatables Rentals</field>
+            <field name="default_code">INFLATE</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Inflatable rentals for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- GAMES RENTALS                               -->
+        <!-- ============================================ -->
+        <record id="product_template_games" model="product.template">
+            <field name="name">Games Rentals</field>
+            <field name="default_code">GAMES</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Game rentals for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- DECOR & DECORATIONS                         -->
+        <!-- ============================================ -->
+        <record id="product_template_decor" model="product.template">
+            <field name="name">Decor &amp; Decorations</field>
+            <field name="default_code">DECOR</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Event decor and decoration services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- BALLOON DECOR                               -->
+        <!-- ============================================ -->
+        <record id="product_template_balloon_decor" model="product.template">
+            <field name="name">Balloon Decor</field>
+            <field name="default_code">BALLOON-DECOR</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Balloon decor and arrangements for events.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- EQUIPMENT RENTAL                            -->
+        <!-- ============================================ -->
+        <record id="product_template_equipment_rental" model="product.template">
+            <field name="name">Equipment Rental</field>
+            <field name="default_code">EQUIP</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">General equipment rental. Generator, Tents, Furniture Rentals available.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- FURNITURE RENTALS                           -->
+        <!-- ============================================ -->
+        <record id="product_template_furniture" model="product.template">
+            <field name="name">Furniture Rentals</field>
+            <field name="default_code">FURN</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Furniture rentals for events.</field>
+        </record>
+    </data>
+</odoo>

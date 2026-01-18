@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Partner Form Extension -->
+        <record id="view_partner_form_ptt" model="ir.ui.view">
+            <field name="name">res.partner.form.ptt</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="PTT Info" name="ptt_info">
+                        <group>
+                            <group string="Classification">
+                                <field name="ptt_is_vendor"/>
+                                <field name="ptt_is_client"/>
+                                <field name="ptt_client_type" invisible="not ptt_is_client"/>
+                                <field name="ptt_preferred_contact"/>
+                            </group>
+                            <group string="Vendor Details" invisible="not ptt_is_vendor">
+                                <field name="ptt_vendor_service_types" widget="many2many_tags"/>
+                                <field name="ptt_vendor_rating"/>
+                            </group>
+                        </group>
+                        <group string="Vendor Notes" invisible="not ptt_is_vendor">
+                            <field name="ptt_vendor_notes" nolabel="1" placeholder="Internal notes about this vendor..."/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vendor Service Type Tree -->
+        <record id="view_vendor_service_type_tree" model="ir.ui.view">
+            <field name="name">ptt.vendor.service.type.tree</field>
+            <field name="model">ptt.vendor.service.type</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vendor Service Type Action -->
+        <record id="action_vendor_service_type" model="ir.actions.act_window">
+            <field name="name">Vendor Service Types</field>
+            <field name="res_model">ptt.vendor.service.type</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>

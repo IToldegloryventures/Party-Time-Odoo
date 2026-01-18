@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Register Vendor Wizard Form -->
+        <record id="view_register_vendor_form" model="ir.ui.view">
+            <field name="name">ptt.register.vendor.form</field>
+            <field name="model">ptt.register.vendor</field>
+            <field name="arch" type="xml">
+                <form string="Register Vendor">
+                    <sheet>
+                        <group>
+                            <group string="Partner Information">
+                                <field name="partner_id" 
+                                       options="{'no_create': True}"
+                                       readonly="context.get('default_partner_id')"/>
+                                <field name="is_already_registered" invisible="1"/>
+                            </group>
+                            <group string="Vendor Services">
+                                <field name="service_type_ids" 
+                                       widget="many2many_tags"
+                                       options="{'color_field': 'color'}"/>
+                            </group>
+                        </group>
+                        
+                        <group invisible="is_already_registered">
+                            <group string="Portal Access">
+                                <field name="create_portal_user"/>
+                                <field name="send_invitation" 
+                                       invisible="not create_portal_user"/>
+                            </group>
+                        </group>
+                        
+                        <div class="alert alert-info" role="alert"
+                             invisible="not is_already_registered">
+                            <strong>Note:</strong> This partner is already registered as a vendor.
+                            You can update their service types below.
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_register_vendor" 
+                                string="Register as Vendor" 
+                                type="object" 
+                                class="btn-primary"
+                                invisible="is_already_registered"/>
+                        <button name="action_register_vendor" 
+                                string="Update Vendor" 
+                                type="object" 
+                                class="btn-primary"
+                                invisible="not is_already_registered"/>
+                        <button name="action_send_password_reset"
+                                string="Send Password Reset"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="not is_already_registered"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Action to open wizard from partner -->
+        <record id="action_register_vendor_wizard" model="ir.actions.act_window">
+            <field name="name">Register as Vendor</field>
+            <field name="res_model">ptt.register.vendor</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_partner_id': active_id}</field>
+        </record>
+        
+        <!-- RFQ Select Vendor Wizard Form -->
+        <record id="view_rfq_select_vendor_form" model="ir.ui.view">
+            <field name="name">ptt.rfq.select.vendor.form</field>
+            <field name="model">ptt.rfq.select.vendor</field>
+            <field name="arch" type="xml">
+                <form string="Select Vendor">
+                    <sheet>
+                        <group>
+                            <field name="rfq_id" readonly="1"/>
+                            <field name="quote_ids" invisible="1"/>
+                        </group>
+                        
+                        <group string="Available Quotes">
+                            <field name="selected_quote_id" 
+                                   options="{'no_create': True}">
+                                <list>
+                                    <field name="vendor_id"/>
+                                    <field name="quoted_price"/>
+                                    <field name="estimated_delivery_date"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </group>
+                        
+                        <group string="Selected Quote Details" 
+                               invisible="not selected_quote_id">
+                            <group>
+                                <field name="vendor_name"/>
+                                <field name="quoted_price"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_select_vendor" 
+                                string="Approve Vendor" 
+                                type="object" 
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

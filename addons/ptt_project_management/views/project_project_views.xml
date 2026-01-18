@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Extend Project Form View with Stakeholder and Template Integration -->
+        <record id="view_project_form_ptt_management" model="ir.ui.view">
+            <field name="name">project.project.form.ptt.management</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="ptt_business_core.view_project_form_ptt"/>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                
+                <!-- Add smart buttons for stakeholders -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_stakeholders" type="object"
+                            class="oe_stat_button" icon="fa-users">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="confirmed_stakeholders"/>/<field name="pending_stakeholders" class="ms-1"/>
+                            </span>
+                            <span class="o_stat_text">Stakeholders</span>
+                        </div>
+                    </button>
+                    <button name="action_view_vendors" type="object"
+                            class="oe_stat_button" icon="fa-truck">
+                        <field name="vendor_count" widget="statinfo" string="Vendors"/>
+                    </button>
+                </xpath>
+                
+                <!-- Add Template field (event type is ptt_event_type_id from ptt_enhanced_sales) -->
+                <xpath expr="//field[@name='ptt_crm_lead_id']" position="after">
+                    <field name="template_id" options="{'no_create': True}"/>
+                </xpath>
+                
+                <!-- Add Event Status -->
+                <xpath expr="//field[@name='ptt_event_name']" position="after">
+                    <field name="event_status" widget="badge"
+                           decoration-info="event_status == 'planning'"
+                           decoration-success="event_status in ('confirmed', 'completed')"
+                           decoration-warning="event_status == 'in_progress'"
+                           decoration-danger="event_status == 'cancelled'"/>
+                </xpath>
+                
+                <!-- Add Stakeholders Page -->
+                <xpath expr="//page[@name='ptt_vendors']" position="after">
+                    <page string="Stakeholders" name="stakeholders">
+                        <group>
+                            <group>
+                                <field name="vendor_count" readonly="1"/>
+                                <field name="client_count" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="internal_count" readonly="1"/>
+                            </group>
+                        </group>
+                        <field name="stakeholder_ids" context="{'default_project_id': id}">
+                            <list editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="partner_id"/>
+                                <field name="role"/>
+                                <field name="is_vendor"/>
+                                <field name="is_client"/>
+                                <field name="is_internal"/>
+                                <field name="vendor_category" optional="show"/>
+                                <field name="status" widget="badge"/>
+                                <field name="required_for_event"/>
+                            </list>
+                        </field>
+                        
+                        <div class="oe_button_box mt-3">
+                            <button name="action_confirm_all_stakeholders" type="object"
+                                    string="Confirm All Pending" class="btn-secondary"
+                                    icon="fa-check"/>
+                            <button name="action_send_stakeholder_notifications" type="object"
+                                    string="Send Notifications" class="btn-secondary"
+                                    icon="fa-envelope"/>
+                        </div>
+                    </page>
+                </xpath>
+                
+            </field>
+        </record>
+        
+        <!-- Extend Project Tree View -->
+        <record id="view_project_tree_ptt_management" model="ir.ui.view">
+            <field name="name">project.project.tree.ptt.management</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="ptt_business_core.view_project_tree_ptt"/>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ptt_event_date']" position="after">
+                    <field name="event_status" widget="badge" optional="show"
+                           decoration-info="event_status == 'planning'"
+                           decoration-success="event_status in ('confirmed', 'completed')"
+                           decoration-warning="event_status == 'in_progress'"
+                           decoration-danger="event_status == 'cancelled'"/>
+                    <field name="vendor_count" optional="hide"/>
+                    <field name="confirmed_stakeholders" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

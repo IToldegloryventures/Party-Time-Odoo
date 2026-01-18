@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Project Vendor Assignment Tree -->
+        <record id="view_project_vendor_assignment_tree" model="ir.ui.view">
+            <field name="name">ptt.project.vendor.assignment.tree</field>
+            <field name="model">ptt.project.vendor.assignment</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="project_id" column_invisible="True"/>
+                    <field name="service_type"/>
+                    <field name="vendor_id"/>
+                    <field name="vendor_name"/>
+                    <field name="estimated_cost"/>
+                    <field name="actual_cost"/>
+                    <field name="cost_variance"/>
+                    <field name="status"/>
+                    <field name="service_date"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Project Vendor Assignment Form -->
+        <record id="view_project_vendor_assignment_form" model="ir.ui.view">
+            <field name="name">ptt.project.vendor.assignment.form</field>
+            <field name="model">ptt.project.vendor.assignment</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="status" widget="statusbar" options="{'clickable': '1'}"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group string="Service">
+                                <field name="project_id"/>
+                                <field name="service_type"/>
+                                <field name="description"/>
+                            </group>
+                            <group string="Vendor">
+                                <field name="vendor_id"/>
+                                <field name="vendor_contact"/>
+                                <field name="vendor_phone"/>
+                                <field name="vendor_email"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Costs">
+                                <field name="estimated_cost"/>
+                                <field name="actual_cost"/>
+                                <field name="cost_variance"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Dates">
+                                <field name="contract_date"/>
+                                <field name="service_date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Notes" name="notes">
+                                <group>
+                                    <field name="notes"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Project Vendor Assignment Action -->
+        <record id="action_project_vendor_assignment" model="ir.actions.act_window">
+            <field name="name">Vendor Assignments</field>
+            <field name="res_model">ptt.project.vendor.assignment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first vendor assignment
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

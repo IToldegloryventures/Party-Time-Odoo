@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ptt_vendor_document_user,ptt.vendor.document user,model_ptt_vendor_document,base.group_user,1,1,1,0
+access_ptt_vendor_document_manager,ptt.vendor.document manager,model_ptt_vendor_document,project.group_project_manager,1,1,1,1
+access_ptt_vendor_document_portal,ptt.vendor.document portal,model_ptt_vendor_document,base.group_portal,1,0,0,0
+access_ptt_vendor_rfq_user,ptt.vendor.rfq user,model_ptt_vendor_rfq,base.group_user,1,1,1,0
+access_ptt_vendor_rfq_manager,ptt.vendor.rfq manager,model_ptt_vendor_rfq,project.group_project_manager,1,1,1,1
+access_ptt_vendor_rfq_portal,ptt.vendor.rfq portal,model_ptt_vendor_rfq,base.group_portal,1,0,0,0
+access_ptt_vendor_quote_history_user,ptt.vendor.quote.history user,model_ptt_vendor_quote_history,base.group_user,1,1,1,0
+access_ptt_vendor_quote_history_manager,ptt.vendor.quote.history manager,model_ptt_vendor_quote_history,project.group_project_manager,1,1,1,1
+access_ptt_vendor_quote_history_portal,ptt.vendor.quote.history portal,model_ptt_vendor_quote_history,base.group_portal,1,1,1,0
+access_ptt_register_vendor_user,ptt.register.vendor user,model_ptt_register_vendor,base.group_user,1,1,1,1
+access_ptt_rfq_select_vendor_user,ptt.rfq.select.vendor user,model_ptt_rfq_select_vendor,base.group_user,1,1,1,1

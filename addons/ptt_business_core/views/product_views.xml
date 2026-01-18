@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Product Views - PTT Extensions
+        Adds variant-specific fields for service configuration
+    -->
+    
+    <!-- ============================================ -->
+    <!-- PRODUCT.PRODUCT FORM VIEW EXTENSION         -->
+    <!-- Shows ptt_* fields on variant form          -->
+    <!-- ============================================ -->
+    <record id="product_product_form_view_ptt" model="ir.ui.view">
+        <field name="name">product.product.form.ptt</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="PTT Service Configuration" name="ptt_service_config">
+                    <group>
+                        <group string="Service Requirements">
+                            <field name="ptt_min_hours"/>
+                            <field name="ptt_guest_count_min"/>
+                            <field name="ptt_guest_count_max"/>
+                        </group>
+                        <group string="Pricing Guide (Internal)">
+                            <field name="ptt_price_per_hour_min"/>
+                            <field name="ptt_price_per_hour_max"/>
+                            <field name="ptt_cost_per_hour_min"/>
+                            <field name="ptt_cost_per_hour_max"/>
+                        </group>
+                    </group>
+                    <group string="Package Description">
+                        <field name="ptt_package_includes" nolabel="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- PRODUCT.PRODUCT TREE VIEW - Add Min Hours   -->
+    <!-- ============================================ -->
+    <record id="product_product_tree_view_ptt" model="ir.ui.view">
+        <field name="name">product.product.tree.ptt</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lst_price']" position="after">
+                <field name="ptt_min_hours" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- PRODUCT.TEMPLATE FORM - Info about variants -->
+    <!-- ============================================ -->
+    <record id="product_template_form_view_ptt" model="ir.ui.view">
+        <field name="name">product.template.form.ptt</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="PTT Variants Info" name="ptt_variants_info" 
+                      invisible="product_variant_count &lt;= 1">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Service Variant Configuration:</strong>
+                        <p>This product template has <field name="product_variant_count" class="oe_inline"/> variants 
+                        (Event Type × Service Tier combinations).</p>
+                        <p>To configure per-variant settings like <strong>Minimum Hours</strong>, 
+                        <strong>Guest Count Ranges</strong>, and <strong>Pricing Guides</strong>, 
+                        go to the individual product variants.</p>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

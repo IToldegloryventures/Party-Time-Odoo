@@ -1,10 +1,19 @@
+# -*- coding: utf-8 -*-
 from odoo import models, fields
+
+from odoo.addons.ptt_business_core.constants import SERVICE_TYPES
 
 
 class PttCrmVendorEstimate(models.Model):
-    """Estimated vendor costs for CRM opportunities."""
+    """Estimated vendor costs for CRM opportunities - planning stage."""
     _name = "ptt.crm.vendor.estimate"
     _description = "CRM Lead Vendor Cost Estimate"
+    _order = "service_type, id"
+
+    _positive_estimated_cost = models.Constraint(
+        "CHECK (estimated_cost >= 0)",
+        "Estimated cost cannot be negative.",
+    )
 
     crm_lead_id = fields.Many2one(
         "crm.lead",
@@ -14,27 +23,14 @@ class PttCrmVendorEstimate(models.Model):
         index=True,
     )
     service_type = fields.Selection(
-        [
-            ("dj", "DJ/MC Services"),
-            ("photovideo", "Photo/Video"),
-            ("live_entertainment", "Live Entertainment"),
-            ("lighting", "Lighting/AV"),
-            ("decor", "Decor/Thematic Design"),
-            ("photobooth", "Photo Booth"),
-            ("caricature", "Caricature Artists"),
-            ("casino", "Casino Services"),
-            ("catering", "Catering"),
-            ("transportation", "Transportation"),
-            ("rentals", "Rentals (Other)"),
-            ("staffing", "Staffing"),
-            ("venue_sourcing", "Venue Sourcing"),
-            ("coordination", "Event Coordination"),
-            ("other", "Other"),
-        ],
+        selection=SERVICE_TYPES,
         string="Service Type",
         required=True,
     )
-    vendor_name = fields.Char(string="Vendor Name (Estimated)", help="Name of vendor we expect to use")
+    vendor_name = fields.Char(
+        string="Vendor Name (Estimated)",
+        help="Name of vendor we expect to use"
+    )
     estimated_cost = fields.Monetary(
         string="Estimated Cost",
         currency_field="currency_id",
@@ -48,6 +44,5 @@ class PttCrmVendorEstimate(models.Model):
         store=True,
         readonly=True,
     )
-
-    _order = "id"
+    notes = fields.Text(string="Notes")
 

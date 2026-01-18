@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- CRM Lead Form Extension -->
+        <record id="view_crm_lead_form_ptt" model="ir.ui.view">
+            <field name="name">crm.lead.form.ptt</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                
+                <!-- Add stat buttons -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_sale_orders" type="object"
+                        class="oe_stat_button" icon="fa-shopping-cart"
+                        invisible="ptt_sale_order_count == 0 or type == 'lead'">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value"><field name="ptt_sale_order_count"/></span>
+                            <span class="o_stat_text">Sale Orders</span>
+                        </div>
+                    </button>
+                    <button name="action_view_invoices" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="ptt_invoice_count == 0 or type == 'lead'">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value"><field name="ptt_invoice_count"/></span>
+                            <span class="o_stat_text">Invoices</span>
+                        </div>
+                    </button>
+                    <button name="action_view_project" type="object"
+                        class="oe_stat_button" icon="fa-tasks"
+                        invisible="not ptt_project_id">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value"><field name="ptt_project_count"/></span>
+                            <span class="o_stat_text">Project</span>
+                        </div>
+                    </button>
+                </xpath>
+
+                <!-- Add Create Project button -->
+                <xpath expr="//button[@name='action_set_won_rainbowman']" position="before">
+                    <button name="action_create_project" string="Create Project" type="object"
+                        class="oe_highlight" invisible="ptt_project_id or type == 'lead'"/>
+                </xpath>
+
+                <!-- Add PTT Event Pages -->
+                <xpath expr="//notebook" position="inside">
+                    
+                    <!-- Contact Information -->
+                    <page string="Contact Info" name="ptt_contact">
+                        <group>
+                            <group>
+                                <field name="ptt_date_of_call"/>
+                                <field name="ptt_lead_type"/>
+                                <field name="ptt_preferred_contact"/>
+                            </group>
+                            <group string="Secondary Contact">
+                                <field name="ptt_secondary_contact_name"/>
+                                <field name="ptt_secondary_contact_phone"/>
+                                <field name="ptt_secondary_contact_email"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Event Overview -->
+                    <page string="Event Details" name="ptt_event">
+                        <group>
+                            <group>
+                                <field name="ptt_event_name"/>
+                                <field name="ptt_event_goal"/>
+                                <field name="ptt_event_date"/>
+                                <field name="ptt_event_time"/>
+                                <field name="ptt_event_duration"/>
+                                <field name="ptt_guest_count"/>
+                            </group>
+                            <group string="Venue">
+                                <field name="ptt_venue_booked"/>
+                                <field name="ptt_venue_name"/>
+                                <field name="ptt_location_type"/>
+                                <field name="ptt_venue_address"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Services -->
+                    <page string="Services" name="ptt_services">
+                        <group>
+                            <group string="Entertainment">
+                                <field name="ptt_service_dj"/>
+                                <field name="ptt_service_live_entertainment"/>
+                                <field name="ptt_service_photobooth"/>
+                                <field name="ptt_service_casino"/>
+                                <field name="ptt_service_caricature"/>
+                            </group>
+                            <group string="Production">
+                                <field name="ptt_service_photovideo"/>
+                                <field name="ptt_service_lighting"/>
+                                <field name="ptt_service_decor"/>
+                            </group>
+                            <group string="Logistics">
+                                <field name="ptt_service_venue_sourcing"/>
+                                <field name="ptt_service_catering"/>
+                                <field name="ptt_service_transportation"/>
+                                <field name="ptt_service_rentals"/>
+                                <field name="ptt_service_staffing"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Service Details (conditional) -->
+                        <group string="DJ Details" invisible="not ptt_service_dj">
+                            <field name="ptt_dj_music_styles"/>
+                            <field name="ptt_dj_mc_needed"/>
+                            <field name="ptt_dj_karaoke"/>
+                        </group>
+                        <group string="Photo Booth Details" invisible="not ptt_service_photobooth">
+                            <field name="ptt_photobooth_type"/>
+                            <field name="ptt_photobooth_branding"/>
+                        </group>
+                        <group string="Casino Details" invisible="not ptt_service_casino">
+                            <field name="ptt_casino_games"/>
+                            <field name="ptt_casino_player_count"/>
+                        </group>
+                    </page>
+
+                    <!-- Service Lines (Structured Quote Building) -->
+                    <page string="Service Lines" name="ptt_service_lines">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Build Your Quote</strong> - 
+                            Add services with tier selections and pricing. 
+                            These will be used to create the formal quotation.
+                        </div>
+                        
+                        <!-- Service Lines Table -->
+                        <field name="ptt_service_line_ids" nolabel="1">
+                            <list editable="bottom" decoration-warning="hours &lt; product_min_hours">
+                                <field name="sequence" widget="handle"/>
+                                <field name="service_type"/>
+                                <field name="service_tier" widget="badge"
+                                       decoration-info="service_tier == 'essentials'"
+                                       decoration-success="service_tier == 'classic'"
+                                       decoration-warning="service_tier == 'premier'"/>
+                                <field name="product_id" optional="show"/>
+                                <field name="name"/>
+                                <field name="hours"/>
+                                <field name="product_min_hours" string="Min Hrs" readonly="1" optional="show"/>
+                                <field name="unit_price"/>
+                                <field name="subtotal" sum="Total"/>
+                                <field name="notes" optional="hide"/>
+                            </list>
+                        </field>
+                        
+                        <!-- Service Lines Summary -->
+                        <group class="oe_subtotal_footer">
+                            <field name="ptt_service_lines_total" widget="monetary" 
+                                   class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </page>
+
+                    <!-- Budget & Vendors -->
+                    <page string="Budget &amp; Vendors" name="ptt_budget">
+                        <!-- Financial Summary Dashboard -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-subtitle mb-2">Est. Client Revenue</h6>
+                                        <h3 class="card-title mb-0">
+                                            <field name="ptt_estimated_client_total" widget="monetary" nolabel="1"/>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-warning">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-subtitle mb-2">Est. Vendor Costs</h6>
+                                        <h3 class="card-title mb-0">
+                                            <field name="ptt_estimated_vendor_total" widget="monetary" nolabel="1"/>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-subtitle mb-2">Est. Margin</h6>
+                                        <h3 class="card-title mb-0">
+                                            <field name="ptt_estimated_margin" widget="monetary" nolabel="1"/>
+                                            <small class="ms-2">(<field name="ptt_margin_percent" nolabel="1"/>%)</small>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="ptt_budget_range"/>
+                                <field name="ptt_services_already_booked"/>
+                            </group>
+                            <group string="Finance Contact">
+                                <field name="ptt_finance_contact_name"/>
+                                <field name="ptt_finance_contact_phone"/>
+                                <field name="ptt_finance_contact_email"/>
+                            </group>
+                        </group>
+                        
+                        <separator string="Vendor Cost Estimates"/>
+                        <field name="ptt_vendor_estimate_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="service_type"/>
+                                <field name="vendor_name"/>
+                                <field name="estimated_cost"/>
+                                <field name="notes"/>
+                            </list>
+                        </field>
+                        
+                        <group>
+                            <group>
+                                <field name="ptt_estimated_vendor_total"/>
+                                <field name="ptt_estimated_client_total"/>
+                            </group>
+                            <group>
+                                <field name="ptt_estimated_margin"/>
+                                <field name="ptt_margin_percent"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Follow-up -->
+                    <page string="Follow-up" name="ptt_followup">
+                        <group>
+                            <group>
+                                <field name="ptt_followup_email_sent"/>
+                                <field name="ptt_proposal_sent"/>
+                                <field name="ptt_next_contact_date"/>
+                            </group>
+                            <group>
+                                <field name="ptt_project_id" readonly="1"/>
+                                <field name="ptt_payment_status"/>
+                            </group>
+                        </group>
+                    </page>
+
+                </xpath>
+            </field>
+        </record>
+
+        <!-- CRM Lead Tree Extension -->
+        <record id="view_crm_lead_tree_ptt" model="ir.ui.view">
+            <field name="name">crm.lead.tree.ptt</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="ptt_event_date" optional="show"/>
+                    <field name="ptt_guest_count" optional="hide"/>
+                    <field name="ptt_payment_status" optional="show"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- CRM Lead Search Extension -->
+        <record id="view_crm_lead_search_ptt" model="ir.ui.view">
+            <field name="name">crm.lead.search.ptt</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="ptt_event_name"/>
+                    <field name="ptt_venue_name"/>
+                </field>
+                <xpath expr="//filter[@name='filter_won_status_won']" position="after">
+                    <separator/>
+                    <filter name="filter_future_events" string="Future Events" 
+                            domain="[('ptt_event_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter name="filter_past_events" string="Past Events" 
+                            domain="[('ptt_event_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <filter name="filter_dj" string="DJ Services" domain="[('ptt_service_dj', '=', True)]"/>
+                    <filter name="filter_photo" string="Photo/Video" domain="[('ptt_service_photovideo', '=', True)]"/>
+                    <filter name="filter_lighting" string="Lighting/AV" domain="[('ptt_service_lighting', '=', True)]"/>
+                </xpath>
+                <xpath expr="//group[filter[@name='salesperson']]" position="inside">
+                    <filter string="Event Date" name="group_event_date" context="{'group_by': 'ptt_event_date'}"/>
+                    <filter string="Payment Status" name="group_payment" context="{'group_by': 'ptt_payment_status'}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

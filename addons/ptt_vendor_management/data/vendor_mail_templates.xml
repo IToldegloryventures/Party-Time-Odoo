@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Mail Template: RFQ Sent to Vendors -->
+        <record id="email_template_vendor_rfq" model="mail.template">
+            <field name="name">Vendor RFQ - Request for Quote</field>
+            <field name="model_id" ref="model_ptt_vendor_rfq"/>
+            <field name="subject">{{ object.company_id.name }} - Request for Quote: {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email or object.user_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.vendor_ids.mapped('email') | join(',') }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear Vendor,
+        <br/><br/>
+        We are pleased to invite you to submit a quote for the following service request:
+        <br/><br/>
+        <strong>RFQ Reference:</strong> <t t-out="object.name"/><br/>
+        <strong>Service Type:</strong> <t t-out="object.service_type or 'N/A'"/><br/>
+        <strong>Event:</strong> <t t-out="object.crm_lead_id.name if object.crm_lead_id else (object.project_id.name if object.project_id else 'N/A')"/><br/>
+        <strong>Event Date:</strong> <t t-out="object.event_date and object.event_date.strftime('%B %d, %Y') or 'TBD'"/><br/>
+        <strong>Deadline for Quotes:</strong> <t t-out="object.closing_date and object.closing_date.strftime('%B %d, %Y') or 'As soon as possible'"/><br/>
+        <br/>
+        <strong>Description:</strong><br/>
+        <t t-out="object.service_description or 'Please see attached documents for details.'"/>
+        <br/><br/>
+        Please log in to your vendor portal to submit your quote:
+        <br/>
+        <a href="/my/vendor/rfq" style="background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+            View RFQ in Portal
+        </a>
+        <br/><br/>
+        If you have any questions, please don't hesitate to contact us.
+        <br/><br/>
+        Best regards,<br/>
+        <t t-out="object.user_id.name or object.company_id.name"/>
+        <br/><br/>
+        <strong><t t-out="object.company_id.name"/></strong><br/>
+        <t t-if="object.company_id.phone">Phone: <t t-out="object.company_id.phone"/><br/></t>
+        <t t-if="object.company_id.email">Email: <t t-out="object.company_id.email"/></t>
+    </p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Mail Template: Vendor Registration Welcome -->
+        <record id="email_template_vendor_welcome" model="mail.template">
+            <field name="name">Vendor Portal - Welcome Email</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Welcome to {{ object.company_id.name or 'Party Time Texas' }} Vendor Portal</field>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.name"/>,
+        <br/><br/>
+        Welcome to the <strong><t t-out="object.company_id.name or 'Party Time Texas'"/></strong> Vendor Portal!
+        <br/><br/>
+        Your vendor account has been successfully created. You can now:
+        <ul>
+            <li>View and respond to Request for Quotes (RFQs)</li>
+            <li>Track your vendor assignments</li>
+            <li>Update your service information and availability</li>
+            <li>Communicate with our event coordinators</li>
+        </ul>
+        <br/>
+        <strong>Your Registered Services:</strong><br/>
+        <t t-out="', '.join(object.ptt_vendor_service_types.mapped('name')) if object.ptt_vendor_service_types else 'Please update your service offerings in the portal'"/>
+        <br/><br/>
+        Click below to access your vendor portal:
+        <br/>
+        <a href="/my/home" style="background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+            Access Vendor Portal
+        </a>
+        <br/><br/>
+        If you haven't set your password yet, please click "Reset Password" on the login page.
+        <br/><br/>
+        Best regards,<br/>
+        <strong><t t-out="object.company_id.name or 'Party Time Texas'"/></strong>
+    </p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Mail Template: Quote Accepted Notification -->
+        <record id="email_template_quote_accepted" model="mail.template">
+            <field name="name">Vendor Quote - Accepted Notification</field>
+            <field name="model_id" ref="model_ptt_vendor_quote_history"/>
+            <field name="subject">Congratulations! Your Quote for {{ object.rfq_id.name }} Has Been Accepted</field>
+            <field name="email_from">{{ (object.rfq_id.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.vendor_id.email }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.vendor_id.name"/>,
+        <br/><br/>
+        Great news! Your quote for <strong><t t-out="object.rfq_id.name"/></strong> has been accepted.
+        <br/><br/>
+        <strong>Quote Details:</strong><br/>
+        <strong>Service:</strong> <t t-out="object.rfq_id.service_type or 'Event Service'"/><br/>
+        <strong>Event:</strong> <t t-out="object.rfq_id.crm_lead_id.name if object.rfq_id.crm_lead_id else (object.rfq_id.project_id.name if object.rfq_id.project_id else 'N/A')"/><br/>
+        <strong>Event Date:</strong> <t t-out="object.rfq_id.event_date and object.rfq_id.event_date.strftime('%B %d, %Y') or 'TBD'"/><br/>
+        <strong>Your Quoted Amount:</strong> $<t t-out="'{:,.2f}'.format(object.quoted_price)"/><br/>
+        <br/>
+        A vendor assignment has been created for you. Please check your portal for complete details and any required next steps.
+        <br/><br/>
+        <a href="/my/vendor/assignments" style="background-color: #28a745; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+            View Your Assignments
+        </a>
+        <br/><br/>
+        Thank you for being a valued vendor partner!
+        <br/><br/>
+        Best regards,<br/>
+        <strong><t t-out="object.rfq_id.company_id.name or 'Party Time Texas'"/></strong>
+    </p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Mail Template: Assignment Created Notification -->
+        <record id="email_template_assignment_created" model="mail.template">
+            <field name="name">Vendor Assignment - Created Notification</field>
+            <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+            <field name="subject">New Vendor Assignment: {{ object.project_id.name }} - {{ object.service_type }}</field>
+            <field name="email_from">{{ (object.project_id.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.vendor_id.email }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.vendor_id.name"/>,
+        <br/><br/>
+        You have been assigned to provide services for the following event:
+        <br/><br/>
+        <strong>Assignment Details:</strong><br/>
+        <strong>Event/Project:</strong> <t t-out="object.project_id.name"/><br/>
+        <strong>Service Type:</strong> <t t-out="object.service_type"/><br/>
+        <strong>Event Date:</strong> <t t-out="object.project_id.ptt_event_date.strftime('%B %d, %Y') if object.project_id.ptt_event_date else 'TBD'"/><br/>
+        <strong>Status:</strong> <t t-out="object.status.replace('_', ' ').title()"/><br/>
+        <strong>Estimated Amount:</strong> $<t t-out="'{:,.2f}'.format(object.estimated_cost or 0)"/><br/>
+        <br/>
+        <strong>Notes:</strong><br/>
+        <t t-out="object.notes or 'No additional notes.'"/>
+        <br/><br/>
+        Please log in to your vendor portal to confirm this assignment and view complete event details.
+        <br/><br/>
+        <a href="/my/vendor/assignments" style="background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+            View Assignment Details
+        </a>
+        <br/><br/>
+        Best regards,<br/>
+        <strong><t t-out="object.project_id.company_id.name or 'Party Time Texas'"/></strong>
+    </p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

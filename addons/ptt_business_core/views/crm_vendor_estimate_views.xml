@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- CRM Vendor Estimate Tree -->
+        <record id="view_crm_vendor_estimate_tree" model="ir.ui.view">
+            <field name="name">ptt.crm.vendor.estimate.tree</field>
+            <field name="model">ptt.crm.vendor.estimate</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="crm_lead_id" column_invisible="True"/>
+                    <field name="service_type"/>
+                    <field name="vendor_name"/>
+                    <field name="estimated_cost"/>
+                    <field name="notes"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- CRM Vendor Estimate Form -->
+        <record id="view_crm_vendor_estimate_form" model="ir.ui.view">
+            <field name="name">ptt.crm.vendor.estimate.form</field>
+            <field name="model">ptt.crm.vendor.estimate</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="crm_lead_id" readonly="1"/>
+                                <field name="service_type"/>
+                                <field name="vendor_name"/>
+                            </group>
+                            <group>
+                                <field name="estimated_cost"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

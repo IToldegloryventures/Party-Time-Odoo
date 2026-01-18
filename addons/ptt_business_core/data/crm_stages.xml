@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+    PTT CRM Pipeline Stages
+    =======================
+    Custom stages for Party Time Texas event sales pipeline.
+    
+    Pipeline Flow:
+    New → Qualified → Proposal Sent → Contract Sent → Booked (Won)
+    
+    Note: These use forcecreate="False" to avoid duplicates if stages
+    already exist with the same XML ID from a previous installation.
+    -->
+
+    <!-- 
+    Proposal Sent Stage
+    Triggered automatically when quotation is sent to customer via sale.order.action_quotation_sent()
+    -->
+    <record model="crm.stage" id="stage_ptt_proposal_sent" forcecreate="False">
+        <field name="name">Proposal Sent</field>
+        <field name="sequence">30</field>
+        <field name="color">4</field>
+        <field name="requirements">Quotation has been sent to the customer. Awaiting response.</field>
+    </record>
+
+    <!-- 
+    Contract Sent Stage
+    Triggered when a formal contract is sent to customer for signature
+    -->
+    <record model="crm.stage" id="stage_ptt_contract_sent" forcecreate="False">
+        <field name="name">Contract Sent</field>
+        <field name="sequence">50</field>
+        <field name="color">6</field>
+        <field name="requirements">Contract has been sent for customer signature. Awaiting signed contract and deposit.</field>
+    </record>
+
+    <!-- 
+    Booked Stage (Won)
+    Triggered when sale order is confirmed OR when deposit payment is received
+    This is a "Won" stage with is_won=True
+    -->
+    <record model="crm.stage" id="stage_ptt_booked" forcecreate="False">
+        <field name="name">Booked</field>
+        <field name="sequence">70</field>
+        <field name="is_won">True</field>
+        <field name="color">10</field>
+        <field name="requirements">Customer has confirmed and event is officially booked. Project should be created.</field>
+    </record>
+
+    <!--
+    Lost Stage
+    Used when opportunity is lost. Standard Odoo has this but we define our own
+    with PTT-specific messaging.
+    -->
+    <record model="crm.stage" id="stage_ptt_lost" forcecreate="False">
+        <field name="name">Lost</field>
+        <field name="sequence">99</field>
+        <field name="fold">True</field>
+        <field name="color">1</field>
+        <field name="requirements">Opportunity was not converted. Record lost reason for analytics.</field>
+    </record>
+
+</odoo>
