@@ -37,12 +37,6 @@
                     </button>
                 </xpath>
 
-                <!-- Add Create Project button -->
-                <xpath expr="//button[@name='action_set_won_rainbowman']" position="before">
-                    <button name="action_create_project" string="Create Project" type="object"
-                        class="oe_highlight" invisible="ptt_project_id or type == 'lead'"/>
-                </xpath>
-
                 <!-- Add PTT Event Pages -->
                 <xpath expr="//notebook" position="inside">
                     
