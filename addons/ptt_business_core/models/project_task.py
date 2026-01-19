@@ -10,11 +10,10 @@ class ProjectTask(models.Model):
     NOTE: All event context (date, venue, client, etc.) should be accessed 
     via task.project_id - no need for redundant related fields.
     
-    Access event data via: task.project_id.x_studio_event_date, task.project_id.x_studio_venue_name, etc.
+    Access event data via: task.project_id.ptt_event_date, task.project_id.ptt_venue_name, etc.
     
     FIELD NAMING:
-    - Genuine PTT fields use ptt_ prefix (Party Time Texas)
-    - Studio fields (x_studio_*) are used directly without aliases
+    - All PTT fields use ptt_ prefix (Party Time Texas)
     """
     _inherit = "project.task"
 

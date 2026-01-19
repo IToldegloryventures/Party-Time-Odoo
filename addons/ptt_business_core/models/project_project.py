@@ -38,33 +38,35 @@ class ProjectProject(models.Model):
         index=True,
         help="Unique event identifier (e.g., EVT-2026-0001). Links to CRM Lead, Sale Orders, Tasks.",
     )
-    # NOTE: Event type is now managed via ptt_event_type_id (Many2one to sale.order.type)
-    # which links to one of 3 types: Corporate, Social, Wedding
-    # The deprecated ptt_event_type selection field has been removed.
     
-    # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
-    # x_studio_venue_address) are defined on CRM Lead. Mirror them here so
-    # project views and searches can use them safely in pre_prod.
-    # NOTE: Using fields.Field (generic) to let Odoo infer type from related source
-    x_studio_event_name = fields.Char(
-        related="ptt_crm_lead_id.x_studio_event_name",
-        store=True,
-        readonly=True,
+    # Event Type (same 3 types as CRM Lead and Product Variants)
+    ptt_event_type = fields.Selection(
+        selection=[
+            ("corporate", "Corporate"),
+            ("social", "Social"),
+            ("wedding", "Wedding"),
+        ],
+        string="Event Type",
+        help="Event classification copied from CRM Lead.",
     )
-    x_studio_event_date = fields.Date(
-        related="ptt_crm_lead_id.x_studio_event_date",
-        store=True,
-        readonly=True,
+    
+    # Event details - proper ptt_ prefixed fields
+    ptt_event_name = fields.Char(
+        string="Event Name",
+        help="Name or title of the event.",
     )
-    x_studio_venue_name = fields.Char(
-        related="ptt_crm_lead_id.x_studio_venue_name",
-        store=True,
-        readonly=True,
+    ptt_event_date = fields.Date(
+        string="Event Date",
+        index=True,
+        help="Scheduled date for the event.",
     )
-    x_studio_venue_address = fields.Text(
-        related="ptt_crm_lead_id.x_studio_venue_address",
-        store=True,
-        readonly=True,
+    ptt_venue_name = fields.Char(
+        string="Venue Name",
+        help="Name of the venue where the event will be held.",
+    )
+    ptt_venue_address = fields.Text(
+        string="Venue Address",
+        help="Full address of the event venue.",
     )
     
     ptt_guest_count = fields.Integer(string="Guest Count")
@@ -198,7 +200,7 @@ class ProjectProject(models.Model):
     def _cron_send_event_reminders_10_day(self):
         """Cron job: Send 10-day event reminders to project managers.
         
-        Finds all event projects with x_studio_event_date exactly 10 days from today
+        Finds all event projects with ptt_event_date exactly 10 days from today
         and sends reminder emails to their project managers. The 10-day mark
         is when most setup preparation happens.
         
@@ -210,7 +212,7 @@ class ProjectProject(models.Model):
     def _cron_send_event_reminders_3_day(self):
         """Cron job: Send 3-day urgent event reminders to project managers.
         
-        Finds all event projects with x_studio_event_date exactly 3 days from today
+        Finds all event projects with ptt_event_date exactly 3 days from today
         and sends urgent reminder emails. The 3-day mark is for final
         verification and last-minute preparations.
         
@@ -231,7 +233,7 @@ class ProjectProject(models.Model):
         
         # Find projects with events on target date
         projects = self.search([
-            ('x_studio_event_date', '=', target_date),
+            ('ptt_event_date', '=', target_date),
             ('active', '=', True),
         ])
         
@@ -301,9 +303,9 @@ class ProjectProject(models.Model):
         self.ensure_one()
         missing = []
         
-        if not self.x_studio_venue_name:
+        if not self.ptt_venue_name:
             missing.append(_("Venue name not set"))
-        if not self.x_studio_venue_address:
+        if not self.ptt_venue_address:
             missing.append(_("Venue address not set"))
         if not self.ptt_event_start_time:
             missing.append(_("Event start time not set"))

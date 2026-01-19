@@ -61,9 +61,8 @@ class PttCrmServiceLine(models.Model):
     service_tier = fields.Selection(
         selection=SERVICE_TIERS,
         string="Service Tier",
-        default="classic",
         required=True,
-        help="Essentials = Basic package, Classic = Standard, Premier = Premium",
+        help="Essential = Basic package, Classic = Standard, Premier = Premium",
     )
     name = fields.Char(
         string="Description",
@@ -135,16 +134,20 @@ class PttCrmServiceLine(models.Model):
     # =========================================================================
     @api.depends('product_id', 'service_type', 'service_tier')
     def _compute_name(self):
-        """Generate description from product or service type + tier."""
+        """Generate description from service type + tier, not product name."""
         tier_labels = dict(SERVICE_TIERS)
         type_labels = dict(SERVICE_TYPES)
         for line in self:
-            if line.product_id:
-                line.name = line.product_id.display_name
+            # ALWAYS prioritize service_type + tier for display
+            if line.service_type and line.service_tier:
+                type_name = type_labels.get(line.service_type, line.service_type)
+                tier_name = tier_labels.get(line.service_tier, line.service_tier)
+                line.name = f"{type_name} - {tier_name}"
             elif line.service_type:
                 type_name = type_labels.get(line.service_type, line.service_type)
-                tier_name = tier_labels.get(line.service_tier, '')
-                line.name = f"{type_name} - {tier_name}" if tier_name else type_name
+                line.name = type_name
+            elif line.product_id:
+                line.name = line.product_id.display_name
             else:
                 line.name = "New Service"
 

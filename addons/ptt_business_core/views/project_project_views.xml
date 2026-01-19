@@ -16,10 +16,10 @@
                             <group string="Event Identity">
                                 <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_crm_lead_id"/>
-                                <field name="x_studio_event_name"/>
+                                <field name="ptt_event_name"/>
                             </group>
                             <group string="Event Schedule">
-                                <field name="x_studio_event_date"/>
+                                <field name="ptt_event_date"/>
                                 <field name="ptt_event_start_time"/>
                                 <field name="ptt_event_end_time"/>
                                 <field name="ptt_total_hours"/>
@@ -28,9 +28,9 @@
                         </group>
                         <group>
                             <group string="Venue">
-                                <field name="x_studio_venue_name"/>
+                                <field name="ptt_venue_name"/>
                                 <field name="ptt_location_type"/>
-                                <field name="x_studio_venue_address"/>
+                                <field name="ptt_venue_address"/>
                             </group>
                         </group>
                     </page>
@@ -131,7 +131,7 @@
             <field name="inherit_id" ref="project.view_project"/>
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="x_studio_event_date" optional="show"/>
+                    <field name="ptt_event_date" optional="show"/>
                     <field name="ptt_guest_count" optional="hide"/>
                     <field name="ptt_client_total" string="Revenue" optional="show" widget="monetary"/>
                     <field name="ptt_actual_margin" string="Margin" optional="show" widget="monetary"

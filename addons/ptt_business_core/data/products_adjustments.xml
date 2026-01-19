@@ -84,15 +84,26 @@
         <!-- ADDITIONAL INSURED COVERAGE EXTENSION       -->
         <!-- ============================================ -->
         <record id="product_template_additional_insured" model="product.template">
-            <field name="name">* Additional Insured Coverage Extension</field>
+            <field name="name">Additional Insured Coverage Extension</field>
             <field name="default_code">INSURED</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
+            <field name="list_price">158.0</field>
+            <field name="standard_price">105.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Additional insured coverage extension fee.</field>
+            <field name="description_sale">Additional insured coverage for venue requirements.</field>
+        </record>
+        <record id="additional_insured_event_type_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_additional_insured"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="additional_insured_tier_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_additional_insured"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
         <!-- ============================================ -->
@@ -186,6 +197,16 @@
             <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="description_sale">Miscellaneous untaxed event entertainment services.</field>
         </record>
+        <record id="misc_untaxed_event_type_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_misc_untaxed"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="misc_untaxed_tier_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_misc_untaxed"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
 
         <!-- ============================================ -->
         <!-- MISC EVENT SERVICES (TAXED)                 -->
@@ -200,6 +221,16 @@
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="description_sale">Miscellaneous taxed event services.</field>
+        </record>
+        <record id="misc_taxed_event_type_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_misc_taxed"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="misc_taxed_tier_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_misc_taxed"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
     </data>
 </odoo>
