@@ -32,7 +32,7 @@ class ProjectProject(models.Model):
     # EVENT IDENTITY
     # =========================================================================
     ptt_event_id = fields.Char(
-        string="Event ID",
+        string="PTT Event ID",
         readonly=True,
         copy=False,
         index=True,
