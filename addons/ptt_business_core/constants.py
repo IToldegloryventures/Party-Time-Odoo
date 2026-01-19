@@ -5,22 +5,47 @@
 # =============================================================================
 # SERVICE TYPES
 # =============================================================================
-# Service categories offered by Party Time Texas
+# Service categories offered by Party Time Texas (aligned to QuickBooks export)
 SERVICE_TYPES = [
-    ("dj", "DJ/MC Services"),
-    ("photovideo", "Photo/Video"),
-    ("live_entertainment", "Live Entertainment"),
-    ("lighting", "Lighting/AV"),
-    ("decor", "Decor/Thematic Design"),
-    ("photobooth", "Photo Booth"),
-    ("caricature", "Caricature Artists"),
+    # Entertainment
+    ("dj", "DJ & MC Services"),
+    ("band", "Band Services"),
+    ("musicians", "Musicians (Solo/Duo)"),
+    ("dancers_characters", "Dancers & Characters"),
     ("casino", "Casino Services"),
-    ("catering", "Catering"),
+
+    # Photo/Video
+    ("photography", "Photography"),
+    ("videography", "Videography"),
+    ("photobooth", "Photo Booth"),
+
+    # Artists
+    ("caricature", "Caricature Artist"),
+    ("balloon_face_painters", "Balloon & Face Painters"),
+
+    # Food & Beverage
+    ("catering", "Catering & Bartender Services"),
+
+    # Rentals & Equipment
+    ("av_rentals", "A/V Rentals"),
+    ("lighting", "Lighting Rentals"),
+    ("balloon_decor", "Balloon Decor"),
+    ("misc_rental", "Misc Event Rental"),
+
+    # Services
+    ("coordination", "Event Planning Services"),
     ("transportation", "Transportation"),
-    ("rentals", "Rentals (Other)"),
     ("staffing", "Staffing"),
     ("venue_sourcing", "Venue Sourcing"),
-    ("coordination", "Event Coordination"),
+
+    # Insurance & Adjustments
+    ("insurance", "Additional Insured Coverage Extension"),
+    ("deposit", "Customer Deposit / Retainer"),
+    ("discount", "Client Discounts"),
+    ("refund", "Client Refund"),
+    ("cancellation", "Cancellation Event Fees"),
+    ("bad_debt", "Bad Debt"),
+
     ("other", "Other"),
 ]
 

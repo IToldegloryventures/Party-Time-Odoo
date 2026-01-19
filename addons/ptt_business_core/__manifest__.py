@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.3.1.0",
+    "version": "19.0.3.2.0",
     "summary": "Party Time Texas core business models for event management.",
     "description": """
 Party Time Texas Business Core Module

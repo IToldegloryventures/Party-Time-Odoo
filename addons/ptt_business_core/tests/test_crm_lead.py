@@ -73,7 +73,7 @@ class TestCrmLeadProjectFlow(TransactionCase):
         
         self.env['ptt.crm.vendor.estimate'].create({
             'crm_lead_id': lead.id,
-            'service_type': 'photovideo',
+            'service_type': 'photography',
             'vendor_name': 'Photo Magic',
             'estimated_cost': 1200.00,
         })

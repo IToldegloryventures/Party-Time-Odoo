@@ -84,7 +84,7 @@ class TestProjectVendorAssignment(TransactionCase):
         
         self.env['ptt.project.vendor.assignment'].create({
             'project_id': self.project.id,
-            'service_type': 'photovideo',
+            'service_type': 'photography',
             'vendor_id': self.vendor_photo.id,
             'estimated_cost': 1500.00,
             'actual_cost': 1600.00,

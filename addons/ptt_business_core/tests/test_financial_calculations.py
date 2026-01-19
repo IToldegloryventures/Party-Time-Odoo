@@ -40,7 +40,7 @@ class TestFinancialCalculations(TransactionCase):
         
         self.env['ptt.crm.vendor.estimate'].create({
             'crm_lead_id': lead.id,
-            'service_type': 'photovideo',
+            'service_type': 'photography',
             'estimated_cost': 1500.00,
         })
         
@@ -98,7 +98,7 @@ class TestFinancialCalculations(TransactionCase):
         
         self.env['ptt.project.vendor.assignment'].create({
             'project_id': project.id,
-            'service_type': 'photovideo',
+            'service_type': 'photography',
             'vendor_id': self.vendor.id,
             'estimated_cost': 1500.00,
             'actual_cost': 1700.00,
@@ -168,7 +168,7 @@ class TestFinancialCalculations(TransactionCase):
         })
         
         # Create 5 vendor assignments
-        services = ['dj', 'photovideo', 'lighting', 'decor', 'catering']
+        services = ['dj', 'photography', 'lighting', 'balloon_decor', 'catering']
         for i, service in enumerate(services, 1):
             self.env['ptt.project.vendor.assignment'].create({
                 'project_id': project.id,

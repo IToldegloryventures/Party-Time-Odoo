@@ -3,10 +3,14 @@
     <data noupdate="1">
         <!-- Backward-compatibility aliases for legacy event type XML IDs -->
         <record id="event_type_corporate_conference" model="ir.model.data">
+            <field name="module">ptt_enhanced_sales</field>
+            <field name="name">event_type_corporate_conference</field>
             <field name="model">sale.order.type</field>
             <field name="res_id" ref="ptt_enhanced_sales.event_type_corporate"/>
         </record>
         <record id="event_type_casino_night" model="ir.model.data">
+            <field name="module">ptt_enhanced_sales</field>
+            <field name="name">event_type_casino_night</field>
             <field name="model">sale.order.type</field>
             <field name="res_id" ref="ptt_enhanced_sales.event_type_social"/>
         </record>

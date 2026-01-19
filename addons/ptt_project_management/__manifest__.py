@@ -1,6 +1,6 @@
 {
     "name": "PTT Project Management",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "summary": "Enhanced project management for Party Time Texas event execution",
     "description": """
 Event Project Management Enhancement

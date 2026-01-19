@@ -204,7 +204,7 @@
             <field name="role">Event Photographer</field>
             <field name="responsibility">Document conference sessions and networking</field>
             <field name="is_vendor">True</field>
-            <field name="vendor_category">photovideo</field>
+            <field name="vendor_category">photography</field>
             <field name="communication_preference">email</field>
             <field name="required_for_event">False</field>
         </record>
@@ -237,7 +237,7 @@
             <field name="role">Wedding Photographer</field>
             <field name="responsibility">Capture ceremony and reception moments</field>
             <field name="is_vendor">True</field>
-            <field name="vendor_category">photovideo</field>
+            <field name="vendor_category">photography</field>
             <field name="communication_preference">email</field>
             <field name="required_for_event">True</field>
         </record>
