@@ -6,7 +6,7 @@
         ALL services have: Event Type (Social, Corporate, Wedding) × Service Tier (Essential, Classic, Premier)
         Products with additional variants also have their type-specific attributes
     -->
-    <data noupdate="0">
+    <data noupdate="1">
         
         <!-- ================================================================ -->
         <!-- A/V RENTALS - PROJECTOR AND SCREEN - Event Type × Service Tier  -->

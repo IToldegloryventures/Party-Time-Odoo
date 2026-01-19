@@ -4,7 +4,7 @@
         Product Attributes for Service Variants
         Creates configurable products with various attribute selections
     -->
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- ===================== -->
         <!-- EVENT TYPE ATTRIBUTE  -->
         <!-- ===================== -->

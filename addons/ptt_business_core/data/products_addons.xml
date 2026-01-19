@@ -7,7 +7,7 @@
         a DJ service variant is selected. Each add-on is a simple
         product without variants.
     -->
-    <data noupdate="0">
+    <data noupdate="1">
         
         <!-- ============================================ -->
         <!-- GENERAL DJ ADD-ONS                          -->

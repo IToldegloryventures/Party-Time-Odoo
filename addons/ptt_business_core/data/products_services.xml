@@ -11,7 +11,7 @@
         when the sale order is confirmed. The project is created by the
         "Event Kickoff" product which uses service_tracking='project_only'.
     -->
-    <data noupdate="0">
+    <data noupdate="1">
         
         <!-- ================================================================ -->
         <!-- PHOTOGRAPHY SERVICES - Photo Type × Event Type × Service Tier   -->
