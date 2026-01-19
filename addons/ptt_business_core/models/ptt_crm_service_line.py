@@ -24,14 +24,10 @@ class PttCrmServiceLine(models.Model):
     _order = "sequence, id"
 
     # SQL Constraints
-    _positive_hours = models.Constraint(
-        "CHECK (hours >= 0)",
-        "Hours cannot be negative.",
-    )
-    _positive_quantity = models.Constraint(
-        "CHECK (quantity >= 0)",
-        "Quantity cannot be negative.",
-    )
+    _sql_constraints = [
+        ('positive_hours', 'CHECK(hours >= 0)', 'Hours cannot be negative.'),
+        ('positive_quantity', 'CHECK(quantity >= 0)', 'Quantity cannot be negative.'),
+    ]
 
     # =========================================================================
     # RELATIONSHIPS
