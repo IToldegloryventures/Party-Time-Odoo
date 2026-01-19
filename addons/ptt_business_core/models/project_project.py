@@ -9,8 +9,8 @@ class ProjectProject(models.Model):
     """Project extensions for Party Time Texas event management."""
     _inherit = "project.project"
 
-    _unique_x_plan2_id = models.Constraint(
-        "UNIQUE (x_plan2_id)",
+    _unique_ptt_event_id = models.Constraint(
+        "UNIQUE (ptt_event_id)",
         "Event ID must be unique! Another project already has this Event ID.",
     )
     _positive_ptt_guest_count = models.Constraint(
@@ -31,10 +31,12 @@ class ProjectProject(models.Model):
     # =========================================================================
     # EVENT IDENTITY
     # =========================================================================
-    x_plan2_id = fields.Char(
+    ptt_event_id = fields.Char(
         string="Event ID",
         readonly=True,
         copy=False,
+        index=True,
+        help="Unique event identifier (e.g., EVT-2026-0001). Links to CRM Lead, Sale Orders, Tasks.",
     )
     # NOTE: Event type is now managed via ptt_event_type_id (Many2one to sale.order.type)
     # which links to one of 3 types: Corporate, Social, Wedding

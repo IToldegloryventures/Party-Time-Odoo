@@ -46,6 +46,17 @@ class CrmLead(models.Model):
     ptt_secondary_contact_email = fields.Char(string="2nd Contact Email")
 
     # =========================================================================
+    # EVENT IDENTITY
+    # =========================================================================
+    ptt_event_id = fields.Char(
+        string="Event ID",
+        readonly=True,
+        copy=False,
+        index=True,
+        help="Unique event identifier (e.g., EVT-2026-0001). Generated when opportunity is qualified. Used to track event across CRM, Sales, Projects, and Tasks.",
+    )
+
+    # =========================================================================
     # EVENT OVERVIEW
     # =========================================================================
     # NOTE: Event type is now managed via ptt_event_type_id (Many2one to sale.order.type)
@@ -378,6 +389,13 @@ class CrmLead(models.Model):
             "target": "current",
         }
 
+    def action_generate_event_id(self):
+        """Generate event ID for this opportunity if not already set."""
+        self.ensure_one()
+        if not self.ptt_event_id:
+            self.ptt_event_id = self.env['ir.sequence'].next_by_code('ptt.event.id') or 'EVT-NEW'
+        return self.ptt_event_id
+
     def action_create_project(self):
         """Create project from this opportunity."""
         self.ensure_one()
@@ -386,16 +404,15 @@ class CrmLead(models.Model):
         if not self.partner_id:
             raise UserError(_("Please set a customer before creating a project."))
 
-        # Generate event ID
-        project_count = self.env["project.project"].search_count([])
-        event_id = str(project_count + 1).zfill(6)
+        # Ensure event ID exists (generate if needed)
+        event_id = self.action_generate_event_id()
 
         project_vals = {
             "name": f"Event {event_id} - {self.partner_id.name} - {self.x_studio_event_name or self.name}",
             "partner_id": self.partner_id.id,
             "user_id": self.user_id.id,
             "ptt_crm_lead_id": self.id,
-            "x_plan2_id": event_id,
+            "ptt_event_id": event_id,
             # NOTE: ptt_event_type removed - use ptt_event_type_id (Many2one) instead
             "x_studio_event_name": self.x_studio_event_name,
             "x_studio_event_date": self.x_studio_event_date,

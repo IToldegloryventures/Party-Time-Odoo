@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+    PTT Event ID Sequence
+    =====================
+    Generates unique event IDs in format: EVT-2026-0001
+    Used across CRM Lead, Sale Order, Project, Tasks, Purchase Orders
+    for unified tracking of entire event lifecycle.
+    -->
+    
+    <record id="seq_ptt_event_id" model="ir.sequence">
+        <field name="name">PTT Event ID</field>
+        <field name="code">ptt.event.id</field>
+        <field name="prefix">EVT-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

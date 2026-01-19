@@ -14,7 +14,7 @@
                     <page string="Event Details" name="ptt_event_details">
                         <group>
                             <group string="Event Identity">
-                                <field name="x_plan2_id" readonly="1"/>
+                                <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_crm_lead_id"/>
                                 <field name="x_studio_event_name"/>
                             </group>
