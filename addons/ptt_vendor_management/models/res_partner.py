@@ -8,8 +8,8 @@ class ResPartner(models.Model):
     This module adds vendor-specific fields and functionality to partners.
     
     VENDOR IDENTIFICATION:
-    - Uses ptt_is_vendor boolean field (defined in ptt_business_core)
-    - When ptt_is_vendor = True, partner appears in Vendor Management app
+    - Uses native Odoo supplier_rank field (supplier_rank > 0 = vendor)
+    - When supplier_rank > 0, partner appears in Vendor Management app
     
     VENDOR STATUS WORKFLOW:
     - new → pending_review → active → inactive
@@ -21,7 +21,7 @@ class ResPartner(models.Model):
     
     PERFORMANCE:
     - Required document types are cached per-environment to avoid repeated searches
-    - Compliance computation only runs for vendors (ptt_is_vendor = True)
+    - Compliance computation only runs for vendors (supplier_rank > 0)
     """
     _inherit = "res.partner"
 
@@ -266,14 +266,14 @@ class ResPartner(models.Model):
             setattr(self.env, cache_key, set(required_doc_types.ids))
         return getattr(self.env, cache_key)
 
-    @api.depends("ptt_is_vendor", "ptt_vendor_document_ids", "ptt_vendor_document_ids.status", 
+    @api.depends("supplier_rank", "ptt_vendor_document_ids", "ptt_vendor_document_ids.status", 
                  "ptt_vendor_document_ids.document_type_id.required")
     def _compute_vendor_compliance_status(self):
         """Compute vendor compliance status based on required documents (stored field)."""
         required_type_ids = self._get_required_document_type_ids()
         
         for partner in self:
-            if not partner.ptt_is_vendor:
+            if partner.supplier_rank <= 0:
                 partner.ptt_vendor_compliance_status = False
                 continue
             
@@ -316,21 +316,21 @@ class ResPartner(models.Model):
         
         # Auto-populate document lines for new vendors
         for record in records:
-            if record.ptt_is_vendor:
+            if record.supplier_rank > 0:
                 record._populate_vendor_document_lines()
         
         return records
     
     def write(self, vals):
         """Auto-populate document lines when partner becomes a vendor."""
-        # Check if becoming a vendor (ptt_is_vendor going from False to True)
-        becoming_vendor = 'ptt_is_vendor' in vals and vals['ptt_is_vendor']
-        was_vendor = self.filtered(lambda p: p.ptt_is_vendor)
+        # Check if becoming a vendor (supplier_rank going from 0 to > 0)
+        becoming_vendor = 'supplier_rank' in vals and vals['supplier_rank'] > 0
+        was_vendor = self.filtered(lambda p: p.supplier_rank > 0)
         
         result = super().write(vals)
         
         if becoming_vendor:
-            new_vendors = self.filtered(lambda p: p.ptt_is_vendor and p not in was_vendor)
+            new_vendors = self.filtered(lambda p: p.supplier_rank > 0 and p not in was_vendor)
             for vendor in new_vendors:
                 vendor._populate_vendor_document_lines()
         
@@ -343,7 +343,7 @@ class ResPartner(models.Model):
         to upload the PDF files instead of remembering each document type.
         """
         self.ensure_one()
-        if not self.ptt_is_vendor:
+        if self.supplier_rank <= 0:
             return
         
         # Get all required document types
@@ -372,7 +372,7 @@ class ResPartner(models.Model):
         Use this for existing vendors who don't have document lines yet.
         """
         for vendor in self:
-            if vendor.ptt_is_vendor:
+            if vendor.supplier_rank > 0:
                 vendor._populate_vendor_document_lines()
         return True
     
@@ -382,7 +382,7 @@ class ResPartner(models.Model):
         
         Call this once after installing/updating to populate existing vendors.
         """
-        vendors = self.search([("ptt_is_vendor", "=", True)])
+        vendors = self.search([("supplier_rank", ">", 0)])
         count = 0
         for vendor in vendors:
             existing_count = len(vendor.ptt_vendor_document_ids)
@@ -408,7 +408,7 @@ class ResPartner(models.Model):
         Validates that required fields are filled before submission.
         """
         for vendor in self:
-            if not vendor.ptt_is_vendor:
+            if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
             
             # Validate required fields
@@ -424,7 +424,7 @@ class ResPartner(models.Model):
     def action_approve_vendor(self):
         """Approve vendor and set status to active."""
         for vendor in self:
-            if not vendor.ptt_is_vendor:
+            if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
             
             vendor.ptt_vendor_status = "active"
@@ -437,7 +437,7 @@ class ResPartner(models.Model):
     def action_request_info(self):
         """Request additional information from vendor."""
         for vendor in self:
-            if not vendor.ptt_is_vendor:
+            if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
             
             vendor.ptt_vendor_status = "new"
@@ -469,7 +469,7 @@ class ResPartner(models.Model):
     def action_reactivate_vendor(self):
         """Reactivate vendor after validating documents."""
         for vendor in self:
-            if not vendor.ptt_is_vendor:
+            if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
             
             # Check document validity
@@ -491,7 +491,7 @@ class ResPartner(models.Model):
         """
         self.ensure_one()
         
-        if not self.ptt_is_vendor:
+        if self.supplier_rank <= 0:
             raise UserError(_("This contact is not marked as a vendor."))
         
         if not self.name or not self.email:

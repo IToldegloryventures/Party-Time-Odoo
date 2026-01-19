@@ -39,7 +39,7 @@ class TestEventReminders(TransactionCase):
         cls.vendor = cls.env['res.partner'].create({
             'name': 'Test DJ Vendor',
             'email': 'vendor@example.com',
-            'ptt_is_vendor': True,
+            'supplier_rank': 1,
         })
     
     def _create_project_for_date(self, event_date, **kwargs):
@@ -223,7 +223,7 @@ class TestVendorConfirmation(TransactionCase):
         cls.vendor = cls.env['res.partner'].create({
             'name': 'Check DJ Vendor',
             'email': 'vdj@example.com',
-            'ptt_is_vendor': True,
+            'supplier_rank': 1,
         })
         
         cls.pm_user = cls.env['res.users'].create({

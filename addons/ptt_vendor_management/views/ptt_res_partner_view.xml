@@ -3,8 +3,8 @@
     <!--
         PTT Res Partner Form View Extension
         
-        Adds vendor-specific tabs visible when ptt_is_vendor = True.
-        Uses ptt_is_vendor field (defined in ptt_business_core) for vendor identification.
+        Adds vendor-specific tabs visible when supplier_rank > 0.
+        Uses native supplier_rank field for vendor identification.
         All custom fields use ptt_ prefix (Odoo best practice).
     -->
     <record id="view_partner_form_ptt" model="ir.ui.view">
@@ -13,7 +13,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             
-            <!-- Vendor toggle is defined in ptt_business_core (ptt_is_vendor field) -->
+            <!-- Vendor toggle uses native supplier_rank field -->
             
             <!-- Add smart buttons for vendor stats -->
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -21,7 +21,7 @@
                         type="object"
                         class="oe_stat_button" 
                         icon="fa-truck"
-                        invisible="not ptt_is_vendor">
+                        invisible="supplier_rank == 0">
                     <div class="o_stat_info">
                         <field name="ptt_assignment_count" class="o_stat_value"/>
                         <span class="o_stat_text">Work Orders</span>
@@ -31,7 +31,7 @@
                         type="object"
                         class="oe_stat_button" 
                         icon="fa-usd"
-                        invisible="not ptt_is_vendor"
+                        invisible="supplier_rank == 0"
                         context="{'search_default_filter_completed': 1}">
                     <div class="o_stat_info">
                         <field name="ptt_total_paid" class="o_stat_value" widget="monetary"/>
@@ -47,9 +47,9 @@
                        invisible="not parent_id or company_type == 'company'"/>
             </xpath>
             
-            <!-- Add Vendor Info tab (visible when ptt_is_vendor is True) -->
+            <!-- Add Vendor Info tab (visible when supplier_rank > 0) -->
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="Vendor Info" name="ptt_vendor_info" invisible="not ptt_is_vendor">
+                <page string="Vendor Info" name="ptt_vendor_info" invisible="supplier_rank == 0">
                     <div class="alert alert-warning" role="alert"
                          invisible="ptt_vendor_compliance_status not in ('missing_required', 'expired')">
                         <i class="fa fa-exclamation-triangle me-1" title="Attention"/>
@@ -83,7 +83,7 @@
                 </page>
                 
                 <!-- Vendor Work History Tab -->
-                <page string="Work History" name="ptt_vendor_work_history" invisible="not ptt_is_vendor">
+                <page string="Work History" name="ptt_vendor_work_history" invisible="supplier_rank == 0">
                     <group>
                         <group string="Performance Summary">
                             <field name="ptt_assignment_count" string="Total Assignments"/>
@@ -113,8 +113,8 @@
                     </field>
                 </page>
                 
-                <!-- Vendor Documents Tab (visible when ptt_is_vendor is True) -->
-                <page string="Documents" name="ptt_vendor_documents" invisible="not ptt_is_vendor">
+                <!-- Vendor Documents Tab (visible when supplier_rank > 0) -->
+                <page string="Documents" name="ptt_vendor_documents" invisible="supplier_rank == 0">
                     <div class="mb-3">
                         <button name="action_populate_document_lines" type="object"
                                 string="⟳ Populate Required Document Lines" 

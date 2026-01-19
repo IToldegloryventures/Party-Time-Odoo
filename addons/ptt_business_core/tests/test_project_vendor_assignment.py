@@ -22,13 +22,13 @@ class TestProjectVendorAssignment(TransactionCase):
         cls.vendor_dj = cls.env['res.partner'].create({
             'name': 'DJ Pro Services',
             'email': 'dj@example.com',
-            'ptt_is_vendor': True,
+            'supplier_rank': 1,
         })
         
         cls.vendor_photo = cls.env['res.partner'].create({
             'name': 'Photo Magic Studios',
             'email': 'photo@example.com',
-            'ptt_is_vendor': True,
+            'supplier_rank': 1,
         })
         
         # Create a test project

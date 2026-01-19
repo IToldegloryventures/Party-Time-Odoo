@@ -24,7 +24,7 @@ class TestCrmLeadProjectFlow(TransactionCase):
         cls.vendor = cls.env['res.partner'].create({
             'name': 'Test DJ Vendor',
             'email': 'dj@example.com',
-            'ptt_is_vendor': True,
+            'supplier_rank': 1,
         })
         
         # Create a test user

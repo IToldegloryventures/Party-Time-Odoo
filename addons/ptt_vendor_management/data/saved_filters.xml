@@ -5,17 +5,17 @@
         <record id="filter_vendors_missing_docs" model="ir.filters">
             <field name="name">Vendors: Missing Documents</field>
             <field name="model_id">res.partner</field>
-            <field name="domain">[('ptt_is_vendor','=',True),('ptt_vendor_compliance_status','=','missing_required')]</field>
+            <field name="domain">[('supplier_rank','>',0),('ptt_vendor_compliance_status','=','missing_required')]</field>
         </record>
         <record id="filter_vendors_pending_review" model="ir.filters">
             <field name="name">Vendors: Pending Review</field>
             <field name="model_id">res.partner</field>
-            <field name="domain">[('ptt_is_vendor','=',True),('ptt_vendor_status','=','pending_review')]</field>
+            <field name="domain">[('supplier_rank','>',0),('ptt_vendor_status','=','pending_review')]</field>
         </record>
         <record id="filter_vendors_active_compliant" model="ir.filters">
             <field name="name">Vendors: Active + Compliant</field>
             <field name="model_id">res.partner</field>
-            <field name="domain">[('ptt_is_vendor','=',True),('ptt_vendor_status','=','active'),('ptt_vendor_compliance_status','=','compliant')]</field>
+            <field name="domain">[('supplier_rank','>',0),('ptt_vendor_status','=','active'),('ptt_vendor_compliance_status','=','compliant')]</field>
         </record>
         <record id="filter_rfqs_in_progress" model="ir.filters">
             <field name="name">RFQs: In Progress</field>

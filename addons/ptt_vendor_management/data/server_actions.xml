@@ -16,8 +16,8 @@
         <field name="state">code</field>
         <field name="code">
 # Populate document lines for selected vendors or all vendors if none selected
-vendors = records if records else env['res.partner'].search([('ptt_is_vendor', '=', True)])
-vendors = vendors.filtered(lambda v: v.ptt_is_vendor)
+vendors = records if records else env['res.partner'].search([('supplier_rank', '>', 0)])
+vendors = vendors.filtered(lambda v: v.supplier_rank > 0)
 count = 0
 for vendor in vendors:
     existing_count = len(vendor.ptt_vendor_document_ids)

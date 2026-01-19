@@ -38,7 +38,7 @@
                     <group>
                         <group string="Document Information">
                             <field name="vendor_id" options="{'no_create': True}" 
-                                   domain="[('ptt_is_vendor', '=', True)]"/>
+                                   domain="[('supplier_rank', '>', 0)]"/>
                             <field name="document_type_id" options="{'no_create': True}"/>
                             <field name="validity"/>
                             <field name="status" widget="badge"

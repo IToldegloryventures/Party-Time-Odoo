@@ -25,7 +25,7 @@ class PttVendorServicePricing(models.Model):
         required=True,
         ondelete="cascade",
         index=True,
-        domain="[('ptt_is_vendor', '=', True)]",
+        domain="[('supplier_rank', '>', 0)]",
     )
     
     service_type_id = fields.Many2one(

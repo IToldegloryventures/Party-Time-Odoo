@@ -65,7 +65,7 @@ class VendorPortal(CustomerPortal):
                     '|',
                     ('ptt_portal_user_id', '=', request.env.user.id),
                     ('create_uid', '=', request.env.user.id),
-                    ('ptt_is_vendor', '=', True),
+                    ('supplier_rank', '>', 0),
                 ]
                 count = request.env['res.partner'].sudo().search_count(domain)
             except Exception:
@@ -369,7 +369,7 @@ class VendorPortal(CustomerPortal):
         partner = request.env.user.partner_id
         
         # Check if already a vendor
-        if partner.ptt_is_vendor and partner.ptt_vendor_status == 'active':
+        if partner.supplier_rank > 0 and partner.ptt_vendor_status == 'active':
             return request.redirect('/my/applications')
         
         # Handle POST submission
@@ -446,7 +446,7 @@ class VendorPortal(CustomerPortal):
                 'zip': kw.get('zip', '').strip(),
                 'website': kw.get('website_url', '').strip() or False,
                 'is_company': True,
-                'ptt_is_vendor': True,
+                'supplier_rank': 1,
                 'ptt_vendor_status': 'pending_review',
                 'ptt_vendor_principal_name': kw.get('principal_name', '').strip() or False,
                 'ptt_vendor_additional_phone': kw.get('additional_phone', '').strip() or False,
@@ -566,7 +566,7 @@ class VendorPortal(CustomerPortal):
             '|',
             ('ptt_portal_user_id', '=', request.env.user.id),
             ('create_uid', '=', request.env.user.id),
-            ('ptt_is_vendor', '=', True),
+            ('supplier_rank', '>', 0),
         ]
         
         applications = request.env['res.partner'].sudo().search(domain, order='create_date desc')

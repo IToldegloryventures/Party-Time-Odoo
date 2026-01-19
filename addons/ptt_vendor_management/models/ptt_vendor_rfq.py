@@ -116,7 +116,7 @@ class PTTVendorRFQ(models.Model):
         "rfq_id",
         "partner_id",
         string="Invited Vendors",
-        domain="[('ptt_is_vendor', '=', True), ('ptt_vendor_status', '=', 'active')]",
+        domain="[('supplier_rank', '>', 0), ('ptt_vendor_status', '=', 'active')]",
         help="Active vendors invited to quote on this RFQ",
     )
     

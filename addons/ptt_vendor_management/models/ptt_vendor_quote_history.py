@@ -19,7 +19,7 @@ class PTTVendorQuoteHistory(models.Model):
         "res.partner",
         string="Vendor",
         required=True,
-        domain="[('ptt_is_vendor', '=', True)]",
+        domain="[('supplier_rank', '>', 0)]",
         help="The vendor who submitted this quote",
     )
     

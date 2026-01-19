@@ -20,7 +20,7 @@ class TestFinancialCalculations(TransactionCase):
         cls.vendor = cls.env['res.partner'].create({
             'name': 'Test Vendor',
             'email': 'vendor@example.com',
-            'ptt_is_vendor': True,
+            'supplier_rank': 1,
         })
         
     def test_crm_margin_calculation_basic(self):

@@ -2,7 +2,7 @@
 Pre-migration script for ptt_vendor_management 19.0.2.0.0
 
 This migration:
-1. Migrates x_is_vendor data to ptt_is_vendor (defined in ptt_business_core)
+1. Migrates x_is_vendor data to supplier_rank (native Odoo vendor flag)
 2. Renames all x_vendor_* fields to ptt_vendor_* following Odoo best practices
 """
 import logging
@@ -12,14 +12,14 @@ _logger = logging.getLogger(__name__)
 
 def migrate(cr, version):
     """
-    Pre-migration: Transfer x_is_vendor data to ptt_is_vendor and rename fields.
+    Pre-migration: Transfer x_is_vendor data to supplier_rank and rename fields.
     """
     if not version:
         return
     
     _logger.info("PTT Vendor Management: Starting pre-migration 19.0.2.0.0")
     
-    # === PHASE 1: Migrate x_is_vendor to ptt_is_vendor ===
+    # === PHASE 1: Migrate x_is_vendor to supplier_rank ===
     
     # Check if x_is_vendor column exists
     cr.execute("""
@@ -29,22 +29,14 @@ def migrate(cr, version):
     """)
     
     if cr.fetchone():
-        # Check if ptt_is_vendor column exists (from ptt_business_core)
+        # Transfer x_is_vendor data to supplier_rank
         cr.execute("""
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'res_partner' AND column_name = 'ptt_is_vendor'
+            UPDATE res_partner
+            SET supplier_rank = 1
+            WHERE x_is_vendor = True AND (supplier_rank IS NULL OR supplier_rank = 0)
         """)
-        
-        if cr.fetchone():
-            # Transfer x_is_vendor data to ptt_is_vendor
-            cr.execute("""
-                UPDATE res_partner
-                SET ptt_is_vendor = True
-                WHERE x_is_vendor = True AND (ptt_is_vendor IS NULL OR ptt_is_vendor = False)
-            """)
-            updated_count = cr.rowcount
-            _logger.info(f"PTT Vendor Management: Migrated {updated_count} vendors to ptt_is_vendor")
+        updated_count = cr.rowcount
+        _logger.info(f"PTT Vendor Management: Migrated {updated_count} vendors to supplier_rank")
         
         # Remove the x_is_vendor column from the database
         cr.execute("ALTER TABLE res_partner DROP COLUMN IF EXISTS x_is_vendor")

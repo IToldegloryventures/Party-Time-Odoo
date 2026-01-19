@@ -98,7 +98,7 @@ class PTTVendorInviteWizard(models.TransientModel):
             ("email", "=", self.recipient_email)
         ], limit=1)
         
-        if existing_partner and existing_partner.ptt_is_vendor:
+        if existing_partner and existing_partner.supplier_rank > 0:
             raise UserError(
                 _("A vendor already exists with this email address: %s") % existing_partner.name
             )
@@ -115,7 +115,7 @@ class PTTVendorInviteWizard(models.TransientModel):
                 "email": self.recipient_email,
                 "phone": self.recipient_phone or False,
                 "is_company": True,
-                "ptt_is_vendor": False,  # Not a vendor YET - they need to apply
+                "supplier_rank": 0,  # Not a vendor YET - they need to apply
                 "ptt_vendor_status": "new",
             })
         else:
