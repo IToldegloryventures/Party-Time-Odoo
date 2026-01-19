@@ -20,7 +20,7 @@
             <field name="list_price">300.0</field>
             <field name="standard_price">150.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -48,7 +48,7 @@
             <field name="list_price">75.0</field>
             <field name="standard_price">50.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -75,7 +75,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -102,7 +102,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -134,7 +134,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -166,7 +166,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -198,7 +198,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -230,7 +230,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -262,7 +262,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -294,7 +294,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
@@ -321,7 +321,7 @@
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
