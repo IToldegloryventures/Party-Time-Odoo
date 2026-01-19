@@ -22,6 +22,7 @@
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
             <field name="service_tracking">project_only</field>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="description_sale">Event project kickoff - creates the event project when the sale order is confirmed. This should be the first line on every event quote.</field>
         </record>
         

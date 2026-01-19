@@ -16,7 +16,7 @@ def migrate(cr, version):
     if not version:
         return
 
-    _logger.info("PTT Business Core: Starting post-migration 19.0.4.2.1")
+    _logger.info("PTT Business Core: Starting post-migration 19.0.4.2.2")
 
     # In Odoo 19, field_description is a JSONB column with language translations
     # Format: {"en_US": "Label Text", "fr_FR": "Texte du libellé"}
@@ -52,4 +52,4 @@ def migrate(cr, version):
     else:
         _logger.info("x_plan2_id field not found in ir_model_fields, skipping")
 
-    _logger.info("PTT Business Core: Post-migration 19.0.4.2.1 complete")
+    _logger.info("PTT Business Core: Post-migration 19.0.4.2.2 complete")

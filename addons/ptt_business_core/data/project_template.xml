@@ -19,6 +19,7 @@
         <!-- ============================================ -->
         <record id="project_template_standard_event" model="project.project">
             <field name="name">Standard Event Project Template</field>
+            <field name="is_template" eval="True"/>
             <field name="privacy_visibility">followers</field>
             <field name="active" eval="True"/>
         </record>

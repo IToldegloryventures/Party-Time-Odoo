@@ -43,8 +43,28 @@ class ProjectProject(models.Model):
     # The deprecated ptt_event_type selection field has been removed.
     
     # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
-    # x_studio_venue_address) already exist in DB from Odoo Studio - no need to redeclare.
-    # Use them directly in views and code.
+    # x_studio_venue_address) are defined on CRM Lead. Mirror them here so
+    # project views and searches can use them safely in pre_prod.
+    x_studio_event_name = fields.Char(
+        related="ptt_crm_lead_id.x_studio_event_name",
+        store=True,
+        readonly=True,
+    )
+    x_studio_event_date = fields.Date(
+        related="ptt_crm_lead_id.x_studio_event_date",
+        store=True,
+        readonly=True,
+    )
+    x_studio_venue_name = fields.Char(
+        related="ptt_crm_lead_id.x_studio_venue_name",
+        store=True,
+        readonly=True,
+    )
+    x_studio_venue_address = fields.Char(
+        related="ptt_crm_lead_id.x_studio_venue_address",
+        store=True,
+        readonly=True,
+    )
     
     ptt_guest_count = fields.Integer(string="Guest Count")
     
@@ -70,7 +90,6 @@ class ProjectProject(models.Model):
         help="Total duration of the event in hours"
     )
     
-    # Venue - x_studio_venue_name and x_studio_venue_address already exist in DB from Studio
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Location Type",
