@@ -64,6 +64,7 @@ Other PTT modules depend on this one.
         "data/product_attributes.xml",
         "data/product_categories.xml",
         "data/products_entertainment.xml",
+        "data/products_dj_mc_services.xml",
         "data/products_services.xml",
         "data/products_rentals.xml",
         "data/products_adjustments.xml",

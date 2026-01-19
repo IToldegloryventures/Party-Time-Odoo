@@ -100,42 +100,10 @@
                         </group>
                     </page>
 
-                    <!-- Service Lines (Structured Quote Building) -->
-                    <page string="Service Lines" name="ptt_service_lines">
-                        <div class="alert alert-info" role="alert">
-                            <strong>Build Your Quote</strong> - 
-                            Add services with tier selections and pricing. 
-                            These will be used to create the formal quotation.
-                        </div>
-                        
-                        <!-- Service Lines Table -->
-                        <field name="ptt_service_line_ids" nolabel="1">
-                            <list editable="bottom" decoration-warning="hours &lt; product_min_hours">
-                                <field name="sequence" widget="handle"/>
-                                <field name="service_type"/>
-                                <field name="service_tier" widget="badge"
-                                       decoration-info="service_tier == 'essentials'"
-                                       decoration-success="service_tier == 'classic'"
-                                       decoration-warning="service_tier == 'premier'"/>
-                                <field name="product_id" optional="show"/>
-                                <field name="name"/>
-                                <field name="hours"/>
-                                <field name="product_min_hours" string="Min Hrs" readonly="1" optional="show"/>
-                                <field name="unit_price"/>
-                                <field name="subtotal" sum="Total"/>
-                                <field name="notes" optional="hide"/>
-                            </list>
-                        </field>
-                        
-                        <!-- Service Lines Summary -->
-                        <group class="oe_subtotal_footer">
-                            <field name="ptt_service_lines_total" widget="monetary" 
-                                   class="oe_subtotal_footer_separator"/>
-                        </group>
-
-                        <separator string="Service Notes"/>
+                    <!-- Service Notes -->
+                    <page string="Service Notes" name="ptt_service_notes">
                         <field name="ptt_service_notes" nolabel="1"
-                               placeholder="Enter any additional notes about the client's service needs, special requests, or important details..."/>
+                               placeholder="Enter internal service notes, special requests, or important details..."/>
                     </page>
 
                     <!-- Budget & Vendors -->

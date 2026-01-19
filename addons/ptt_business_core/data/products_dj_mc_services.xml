@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        DJ & MC Services Products - From PTT_Event Pricing & Costing Spreadsheet
+        
+        DJ Services: Essential, Classic, Premier x Social, Corporate, Wedding (9 products)
+        MC Services: Classic, Premier x Social, Corporate, Wedding (6 products) - NO Essential
+        
+        Pricing from dj_tier.csv spreadsheet (January 2026)
+        UoM = Hours (hourly pricing)
+    -->
+    <data noupdate="1">
+        
+        <!-- ============================================ -->
+        <!-- PRODUCT CATEGORY                            -->
+        <!-- ============================================ -->
+        <record id="product_category_dj_mc" model="product.category">
+            <field name="name">DJ &amp; MC Services</field>
+            <field name="parent_id" ref="product_category_event_entertainment"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- DJ SERVICES - SOCIAL                        -->
+        <!-- ============================================ -->
+        
+        <!-- DJ Social Essential: 1-100 guests, 2hr min, $300-$400/hr, Cost $150-$225 -->
+        <record id="product_dj_social_essential" model="product.product">
+            <field name="name">DJ Services - Social Essential</field>
+            <field name="default_code">DJ-SOC-ESS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">300.00</field>
+            <field name="standard_price">150.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">2 hrs music, curated playlist, basic audio setup (1-2 speakers, DJ controller, mic). Guest count: 1-100. Minimum 2 hours.</field>
+        </record>
+
+        <!-- DJ Social Classic: 101-175 guests, 2hr min, $425-$600/hr, Cost $200-$325 -->
+        <record id="product_dj_social_classic" model="product.product">
+            <field name="name">DJ Services - Social Classic</field>
+            <field name="default_code">DJ-SOC-CLS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">425.00</field>
+            <field name="standard_price">200.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">2 hrs music, dance floor lighting, intro announcements. Guest count: 101-175. Minimum 2 hours. Add-ons: Assistant DJ, song request queue, Uplights.</field>
+        </record>
+
+        <!-- DJ Social Premier: 176-250+ guests, 2hr min, $600-$675/hr, Cost $300-$425 -->
+        <record id="product_dj_social_premier" model="product.product">
+            <field name="name">DJ Services - Social Premier</field>
+            <field name="default_code">DJ-SOC-PRM</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">600.00</field>
+            <field name="standard_price">300.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">2 hrs music, dance floor lighting, scripted MC, crowd engagement. Guest count: 176-250+. Minimum 2 hours. Add-ons: Video DJ booth, uplights, co-host.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- DJ SERVICES - CORPORATE                     -->
+        <!-- ============================================ -->
+        
+        <!-- DJ Corporate Essential: 1-100 guests, 2hr min, $300-$400/hr, Cost $150-$225 -->
+        <record id="product_dj_corporate_essential" model="product.product">
+            <field name="name">DJ Services - Corporate Essential</field>
+            <field name="default_code">DJ-CRP-ESS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">300.00</field>
+            <field name="standard_price">150.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">2 hrs background/dance music, announcements, 1-2 speakers, wireless mic. Guest count: 1-100. Minimum 2 hours. Add-ons: Branded loop, raffle music, extra mic.</field>
+        </record>
+
+        <!-- DJ Corporate Classic: 101-250 guests, 2hr min, $425-$600/hr, Cost $200-$325 -->
+        <record id="product_dj_corporate_classic" model="product.product">
+            <field name="name">DJ Services - Corporate Classic</field>
+            <field name="default_code">DJ-CRP-CLS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">425.00</field>
+            <field name="standard_price">200.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">2 hrs networking + dance mix, dance lights, DJ/MC. Guest count: 101-250. Minimum 2 hours. Add-ons: Branded booth, intro voiceover.</field>
+        </record>
+
+        <!-- DJ Corporate Premier: 251-500 guests, 2hr min, $600-$675/hr, Cost $300-$425 -->
+        <record id="product_dj_corporate_premier" model="product.product">
+            <field name="name">DJ Services - Corporate Premier</field>
+            <field name="default_code">DJ-CRP-PRM</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">600.00</field>
+            <field name="standard_price">300.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">2 hrs DJ, Scripted MC, stage presence, walk-on music. Guest count: 251-500. Minimum 2 hours. Add-ons: Remix sets, sponsor plugs, custom cues.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- DJ SERVICES - WEDDING                       -->
+        <!-- ============================================ -->
+        
+        <!-- DJ Wedding Essential: 50-350 guests, 3hr min, $350-$450/hr, Cost $200-$300 -->
+        <record id="product_dj_wedding_essential" model="product.product">
+            <field name="name">DJ Services - Wedding Essential</field>
+            <field name="default_code">DJ-WED-ESS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">350.00</field>
+            <field name="standard_price">200.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">3 hrs ceremony or reception, curated music, lav/handheld mic. Guest count: 50-350. Minimum 3 hours. Add-ons: Playlist planning, lighting, timeline assist.</field>
+        </record>
+
+        <!-- DJ Wedding Classic: 101-250 guests, 4hr min, $475-$625/hr, Cost $250-$350 -->
+        <record id="product_dj_wedding_classic" model="product.product">
+            <field name="name">DJ Services - Wedding Classic</field>
+            <field name="default_code">DJ-WED-CLS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">475.00</field>
+            <field name="standard_price">250.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Reception, DJ + MC, dance floor lights, wireless mic. Guest count: 101-250. Minimum 4 hours. Add-ons: Photo booth, custom transitions.</field>
+        </record>
+
+        <!-- DJ Wedding Premier: 251-500 guests, 5hr min, $650-$700/hr, Cost $300-$450 -->
+        <record id="product_dj_wedding_premier" model="product.product">
+            <field name="name">DJ Services - Wedding Premier</field>
+            <field name="default_code">DJ-WED-PRM</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">650.00</field>
+            <field name="standard_price">300.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Scripted MC, dance floor lighting, sub, wireless mic. Guest count: 251-500. Minimum 5 hours. Add-ons: Guest request app, intro voiceover, video booth.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- MC SERVICES - SOCIAL (Classic & Premier ONLY) -->
+        <!-- ============================================ -->
+        
+        <!-- MC Social Classic -->
+        <record id="product_mc_social_classic" model="product.product">
+            <field name="name">MC Services - Social Classic</field>
+            <field name="default_code">MC-SOC-CLS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">300.00</field>
+            <field name="standard_price">150.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Professional MC for social events. Intro announcements, crowd engagement, event flow management. Minimum 2 hours.</field>
+        </record>
+
+        <!-- MC Social Premier -->
+        <record id="product_mc_social_premier" model="product.product">
+            <field name="name">MC Services - Social Premier</field>
+            <field name="default_code">MC-SOC-PRM</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">450.00</field>
+            <field name="standard_price">225.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Premium MC for social events. Scripted hosting, interactive engagement, full event coordination. Minimum 2 hours.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- MC SERVICES - CORPORATE (Classic & Premier ONLY) -->
+        <!-- ============================================ -->
+        
+        <!-- MC Corporate Classic -->
+        <record id="product_mc_corporate_classic" model="product.product">
+            <field name="name">MC Services - Corporate Classic</field>
+            <field name="default_code">MC-CRP-CLS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">350.00</field>
+            <field name="standard_price">175.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Professional MC for corporate events. Announcements, introductions, agenda management. Minimum 2 hours.</field>
+        </record>
+
+        <!-- MC Corporate Premier -->
+        <record id="product_mc_corporate_premier" model="product.product">
+            <field name="name">MC Services - Corporate Premier</field>
+            <field name="default_code">MC-CRP-PRM</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">500.00</field>
+            <field name="standard_price">250.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Premium MC for corporate events. Executive-level hosting, keynote introductions, awards presentation. Minimum 2 hours.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- MC SERVICES - WEDDING (Classic & Premier ONLY) -->
+        <!-- ============================================ -->
+        
+        <!-- MC Wedding Classic -->
+        <record id="product_mc_wedding_classic" model="product.product">
+            <field name="name">MC Services - Wedding Classic</field>
+            <field name="default_code">MC-WED-CLS</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">400.00</field>
+            <field name="standard_price">200.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Professional MC for weddings. Introductions, toasts, reception flow management. Minimum 4 hours.</field>
+        </record>
+
+        <!-- MC Wedding Premier -->
+        <record id="product_mc_wedding_premier" model="product.product">
+            <field name="name">MC Services - Wedding Premier</field>
+            <field name="default_code">MC-WED-PRM</field>
+            <field name="categ_id" ref="product_category_dj_mc"/>
+            <field name="type">service</field>
+            <field name="sale_ok">True</field>
+            <field name="purchase_ok">True</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="list_price">550.00</field>
+            <field name="standard_price">275.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Premium MC for weddings. Full scripted hosting, timeline coordination, seamless event flow. Minimum 5 hours.</field>
+        </record>
+
+    </data>
+</odoo>
