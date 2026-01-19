@@ -34,6 +34,7 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
         "views/project_project_views.xml",
         "views/sale_order_type_views.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": True,
     "auto_install": False,

@@ -10,8 +10,8 @@
             <field name="priority">25</field>
             <field name="arch" type="xml">
                 
-                <!-- Add Event Type Template near event info -->
-                <xpath expr="//field[@name='ptt_event_name']" position="before">
+                <!-- Add Event Type Template inside Event Information -->
+                <xpath expr="//page[@name='ptt_event']//group/group/field[@name='ptt_event_name']" position="before">
                     <field name="ptt_event_type_id" 
                            options="{'no_create': True}"
                            placeholder="Select event template..."/>

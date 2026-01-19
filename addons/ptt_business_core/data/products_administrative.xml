@@ -148,7 +148,7 @@
         <record id="product_template_misc_entertainment_untaxed" model="product.template">
             <field name="name">* Misc Event Entertainment Services (Untaxed)</field>
             <field name="default_code">MISC-ENT-UT</field>
-            <field name="categ_id" ref="product_category_entertainment"/>
+            <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>

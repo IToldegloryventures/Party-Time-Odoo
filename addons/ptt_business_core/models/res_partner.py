@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import models, fields, _
 
 from odoo.addons.ptt_business_core.constants import SERVICE_TYPES
 
@@ -47,6 +47,11 @@ class ResPartner(models.Model):
         ],
         string="Client Type",
     )
+
+    ptt_opportunity_count = fields.Integer(
+        string="Opportunities",
+        compute="_compute_ptt_opportunity_count",
+    )
     
     # Preferred contact method
     ptt_preferred_contact = fields.Selection(
@@ -57,6 +62,34 @@ class ResPartner(models.Model):
         ],
         string="Preferred Contact Method",
     )
+
+    def _compute_ptt_opportunity_count(self):
+        """Count related opportunities for client contacts."""
+        lead_model = self.env["crm.lead"]
+        for partner in self:
+            if not partner.ptt_is_client:
+                partner.ptt_opportunity_count = 0
+                continue
+            partner.ptt_opportunity_count = lead_model.search_count([
+                ("partner_id", "child_of", partner.id),
+                ("type", "=", "opportunity"),
+            ])
+
+    def action_view_ptt_opportunities(self):
+        """Open related opportunities for this contact."""
+        self.ensure_one()
+        action = self.env.ref("crm.crm_lead_action_pipeline").read()[0]
+        action["domain"] = [
+            ("partner_id", "child_of", self.id),
+            ("type", "=", "opportunity"),
+        ]
+        action["context"] = {
+            **self.env.context,
+            "default_partner_id": self.id,
+            "default_type": "opportunity",
+        }
+        action["name"] = _("Opportunities")
+        return action
 
 
 class PttVendorServiceType(models.Model):

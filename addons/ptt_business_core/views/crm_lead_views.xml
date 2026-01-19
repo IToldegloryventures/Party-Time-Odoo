@@ -91,57 +91,6 @@
                         </group>
                     </page>
 
-                    <!-- Service Notes - For sales rep notes about client needs -->
-                    <page string="Service Notes" name="ptt_services">
-                        <div class="alert alert-info" role="alert">
-                            <strong>Service Notes</strong> - 
-                            Record notes about the client's specific needs, preferences, and requirements for each service category.
-                        </div>
-                        
-                        <!-- Services Requested Checkboxes -->
-                        <separator string="Services Requested"/>
-                        <group>
-                            <group string="Entertainment">
-                                <field name="ptt_service_dj"/>
-                                <field name="ptt_service_live_entertainment"/>
-                                <field name="ptt_service_photobooth"/>
-                                <field name="ptt_service_casino"/>
-                                <field name="ptt_service_caricature"/>
-                            </group>
-                            <group string="Production">
-                                <field name="ptt_service_photovideo"/>
-                                <field name="ptt_service_lighting"/>
-                                <field name="ptt_service_decor"/>
-                            </group>
-                            <group string="Logistics">
-                                <field name="ptt_service_venue_sourcing"/>
-                                <field name="ptt_service_catering"/>
-                                <field name="ptt_service_transportation"/>
-                                <field name="ptt_service_rentals"/>
-                                <field name="ptt_service_staffing"/>
-                            </group>
-                        </group>
-                        
-                        <!-- Service-Specific Notes (conditional) -->
-                        <group string="DJ Notes" invisible="not ptt_service_dj">
-                            <field name="ptt_dj_music_styles"/>
-                            <field name="ptt_dj_mc_needed"/>
-                            <field name="ptt_dj_karaoke"/>
-                        </group>
-                        <group string="Photo Booth Notes" invisible="not ptt_service_photobooth">
-                            <field name="ptt_photobooth_type"/>
-                            <field name="ptt_photobooth_branding"/>
-                        </group>
-                        <group string="Casino Notes" invisible="not ptt_service_casino">
-                            <field name="ptt_casino_games"/>
-                            <field name="ptt_casino_player_count"/>
-                        </group>
-                        
-                        <!-- General Service Notes Text Area -->
-                        <separator string="Additional Notes"/>
-                        <field name="ptt_service_notes" placeholder="Enter any additional notes about the client's service needs, special requests, or important details..." nolabel="1"/>
-                    </page>
-
                     <!-- Service Lines (Structured Quote Building) -->
                     <page string="Service Lines" name="ptt_service_lines">
                         <div class="alert alert-info" role="alert">
@@ -174,6 +123,10 @@
                             <field name="ptt_service_lines_total" widget="monetary" 
                                    class="oe_subtotal_footer_separator"/>
                         </group>
+
+                        <separator string="Service Notes"/>
+                        <field name="ptt_service_notes" nolabel="1"
+                               placeholder="Enter any additional notes about the client's service needs, special requests, or important details..."/>
                     </page>
 
                     <!-- Budget & Vendors -->

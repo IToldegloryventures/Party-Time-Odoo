@@ -8,24 +8,33 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//notebook" position="inside">
-                    <page string="PTT Info" name="ptt_info">
-                        <group>
-                            <group string="Classification">
-                                <field name="ptt_is_vendor"/>
-                                <field name="ptt_is_client"/>
-                                <field name="ptt_client_type" invisible="not ptt_is_client"/>
-                                <field name="ptt_preferred_contact"/>
-                            </group>
-                            <group string="Vendor Details" invisible="not ptt_is_vendor">
-                                <field name="ptt_vendor_service_types" widget="many2many_tags"/>
-                                <field name="ptt_vendor_rating"/>
-                            </group>
-                        </group>
-                        <group string="Vendor Notes" invisible="not ptt_is_vendor">
-                            <field name="ptt_vendor_notes" nolabel="1" placeholder="Internal notes about this vendor..."/>
-                        </group>
-                    </page>
+                <xpath expr="//field[@name='company_type']" position="after">
+                    <field name="ptt_is_vendor"/>
+                    <field name="ptt_is_client"/>
+                </xpath>
+
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_ptt_opportunities" type="object"
+                        class="oe_stat_button" icon="fa-bullseye"
+                        invisible="not ptt_is_client">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value"><field name="ptt_opportunity_count"/></span>
+                            <span class="o_stat_text">Opportunities</span>
+                        </div>
+                    </button>
+                </xpath>
+
+                <xpath expr="//page[@name='sales_purchases']" position="inside">
+                    <group string="PTT Classification">
+                        <field name="ptt_client_type" invisible="not ptt_is_client"/>
+                        <field name="ptt_preferred_contact"/>
+                    </group>
+                    <group string="Vendor Details" invisible="not ptt_is_vendor">
+                        <field name="ptt_vendor_service_types" widget="many2many_tags"/>
+                        <field name="ptt_vendor_rating" widget="priority"/>
+                        <field name="ptt_vendor_notes" nolabel="1"
+                               placeholder="Internal notes about this vendor..."/>
+                    </group>
                 </xpath>
             </field>
         </record>
