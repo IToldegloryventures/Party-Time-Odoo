@@ -44,15 +44,10 @@ class TestCrmLeadProjectFlow(TransactionCase):
             'x_studio_event_date': '2026-06-15',
             'ptt_guest_count': 200,
             'x_studio_venue_name': 'Grand Ballroom',
-            'ptt_service_dj': True,
-            'ptt_service_photovideo': True,
         })
         
         self.assertEqual(lead.x_studio_event_name, 'Annual Company Gala')
         self.assertEqual(lead.ptt_guest_count, 200)
-        self.assertTrue(lead.ptt_service_dj)
-        self.assertTrue(lead.ptt_service_photovideo)
-        self.assertFalse(lead.ptt_service_lighting)
         
     def test_crm_lead_vendor_estimates(self):
         """Test adding vendor estimates to a lead."""

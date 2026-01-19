@@ -1,80 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 
+    <!--
         Entertainment Products & Services
+        ALL services have: Event Type (Social, Corporate, Wedding) × Service Tier (Essential, Classic, Premier)
+        Services with additional variants also have their type-specific attributes
         
-        DJ PRICING MODEL (from spreadsheet):
-        - list_price = BASE hourly rate ($300 = Social Essential MIN)
-        - Variant pricing via product.template.attribute.value price_extra
-        - UoM = Hours
-        
-        Price Extras (added to base $300):
-        - Event Type: Social=0, Corporate=0, Wedding=+$50
-        - Service Tier: Essentials=0, Classic=+$125, Premier=+$300
-        
-        Example: Wedding Premier = $300 + $50 + $300 = $650/hr
-        
-        NOTE: service_tracking='task_in_project' creates tasks when SO is confirmed.
+        Based on: QuickBooks ProductsServicesList export
     -->
     <data noupdate="0">
-        <!-- ============================================ -->
-        <!-- DJ SERVICES - PRODUCT TEMPLATE              -->
-        <!-- Creates 9 variants via attributes           -->
-        <!-- Base price: $300/hr (Social Essential MIN)  -->
-        <!-- ============================================ -->
+        
+        <!-- ================================================================ -->
+        <!-- DJ SERVICES - Event Type × Service Tier (9 variants)            -->
+        <!-- ================================================================ -->
         <record id="product_template_dj_services" model="product.template">
-            <field name="name">* DJ &amp; MC Services</field>
+            <field name="name">DJ Services</field>
             <field name="default_code">DJ-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">300.0</field>
             <field name="standard_price">150.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional DJ services for your event. Pricing is per hour. Package inclusions and rates vary by Event Type and Service Tier selected. Minimum hours may apply based on tier.</field>
+            <field name="description_sale">Professional DJ services. Pricing varies by Event Type and Service Tier.</field>
         </record>
-
-        <!-- Link Event Type Attribute to DJ Template -->
         <record id="dj_event_type_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_template_dj_services"/>
             <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [
-                ref('pav_event_social'),
-                ref('pav_event_corporate'),
-                ref('pav_event_wedding'),
-            ])]"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
         </record>
-
-        <!-- Link Service Tier Attribute to DJ Template -->
         <record id="dj_service_tier_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_template_dj_services"/>
             <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [
-                ref('pav_tier_essentials'),
-                ref('pav_tier_classic'),
-                ref('pav_tier_premier'),
-            ])]"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- MC SERVICES - Separate Product (Add-on)     -->
-        <!-- ============================================ -->
-        <!-- MC SERVICES (Event Type × Tier: Classic/Premier only) -->
-        <!-- ============================================ -->
+        <!-- ================================================================ -->
+        <!-- MC SERVICES - Event Type × Service Tier (Classic/Premier only)  -->
+        <!-- ================================================================ -->
         <record id="product_template_mc_services" model="product.template">
-            <field name="name">* MC Services</field>
+            <field name="name">MC Services</field>
             <field name="default_code">MC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">75.0</field>
             <field name="standard_price">50.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional MC/Host services. Classic and Premier tiers available.</field>
+            <field name="description_sale">Professional MC/Host services. Classic and Premier tiers only.</field>
         </record>
         <record id="mc_event_type_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_template_mc_services"/>
@@ -87,22 +65,22 @@
             <field name="value_ids" eval="[(6, 0, [ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- BAND SERVICES - PRODUCT TEMPLATE (9 VARIANTS) -->
-        <!-- ============================================ -->
+        <!-- ================================================================ -->
+        <!-- BAND SERVICES - Event Type × Service Tier                       -->
+        <!-- ================================================================ -->
         <record id="product_template_band_services" model="product.template">
-            <field name="name">* Band Services</field>
+            <field name="name">Band Services</field>
             <field name="default_code">BAND-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Live band performance for your event. Select Event Type and Service Tier.</field>
+            <field name="description_sale">Live band performance for your event.</field>
         </record>
-        
         <record id="band_event_type_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_template_band_services"/>
             <field name="attribute_id" ref="pa_event_type"/>
@@ -114,213 +92,52 @@
             <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- MUSICIAN SERVICES (Solo, Duet, Trio, Quartet, Band) -->
-        <!-- ============================================ -->
+        <!-- ================================================================ -->
+        <!-- MUSICIAN SERVICES - Musician Type × Event Type × Service Tier   -->
+        <!-- ================================================================ -->
         <record id="product_template_musician_services" model="product.template">
-            <field name="name">* Musician Services</field>
+            <field name="name">Musician Services</field>
             <field name="default_code">MUSIC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional musician services. Solo, Duet, Trio, Quartet, or Band available.</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Professional musician services. Solo, Duet, Trio, Quartet, or Band.</field>
         </record>
         <record id="musician_type_attribute_line" model="product.template.attribute.line">
             <field name="product_tmpl_id" ref="product_template_musician_services"/>
             <field name="attribute_id" ref="pa_musician_type"/>
             <field name="value_ids" eval="[(6, 0, [ref('pav_musician_solo'), ref('pav_musician_duet'), ref('pav_musician_trio'), ref('pav_musician_quartet'), ref('pav_musician_band')])]"/>
         </record>
-
-        <!-- ============================================ -->
-        <!-- CASINO SERVICES (Package/Single variants)   -->
-        <!-- ============================================ -->
-        <record id="product_template_casino_services" model="product.template">
-            <field name="name">* Casino Services</field>
-            <field name="default_code">CASINO-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Casino services for your event. Package and single table options.</field>
+        <record id="musician_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_musician_services"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
         </record>
-        <record id="casino_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_casino_services"/>
-            <field name="attribute_id" ref="pa_casino_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_casino_package'), ref('pav_casino_single')])]"/>
+        <record id="musician_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_musician_services"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- MAGICIANS (Stage, Walk Around, Card)        -->
-        <!-- ============================================ -->
-        <record id="product_template_magicians" model="product.template">
-            <field name="name">* Magician Services</field>
-            <field name="default_code">MAGIC-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional magic entertainment. Stage Magic, Walk Around, or Card options.</field>
-        </record>
-        <record id="magician_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_magicians"/>
-            <field name="attribute_id" ref="pa_magician_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_magician_stage'), ref('pav_magician_walkaround'), ref('pav_magician_card')])]"/>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- PSYCHICS (Tarot, Hypnotist, Mentalist, Palm)-->
-        <!-- ============================================ -->
-        <record id="product_template_psychics" model="product.template">
-            <field name="name">* Psychic Services</field>
-            <field name="default_code">PSYCHIC-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Psychic entertainment. Tarot, Hypnotist, Mentalist, Palm Reader options.</field>
-        </record>
-        <record id="psychic_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_psychics"/>
-            <field name="attribute_id" ref="pa_psychic_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_psychic_tarot'), ref('pav_psychic_hypnotist'), ref('pav_psychic_mentalist'), ref('pav_psychic_palm')])]"/>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- COMEDIAN (Single - no variants)             -->
-        <!-- ============================================ -->
-        <record id="product_template_comedian" model="product.template">
-            <field name="name">* Comedian</field>
-            <field name="default_code">COMEDY-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional comedy entertainment for your event.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- OFFICIANT SERVICES (Single - no variants)   -->
-        <!-- ============================================ -->
-        <record id="product_template_officiant" model="product.template">
-            <field name="name">* Officiant Services</field>
-            <field name="default_code">OFFICIANT-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional officiant services for ceremonies.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- CARICATURE (Traditional/Digital variants)   -->
-        <!-- ============================================ -->
-        <record id="product_template_caricature" model="product.template">
-            <field name="name">* Caricature Artist</field>
-            <field name="default_code">CARIC-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Traditional or Digital Caricature Artist services.</field>
-        </record>
-        <record id="caricature_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_caricature"/>
-            <field name="attribute_id" ref="pa_caricature_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_caricature_traditional'), ref('pav_caricature_digital')])]"/>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- BALLOON ARTIST (Single - no variants)       -->
-        <!-- ============================================ -->
-        <record id="product_template_balloon_artist" model="product.template">
-            <field name="name">* Balloon Artist</field>
-            <field name="default_code">BALLOON-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Balloon twisting and sculpting artist.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- FACE PAINTERS (Single - no variants)        -->
-        <!-- ============================================ -->
-        <record id="product_template_face_painters" model="product.template">
-            <field name="name">* Face Painters</field>
-            <field name="default_code">FACE-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional face painting services.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- AIRBRUSH TATTOO (Single - no variants)      -->
-        <!-- ============================================ -->
-        <record id="product_template_airbrush_tattoo" model="product.template">
-            <field name="name">* Airbrush Tattoo</field>
-            <field name="default_code">AIRBRUSH-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Temporary airbrush tattoo services.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- PETTING ZOO (Package/Individual variants)   -->
-        <!-- ============================================ -->
-        <record id="product_template_petting_zoo" model="product.template">
-            <field name="name">* Petting Zoo</field>
-            <field name="default_code">PETZOO-SVC</field>
-            <field name="categ_id" ref="product_category_misc_untaxed"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Petting zoo services. Package or Individual animal options.</field>
-        </record>
-        <record id="petting_zoo_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_petting_zoo"/>
-            <field name="attribute_id" ref="pa_petting_zoo_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_zoo_package'), ref('pav_zoo_individual')])]"/>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- DANCERS (Line, Aerial, Other variants)      -->
-        <!-- ============================================ -->
+        <!-- ================================================================ -->
+        <!-- DANCERS - Dancer Type × Event Type × Service Tier               -->
+        <!-- ================================================================ -->
         <record id="product_template_dancers" model="product.template">
-            <field name="name">* Dancers</field>
+            <field name="name">Dancers</field>
             <field name="default_code">DANCER-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional dancers. Line dancers, Aerial performers, and more.</field>
         </record>
         <record id="dancer_type_attribute_line" model="product.template.attribute.line">
@@ -328,19 +145,31 @@
             <field name="attribute_id" ref="pa_dancer_type"/>
             <field name="value_ids" eval="[(6, 0, [ref('pav_dancer_line'), ref('pav_dancer_aerial'), ref('pav_dancer_other')])]"/>
         </record>
+        <record id="dancer_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_dancers"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="dancer_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_dancers"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
 
-        <!-- ============================================ -->
-        <!-- CHARACTERS (Stilt, Santa, Other variants)   -->
-        <!-- ============================================ -->
+        <!-- ================================================================ -->
+        <!-- CHARACTERS - Character Type × Event Type × Service Tier         -->
+        <!-- ================================================================ -->
         <record id="product_template_characters" model="product.template">
-            <field name="name">* Characters</field>
+            <field name="name">Characters</field>
             <field name="default_code">CHAR-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Character performers. Stilt walkers, Santa, and other characters.</field>
         </record>
         <record id="character_type_attribute_line" model="product.template.attribute.line">
@@ -348,125 +177,171 @@
             <field name="attribute_id" ref="pa_character_type"/>
             <field name="value_ids" eval="[(6, 0, [ref('pav_char_stilt'), ref('pav_char_santa'), ref('pav_char_other')])]"/>
         </record>
-
-        <!-- ============================================ -->
-        <!-- BALLOON DECOR (Single - no variants)        -->
-        <!-- ============================================ -->
-        <record id="product_template_balloon_decor" model="product.template">
-            <field name="name">* Balloon Decor</field>
-            <field name="default_code">BALLOON-DECOR</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Balloon decor and installations for events.</field>
+        <record id="character_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_characters"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="character_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_characters"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- BED DECOR (Single - Non-Inventory)          -->
-        <!-- ============================================ -->
-        <record id="product_template_bed_decor" model="product.template">
-            <field name="name">* Bed Decor</field>
-            <field name="default_code">BED-DECOR</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Bed decor services.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- TIPS GIVEN (Single - no variants)           -->
-        <!-- ============================================ -->
-        <record id="product_template_tips_given" model="product.template">
-            <field name="name">* Tips Given</field>
-            <field name="default_code">TIPS</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Tips and gratuities.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- FACE PAINTERS (Single)                      -->
-        <!-- ============================================ -->
-        <record id="product_template_face_painters" model="product.template">
-            <field name="name">* Face Painters</field>
-            <field name="default_code">FACE-PAINT</field>
+        <!-- ================================================================ -->
+        <!-- CASINO SERVICES - Casino Type × Event Type × Service Tier       -->
+        <!-- ================================================================ -->
+        <record id="product_template_casino_services" model="product.template">
+            <field name="name">Casino Services</field>
+            <field name="default_code">CASINO-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional face painting services for events.</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Casino services. Package and single table options.</field>
+        </record>
+        <record id="casino_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_casino_services"/>
+            <field name="attribute_id" ref="pa_casino_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_casino_package'), ref('pav_casino_single')])]"/>
+        </record>
+        <record id="casino_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_casino_services"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="casino_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_casino_services"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- BALLOON ARTIST (Single)                     -->
-        <!-- ============================================ -->
-        <record id="product_template_balloon_artist" model="product.template">
-            <field name="name">* Balloon Artist</field>
-            <field name="default_code">BALLOON-ART</field>
+        <!-- ================================================================ -->
+        <!-- PSYCHICS - Psychic Type × Event Type × Service Tier             -->
+        <!-- ================================================================ -->
+        <record id="product_template_psychics" model="product.template">
+            <field name="name">Psychics</field>
+            <field name="default_code">PSYCHIC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional balloon artist for balloon twisting and sculptures.</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Psychic entertainment. Palm Reader, Tarot, Hypnotist, Mentalist.</field>
+        </record>
+        <record id="psychic_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_psychics"/>
+            <field name="attribute_id" ref="pa_psychic_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_psychic_palm'), ref('pav_psychic_tarot'), ref('pav_psychic_hypnotist'), ref('pav_psychic_mentalist')])]"/>
+        </record>
+        <record id="psychic_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_psychics"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="psychic_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_psychics"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- AIRBRUSH TATTOO (Single)                    -->
-        <!-- ============================================ -->
-        <record id="product_template_airbrush_tattoo" model="product.template">
-            <field name="name">* Airbrush Tattoo</field>
-            <field name="default_code">AIRBRUSH</field>
+        <!-- ================================================================ -->
+        <!-- MAGICIANS - Magician Type × Event Type × Service Tier           -->
+        <!-- ================================================================ -->
+        <record id="product_template_magicians" model="product.template">
+            <field name="name">Magicians</field>
+            <field name="default_code">MAGIC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Airbrush temporary tattoo services for events.</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Professional magic. Stage Magic, Walk Around, Card.</field>
+        </record>
+        <record id="magician_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_magicians"/>
+            <field name="attribute_id" ref="pa_magician_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_magician_stage'), ref('pav_magician_walkaround'), ref('pav_magician_card')])]"/>
+        </record>
+        <record id="magician_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_magicians"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="magician_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_magicians"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- COMEDIAN (Single)                           -->
-        <!-- ============================================ -->
+        <!-- ================================================================ -->
+        <!-- COMEDIAN - Event Type × Service Tier                            -->
+        <!-- ================================================================ -->
         <record id="product_template_comedian" model="product.template">
-            <field name="name">* Comedian</field>
-            <field name="default_code">COMEDIAN</field>
+            <field name="name">Comedian</field>
+            <field name="default_code">COMEDY-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Professional comedian for event entertainment.</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Professional comedy entertainment.</field>
+        </record>
+        <record id="comedian_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_comedian"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="comedian_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_comedian"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- OFFICIANT SERVICES (Single)                 -->
-        <!-- ============================================ -->
-        <record id="product_template_officiant" model="product.template">
-            <field name="name">* Officiant Services</field>
-            <field name="default_code">OFFICIANT</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
+        <!-- ================================================================ -->
+        <!-- PETTING ZOO - Zoo Type × Event Type × Service Tier              -->
+        <!-- ================================================================ -->
+        <record id="product_template_petting_zoo" model="product.template">
+            <field name="name">Petting Zoo</field>
+            <field name="default_code">PETZOO-SVC</field>
+            <field name="categ_id" ref="product_category_misc_untaxed"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Wedding officiant services.</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="description_sale">Petting zoo services. Package or Individual animal options.</field>
         </record>
+        <record id="petting_zoo_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_petting_zoo"/>
+            <field name="attribute_id" ref="pa_petting_zoo_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_zoo_package'), ref('pav_zoo_individual')])]"/>
+        </record>
+        <record id="petting_zoo_event_type_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_petting_zoo"/>
+            <field name="attribute_id" ref="pa_event_type"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
+        </record>
+        <record id="petting_zoo_tier_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_template_petting_zoo"/>
+            <field name="attribute_id" ref="pa_service_tier"/>
+            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+        </record>
+
     </data>
 </odoo>

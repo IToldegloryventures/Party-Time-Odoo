@@ -154,5 +154,52 @@
             <field name="purchase_ok" eval="False"/>
             <field name="description_sale">Performance bonus or penalty adjustment.</field>
         </record>
+
+        <!-- ============================================ -->
+        <!-- BAD DEBT                                    -->
+        <!-- ============================================ -->
+        <record id="product_template_bad_debt" model="product.template">
+            <field name="name">* Bad Debt</field>
+            <field name="default_code">BADDEBT</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Bad debt write-off adjustment.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- MISC EVENT ENTERTAINMENT SERVICES (UNTAXED) -->
+        <!-- ============================================ -->
+        <record id="product_template_misc_untaxed" model="product.template">
+            <field name="name">Misc Event Entertainment Services (Untaxed)</field>
+            <field name="default_code">MISC-UNTAXED</field>
+            <field name="categ_id" ref="product_category_misc_untaxed"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Miscellaneous untaxed event entertainment services.</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- MISC EVENT SERVICES (TAXED)                 -->
+        <!-- ============================================ -->
+        <record id="product_template_misc_taxed" model="product.template">
+            <field name="name">Misc Event Services (Taxed)</field>
+            <field name="default_code">MISC-TAXED</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="description_sale">Miscellaneous taxed event services.</field>
+        </record>
     </data>
 </odoo>

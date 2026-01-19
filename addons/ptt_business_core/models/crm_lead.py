@@ -86,23 +86,6 @@ class CrmLead(models.Model):
     )
 
     # =========================================================================
-    # SERVICES REQUESTED (Simple Boolean Flags)
-    # =========================================================================
-    ptt_service_dj = fields.Boolean(string="DJ/MC Services")
-    ptt_service_photovideo = fields.Boolean(string="Photo/Video")
-    ptt_service_live_entertainment = fields.Boolean(string="Live Entertainment")
-    ptt_service_lighting = fields.Boolean(string="Lighting/AV")
-    ptt_service_decor = fields.Boolean(string="Decor/Thematic Design")
-    ptt_service_venue_sourcing = fields.Boolean(string="Venue Sourcing")
-    ptt_service_catering = fields.Boolean(string="Catering")
-    ptt_service_transportation = fields.Boolean(string="Transportation")
-    ptt_service_rentals = fields.Boolean(string="Rentals")
-    x_studio_photo_booth = fields.Boolean(string="Photo Booth")
-    ptt_service_caricature = fields.Boolean(string="Caricature Artists")
-    ptt_service_casino = fields.Boolean(string="Casino Services")
-    ptt_service_staffing = fields.Boolean(string="Event Staffing")
-
-    # =========================================================================
     # SERVICE DETAILS (Optional - Captured When Relevant)
     # =========================================================================
     # DJ Details
