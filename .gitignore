@@ -69,3 +69,8 @@ NOTES/
 # Local tooling and scratch
 .local/
 
+
+# AI Tool Configuration (local only)
+.claude/
+.cursor/
+
