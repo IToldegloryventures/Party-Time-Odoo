@@ -21,7 +21,7 @@
         <!-- Base price: $300/hr (Social Essential MIN)  -->
         <!-- ============================================ -->
         <record id="product_template_dj_services" model="product.template">
-            <field name="name">DJ &amp; MC Services</field>
+            <field name="name">* DJ &amp; MC Services</field>
             <field name="default_code">DJ-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -61,7 +61,7 @@
         <!-- MC SERVICES (Event Type × Tier: Classic/Premier only) -->
         <!-- ============================================ -->
         <record id="product_template_mc_services" model="product.template">
-            <field name="name">MC Services</field>
+            <field name="name">* MC Services</field>
             <field name="default_code">MC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -87,7 +87,7 @@
         <!-- BAND SERVICES - PRODUCT TEMPLATE (9 VARIANTS) -->
         <!-- ============================================ -->
         <record id="product_template_band_services" model="product.template">
-            <field name="name">Band Services</field>
+            <field name="name">* Band Services</field>
             <field name="default_code">BAND-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -113,7 +113,7 @@
         <!-- MUSICIAN SERVICES (Solo, Duet, Trio, Quartet, Band) -->
         <!-- ============================================ -->
         <record id="product_template_musician_services" model="product.template">
-            <field name="name">Musician Services</field>
+            <field name="name">* Musician Services</field>
             <field name="default_code">MUSIC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -133,7 +133,7 @@
         <!-- CASINO SERVICES (Package/Single variants)   -->
         <!-- ============================================ -->
         <record id="product_template_casino_services" model="product.template">
-            <field name="name">Casino Services</field>
+            <field name="name">* Casino Services</field>
             <field name="default_code">CASINO-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -153,7 +153,7 @@
         <!-- MAGICIANS (Stage, Walk Around, Card)        -->
         <!-- ============================================ -->
         <record id="product_template_magicians" model="product.template">
-            <field name="name">Magician Services</field>
+            <field name="name">* Magician Services</field>
             <field name="default_code">MAGIC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -173,7 +173,7 @@
         <!-- PSYCHICS (Tarot, Hypnotist, Mentalist, Palm)-->
         <!-- ============================================ -->
         <record id="product_template_psychics" model="product.template">
-            <field name="name">Psychic Services</field>
+            <field name="name">* Psychic Services</field>
             <field name="default_code">PSYCHIC-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -193,7 +193,7 @@
         <!-- COMEDIAN (Single - no variants)             -->
         <!-- ============================================ -->
         <record id="product_template_comedian" model="product.template">
-            <field name="name">Comedian</field>
+            <field name="name">* Comedian</field>
             <field name="default_code">COMEDY-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -208,7 +208,7 @@
         <!-- OFFICIANT SERVICES (Single - no variants)   -->
         <!-- ============================================ -->
         <record id="product_template_officiant" model="product.template">
-            <field name="name">Officiant Services</field>
+            <field name="name">* Officiant Services</field>
             <field name="default_code">OFFICIANT-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -223,7 +223,7 @@
         <!-- CARICATURE (Traditional/Digital variants)   -->
         <!-- ============================================ -->
         <record id="product_template_caricature" model="product.template">
-            <field name="name">Caricature Artist</field>
+            <field name="name">* Caricature Artist</field>
             <field name="default_code">CARIC-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -243,7 +243,7 @@
         <!-- BALLOON ARTIST (Single - no variants)       -->
         <!-- ============================================ -->
         <record id="product_template_balloon_artist" model="product.template">
-            <field name="name">Balloon Artist</field>
+            <field name="name">* Balloon Artist</field>
             <field name="default_code">BALLOON-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -258,7 +258,7 @@
         <!-- FACE PAINTERS (Single - no variants)        -->
         <!-- ============================================ -->
         <record id="product_template_face_painters" model="product.template">
-            <field name="name">Face Painters</field>
+            <field name="name">* Face Painters</field>
             <field name="default_code">FACE-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -273,7 +273,7 @@
         <!-- AIRBRUSH TATTOO (Single - no variants)      -->
         <!-- ============================================ -->
         <record id="product_template_airbrush_tattoo" model="product.template">
-            <field name="name">Airbrush Tattoo</field>
+            <field name="name">* Airbrush Tattoo</field>
             <field name="default_code">AIRBRUSH-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -288,7 +288,7 @@
         <!-- PETTING ZOO (Package/Individual variants)   -->
         <!-- ============================================ -->
         <record id="product_template_petting_zoo" model="product.template">
-            <field name="name">Petting Zoo</field>
+            <field name="name">* Petting Zoo</field>
             <field name="default_code">PETZOO-SVC</field>
             <field name="categ_id" ref="product_category_misc_untaxed"/>
             <field name="type">service</field>
@@ -308,7 +308,7 @@
         <!-- DANCERS (Line, Aerial, Other variants)      -->
         <!-- ============================================ -->
         <record id="product_template_dancers" model="product.template">
-            <field name="name">Dancers</field>
+            <field name="name">* Dancers</field>
             <field name="default_code">DANCER-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -328,7 +328,7 @@
         <!-- CHARACTERS (Stilt, Santa, Other variants)   -->
         <!-- ============================================ -->
         <record id="product_template_characters" model="product.template">
-            <field name="name">Characters</field>
+            <field name="name">* Characters</field>
             <field name="default_code">CHAR-SVC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -348,7 +348,7 @@
         <!-- BALLOON DECOR (Single - no variants)        -->
         <!-- ============================================ -->
         <record id="product_template_balloon_decor" model="product.template">
-            <field name="name">Balloon Decor</field>
+            <field name="name">* Balloon Decor</field>
             <field name="default_code">BALLOON-DECOR</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -363,7 +363,7 @@
         <!-- BED DECOR (Single - Non-Inventory)          -->
         <!-- ============================================ -->
         <record id="product_template_bed_decor" model="product.template">
-            <field name="name">Bed Decor</field>
+            <field name="name">* Bed Decor</field>
             <field name="default_code">BED-DECOR</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -378,7 +378,7 @@
         <!-- TIPS GIVEN (Single - no variants)           -->
         <!-- ============================================ -->
         <record id="product_template_tips_given" model="product.template">
-            <field name="name">Tips Given</field>
+            <field name="name">* Tips Given</field>
             <field name="default_code">TIPS</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -393,7 +393,7 @@
         <!-- FACE PAINTERS (Single)                      -->
         <!-- ============================================ -->
         <record id="product_template_face_painters" model="product.template">
-            <field name="name">Face Painters</field>
+            <field name="name">* Face Painters</field>
             <field name="default_code">FACE-PAINT</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -408,7 +408,7 @@
         <!-- BALLOON ARTIST (Single)                     -->
         <!-- ============================================ -->
         <record id="product_template_balloon_artist" model="product.template">
-            <field name="name">Balloon Artist</field>
+            <field name="name">* Balloon Artist</field>
             <field name="default_code">BALLOON-ART</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -423,7 +423,7 @@
         <!-- AIRBRUSH TATTOO (Single)                    -->
         <!-- ============================================ -->
         <record id="product_template_airbrush_tattoo" model="product.template">
-            <field name="name">Airbrush Tattoo</field>
+            <field name="name">* Airbrush Tattoo</field>
             <field name="default_code">AIRBRUSH</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -438,7 +438,7 @@
         <!-- COMEDIAN (Single)                           -->
         <!-- ============================================ -->
         <record id="product_template_comedian" model="product.template">
-            <field name="name">Comedian</field>
+            <field name="name">* Comedian</field>
             <field name="default_code">COMEDIAN</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -453,7 +453,7 @@
         <!-- OFFICIANT SERVICES (Single)                 -->
         <!-- ============================================ -->
         <record id="product_template_officiant" model="product.template">
-            <field name="name">Officiant Services</field>
+            <field name="name">* Officiant Services</field>
             <field name="default_code">OFFICIANT</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>

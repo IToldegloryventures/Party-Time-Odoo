@@ -14,7 +14,7 @@
         <!-- ============================================ -->
         
         <record id="product_addon_extra_hour" model="product.template">
-            <field name="name">DJ Extra Hour</field>
+            <field name="name">* DJ Extra Hour</field>
             <field name="default_code">DJ-ADDON-HOUR</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -27,7 +27,7 @@
         </record>
 
         <record id="product_addon_lighting_upgrade" model="product.template">
-            <field name="name">Lighting Upgrade Package</field>
+            <field name="name">* Lighting Upgrade Package</field>
             <field name="default_code">DJ-ADDON-LIGHT</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -40,7 +40,7 @@
         </record>
 
         <record id="product_addon_mc_services" model="product.template">
-            <field name="name">MC Services Add-on</field>
+            <field name="name">* MC Services Add-on</field>
             <field name="default_code">DJ-ADDON-MC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -53,7 +53,7 @@
         </record>
 
         <record id="product_addon_assistant_dj" model="product.template">
-            <field name="name">Assistant DJ</field>
+            <field name="name">* Assistant DJ</field>
             <field name="default_code">DJ-ADDON-ASSIST</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -66,7 +66,7 @@
         </record>
 
         <record id="product_addon_song_request_queue" model="product.template">
-            <field name="name">Song Request Queue System</field>
+            <field name="name">* Song Request Queue System</field>
             <field name="default_code">DJ-ADDON-QUEUE</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -79,7 +79,7 @@
         </record>
 
         <record id="product_addon_uplights" model="product.template">
-            <field name="name">Uplights (Set of 10)</field>
+            <field name="name">* Uplights (Set of 10)</field>
             <field name="default_code">DJ-ADDON-UPLIGHT</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -92,7 +92,7 @@
         </record>
 
         <record id="product_addon_video_dj_booth" model="product.template">
-            <field name="name">Video DJ Booth</field>
+            <field name="name">* Video DJ Booth</field>
             <field name="default_code">DJ-ADDON-VIDEO</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -105,7 +105,7 @@
         </record>
 
         <record id="product_addon_cohost" model="product.template">
-            <field name="name">Co-Host / Hype Person</field>
+            <field name="name">* Co-Host / Hype Person</field>
             <field name="default_code">DJ-ADDON-COHOST</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -122,7 +122,7 @@
         <!-- ============================================ -->
 
         <record id="product_addon_branded_loop" model="product.template">
-            <field name="name">Branded Music Loop</field>
+            <field name="name">* Branded Music Loop</field>
             <field name="default_code">DJ-ADDON-BRAND</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -135,7 +135,7 @@
         </record>
 
         <record id="product_addon_raffle_music" model="product.template">
-            <field name="name">Raffle/Prize Music Package</field>
+            <field name="name">* Raffle/Prize Music Package</field>
             <field name="default_code">DJ-ADDON-RAFFLE</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -148,7 +148,7 @@
         </record>
 
         <record id="product_addon_extra_mic" model="product.template">
-            <field name="name">Extra Wireless Microphone</field>
+            <field name="name">* Extra Wireless Microphone</field>
             <field name="default_code">DJ-ADDON-MIC</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -161,7 +161,7 @@
         </record>
 
         <record id="product_addon_branded_booth" model="product.template">
-            <field name="name">Branded DJ Booth Facade</field>
+            <field name="name">* Branded DJ Booth Facade</field>
             <field name="default_code">DJ-ADDON-FACADE</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -174,7 +174,7 @@
         </record>
 
         <record id="product_addon_intro_voiceover" model="product.template">
-            <field name="name">Custom Intro Voiceover</field>
+            <field name="name">* Custom Intro Voiceover</field>
             <field name="default_code">DJ-ADDON-VOICE</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -187,7 +187,7 @@
         </record>
 
         <record id="product_addon_remix_sets" model="product.template">
-            <field name="name">Custom Remix Sets</field>
+            <field name="name">* Custom Remix Sets</field>
             <field name="default_code">DJ-ADDON-REMIX</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -200,7 +200,7 @@
         </record>
 
         <record id="product_addon_sponsor_plugs" model="product.template">
-            <field name="name">Sponsor Plugs Package</field>
+            <field name="name">* Sponsor Plugs Package</field>
             <field name="default_code">DJ-ADDON-SPONSOR</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -213,7 +213,7 @@
         </record>
 
         <record id="product_addon_custom_cues" model="product.template">
-            <field name="name">Custom Audio Cues</field>
+            <field name="name">* Custom Audio Cues</field>
             <field name="default_code">DJ-ADDON-CUES</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -230,7 +230,7 @@
         <!-- ============================================ -->
 
         <record id="product_addon_playlist_planning" model="product.template">
-            <field name="name">Playlist Planning Session</field>
+            <field name="name">* Playlist Planning Session</field>
             <field name="default_code">DJ-ADDON-PLAYLIST</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -243,7 +243,7 @@
         </record>
 
         <record id="product_addon_timeline_assist" model="product.template">
-            <field name="name">Timeline Planning Assistance</field>
+            <field name="name">* Timeline Planning Assistance</field>
             <field name="default_code">DJ-ADDON-TIMELINE</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -256,7 +256,7 @@
         </record>
 
         <record id="product_addon_custom_transitions" model="product.template">
-            <field name="name">Custom Music Transitions</field>
+            <field name="name">* Custom Music Transitions</field>
             <field name="default_code">DJ-ADDON-TRANS</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
@@ -269,7 +269,7 @@
         </record>
 
         <record id="product_addon_guest_request_app" model="product.template">
-            <field name="name">Guest Request App</field>
+            <field name="name">* Guest Request App</field>
             <field name="default_code">DJ-ADDON-APP</field>
             <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>

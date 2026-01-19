@@ -9,7 +9,7 @@
         <!-- ADDITIONAL INSURED COVERAGE EXTENSION       -->
         <!-- ============================================ -->
         <record id="product_template_additional_insured" model="product.template">
-            <field name="name">Additional Insured Coverage Extension</field>
+            <field name="name">* Additional Insured Coverage Extension</field>
             <field name="default_code">INS-EXT</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -24,7 +24,7 @@
         <!-- CLIENT CONTRACT - BS                        -->
         <!-- ============================================ -->
         <record id="product_template_client_contract" model="product.template">
-            <field name="name">Client Contract - BS</field>
+            <field name="name">* Client Contract - BS</field>
             <field name="default_code">CONTRACT</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">consu</field>
@@ -39,7 +39,7 @@
         <!-- CLIENT DISCOUNTS                            -->
         <!-- ============================================ -->
         <record id="product_template_client_discount" model="product.template">
-            <field name="name">Client Discounts</field>
+            <field name="name">* Client Discounts</field>
             <field name="default_code">DISCOUNT</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -54,7 +54,7 @@
         <!-- CLIENT REFUND                               -->
         <!-- ============================================ -->
         <record id="product_template_client_refund" model="product.template">
-            <field name="name">Client Refund</field>
+            <field name="name">* Client Refund</field>
             <field name="default_code">REFUND</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -69,7 +69,7 @@
         <!-- CUSTOMER DEPOSIT / RETAINER                 -->
         <!-- ============================================ -->
         <record id="product_template_customer_deposit" model="product.template">
-            <field name="name">Customer Deposit/Retainer</field>
+            <field name="name">* Customer Deposit/Retainer</field>
             <field name="default_code">DEPOSIT</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">consu</field>
@@ -84,7 +84,7 @@
         <!-- CANCELLATION EVENT FEES                     -->
         <!-- ============================================ -->
         <record id="product_template_cancellation_fees" model="product.template">
-            <field name="name">Cancellation Event Fees</field>
+            <field name="name">* Cancellation Event Fees</field>
             <field name="default_code">CANCEL-FEE</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -99,7 +99,7 @@
         <!-- INITIAL 10% LATE FEE (Non-Taxable)          -->
         <!-- ============================================ -->
         <record id="product_template_late_fee_10" model="product.template">
-            <field name="name">Initial 10% Late Fee</field>
+            <field name="name">* Initial 10% Late Fee</field>
             <field name="default_code">LATE-10</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -115,7 +115,7 @@
         <!-- MONTHLY 1.5% LATE FEE (Non-Taxable)         -->
         <!-- ============================================ -->
         <record id="product_template_late_fee_monthly" model="product.template">
-            <field name="name">Monthly 1.5% Late Fee</field>
+            <field name="name">* Monthly 1.5% Late Fee</field>
             <field name="default_code">LATE-1.5</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -131,7 +131,7 @@
         <!-- VARIABLE CONSIDERATION                      -->
         <!-- ============================================ -->
         <record id="product_template_variable_consideration" model="product.template">
-            <field name="name">Variable Consideration (Performance Bonus &amp; Penalties)</field>
+            <field name="name">* Variable Consideration (Performance Bonus &amp; Penalties)</field>
             <field name="default_code">VAR-CONSID</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -146,7 +146,7 @@
         <!-- MISC EVENT ENTERTAINMENT SERVICES (Untaxed) -->
         <!-- ============================================ -->
         <record id="product_template_misc_entertainment_untaxed" model="product.template">
-            <field name="name">Misc Event Entertainment Services (Untaxed)</field>
+            <field name="name">* Misc Event Entertainment Services (Untaxed)</field>
             <field name="default_code">MISC-ENT-UT</field>
             <field name="categ_id" ref="product_category_entertainment"/>
             <field name="type">service</field>
@@ -162,7 +162,7 @@
         <!-- MISC EVENT SERVICES (Taxed)                 -->
         <!-- ============================================ -->
         <record id="product_template_misc_services_taxed" model="product.template">
-            <field name="name">Misc Event Services (Taxed)</field>
+            <field name="name">* Misc Event Services (Taxed)</field>
             <field name="default_code">MISC-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>

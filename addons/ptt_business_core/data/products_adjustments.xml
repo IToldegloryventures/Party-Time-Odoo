@@ -9,7 +9,7 @@
         <!-- CLIENT DISCOUNTS                            -->
         <!-- ============================================ -->
         <record id="product_template_client_discounts" model="product.template">
-            <field name="name">Client Discounts</field>
+            <field name="name">* Client Discounts</field>
             <field name="default_code">DISC</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -24,7 +24,7 @@
         <!-- CLIENT REFUND                               -->
         <!-- ============================================ -->
         <record id="product_template_client_refund" model="product.template">
-            <field name="name">Client Refund</field>
+            <field name="name">* Client Refund</field>
             <field name="default_code">REFUND</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -39,7 +39,7 @@
         <!-- CUSTOMER DEPOSIT / RETAINER                 -->
         <!-- ============================================ -->
         <record id="product_template_customer_deposit" model="product.template">
-            <field name="name">Customer Deposit / Retainer</field>
+            <field name="name">* Customer Deposit / Retainer</field>
             <field name="default_code">DEPOSIT</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -54,7 +54,7 @@
         <!-- CLIENT CONTRACT - $5                        -->
         <!-- ============================================ -->
         <record id="product_template_client_contract" model="product.template">
-            <field name="name">Client Contract - $5</field>
+            <field name="name">* Client Contract - $5</field>
             <field name="default_code">CONTRACT</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">consu</field>
@@ -69,7 +69,7 @@
         <!-- CANCELLATION EVENT FEES                     -->
         <!-- ============================================ -->
         <record id="product_template_cancellation_fees" model="product.template">
-            <field name="name">Cancellation Event Fees</field>
+            <field name="name">* Cancellation Event Fees</field>
             <field name="default_code">CANCEL</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -84,7 +84,7 @@
         <!-- ADDITIONAL INSURED COVERAGE EXTENSION       -->
         <!-- ============================================ -->
         <record id="product_template_additional_insured" model="product.template">
-            <field name="name">Additional Insured Coverage Extension</field>
+            <field name="name">* Additional Insured Coverage Extension</field>
             <field name="default_code">INSURED</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -99,7 +99,7 @@
         <!-- INITIAL 10% LATE FEE                        -->
         <!-- ============================================ -->
         <record id="product_template_late_fee_initial" model="product.template">
-            <field name="name">Initial 10% Late Fee</field>
+            <field name="name">* Initial 10% Late Fee</field>
             <field name="default_code">LATE-10</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -114,7 +114,7 @@
         <!-- MONTHLY 1.5% LATE FEE                       -->
         <!-- ============================================ -->
         <record id="product_template_late_fee_monthly" model="product.template">
-            <field name="name">Monthly 1.5% Late Fee</field>
+            <field name="name">* Monthly 1.5% Late Fee</field>
             <field name="default_code">LATE-1.5</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -129,7 +129,7 @@
         <!-- TIPS GIVEN                                  -->
         <!-- ============================================ -->
         <record id="product_template_tips" model="product.template">
-            <field name="name">Tips Given</field>
+            <field name="name">* Tips Given</field>
             <field name="default_code">TIPS</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
@@ -144,7 +144,7 @@
         <!-- VARIABLE CONSIDERATION (Bonus/Penalties)    -->
         <!-- ============================================ -->
         <record id="product_template_variable_consideration" model="product.template">
-            <field name="name">Variable Consideration (Performance Bonus &amp; Penalties)</field>
+            <field name="name">* Variable Consideration (Performance Bonus &amp; Penalties)</field>
             <field name="default_code">VARIABLE</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>

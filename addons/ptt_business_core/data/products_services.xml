@@ -9,7 +9,7 @@
         <!-- PHOTOGRAPHY SERVICES (Head Shots / Event)   -->
         <!-- ============================================ -->
         <record id="product_template_photography" model="product.template">
-            <field name="name">Photography Services</field>
+            <field name="name">* Photography Services</field>
             <field name="default_code">PHOTO-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -29,7 +29,7 @@
         <!-- VIDEOGRAPHY SERVICES (Event/Highlight/Content/Promo) -->
         <!-- ============================================ -->
         <record id="product_template_videography" model="product.template">
-            <field name="name">Videography Services</field>
+            <field name="name">* Videography Services</field>
             <field name="default_code">VIDEO-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -49,7 +49,7 @@
         <!-- EVENT PLANNING SERVICES                     -->
         <!-- ============================================ -->
         <record id="product_template_event_planning" model="product.template">
-            <field name="name">Event Planning Services</field>
+            <field name="name">* Event Planning Services</field>
             <field name="default_code">PLAN-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -64,7 +64,7 @@
         <!-- CATERING SERVICES                           -->
         <!-- ============================================ -->
         <record id="product_template_catering" model="product.template">
-            <field name="name">Catering Services</field>
+            <field name="name">* Catering Services</field>
             <field name="default_code">CATER-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -79,7 +79,7 @@
         <!-- BARTENDER SERVICES                          -->
         <!-- ============================================ -->
         <record id="product_template_bartender" model="product.template">
-            <field name="name">Bartender Services</field>
+            <field name="name">* Bartender Services</field>
             <field name="default_code">BAR-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -94,7 +94,7 @@
         <!-- WAIT STAFF                                  -->
         <!-- ============================================ -->
         <record id="product_template_wait_staff" model="product.template">
-            <field name="name">Wait Staff</field>
+            <field name="name">* Wait Staff</field>
             <field name="default_code">WAIT-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -109,7 +109,7 @@
         <!-- DELIVER, SETUP, STRIKE                      -->
         <!-- ============================================ -->
         <record id="product_template_delivery_setup" model="product.template">
-            <field name="name">Deliver, Setup, Strike</field>
+            <field name="name">* Deliver, Setup, Strike</field>
             <field name="default_code">SETUP-SVC</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
@@ -124,7 +124,7 @@
         <!-- TRAVEL AND EXPENSES                         -->
         <!-- ============================================ -->
         <record id="product_template_travel_expenses" model="product.template">
-            <field name="name">Travel and Expenses</field>
+            <field name="name">* Travel and Expenses</field>
             <field name="default_code">TRAVEL</field>
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>

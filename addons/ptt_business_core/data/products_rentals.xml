@@ -9,7 +9,7 @@
         <!-- A/V RENTALS - PROJECTOR AND SCREEN          -->
         <!-- ============================================ -->
         <record id="product_template_av_projector_screen" model="product.template">
-            <field name="name">A/V Rentals - Projector and Screen</field>
+            <field name="name">* A/V Rentals - Projector and Screen</field>
             <field name="default_code">AV-PROJ</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -24,7 +24,7 @@
         <!-- A/V RENTALS - MONITOR                       -->
         <!-- ============================================ -->
         <record id="product_template_av_monitor" model="product.template">
-            <field name="name">A/V Rentals - Monitor</field>
+            <field name="name">* A/V Rentals - Monitor</field>
             <field name="default_code">AV-MON</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -39,7 +39,7 @@
         <!-- A/V RENTALS - LED WALL PANEL                -->
         <!-- ============================================ -->
         <record id="product_template_av_led_wall" model="product.template">
-            <field name="name">A/V Rentals - LED Wall Panel</field>
+            <field name="name">* A/V Rentals - LED Wall Panel</field>
             <field name="default_code">AV-LED</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -55,7 +55,7 @@
         <!-- With Event Type and Tier variants           -->
         <!-- ============================================ -->
         <record id="product_template_av_audio" model="product.template">
-            <field name="name">A/V Rentals - Audio</field>
+            <field name="name">* A/V Rentals - Audio</field>
             <field name="default_code">AV-AUDIO</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -81,7 +81,7 @@
         <!-- A/V RENTALS - MISC                          -->
         <!-- ============================================ -->
         <record id="product_template_av_misc" model="product.template">
-            <field name="name">A/V Rentals - Misc</field>
+            <field name="name">* A/V Rentals - Misc</field>
             <field name="default_code">AV-MISC</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -96,7 +96,7 @@
         <!-- A/V TECHNICIAN (Setup, Camera, Audio)       -->
         <!-- ============================================ -->
         <record id="product_template_av_technician" model="product.template">
-            <field name="name">A/V Technician</field>
+            <field name="name">* A/V Technician</field>
             <field name="default_code">AV-TECH</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -116,7 +116,7 @@
         <!-- A/V PRODUCTION MANAGER (Single)             -->
         <!-- ============================================ -->
         <record id="product_template_av_production_manager" model="product.template">
-            <field name="name">A/V Production Manager</field>
+            <field name="name">* A/V Production Manager</field>
             <field name="default_code">AV-PM</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -131,7 +131,7 @@
         <!-- A/V TECHNICAL DIRECTOR (Single)             -->
         <!-- ============================================ -->
         <record id="product_template_av_technical_director" model="product.template">
-            <field name="name">A/V Technical Director</field>
+            <field name="name">* A/V Technical Director</field>
             <field name="default_code">AV-TD</field>
             <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
@@ -146,7 +146,7 @@
         <!-- PHOTO BOOTH RENTALS (4 booth types)         -->
         <!-- ============================================ -->
         <record id="product_template_photo_booth" model="product.template">
-            <field name="name">Photo Booth Rentals</field>
+            <field name="name">* Photo Booth Rentals</field>
             <field name="default_code">BOOTH-SVC</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
@@ -166,7 +166,7 @@
         <!-- INFLATABLES RENTALS                         -->
         <!-- ============================================ -->
         <record id="product_template_inflatables" model="product.template">
-            <field name="name">Inflatables Rentals</field>
+            <field name="name">* Inflatables Rentals</field>
             <field name="default_code">INFLATE</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
@@ -181,7 +181,7 @@
         <!-- GAMES RENTALS                               -->
         <!-- ============================================ -->
         <record id="product_template_games" model="product.template">
-            <field name="name">Games Rentals</field>
+            <field name="name">* Games Rentals</field>
             <field name="default_code">GAMES</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
@@ -196,7 +196,7 @@
         <!-- DECOR & DECORATIONS                         -->
         <!-- ============================================ -->
         <record id="product_template_decor" model="product.template">
-            <field name="name">Decor &amp; Decorations</field>
+            <field name="name">* Decor &amp; Decorations</field>
             <field name="default_code">DECOR</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
@@ -211,7 +211,7 @@
         <!-- BALLOON DECOR                               -->
         <!-- ============================================ -->
         <record id="product_template_balloon_decor" model="product.template">
-            <field name="name">Balloon Decor</field>
+            <field name="name">* Balloon Decor</field>
             <field name="default_code">BALLOON-DECOR</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
@@ -226,7 +226,7 @@
         <!-- EQUIPMENT RENTAL (Generator/Tents/Furniture)-->
         <!-- ============================================ -->
         <record id="product_template_equipment_rental" model="product.template">
-            <field name="name">Equipment Rental</field>
+            <field name="name">* Equipment Rental</field>
             <field name="default_code">EQUIP</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
@@ -246,7 +246,7 @@
         <!-- FURNITURE RENTALS (Single)                  -->
         <!-- ============================================ -->
         <record id="product_template_furniture" model="product.template">
-            <field name="name">Furniture Rentals</field>
+            <field name="name">* Furniture Rentals</field>
             <field name="default_code">FURN</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
