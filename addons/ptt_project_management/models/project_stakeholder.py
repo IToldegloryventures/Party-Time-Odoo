@@ -162,8 +162,8 @@ class ProjectStakeholder(models.Model):
         determines default communication preference.
         """
         if self.partner_id:
-            # Check if partner is marked as vendor in ptt_business_core
-            if hasattr(self.partner_id, 'ptt_is_vendor') and self.partner_id.ptt_is_vendor:
+            # Mark as vendor when partner is a supplier
+            if self.partner_id.supplier_rank > 0:
                 self.is_vendor = True
                 self.is_internal = False
             

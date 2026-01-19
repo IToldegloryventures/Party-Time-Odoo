@@ -36,7 +36,7 @@ class PttProjectVendorAssignment(models.Model):
     vendor_id = fields.Many2one(
         "res.partner",
         string="Vendor",
-        domain="[('ptt_is_vendor', '=', True)]",
+        domain="[('supplier_rank', '>', 0)]",
         index=True,
         help="Actual vendor assigned for this service",
         tracking=True,

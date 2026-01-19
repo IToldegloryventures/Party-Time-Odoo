@@ -246,14 +246,10 @@ if dj_template:
 </field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- CRON/DATA TRIGGER: Run on module install    -->
-        <!-- ============================================ -->
-        <function model="ir.actions.server" name="run">
-            <value eval="[ref('ptt_business_core.action_configure_dj_pricing')]"/>
-        </function>
-        <function model="ir.actions.server" name="run">
-            <value eval="[ref('ptt_business_core.action_configure_dj_variants')]"/>
-        </function>
+        <!-- 
+            NOTE: Server actions are created above but NOT auto-executed.
+            Run them manually from Settings > Technical > Server Actions
+            after module installation to configure DJ variant pricing.
+        -->
     </data>
 </odoo>

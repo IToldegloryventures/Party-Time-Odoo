@@ -9,19 +9,18 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='company_type']" position="after">
-                    <label for="ptt_is_vendor" string=""/>
-                    <div class="d-flex gap-4">
-                        <field name="ptt_is_vendor"/>
-                        <label for="ptt_is_vendor" string="Is PTT Vendor" class="me-4"/>
-                        <field name="ptt_is_client"/>
-                        <label for="ptt_is_client" string="Is PTT Client"/>
-                    </div>
+                    <span class="ms-4 d-flex align-items-center gap-1">
+                        <field name="supplier_rank" widget="boolean_toggle"
+                               options="{'autosave': false}"
+                               class="o_field_boolean"/>
+                        <label for="supplier_rank" string="Vendor"/>
+                    </span>
                 </xpath>
 
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button name="action_view_ptt_opportunities" type="object"
                         class="oe_stat_button" icon="fa-bullseye"
-                        invisible="not ptt_is_client">
+                        invisible="customer_rank == 0">
                         <div class="o_stat_info">
                             <span class="o_stat_value"><field name="ptt_opportunity_count"/></span>
                             <span class="o_stat_text">Opportunities</span>
@@ -30,11 +29,11 @@
                 </xpath>
 
                 <xpath expr="//page[@name='sales_purchases']" position="inside">
-                    <group string="PTT Classification">
-                        <field name="ptt_client_type" invisible="not ptt_is_client"/>
+                    <group string="Client Details" invisible="customer_rank == 0">
+                        <field name="ptt_client_type"/>
                         <field name="ptt_preferred_contact"/>
                     </group>
-                    <group string="Vendor Details" invisible="not ptt_is_vendor">
+                    <group string="Vendor Details" invisible="supplier_rank == 0">
                         <field name="ptt_vendor_service_types" widget="many2many_tags"/>
                         <field name="ptt_vendor_rating" widget="priority"/>
                         <field name="ptt_vendor_notes" nolabel="1"

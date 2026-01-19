@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "PTT Business Core",
     "version": "19.0.4.2.2",
     "summary": "Party Time Texas core business models for event management.",
@@ -12,7 +12,7 @@ Core module that defines the foundational models for PTT event management:
 - CRM Stage automation (auto-advance on quote/confirm)
 - Project extensions (event tracking, vendor assignments)
 - Vendor estimate and assignment models
-- Product variants with Event Type × Service Tier attributes
+- Product variants with Event Type Ã— Service Tier attributes
 - Per-variant pricing fields (min hours, guest counts, cost guides)
 - Sale order line minimum hours validation
 - Project templates with 9 standard event tasks

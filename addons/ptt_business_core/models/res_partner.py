@@ -5,14 +5,15 @@ from odoo.addons.ptt_business_core.constants import SERVICE_TYPES
 
 
 class ResPartner(models.Model):
-    """Partner extensions for Party Time Texas."""
+    """Partner extensions for Party Time Texas.
+    
+    Vendor identification uses native Odoo fields:
+    - supplier_rank > 0 indicates a vendor
+    - customer_rank > 0 indicates a customer
+    """
     _inherit = "res.partner"
 
-    # Vendor Classification
-    ptt_is_vendor = fields.Boolean(
-        string="Is PTT Vendor",
-        help="Mark this contact as a vendor/service provider for Party Time Texas.",
-    )
+    # Vendor Classification (see supplier_rank for vendor toggle)
     ptt_vendor_service_types = fields.Many2many(
         "ptt.vendor.service.type",
         string="Service Types",
@@ -33,11 +34,7 @@ class ResPartner(models.Model):
         help="Internal notes about this vendor.",
     )
     
-    # Client Classification
-    ptt_is_client = fields.Boolean(
-        string="Is PTT Client",
-        help="Mark this contact as a Party Time Texas client.",
-    )
+    # Client Classification (see customer_rank for client toggle)
     ptt_client_type = fields.Selection(
         [
             ("individual", "Individual"),
@@ -67,7 +64,7 @@ class ResPartner(models.Model):
         """Count related opportunities for client contacts."""
         lead_model = self.env["crm.lead"]
         for partner in self:
-            if not partner.ptt_is_client:
+            if partner.customer_rank <= 0:
                 partner.ptt_opportunity_count = 0
                 continue
             partner.ptt_opportunity_count = lead_model.search_count([
