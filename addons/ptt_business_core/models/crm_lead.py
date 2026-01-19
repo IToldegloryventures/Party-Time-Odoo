@@ -61,9 +61,23 @@ class CrmLead(models.Model):
     # =========================================================================
     # NOTE: Event type is managed via ptt_event_type_id (Many2one to sale.order.type)
     # in ptt_enhanced_sales. Do not add a second event type field here.
-    #
-    # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
-    # x_studio_venue_address) already exist in DB from Odoo Studio - use them directly.
+    ptt_event_name = fields.Char(
+        string="Event Name",
+        help="Name/title of the event (e.g., 'Smith Wedding Reception')",
+    )
+    ptt_event_date = fields.Date(
+        string="Event Date",
+        help="Date of the event",
+    )
+    ptt_event_type = fields.Selection(
+        selection=[
+            ('social', 'Social'),
+            ('corporate', 'Corporate'),
+            ('wedding', 'Wedding'),
+        ],
+        string="Event Type",
+        help="Primary classification of the event",
+    )
     ptt_event_goal = fields.Char(string="Event Goal")
     ptt_event_time = fields.Char(
         string="Event Time",
@@ -76,6 +90,14 @@ class CrmLead(models.Model):
     ptt_guest_count = fields.Integer(string="Estimated Guest Count")
     
     # Venue Information
+    ptt_venue_name = fields.Char(
+        string="Venue Name",
+        help="Name of the event venue",
+    )
+    ptt_venue_address = fields.Text(
+        string="Venue Address",
+        help="Full address of the venue",
+    )
     ptt_venue_booked = fields.Boolean(string="Venue Booked?")
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
