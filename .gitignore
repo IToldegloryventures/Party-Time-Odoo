@@ -63,6 +63,7 @@ wheels/
 # Documentation (setup guides, notes)
 docs/
 notes/
+NOTES/
 *.md
 
 # Local tooling and scratch

@@ -9,8 +9,8 @@ class ProjectProject(models.Model):
     """Project extensions for Party Time Texas event management."""
     _inherit = "project.project"
 
-    _unique_ptt_event_id = models.Constraint(
-        "UNIQUE (ptt_event_id)",
+    _unique_x_plan2_id = models.Constraint(
+        "UNIQUE (x_plan2_id)",
         "Event ID must be unique! Another project already has this Event ID.",
     )
     _positive_ptt_guest_count = models.Constraint(
@@ -31,7 +31,7 @@ class ProjectProject(models.Model):
     # =========================================================================
     # EVENT IDENTITY
     # =========================================================================
-    ptt_event_id = fields.Char(
+    x_plan2_id = fields.Char(
         string="Event ID",
         readonly=True,
         copy=False,
@@ -40,8 +40,8 @@ class ProjectProject(models.Model):
     # which links to one of 3 types: Corporate, Social, Wedding
     # The deprecated ptt_event_type selection field has been removed.
     
-    ptt_event_name = fields.Char(string="Event Name")
-    ptt_event_date = fields.Date(string="Event Date")
+    x_studio_event_name = fields.Char(string="Event Name")
+    x_studio_event_date = fields.Date(string="Event Date")
     ptt_guest_count = fields.Integer(string="Guest Count")
     
     # Timing fields - all Datetime for full scheduling
@@ -67,8 +67,8 @@ class ProjectProject(models.Model):
     )
     
     # Venue
-    ptt_venue_name = fields.Char(string="Venue Name")
-    ptt_venue_address = fields.Text(string="Venue Address")
+    x_studio_venue_name = fields.Char(string="Venue Name")
+    x_studio_venue_address = fields.Text(string="Venue Address")
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Location Type",
@@ -176,7 +176,7 @@ class ProjectProject(models.Model):
     def _cron_send_event_reminders_10_day(self):
         """Cron job: Send 10-day event reminders to project managers.
         
-        Finds all event projects with ptt_event_date exactly 10 days from today
+        Finds all event projects with x_studio_event_date exactly 10 days from today
         and sends reminder emails to their project managers. The 10-day mark
         is when most setup preparation happens.
         
@@ -188,7 +188,7 @@ class ProjectProject(models.Model):
     def _cron_send_event_reminders_3_day(self):
         """Cron job: Send 3-day urgent event reminders to project managers.
         
-        Finds all event projects with ptt_event_date exactly 3 days from today
+        Finds all event projects with x_studio_event_date exactly 3 days from today
         and sends urgent reminder emails. The 3-day mark is for final
         verification and last-minute preparations.
         
@@ -209,7 +209,7 @@ class ProjectProject(models.Model):
         
         # Find projects with events on target date
         projects = self.search([
-            ('ptt_event_date', '=', target_date),
+            ('x_studio_event_date', '=', target_date),
             ('active', '=', True),
         ])
         
@@ -279,9 +279,9 @@ class ProjectProject(models.Model):
         self.ensure_one()
         missing = []
         
-        if not self.ptt_venue_name:
+        if not self.x_studio_venue_name:
             missing.append(_("Venue name not set"))
-        if not self.ptt_venue_address:
+        if not self.x_studio_venue_address:
             missing.append(_("Venue address not set"))
         if not self.ptt_event_start_time:
             missing.append(_("Event start time not set"))

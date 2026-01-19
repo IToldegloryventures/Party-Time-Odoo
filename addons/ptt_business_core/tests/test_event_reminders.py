@@ -48,10 +48,10 @@ class TestEventReminders(TransactionCase):
             'name': 'Test Event Project',
             'partner_id': self.partner.id,
             'user_id': self.pm_user.id,
-            'ptt_event_name': 'Test Event',
-            'ptt_event_date': event_date,
-            'ptt_venue_name': 'Test Venue',
-            'ptt_venue_address': '123 Test St',
+            'x_studio_event_name': 'Test Event',
+            'x_studio_event_date': event_date,
+            'x_studio_venue_name': 'Test Venue',
+            'x_studio_venue_address': '123 Test St',
             'ptt_guest_count': 100,
         }
         defaults.update(kwargs)
@@ -64,7 +64,7 @@ class TestEventReminders(TransactionCase):
         
         # Project should be found
         projects = self.env['project.project'].search([
-            ('ptt_event_date', '=', target_date),
+            ('x_studio_event_date', '=', target_date),
             ('active', '=', True),
         ])
         
@@ -77,7 +77,7 @@ class TestEventReminders(TransactionCase):
         
         # Project should be found
         projects = self.env['project.project'].search([
-            ('ptt_event_date', '=', target_date),
+            ('x_studio_event_date', '=', target_date),
             ('active', '=', True),
         ])
         
@@ -92,7 +92,7 @@ class TestEventReminders(TransactionCase):
         # Search for 10-day projects
         ten_day_date = fields.Date.today() + timedelta(days=10)
         projects = self.env['project.project'].search([
-            ('ptt_event_date', '=', ten_day_date),
+            ('x_studio_event_date', '=', ten_day_date),
             ('active', '=', True),
         ])
         
@@ -117,8 +117,8 @@ class TestEventReminders(TransactionCase):
         target_date = fields.Date.today() + timedelta(days=10)
         project = self._create_project_for_date(
             target_date,
-            ptt_venue_name=False,
-            ptt_venue_address=False,
+            x_studio_venue_name=False,
+            x_studio_venue_address=False,
             ptt_guest_count=0,
         )
         
@@ -238,7 +238,7 @@ class TestVendorConfirmation(TransactionCase):
             'name': 'Vendor Check Project',
             'partner_id': self.partner.id,
             'user_id': self.pm_user.id,
-            'ptt_event_date': fields.Date.today() + timedelta(days=10),
+            'x_studio_event_date': fields.Date.today() + timedelta(days=10),
         })
         
         # Create vendor assignments with different statuses

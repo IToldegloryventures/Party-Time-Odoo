@@ -40,15 +40,15 @@ class TestCrmLeadProjectFlow(TransactionCase):
             'name': 'Corporate Annual Gala',
             'partner_id': self.partner.id,
             'user_id': self.user.id,
-            'ptt_event_name': 'Annual Company Gala',
-            'ptt_event_date': '2026-06-15',
+            'x_studio_event_name': 'Annual Company Gala',
+            'x_studio_event_date': '2026-06-15',
             'ptt_guest_count': 200,
-            'ptt_venue_name': 'Grand Ballroom',
+            'x_studio_venue_name': 'Grand Ballroom',
             'ptt_service_dj': True,
             'ptt_service_photovideo': True,
         })
         
-        self.assertEqual(lead.ptt_event_name, 'Annual Company Gala')
+        self.assertEqual(lead.x_studio_event_name, 'Annual Company Gala')
         self.assertEqual(lead.ptt_guest_count, 200)
         self.assertTrue(lead.ptt_service_dj)
         self.assertTrue(lead.ptt_service_photovideo)
@@ -59,7 +59,7 @@ class TestCrmLeadProjectFlow(TransactionCase):
         lead = self.env['crm.lead'].create({
             'name': 'Wedding Reception',
             'partner_id': self.partner.id,
-            'ptt_event_name': 'Smith-Jones Wedding',
+            'x_studio_event_name': 'Smith-Jones Wedding',
             'ptt_estimated_client_total': 5000.00,
         })
         
@@ -91,11 +91,11 @@ class TestCrmLeadProjectFlow(TransactionCase):
             'name': 'Birthday Celebration',
             'partner_id': self.partner.id,
             'user_id': self.user.id,
-            'ptt_event_name': 'John\'s 50th Birthday',
-            'ptt_event_date': '2026-08-20',
+            'x_studio_event_name': 'John\'s 50th Birthday',
+            'x_studio_event_date': '2026-08-20',
             'ptt_guest_count': 75,
-            'ptt_venue_name': 'Country Club',
-            'ptt_venue_address': '123 Golf Drive',
+            'x_studio_venue_name': 'Country Club',
+            'x_studio_venue_address': '123 Golf Drive',
             'ptt_location_type': 'indoor',
         })
         
@@ -108,9 +108,9 @@ class TestCrmLeadProjectFlow(TransactionCase):
         
         self.assertEqual(project.partner_id, self.partner)
         self.assertEqual(project.ptt_crm_lead_id, lead)
-        self.assertEqual(project.ptt_event_name, 'John\'s 50th Birthday')
+        self.assertEqual(project.x_studio_event_name, 'John\'s 50th Birthday')
         self.assertEqual(project.ptt_guest_count, 75)
-        self.assertEqual(project.ptt_venue_name, 'Country Club')
+        self.assertEqual(project.x_studio_venue_name, 'Country Club')
         
     def test_cannot_create_duplicate_project(self):
         """Test that a second project cannot be created for same lead."""
@@ -118,7 +118,7 @@ class TestCrmLeadProjectFlow(TransactionCase):
             'name': 'Test Event',
             'partner_id': self.partner.id,
             'user_id': self.user.id,
-            'ptt_event_name': 'Duplicate Test',
+            'x_studio_event_name': 'Duplicate Test',
         })
         
         # Create first project
@@ -134,7 +134,7 @@ class TestCrmLeadProjectFlow(TransactionCase):
         lead = self.env['crm.lead'].create({
             'name': 'No Partner Event',
             'user_id': self.user.id,
-            'ptt_event_name': 'Partner Required Test',
+            'x_studio_event_name': 'Partner Required Test',
         })
         
         # Attempt to create project without partner should fail

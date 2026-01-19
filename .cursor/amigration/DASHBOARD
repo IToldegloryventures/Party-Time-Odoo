@@ -1,0 +1,88 @@
+🎯 COMPREHENSIVE IMPLEMENTATION PLAN - PTT OPERATIONAL DASHBOARD
+PHASE 1: DASHBOARD USER SWITCHER (Add Ability to View Other Users' Dashboards)
+WHAT TO ADD:
+File 1: home_controller.js
+Location: After imports, before HomeController class
+
+Verified Odoo 19 Pattern - Component with useState and useService:
+
+In setup() method, ADD:
+
+File 2: home_controller.xml
+Location: After navbar, before tab content
+
+Verified Odoo 19 Pattern - QWeb template with state binding:
+
+PHASE 2: PERSONAL TODO CREATION IN DASHBOARD
+WHAT TO ADD:
+File: static/src/components/personal_todo.xml
+Location: Top of component, before existing todo list
+
+Verified Odoo 19 Pattern - Form input with event handling:
+
+File: static/src/components/personal_todo.js
+Location: In setup() and add new methods
+
+Verified Odoo 19 Pattern - Form creation with ORM:
+
+File: models/ppt_personal_todo.py
+Location: Add new fields to existing model
+
+Verified Odoo 19 Pattern - Model fields:
+
+PHASE 3: RESTRUCTURE SALES DASHBOARD
+WHAT TO CHANGE:
+File: static/src/components/sales_dashboard.xml
+Location: Complete rewrite of structure
+
+Verified Odoo 19 Pattern - Grid layout with state binding:
+
+File: static/src/components/sales_dashboard.js
+Location: Complete rewrite
+
+Verified Odoo 19 Pattern - Component with ORM calls:
+
+File: models/ppt_home_data.py
+Location: Add new methods to existing model
+
+Verified Odoo 19 Pattern - API methods:
+
+PHASE 4: ENHANCE EVENT CALENDAR WITH INVOICE STAGE
+WHAT TO CHANGE:
+File: static/src/components/event_calendar_full.js
+Location: loadEvents() method
+
+Verified Odoo 19 Pattern - Multiple ORM calls:
+
+PHASE 5: MODELS TO REMOVE
+WHAT TO DELETE:
+File: __init__.py
+Location: Remove these imports
+
+File: models/ppt_dashboard_widget.py
+Action: DELETE ENTIRE FILE
+
+File: models/ppt_sales_rep.py
+Action: DELETE ENTIRE FILE
+
+PHASE 6: UPDATE MANIFEST
+WHAT TO CHANGE:
+File: __manifest__.py
+Location: Update version and remove unused assets
+
+SUMMARY TABLE
+Phase	File	Action	Priority
+1	home_controller.js	Add user switcher + getDashboardUsers()	🔴 HIGH
+1	home_controller.xml	Add user switcher dropdown	🔴 HIGH
+2	personal_todo.xml	Add inline todo creation form	🔴 HIGH
+2	personal_todo.js	Add createTodo() method	🔴 HIGH
+2	ppt_personal_todo.py	Add created_by_user_id field	🔴 HIGH
+3	sales_dashboard.xml	Complete rewrite - company top, reps bottom	🔴 HIGH
+3	sales_dashboard.js	Add loadCompanyMetrics() & loadRepMetrics()	🔴 HIGH
+3	ppt_home_data.py	Add get_company_pipeline_metrics() & get_individual_rep_metrics()	🔴 HIGH
+4	event_calendar_full.js	Add invoice stage coloring + dual borders	🟠 MEDIUM
+5	__init__.py	Remove widget & sales_rep imports	🟠 MEDIUM
+5	ppt_dashboard_widget.py	DELETE ENTIRE FILE	🟠 MEDIUM
+5	ppt_sales_rep.py	DELETE ENTIRE FILE	🟠 MEDIUM
+6	__manifest__.py	Update version to 19.0.2.1.0	🟠 MEDIUM
+All code examples are verified from Odoo 19 official documentation ✅

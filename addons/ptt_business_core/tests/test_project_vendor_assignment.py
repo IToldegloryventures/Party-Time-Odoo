@@ -35,8 +35,8 @@ class TestProjectVendorAssignment(TransactionCase):
         cls.project = cls.env['project.project'].create({
             'name': 'Test Event Project',
             'partner_id': cls.partner.id,
-            'ptt_event_name': 'Test Gala',
-            'ptt_event_date': '2026-06-15',
+            'x_studio_event_name': 'Test Gala',
+            'x_studio_event_date': '2026-06-15',
             'ptt_client_total': 10000.00,
         })
         

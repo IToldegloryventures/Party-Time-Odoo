@@ -52,9 +52,9 @@ class CrmLead(models.Model):
     # which links to one of 3 types: Corporate, Social, Wedding
     # The deprecated ptt_event_type selection field has been removed.
     
-    ptt_event_name = fields.Char(string="Event Name")
+    x_studio_event_name = fields.Char(string="Event Name")
     ptt_event_goal = fields.Char(string="Event Goal")
-    ptt_event_date = fields.Date(string="Event Date")
+    x_studio_event_date = fields.Date(string="Event Date")
     ptt_event_time = fields.Char(
         string="Event Time",
         help="Approximate event start time (e.g., '6:00 PM'). Used for initial planning."
@@ -67,8 +67,8 @@ class CrmLead(models.Model):
     
     # Venue Information
     ptt_venue_booked = fields.Boolean(string="Venue Booked?")
-    ptt_venue_name = fields.Char(string="Venue Name")
-    ptt_venue_address = fields.Text(string="Venue Address")
+    x_studio_venue_name = fields.Char(string="Venue Name")
+    x_studio_venue_address = fields.Text(string="Venue Address")
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Location Type",
@@ -86,7 +86,7 @@ class CrmLead(models.Model):
     ptt_service_catering = fields.Boolean(string="Catering")
     ptt_service_transportation = fields.Boolean(string="Transportation")
     ptt_service_rentals = fields.Boolean(string="Rentals")
-    ptt_service_photobooth = fields.Boolean(string="Photo Booth")
+    x_studio_photo_booth = fields.Boolean(string="Photo Booth")
     ptt_service_caricature = fields.Boolean(string="Caricature Artists")
     ptt_service_casino = fields.Boolean(string="Casino Services")
     ptt_service_staffing = fields.Boolean(string="Event Staffing")
@@ -391,16 +391,16 @@ class CrmLead(models.Model):
         event_id = str(project_count + 1).zfill(6)
 
         project_vals = {
-            "name": f"Event {event_id} - {self.partner_id.name} - {self.ptt_event_name or self.name}",
+            "name": f"Event {event_id} - {self.partner_id.name} - {self.x_studio_event_name or self.name}",
             "partner_id": self.partner_id.id,
             "user_id": self.user_id.id,
             "ptt_crm_lead_id": self.id,
-            "ptt_event_id": event_id,
+            "x_plan2_id": event_id,
             # NOTE: ptt_event_type removed - use ptt_event_type_id (Many2one) instead
-            "ptt_event_name": self.ptt_event_name,
-            "ptt_event_date": self.ptt_event_date,
+            "x_studio_event_name": self.x_studio_event_name,
+            "x_studio_event_date": self.x_studio_event_date,
             "ptt_guest_count": self.ptt_guest_count,
-            "ptt_venue_name": self.ptt_venue_name,
+            "x_studio_venue_name": self.x_studio_venue_name,
             "ptt_total_hours": self.ptt_event_duration,  # Map legacy field to new field
         }
 

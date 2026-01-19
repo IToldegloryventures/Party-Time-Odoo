@@ -12,7 +12,7 @@
         <field name="model_id" ref="project.model_project_project"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.user_id.email }}</field>
-        <field name="subject">📅 10 Days Until Event: {{ object.ptt_event_name or object.name }}</field>
+        <field name="subject">📅 10 Days Until Event: {{ object.x_studio_event_name or object.name }}</field>
         <field name="body_html" type="html">
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <div style="background-color: #875A7B; color: white; padding: 20px; text-align: center;">
@@ -23,14 +23,14 @@
     <div style="padding: 20px; background-color: #f9f9f9;">
         <p>Hi <t t-esc="object.user_id.name or 'Team'"/>,</p>
         
-        <p>This is a friendly reminder that <strong><t t-esc="object.ptt_event_name or object.name"/></strong> is coming up in <strong>10 days</strong>!</p>
+        <p>This is a friendly reminder that <strong><t t-esc="object.x_studio_event_name or object.name"/></strong> is coming up in <strong>10 days</strong>!</p>
         
         <div style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #875A7B;">📋 Event Details</h3>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Event Date:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.ptt_event_date"/></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.x_studio_event_date"/></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Client:</strong></td>
@@ -38,7 +38,7 @@
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Venue:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.ptt_venue_name or 'Not set'"/></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.x_studio_venue_name or 'Not set'"/></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Guest Count:</strong></td>
@@ -117,7 +117,7 @@
         <field name="model_id" ref="project.model_project_project"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.user_id.email }}</field>
-        <field name="subject">🚨 URGENT: 3 Days Until Event - {{ object.ptt_event_name or object.name }}</field>
+        <field name="subject">🚨 URGENT: 3 Days Until Event - {{ object.x_studio_event_name or object.name }}</field>
         <field name="body_html" type="html">
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <div style="background-color: #dc3545; color: white; padding: 20px; text-align: center;">
@@ -128,14 +128,14 @@
     <div style="padding: 20px; background-color: #f9f9f9;">
         <p>Hi <t t-esc="object.user_id.name or 'Team'"/>,</p>
         
-        <p><strong><t t-esc="object.ptt_event_name or object.name"/></strong> is happening in <strong>3 DAYS</strong>! Please ensure all final preparations are complete.</p>
+        <p><strong><t t-esc="object.x_studio_event_name or object.name"/></strong> is happening in <strong>3 DAYS</strong>! Please ensure all final preparations are complete.</p>
         
         <div style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #dc3545;">📋 Event Summary</h3>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Event Date:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong style="color: #dc3545;"><t t-esc="object.ptt_event_date"/></strong></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong style="color: #dc3545;"><t t-esc="object.x_studio_event_date"/></strong></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Start Time:</strong></td>
@@ -147,11 +147,11 @@
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Venue:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.ptt_venue_name or 'NOT SET!'"/></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.x_studio_venue_name or 'NOT SET!'"/></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Address:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.ptt_venue_address or 'NOT SET!'"/></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.x_studio_venue_address or 'NOT SET!'"/></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0;"><strong>Client:</strong></td>

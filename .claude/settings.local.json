@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git cat-file:*)"
+    ]
+  }
+}
