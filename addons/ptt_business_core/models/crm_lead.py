@@ -53,7 +53,7 @@ class CrmLead(models.Model):
         readonly=True,
         copy=False,
         index=True,
-        help="Unique event identifier (e.g., EVT-2026-0001). Generated when opportunity is qualified. Used to track event across CRM, Sales, Projects, and Tasks.",
+        help="Unique event identifier (e.g., EVT-2026-0001). Generated when the sale order is confirmed. Used to track event across CRM, Sales, Projects, and Tasks.",
     )
 
     # =========================================================================
@@ -389,12 +389,20 @@ class CrmLead(models.Model):
             "target": "current",
         }
 
-    def action_generate_event_id(self):
-        """Generate event ID for this opportunity if not already set."""
+    def _ensure_event_id(self):
+        """Ensure the event ID exists, generating it when missing."""
         self.ensure_one()
         if not self.ptt_event_id:
-            self.ptt_event_id = self.env['ir.sequence'].next_by_code('ptt.event.id') or 'EVT-NEW'
+            event_id = self.env["ir.sequence"].next_by_code("ptt.event.id")
+            if not event_id:
+                raise UserError(_("Missing sequence for Event ID (code: ptt.event.id)."))
+            self.ptt_event_id = event_id
         return self.ptt_event_id
+
+    def action_generate_event_id(self):
+        """Generate event ID for this opportunity if not already set."""
+        self._ensure_event_id()
+        return {"type": "ir.actions.client", "tag": "reload"}
 
     def action_create_project(self):
         """Create project from this opportunity."""
@@ -405,7 +413,7 @@ class CrmLead(models.Model):
             raise UserError(_("Please set a customer before creating a project."))
 
         # Ensure event ID exists (generate if needed)
-        event_id = self.action_generate_event_id()
+        event_id = self._ensure_event_id()
 
         project_vals = {
             "name": f"Event {event_id} - {self.partner_id.name} - {self.x_studio_event_name or self.name}",

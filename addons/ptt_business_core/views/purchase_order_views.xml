@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Purchase Order Form Extension -->
+        <record id="purchase_order_form_view_ptt" model="ir.ui.view">
+            <field name="name">purchase.order.form.ptt</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="ptt_project_id"/>
+                    <field name="ptt_event_id" readonly="1" invisible="not ptt_event_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Purchase Order Tree Extension -->
+        <record id="purchase_order_tree_view_ptt" model="ir.ui.view">
+            <field name="name">purchase.order.tree.ptt</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="ptt_project_id" optional="show"/>
+                    <field name="ptt_event_id" optional="show"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Purchase Order Search Extension -->
+        <record id="purchase_order_search_view_ptt" model="ir.ui.view">
+            <field name="name">purchase.order.search.ptt</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="ptt_project_id"/>
+                    <field name="ptt_event_id"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>
