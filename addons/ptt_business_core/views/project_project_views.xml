@@ -13,12 +13,12 @@
                     <!-- PTT Event Details -->
                     <page string="Event Details" name="ptt_event_details">
                         <group>
-                            <group string="Event Identity">
+                            <group string="Event Identity" name="event_identity">
                                 <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_crm_lead_id"/>
                                 <field name="ptt_event_name"/>
                             </group>
-                            <group string="Event Schedule">
+                            <group string="Event Schedule" name="event_schedule">
                                 <field name="ptt_event_date"/>
                                 <field name="ptt_event_start_time"/>
                                 <field name="ptt_event_end_time"/>
