@@ -14,11 +14,11 @@
         <field name="model_id" ref="project.model_project_project"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.user_id.email }}</field>
-        <field name="subject">📅 10 Days Until Event: {{ object.name }}</field>
+        <field name="subject">10 Days Until Event: {{ object.name }}</field>
         <field name="body_html" type="html">
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <div style="background-color: #875A7B; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0;">🎉 Event Reminder</h1>
+        <h1 style="margin: 0;">Event Reminder</h1>
         <p style="margin: 10px 0 0 0; font-size: 18px;">10 Days Until Your Event!</p>
     </div>
     
@@ -28,7 +28,7 @@
         <p>This is a friendly reminder that <strong><t t-esc="object.name"/></strong> is coming up in <strong>10 days</strong>!</p>
         
         <div style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #875A7B;">📋 Event Details</h3>
+            <h3 style="margin-top: 0; color: #875A7B;">Event Details</h3>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Event Date:</strong></td>
@@ -54,7 +54,7 @@
         </div>
         
         <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #856404;">⚠️ Action Items for This Week</h3>
+            <h3 style="margin-top: 0; color: #856404;">Action Items for This Week</h3>
             <ul style="margin: 0; padding-left: 20px;">
                 <li>Confirm all vendor bookings and arrival times</li>
                 <li>Review equipment checklist and prepare inventory</li>
@@ -66,7 +66,7 @@
         
         <t t-if="ctx.get('ptt_missing_info')">
             <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #856404;">🧩 Missing Information</h3>
+                <h3 style="margin-top: 0; color: #856404;">Missing Information</h3>
                 <ul style="margin: 0; padding-left: 20px;">
                     <t t-foreach="ctx.get('ptt_missing_info')" t-as="item">
                         <li><t t-esc="item"/></li>
@@ -77,7 +77,7 @@
 
         <t t-if="ctx.get('ptt_incomplete_tasks')">
             <div style="background-color: #e2f0fb; border: 1px solid #b8daff; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #0b5ed7;">🗂️ Incomplete Tasks</h3>
+                <h3 style="margin-top: 0; color: #0b5ed7;">Incomplete Tasks</h3>
                 <ul style="margin: 0; padding-left: 20px;">
                     <t t-foreach="ctx.get('ptt_incomplete_tasks')" t-as="task">
                         <li><t t-esc="task"/></li>
@@ -88,7 +88,7 @@
 
         <t t-if="ctx.get('ptt_unconfirmed_vendors')">
             <div style="background-color: #f8d7da; border: 1px solid #f5c2c7; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #842029;">📞 Unconfirmed Vendors</h3>
+                <h3 style="margin-top: 0; color: #842029;">Unconfirmed Vendors</h3>
                 <ul style="margin: 0; padding-left: 20px;">
                     <t t-foreach="ctx.get('ptt_unconfirmed_vendors')" t-as="vendor">
                         <li><t t-esc="vendor"/></li>
@@ -119,11 +119,11 @@
         <field name="model_id" ref="project.model_project_project"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.user_id.email }}</field>
-        <field name="subject">🚨 URGENT: 3 Days Until Event - {{ object.name }}</field>
+        <field name="subject">URGENT: 3 Days Until Event - {{ object.name }}</field>
         <field name="body_html" type="html">
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <div style="background-color: #dc3545; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0;">🚨 URGENT: Event in 3 Days!</h1>
+        <h1 style="margin: 0;">URGENT: Event in 3 Days!</h1>
         <p style="margin: 10px 0 0 0; font-size: 18px;">Final Preparations Required</p>
     </div>
     
@@ -133,7 +133,7 @@
         <p><strong><t t-esc="object.name"/></strong> is happening in <strong>3 DAYS</strong>! Please ensure all final preparations are complete.</p>
         
         <div style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #dc3545;">📋 Event Summary</h3>
+            <h3 style="margin-top: 0; color: #dc3545;">Event Summary</h3>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Event Date:</strong></td>
@@ -166,7 +166,7 @@
         </div>
         
         <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #721c24;">🔴 CRITICAL FINAL CHECKLIST</h3>
+            <h3 style="margin-top: 0; color: #721c24;">CRITICAL FINAL CHECKLIST</h3>
             <ul style="margin: 0; padding-left: 20px;">
                 <li><strong>Equipment:</strong> All equipment tested and packed</li>
                 <li><strong>Vendors:</strong> Final confirmation calls completed</li>
@@ -178,7 +178,7 @@
         </div>
         
         <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #155724;">📞 Emergency Contacts</h3>
+            <h3 style="margin-top: 0; color: #155724;">Emergency Contacts</h3>
             <p style="margin: 5px 0;">Make sure you have contact numbers for:</p>
             <ul style="margin: 0; padding-left: 20px;">
                 <li>Client (primary and secondary contacts)</li>
@@ -190,7 +190,7 @@
         
         <t t-if="ctx.get('ptt_missing_info')">
             <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #856404;">🧩 Missing Information</h3>
+                <h3 style="margin-top: 0; color: #856404;">Missing Information</h3>
                 <ul style="margin: 0; padding-left: 20px;">
                     <t t-foreach="ctx.get('ptt_missing_info')" t-as="item">
                         <li><t t-esc="item"/></li>
@@ -201,7 +201,7 @@
 
         <t t-if="ctx.get('ptt_incomplete_tasks')">
             <div style="background-color: #e2f0fb; border: 1px solid #b8daff; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #0b5ed7;">🗂️ Incomplete Tasks</h3>
+                <h3 style="margin-top: 0; color: #0b5ed7;">Incomplete Tasks</h3>
                 <ul style="margin: 0; padding-left: 20px;">
                     <t t-foreach="ctx.get('ptt_incomplete_tasks')" t-as="task">
                         <li><t t-esc="task"/></li>
@@ -212,7 +212,7 @@
 
         <t t-if="ctx.get('ptt_unconfirmed_vendors')">
             <div style="background-color: #f8d7da; border: 1px solid #f5c2c7; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #842029;">📞 Unconfirmed Vendors</h3>
+                <h3 style="margin-top: 0; color: #842029;">Unconfirmed Vendors</h3>
                 <ul style="margin: 0; padding-left: 20px;">
                     <t t-foreach="ctx.get('ptt_unconfirmed_vendors')" t-as="vendor">
                         <li><t t-esc="vendor"/></li>
@@ -224,7 +224,7 @@
         <p style="text-align: center; margin-top: 30px;">
             <a t-attf-href="{{ object.get_base_url() }}/web#id={{ object.id }}&amp;model=project.project&amp;view_type=form"
                style="background-color: #dc3545; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
-                ⚡ View Project NOW
+                View Project NOW
             </a>
         </p>
         
