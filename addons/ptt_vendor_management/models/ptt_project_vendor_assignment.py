@@ -6,6 +6,8 @@ Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/o
 """
 import uuid
 
+from datetime import timedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -57,6 +59,18 @@ class ProjectVendorAssignment(models.Model):
         string="Vendor Tasks",
         compute="_compute_vendor_task_count",
     )
+
+    vendor_pricing_hint = fields.Char(
+        string="Typical Rate",
+        compute="_compute_vendor_pricing_hint",
+        help="Suggested vendor rate from the vendor pricing table",
+    )
+
+    last_reminder_date = fields.Datetime(
+        string="Last Reminder Sent",
+        readonly=True,
+        help="Last time a pending work order reminder was sent",
+    )
     
     # === RELATED FIELDS FOR PORTAL ===
     event_date = fields.Date(
@@ -70,6 +84,28 @@ class ProjectVendorAssignment(models.Model):
     def _compute_vendor_task_count(self):
         for record in self:
             record.vendor_task_count = len(record.vendor_task_ids)
+
+    @api.depends("vendor_id", "service_type")
+    def _compute_vendor_pricing_hint(self):
+        Pricing = self.env["ptt.vendor.service.pricing"]
+        ServiceType = self.env["ptt.vendor.service.type"]
+        for record in self:
+            record.vendor_pricing_hint = False
+            if not record.vendor_id or not record.service_type:
+                continue
+            service_type = ServiceType.search([("code", "=", record.service_type)], limit=1)
+            if not service_type:
+                label = dict(record._fields["service_type"].selection).get(
+                    record.service_type, record.service_type
+                )
+                service_type = ServiceType.search([("name", "ilike", label)], limit=1)
+            if not service_type:
+                continue
+            pricing = Pricing.search([
+                ("vendor_id", "=", record.vendor_id.id),
+                ("service_type_id", "=", service_type.id),
+            ], limit=1)
+            record.vendor_pricing_hint = pricing.price_detail if pricing else False
     
     def _get_access_token(self):
         """Generate access token for portal link."""
@@ -228,6 +264,26 @@ class ProjectVendorAssignment(models.Model):
         self.ensure_one()
         self.status = 'completed'
         return True
+
+    @api.model
+    def _cron_remind_pending_work_orders(self):
+        """Send reminders for pending work orders older than 24 hours."""
+        now = fields.Datetime.now()
+        cutoff = now - timedelta(hours=24)
+        domain = [
+            ("status", "=", "pending"),
+            ("create_date", "<=", cutoff),
+            "|", ("last_reminder_date", "=", False), ("last_reminder_date", "<=", cutoff),
+        ]
+        pending = self.search(domain)
+        template = self.env.ref(
+            "ptt_vendor_management.email_template_vendor_work_order_reminder",
+            raise_if_not_found=False,
+        )
+        for assignment in pending:
+            if template and assignment.vendor_id and assignment.vendor_id.email:
+                template.send_mail(assignment.id, force_send=True)
+                assignment.last_reminder_date = now
 
     def action_view_tasks(self):
         """Open the list of vendor tasks for this assignment."""

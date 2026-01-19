@@ -50,12 +50,14 @@
         # Data (seed data)
         "data/ptt_document_type_data.xml",
         "data/mail_template_work_order.xml",
+        "data/mail_template_work_order_reminder.xml",
         "data/mail_template_vendor_invite.xml",
         "data/mail_template_rfq.xml",
         "data/rfq_sequence.xml",
         "data/rfq_cron.xml",
         "data/server_actions.xml",
         "data/cron_jobs.xml",
+        "data/saved_filters.xml",
         # Wizard views
         "wizard/ptt_vendor_invite_wizard_view.xml",
         # Views (configuration views first, then main views)

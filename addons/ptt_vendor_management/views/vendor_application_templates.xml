@@ -57,6 +57,12 @@
                                 
                                 <!-- Progress Indicator -->
                                 <div class="mb-4">
+                                    <div class="d-flex justify-content-between text-muted small mb-2">
+                                        <span>Profile</span>
+                                        <span>Services</span>
+                                        <span>Documents</span>
+                                        <span>Submit</span>
+                                    </div>
                                     <div class="progress" style="height: 8px;">
                                         <div class="progress-bar bg-primary" role="progressbar" 
                                              style="width: 25%;" id="formProgress"/>

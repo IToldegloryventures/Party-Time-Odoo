@@ -20,6 +20,25 @@
         <field name="arch" type="xml">
             <!-- Add RFQ smart button to button box -->
             <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_vendor_work_orders" type="object"
+                        class="oe_stat_button" icon="fa-briefcase">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="vendor_work_order_count"/>
+                        </span>
+                        <span class="o_stat_text">Work Orders</span>
+                    </div>
+                </button>
+                <button name="action_view_pending_vendor_responses" type="object"
+                        class="oe_stat_button" icon="fa-hourglass-half"
+                        invisible="vendor_pending_response_count == 0">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="vendor_pending_response_count"/>
+                        </span>
+                        <span class="o_stat_text">Pending</span>
+                    </div>
+                </button>
                 <button name="action_view_rfqs" type="object"
                         class="oe_stat_button" icon="fa-file-text-o">
                     <div class="o_stat_info">
@@ -37,6 +56,7 @@
                     <list editable="bottom">
                         <field name="service_type"/>
                         <field name="vendor_id"/>
+                        <field name="vendor_pricing_hint" optional="hide"/>
                         <field name="status" widget="badge" 
                                decoration-warning="status == 'pending'"
                                decoration-success="status in ('confirmed', 'completed')"
@@ -57,6 +77,7 @@
                                 <group>
                                     <field name="service_type"/>
                                     <field name="vendor_id"/>
+                                    <field name="vendor_pricing_hint" readonly="1"/>
                                     <field name="status" widget="badge"/>
                                 </group>
                                 <group>

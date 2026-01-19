@@ -188,6 +188,23 @@ class ResPartner(models.Model):
         help="Vendor document compliance status based on required documents",
     )
 
+    ptt_primary_vendor_contact_id = fields.Many2one(
+        "res.partner",
+        string="Primary Vendor Contact",
+        compute="_compute_primary_vendor_contact",
+        help="Primary contact for this vendor company",
+    )
+
+    ptt_primary_vendor_contact_email = fields.Char(
+        string="Primary Contact Email",
+        compute="_compute_primary_vendor_contact",
+    )
+
+    ptt_primary_vendor_contact_phone = fields.Char(
+        string="Primary Contact Phone",
+        compute="_compute_primary_vendor_contact",
+    )
+
     @api.depends("ptt_vendor_assignment_ids", "ptt_vendor_assignment_ids.status", 
                  "ptt_vendor_assignment_ids.actual_cost")
     def _compute_vendor_assignment_stats(self):
@@ -225,6 +242,18 @@ class ResPartner(models.Model):
             for contact in partner.ptt_vendor_contact_ids:
                 all_docs |= contact.ptt_vendor_document_ids
             partner.ptt_all_document_ids = all_docs
+
+    @api.depends("ptt_vendor_contact_ids", "child_ids")
+    def _compute_primary_vendor_contact(self):
+        """Select a primary vendor contact for quick reference."""
+        for partner in self:
+            contact = partner.ptt_vendor_contact_ids[:1]
+            if not contact:
+                contact = partner.child_ids.filtered(lambda c: not c.is_company)[:1]
+            contact = contact[:1]
+            partner.ptt_primary_vendor_contact_id = contact
+            partner.ptt_primary_vendor_contact_email = contact.email if contact else False
+            partner.ptt_primary_vendor_contact_phone = contact.phone if contact else False
 
     @api.model
     def _get_required_document_type_ids(self):

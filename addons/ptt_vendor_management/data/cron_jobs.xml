@@ -41,6 +41,17 @@
             <field name="interval_type">days</field>
             <field name="active">True</field>
         </record>
+
+        <!-- Remind vendors about pending work orders (runs daily) -->
+        <record id="cron_remind_pending_work_orders" model="ir.cron">
+            <field name="name">Vendor Work Orders: Pending Response Reminder</field>
+            <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_remind_pending_work_orders()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
         
     </data>
 </odoo>

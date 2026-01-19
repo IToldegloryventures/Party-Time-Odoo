@@ -50,12 +50,27 @@
             <!-- Add Vendor Info tab (visible when ptt_is_vendor is True) -->
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="Vendor Info" name="ptt_vendor_info" invisible="not ptt_is_vendor">
+                    <div class="alert alert-warning" role="alert"
+                         invisible="ptt_vendor_compliance_status not in ('missing_required', 'expired')">
+                        <i class="fa fa-exclamation-triangle me-1" title="Attention"/>
+                        This vendor is missing required documents or has expired documents.
+                        <button name="action_populate_document_lines" type="object"
+                                class="btn btn-sm btn-outline-dark ms-2"
+                                title="Add missing required document lines">
+                            Populate Required Docs
+                        </button>
+                    </div>
                     <group>
                         <group string="Vendor Classification">
                             <field name="ptt_vendor_tier" widget="radio" options="{'horizontal': true}"/>
                             <field name="ptt_vendor_service_types" widget="many2many_tags"
                                    options="{'no_create_edit': True}"
                                    placeholder="Select services this vendor provides..."/>
+                        </group>
+                        <group string="Primary Contact">
+                            <field name="ptt_primary_vendor_contact_id" readonly="1"/>
+                            <field name="ptt_primary_vendor_contact_email" readonly="1"/>
+                            <field name="ptt_primary_vendor_contact_phone" readonly="1"/>
                         </group>
                         <group string="Compliance Status">
                             <field name="ptt_vendor_compliance_status" widget="badge"
