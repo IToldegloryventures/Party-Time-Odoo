@@ -3,4 +3,4 @@
 
 from . import models
 from . import data
-from . import hooks
+from .hooks import post_init_hook

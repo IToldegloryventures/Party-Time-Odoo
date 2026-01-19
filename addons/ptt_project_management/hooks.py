@@ -1,12 +1,12 @@
 # Part of Party Time Texas Event Management System
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo import api, SUPERUSER_ID
 
-
-def post_init_hook(cr, registry):
-    """Rename legacy templates to match the simplified event types."""
-    env = api.Environment(cr, SUPERUSER_ID, {})
+def post_init_hook(env):
+    """Rename legacy templates to match the simplified event types.
+    
+    Odoo 19 signature: post_init_hook(env)
+    """
 
     rename_map = {
         "ptt_project_management.template_corporate_conference": "Corporate Template",
