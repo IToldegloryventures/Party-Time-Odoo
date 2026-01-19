@@ -48,8 +48,8 @@
                     <field name="template_id" options="{'no_create': True}"/>
                 </xpath>
                 
-                <!-- Add Event Status -->
-                <xpath expr="//field[@name='ptt_event_name']" position="after">
+                <!-- Add Event Status after Event Identity group -->
+                <xpath expr="//page[@name='ptt_event_details']//group[@string='Event Identity']" position="inside">
                     <field name="event_status" widget="badge"
                            decoration-info="event_status == 'planning'"
                            decoration-success="event_status in ('confirmed', 'completed')"
