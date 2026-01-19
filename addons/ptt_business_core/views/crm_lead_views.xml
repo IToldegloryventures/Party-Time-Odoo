@@ -41,7 +41,7 @@
                 <xpath expr="//notebook" position="inside">
                     
                     <!-- Event Details - Consolidated Tab -->
-                    <page string="Event Details" name="ptt_event">
+                    <page string="Event Details" name="lead_intake">
                         <!-- Contact Information Section -->
                         <separator string="Contact Information"/>
                         <group>
