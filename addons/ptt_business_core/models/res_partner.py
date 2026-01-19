@@ -15,11 +15,11 @@ class ResPartner(models.Model):
 
     # === VENDOR/CLIENT TOGGLES ===
     # These provide Boolean access to the native rank fields
+    # NOT stored - computed on-the-fly from supplier_rank
     ptt_is_vendor = fields.Boolean(
         string="Is Vendor",
         compute="_compute_ptt_is_vendor",
         inverse="_inverse_ptt_is_vendor",
-        store=True,
         help="Toggle to mark this contact as a vendor (sets supplier_rank = 1)",
     )
 
