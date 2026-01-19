@@ -418,7 +418,7 @@ class CrmLead(models.Model):
         event_id = self._ensure_event_id()
 
         project_vals = {
-            "name": f"Event {event_id} - {self.partner_id.name} - {self.x_studio_event_name or self.name}",
+            "name": f"Event {event_id} - {self.partner_id.name} - {self.ptt_event_name or self.name}",
             "partner_id": self.partner_id.id,
             "user_id": self.user_id.id,
             "ptt_crm_lead_id": self.id,

@@ -23,11 +23,15 @@ class PttCrmServiceLine(models.Model):
     _description = "CRM Service Line"
     _order = "sequence, id"
 
-    # SQL Constraints
-    _sql_constraints = [
-        ('positive_hours', 'CHECK(hours >= 0)', 'Hours cannot be negative.'),
-        ('positive_quantity', 'CHECK(quantity >= 0)', 'Quantity cannot be negative.'),
-    ]
+    # Constraints (Odoo 19 style)
+    _positive_hours = models.Constraint(
+        'CHECK(hours >= 0)',
+        'Hours cannot be negative.',
+    )
+    _positive_quantity = models.Constraint(
+        'CHECK(quantity >= 0)',
+        'Quantity cannot be negative.',
+    )
 
     # =========================================================================
     # RELATIONSHIPS
