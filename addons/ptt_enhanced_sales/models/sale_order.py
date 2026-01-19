@@ -244,13 +244,28 @@ class SaleOrder(models.Model):
     def _update_crm_stage_on_order_confirmed(self):
         """Update linked CRM lead when order is confirmed.
         
-        Booking is handled when payment is confirmed, so this
-        method does not set the lead to won.
+        Confirmed orders should move the opportunity to Booked.
         """
         for order in self:
             lead = order.opportunity_id
             if not lead:
                 continue
+            if lead.stage_id.is_won:
+                continue
+            booked_stage = self._get_ptt_stage(
+                "ptt_business_core.stage_ptt_booked",
+                fallback_names=["Booked", "Won"],
+                team=lead.team_id,
+            )
+            if booked_stage:
+                lead.write({
+                    "stage_id": booked_stage.id,
+                    "probability": 100,
+                })
+            else:
+                lead.action_set_won()
+            if hasattr(lead, "ptt_booked"):
+                lead.ptt_booked = True
             lead.message_post(
                 body=_("Order %s confirmed.") % order.name,
                 message_type='notification',
