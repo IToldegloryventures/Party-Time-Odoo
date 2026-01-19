@@ -25,21 +25,8 @@
             <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="description_sale">Event project kickoff - creates the event project when the sale order is confirmed. This should be the first line on every event quote.</field>
         </record>
-        
-        <!-- ============================================ -->
-        <!-- ADDITIONAL INSURED COVERAGE EXTENSION       -->
-        <!-- ============================================ -->
-        <record id="product_template_additional_insured" model="product.template">
-            <field name="name">* Additional Insured Coverage Extension</field>
-            <field name="default_code">INS-EXT</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Additional insured coverage extension for event liability.</field>
-        </record>
+
+        <!-- NOTE: Additional Insured Coverage is defined in products_adjustments.xml with variants -->
 
         <!-- ============================================ -->
         <!-- MISC EVENT ENTERTAINMENT SERVICES (Untaxed) -->
