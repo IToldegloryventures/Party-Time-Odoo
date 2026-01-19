@@ -61,7 +61,7 @@ class TestCrmStageAutomation(TransactionCase):
             })
 
         cls.stage_booked = cls.env.ref(
-            'ptt_business_core.stage_ptt_booked',
+            'crm.stage_lead4',  # Booked stage (was Won, renamed)
             raise_if_not_found=False,
         )
         if not cls.stage_booked:

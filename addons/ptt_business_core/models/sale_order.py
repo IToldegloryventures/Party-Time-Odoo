@@ -92,7 +92,7 @@ class SaleOrder(models.Model):
     def _ptt_advance_crm_to_booked(self):
         """Move linked CRM opportunities to 'Booked' stage."""
         booked_stage = self.env.ref(
-            'ptt_business_core.stage_ptt_booked', 
+            'crm.stage_lead4',  # Booked stage (was Won, renamed in crm_stages.xml)
             raise_if_not_found=False
         )
         

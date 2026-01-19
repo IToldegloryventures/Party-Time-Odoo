@@ -3,64 +3,95 @@
     <!--
     PTT CRM Pipeline Stages
     =======================
-    Custom stages for Party Time Texas event sales pipeline.
+    Complete stage configuration for Party Time Texas event sales pipeline.
     
     Pipeline Flow:
-    New → Qualified → Proposal Sent → Contract Sent → Booked (Won)
+    1. Intake (New leads)
+    2. Qualification (Qualified leads)  
+    3. Approval (Internal approval needed)
+    4. Proposal Sent (Quote sent to customer)
+    5. Contract Sent (Contract awaiting signature)
+    6. Booked (Won - event confirmed)
+    7. Lost (Opportunity lost)
     
-    Note: These use forcecreate="False" to avoid duplicates if stages
-    already exist with the same XML ID from a previous installation.
+    STRATEGY: We override Odoo's default stages by using their XML IDs
+    (crm.stage_lead1, crm.stage_lead2, etc.) and update the names/sequences.
+    Then we add our custom stages.
     -->
 
-    <!-- 
-    Proposal Sent Stage
-    Triggered automatically when quotation is sent to customer via sale.order.action_quotation_sent()
-    -->
-    <record model="crm.stage" id="stage_ptt_proposal_sent" forcecreate="False">
+    <!-- ================================================================
+         OVERRIDE DEFAULT ODOO STAGES
+         These use Odoo's existing XML IDs to rename them in-place
+         ================================================================ -->
+    
+    <!-- Stage 1: Intake (was "New") -->
+    <record model="crm.stage" id="crm.stage_lead1">
+        <field name="name">Intake</field>
+        <field name="sequence">10</field>
+        <field name="color">11</field>
+        <field name="is_won">False</field>
+        <field name="requirements">New inquiry received. Gather initial event details.</field>
+    </record>
+
+    <!-- Stage 2: Qualification (was "Qualified") -->
+    <record model="crm.stage" id="crm.stage_lead2">
+        <field name="name">Qualification</field>
+        <field name="sequence">20</field>
+        <field name="color">5</field>
+        <field name="is_won">False</field>
+        <field name="requirements">Lead is qualified. Event date, budget, and requirements confirmed.</field>
+    </record>
+
+    <!-- Stage 3: Approval (was "Proposition" - repurposed) -->
+    <record model="crm.stage" id="crm.stage_lead3">
+        <field name="name">Approval</field>
+        <field name="sequence">30</field>
+        <field name="color">8</field>
+        <field name="is_won">False</field>
+        <field name="requirements">Internal approval required before sending proposal.</field>
+    </record>
+
+    <!-- ================================================================
+         PTT CUSTOM STAGES
+         These are new stages specific to Party Time Texas workflow
+         ================================================================ -->
+
+    <!-- Stage 4: Proposal Sent -->
+    <record model="crm.stage" id="stage_ptt_proposal_sent">
         <field name="name">Proposal Sent</field>
-        <field name="sequence">4</field>
+        <field name="sequence">40</field>
         <field name="color">4</field>
         <field name="is_won">False</field>
-        <field name="requirements">Quotation has been sent to the customer. Awaiting response.</field>
+        <field name="requirements">Quotation has been sent to customer. Awaiting response.</field>
     </record>
 
-    <!-- 
-    Contract Sent Stage
-    Triggered when a formal contract is sent to customer for signature
-    -->
-    <record model="crm.stage" id="stage_ptt_contract_sent" forcecreate="False">
+    <!-- Stage 5: Contract Sent -->
+    <record model="crm.stage" id="stage_ptt_contract_sent">
         <field name="name">Contract Sent</field>
-        <field name="sequence">5</field>
+        <field name="sequence">50</field>
         <field name="color">6</field>
         <field name="is_won">False</field>
-        <field name="requirements">Contract has been sent for customer signature. Awaiting signed contract and deposit.</field>
+        <field name="requirements">Contract sent for signature. Awaiting signed contract and deposit.</field>
     </record>
 
-    <!-- 
-    Booked Stage (Won)
-    Triggered when sale order is confirmed OR when deposit payment is received
-    This is a "Won" stage with is_won=True
-    -->
-    <record model="crm.stage" id="stage_ptt_booked" forcecreate="False">
+    <!-- Stage 6: Booked (Won) - Override Odoo's Won stage -->
+    <record model="crm.stage" id="crm.stage_lead4">
         <field name="name">Booked</field>
-        <field name="sequence">6</field>
+        <field name="sequence">60</field>
         <field name="is_won">True</field>
+        <field name="fold">False</field>
         <field name="color">10</field>
-        <field name="requirements">Customer has confirmed and event is officially booked. Project should be created.</field>
+        <field name="requirements">Event confirmed and booked. Project should be created.</field>
     </record>
 
-    <!--
-    Lost Stage
-    Used when opportunity is lost. Standard Odoo has this but we define our own
-    with PTT-specific messaging.
-    -->
-    <record model="crm.stage" id="stage_ptt_lost" forcecreate="False">
+    <!-- Stage 7: Lost -->
+    <record model="crm.stage" id="stage_ptt_lost">
         <field name="name">Lost</field>
-        <field name="sequence">8</field>
+        <field name="sequence">100</field>
         <field name="fold">True</field>
         <field name="color">1</field>
         <field name="is_won">False</field>
-        <field name="requirements">Opportunity was not converted. Record lost reason for analytics.</field>
+        <field name="requirements">Opportunity lost. Record reason for analytics.</field>
     </record>
 
 </odoo>

@@ -253,7 +253,7 @@ class SaleOrder(models.Model):
             if lead.stage_id.is_won:
                 continue
             booked_stage = self._get_ptt_stage(
-                "ptt_business_core.stage_ptt_booked",
+                "crm.stage_lead4",  # Booked stage (was Won, renamed in crm_stages.xml)
                 fallback_names=["Booked", "Won"],
                 team=lead.team_id,
             )
@@ -282,7 +282,7 @@ class SaleOrder(models.Model):
             if lead.stage_id.is_won:
                 continue
             booked_stage = self._get_ptt_stage(
-                'ptt_business_core.stage_ptt_booked',
+                'crm.stage_lead4',  # Booked stage (was Won, renamed in crm_stages.xml)
                 fallback_names=['Booked', 'Won'],
                 team=lead.team_id,
             )
