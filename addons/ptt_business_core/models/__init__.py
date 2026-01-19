@@ -3,6 +3,7 @@
 # Models must be loaded in order - comodels before One2many parents
 # NOTE: Constants are in ptt_business_core/constants.py (addon root)
 
+from . import mail_mail  # Email kill switch - MUST BE FIRST
 from . import res_partner  # Partner extensions
 from . import ptt_crm_vendor_estimate  # CRM vendor estimates (before crm_lead)
 from . import ptt_crm_service_line  # CRM service lines (before crm_lead)
