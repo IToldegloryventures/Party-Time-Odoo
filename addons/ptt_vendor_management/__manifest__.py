@@ -1,49 +1,78 @@
 {
     "name": "PTT Vendor Management",
-    "version": "19.0.1.0.0",
-    "summary": "Vendor portal, RFQ, and coordination for Party Time Texas",
+    "version": "19.0.4.0.0",
+    "summary": "Vendor Management + Portal for Work Order Accept/Decline + Vendor Applications + RFQ",
     "description": """
-Vendor Management Portal
-========================
-
-This module provides comprehensive vendor management including:
-* Vendor RFQ (Request for Quote) system for event services
-* Vendor portal access to view and respond to service requests
-* Quote comparison and approval workflow
-* Vendor registration and onboarding
-* Document sharing for event coordination
-* Performance tracking and vendor ratings
-* Email notifications for RFQs and assignments
-
-Inspired by Cybrosys Technologies vendor_portal_odoo module,
-adapted for Party Time Texas event management workflow.
+        Vendor Management Application
+        =============================
+        
+        Comprehensive vendor management system for Party Time Texas:
+        - Vendor service types and categorization
+        - Vendor tier system (Essentials/Classic/Premier)
+        - Document management and compliance tracking
+        - Vendor list views and search functionality
+        
+        Vendor Portal:
+        - Vendors receive work order assignments via email
+        - Vendors can accept/decline work orders from portal
+        - Security-limited view (vendors only see their assignment, NOT customer pricing)
+        - Project manager notifications on accept/decline
+        
+        Vendor Application Portal:
+        - Public vendor application form
+        - Invite wizard to send application invitations
+        - Document upload during application
+        - Application status tracking
+        
+        RFQ System (NEW):
+        - Request for Quotes from multiple vendors
+        - Vendor quote submission via portal
+        - Winner selection workflow
+        - Auto-close RFQs on closing date
+        - Purchase order creation from selected quote
     """,
-    "category": "Website/Website",
+    "category": "Sales",
     "author": "Party Time Texas",
     "license": "LGPL-3",
     "depends": [
-        "portal",
+        "base",
+        "contacts",
         "mail",
-        "project",
-        "crm",
-        "ptt_business_core",
-        "ptt_project_management",
+        "portal",
+        "purchase",
+        "project",  # Required for project view references
+        "ptt_business_core",  # Has ptt.project.vendor.assignment model
     ],
     "data": [
+        # Security (load first)
         "security/ir.model.access.csv",
-        "security/vendor_portal_security.xml",
-        "data/vendor_rfq_sequence.xml",
-        "data/vendor_mail_templates.xml",
-        "wizard/register_vendor_views.xml",
-        "views/vendor_rfq_views.xml",
-        "views/res_partner_views.xml",
-        "views/portal_templates.xml",
+        "security/vendor_portal_rules.xml",
+        # Data (seed data)
+        "data/ptt_document_type_data.xml",
+        "data/mail_template_work_order.xml",
+        "data/mail_template_vendor_invite.xml",
+        "data/mail_template_rfq.xml",
+        "data/rfq_sequence.xml",
+        "data/rfq_cron.xml",
+        "data/server_actions.xml",
+        "data/cron_jobs.xml",
+        # Wizard views
+        "wizard/ptt_vendor_invite_wizard_view.xml",
+        # Views (configuration views first, then main views)
+        "views/ptt_document_type_view.xml",
+        "views/ptt_vendor_document_view.xml",
+        "views/ptt_res_partner_view.xml",
+        "views/ptt_vendor_list_view.xml",
+        "views/ptt_vendor_onboarding_view.xml",
+        "views/ptt_vendor_rfq_views.xml",
+        "views/ptt_vendor_task_views.xml",
+        "views/ptt_vendor_menus.xml",
+        "views/vendor_portal_templates.xml",
+        "views/vendor_application_templates.xml",
+        "views/portal_rfq_templates.xml",
+        # Portal view extensions (extends ptt_business_core project form)
+        "views/ptt_project_vendor_portal_view.xml",
     ],
-    "assets": {
-        "web.assets_frontend": [
-            "ptt_vendor_management/static/src/scss/vendor_portal.scss",
-        ],
-    },
     "installable": True,
     "application": True,
     "auto_install": False,

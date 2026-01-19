@@ -1,0 +1,832 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 
+        Vendor Portal QWeb Templates
+        
+        SECURITY: These templates only show LIMITED information.
+        Vendors CANNOT see customer pricing, other vendors, or profitability.
+        
+        Reference: https://www.odoo.com/documentation/19.0/developer/reference/frontend/qweb.html
+    -->
+    
+    <!-- Work Orders List Page (Logged-in vendors only) -->
+    <template id="portal_my_work_orders" name="My Work Orders">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Work Orders</t>
+            </t>
+            
+            <t t-if="not assignments">
+                <div class="alert alert-info mt-3">
+                    <i class="fa fa-info-circle me-2"/>
+                    You have no work orders assigned.
+                </div>
+            </t>
+            
+            <t t-if="assignments">
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover o_portal_my_doc_table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Event</th>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th class="text-end">Payment</th>
+                                <th class="text-center">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="assignments" t-as="wo">
+                                <tr>
+                                    <td>
+                                        <strong><t t-esc="wo.project_id.name"/></strong>
+                                    </td>
+                                    <td><t t-esc="wo.service_type"/></td>
+                                    <td>
+                                        <t t-if="wo.project_id.ptt_event_date">
+                                            <t t-esc="wo.project_id.ptt_event_date" t-options="{'widget': 'date'}"/>
+                                        </t>
+                                        <t t-else="">TBD</t>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>$<t t-esc="'%.2f' % wo.actual_cost"/></strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-attf-class="badge rounded-pill #{
+                                            'bg-warning text-dark' if wo.status == 'pending' else
+                                            'bg-success' if wo.status == 'confirmed' else
+                                            'bg-danger' if wo.status == 'cancelled' else
+                                            'bg-info' if wo.status == 'completed' else
+                                            'bg-secondary'
+                                        }">
+                                            <t t-if="wo.status == 'pending'">Pending Response</t>
+                                            <t t-elif="wo.status == 'confirmed'">Accepted</t>
+                                            <t t-elif="wo.status == 'completed'">Completed</t>
+                                            <t t-elif="wo.status == 'cancelled'">Cancelled</t>
+                                            <t t-else="">Draft</t>
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a t-attf-href="/my/work-orders/#{wo.id}/#{wo.access_token}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fa fa-eye me-1"/>View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pager -->
+                <t t-if="pager">
+                    <div class="d-flex justify-content-center mt-3">
+                        <t t-call="portal.pager"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Work Order Detail Page (PUBLIC ACCESS via token) -->
+    <template id="portal_work_order_detail" name="Work Order Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-4 mb-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0">
+                                <i class="fa fa-clipboard me-2"/>Work Order
+                            </h3>
+                            <span t-attf-class="badge fs-6 #{
+                                'bg-warning text-dark' if assignment.status == 'pending' else
+                                'bg-success' if assignment.status == 'confirmed' else
+                                'bg-danger' if assignment.status == 'cancelled' else
+                                'bg-info' if assignment.status == 'completed' else
+                                'bg-light text-dark'
+                            }">
+                                <t t-if="assignment.status == 'pending'">ACTION REQUIRED</t>
+                                <t t-elif="assignment.status == 'confirmed'">ACCEPTED</t>
+                                <t t-elif="assignment.status == 'cancelled'">DECLINED</t>
+                                <t t-elif="assignment.status == 'completed'">COMPLETED</t>
+                                <t t-else="">DRAFT</t>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <!-- Event Info (LIMITED - No customer pricing) -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-calendar-alt me-2"/>Event Details
+                                </h5>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="fw-bold" style="width: 40%;">Event:</td>
+                                        <td><t t-esc="event_name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Date:</td>
+                                        <td>
+                                            <t t-if="event_date">
+                                                <t t-esc="event_date" t-options="{'widget': 'date'}"/>
+                                            </t>
+                                            <t t-else="">TBD</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Time:</td>
+                                        <td>
+                                            <t t-if="event_time_start">
+                                                <t t-esc="event_time_start"/>
+                                                <t t-if="event_time_end"> - <t t-esc="event_time_end"/></t>
+                                            </t>
+                                            <t t-else="">TBD</t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-map-marker-alt me-2"/>Venue Location
+                                </h5>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="fw-bold" style="width: 30%;">Venue:</td>
+                                        <td><strong><t t-esc="venue_name or 'TBD'"/></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Address:</td>
+                                        <td>
+                                            <t t-if="venue_address">
+                                                <span style="white-space: pre-line;"><t t-esc="venue_address"/></span>
+                                                <br/>
+                                                <a t-attf-href="https://www.google.com/maps/search/?api=1&amp;query=#{venue_address}"
+                                                   target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                                    <i class="fa fa-map me-1"/>Get Directions
+                                                </a>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted">Address TBD</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4"/>
+                        
+                        <!-- Vendor Assignment (THEIR info only) -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-user-tie me-2"/>Your Assignment
+                                </h5>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td class="fw-bold" style="width: 40%;">Service:</td>
+                                        <td><strong><t t-esc="service_type"/></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Arrival/Setup:</td>
+                                        <td><t t-esc="arrival_time or 'TBD'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Your Payment:</td>
+                                        <td>
+                                            <span class="fs-4 text-success fw-bold">
+                                                $<t t-esc="'%.2f' % vendor_payment"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6" t-if="special_instructions">
+                                <h5 class="text-muted mb-3">
+                                    <i class="fa fa-sticky-note me-2"/>Special Instructions
+                                </h5>
+                                <div class="alert alert-light border">
+                                    <t t-esc="special_instructions"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons (only if pending) -->
+                        <t t-if="assignment.status == 'pending'">
+                            <hr class="my-4"/>
+                            <div class="text-center py-4 bg-light rounded">
+                                <h5 class="mb-4">
+                                    <i class="fa fa-question-circle text-warning me-2"/>
+                                    Action Required
+                                </h5>
+                                <p class="text-muted mb-4">Please respond to this work order assignment</p>
+                                <button class="btn btn-success btn-lg me-3 px-5" 
+                                        id="btn-accept"
+                                        t-att-data-id="assignment.id"
+                                        t-att-data-token="token">
+                                    <i class="fa fa-check me-2"/>Accept This Assignment
+                                </button>
+                                <button class="btn btn-outline-danger btn-lg px-4" 
+                                        id="btn-decline"
+                                        t-att-data-id="assignment.id"
+                                        t-att-data-token="token">
+                                    <i class="fa fa-times me-2"/>Decline
+                                </button>
+                            </div>
+                        </t>
+                        
+                        <!-- Status Messages -->
+                        <t t-if="assignment.status == 'confirmed'">
+                            <div class="alert alert-success d-flex align-items-center mt-4" role="alert">
+                                <i class="fa fa-check-circle fa-2x me-3"/>
+                                <div>
+                                    <strong>You accepted this work order</strong>
+                                    <t t-if="assignment.vendor_signature_date">
+                                        <br/>
+                                        <small class="text-muted">
+                                            Signed on <t t-esc="assignment.vendor_signature_date" t-options="{'widget': 'datetime'}"/>
+                                        </small>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <t t-if="assignment.status == 'cancelled'">
+                            <div class="alert alert-danger d-flex align-items-center mt-4" role="alert">
+                                <i class="fa fa-times-circle fa-2x me-3"/>
+                                <div>
+                                    <strong>You declined this work order</strong>
+                                    <t t-if="assignment.vendor_decline_reason">
+                                        <br/>
+                                        <small>Reason: <t t-esc="assignment.vendor_decline_reason"/></small>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <t t-if="assignment.status == 'completed'">
+                            <div class="alert alert-info d-flex align-items-center mt-4" role="alert">
+                                <i class="fa fa-check-double fa-2x me-3"/>
+                                <div>
+                                    <strong>This event has been completed</strong>
+                                    <br/>
+                                    <small class="text-muted">Thank you for your service!</small>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <!-- ============================================ -->
+                        <!-- YOUR TASKS SECTION -->
+                        <!-- ============================================ -->
+                        <t t-if="vendor_tasks">
+                            <hr class="my-4"/>
+                            <h5 class="text-muted mb-3">
+                                <i class="fa fa-tasks me-2"/>Your Tasks
+                                <span class="badge bg-secondary ms-2">
+                                    <t t-esc="len(vendor_tasks)"/>
+                                </span>
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Task</th>
+                                            <th>Due Date</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="vendor_tasks" t-as="task">
+                                            <tr>
+                                                <td>
+                                                    <strong t-esc="task.name"/>
+                                                    <t t-if="task.description">
+                                                        <br/>
+                                                        <small class="text-muted" t-esc="task.description"/>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="task.due_date">
+                                                        <t t-esc="task.due_date" t-options="{'widget': 'date'}"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="task.priority == '2'">
+                                                        <span class="badge bg-danger">High</span>
+                                                    </t>
+                                                    <t t-elif="task.priority == '1'">
+                                                        <span class="badge bg-warning text-dark">Medium</span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="badge bg-secondary">Low</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="task.state == 'todo'">
+                                                        <span class="badge bg-secondary">To Do</span>
+                                                    </t>
+                                                    <t t-elif="task.state == 'in_progress'">
+                                                        <span class="badge bg-primary">In Progress</span>
+                                                    </t>
+                                                    <t t-elif="task.state == 'done'">
+                                                        <span class="badge bg-success">Done</span>
+                                                    </t>
+                                                    <t t-elif="task.state == 'cancelled'">
+                                                        <span class="badge bg-dark">Cancelled</span>
+                                                    </t>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-if="task.state == 'todo'">
+                                                        <form t-attf-action="/my/vendor-task/#{task.id}/update" method="post" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                            <input type="hidden" name="state" value="in_progress"/>
+                                                            <input type="hidden" name="redirect" t-attf-value="/my/work-orders/#{assignment.id}?access_token=#{token}"/>
+                                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-play me-1"/>Start
+                                                            </button>
+                                                        </form>
+                                                    </t>
+                                                    <t t-if="task.state == 'in_progress'">
+                                                        <form t-attf-action="/my/vendor-task/#{task.id}/update" method="post" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                            <input type="hidden" name="state" value="done"/>
+                                                            <input type="hidden" name="redirect" t-attf-value="/my/work-orders/#{assignment.id}?access_token=#{token}"/>
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fa fa-check me-1"/>Done
+                                                            </button>
+                                                        </form>
+                                                    </t>
+                                                    <t t-if="task.state == 'done'">
+                                                        <form t-attf-action="/my/vendor-task/#{task.id}/update" method="post" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                            <input type="hidden" name="state" value="todo"/>
+                                                            <input type="hidden" name="redirect" t-attf-value="/my/work-orders/#{assignment.id}?access_token=#{token}"/>
+                                                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                                <i class="fa fa-undo me-1"/>Reopen
+                                                            </button>
+                                                        </form>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        
+                        <!-- ============================================ -->
+                        <!-- MESSAGES / COMMUNICATION SECTION -->
+                        <!-- ============================================ -->
+                        <hr class="my-4"/>
+                        <h5 class="text-muted mb-3">
+                            <i class="fa fa-comments me-2"/>Communication
+                        </h5>
+                        
+                        <!-- Message Input Form -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <form t-attf-action="/my/work-orders/#{assignment.id}/message" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="access_token" t-att-value="token"/>
+                                    <div class="mb-3">
+                                        <label for="message_body" class="form-label">Send a Message</label>
+                                        <textarea name="message_body" id="message_body" class="form-control" rows="3"
+                                                  placeholder="Type your message here... (questions, updates, or special requests)"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-paper-plane me-2"/>Send Message
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Previous Messages -->
+                        <t t-if="messages">
+                            <div class="list-group">
+                                <t t-foreach="messages" t-as="msg">
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between mb-2">
+                                            <strong>
+                                                <i class="fa fa-user-circle me-2"/>
+                                                <t t-esc="msg.author_id.name"/>
+                                            </strong>
+                                            <small class="text-muted">
+                                                <t t-esc="msg.date" t-options="{'widget': 'datetime'}"/>
+                                            </small>
+                                        </div>
+                                        <div t-raw="msg.body"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-if="not messages">
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-inbox fa-2x mb-2 d-block"/>
+                                <p>No messages yet. Be the first to send a message!</p>
+                            </div>
+                        </t>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JavaScript for Accept/Decline buttons -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    const acceptBtn = document.getElementById('btn-accept');
+                    const declineBtn = document.getElementById('btn-decline');
+                    
+                    if (acceptBtn) {
+                        acceptBtn.addEventListener('click', async function() {
+                            if (!confirm('Are you sure you want to ACCEPT this work order?')) return;
+                            
+                            this.disabled = true;
+                            this.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
+                            
+                            const id = this.dataset.id;
+                            const token = this.dataset.token;
+                            
+                            try {
+                                const response = await fetch(`/my/work-orders/${id}/accept`, {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        jsonrpc: '2.0',
+                                        method: 'call',
+                                        params: {access_token: token}
+                                    })
+                                });
+                                
+                                const result = await response.json();
+                                if (result.result &amp;&amp; result.result.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + (result.result?.error || 'Unknown error'));
+                                    this.disabled = false;
+                                    this.innerHTML = '<i class="fa fa-check me-2"></i>Accept This Assignment';
+                                }
+                            } catch (e) {
+                                alert('Network error. Please try again.');
+                                this.disabled = false;
+                                this.innerHTML = '<i class="fa fa-check me-2"></i>Accept This Assignment';
+                            }
+                        });
+                    }
+                    
+                    if (declineBtn) {
+                        declineBtn.addEventListener('click', async function() {
+                            const reason = prompt('Please provide a reason for declining (optional):');
+                            if (reason === null) return; // User cancelled
+                            
+                            this.disabled = true;
+                            this.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
+                            
+                            const id = this.dataset.id;
+                            const token = this.dataset.token;
+                            
+                            try {
+                                const response = await fetch(`/my/work-orders/${id}/decline`, {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        jsonrpc: '2.0',
+                                        method: 'call',
+                                        params: {access_token: token, reason: reason}
+                                    })
+                                });
+                                
+                                const result = await response.json();
+                                if (result.result &amp;&amp; result.result.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + (result.result?.error || 'Unknown error'));
+                                    this.disabled = false;
+                                    this.innerHTML = '<i class="fa fa-times me-2"></i>Decline';
+                                }
+                            } catch (e) {
+                                alert('Network error. Please try again.');
+                                this.disabled = false;
+                                this.innerHTML = '<i class="fa fa-times me-2"></i>Decline';
+                            }
+                        });
+                    }
+                });
+            </script>
+        </t>
+    </template>
+    
+    <!-- Add Work Orders link to portal home -->
+    <template id="portal_my_home_menu_work_orders" name="Portal My Home: Work Orders" 
+              inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/portal/static/src/img/briefcase.svg'"/>
+                <t t-set="title">Work Orders</t>
+                <t t-set="url" t-value="'/my/work-orders'"/>
+                <t t-set="text">View and respond to your event assignments</t>
+                <t t-set="placeholder_count" t-value="'work_order_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/portal/static/src/img/clock.svg'"/>
+                <t t-set="title">Upcoming Events</t>
+                <t t-set="url" t-value="'/my/upcoming-events'"/>
+                <t t-set="text">View your upcoming confirmed events</t>
+                <t t-set="placeholder_count" t-value="'upcoming_event_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/portal/static/src/img/checklist.svg'"/>
+                <t t-set="title">My Tasks</t>
+                <t t-set="url" t-value="'/my/vendor-tasks'"/>
+                <t t-set="text">View and manage your assigned tasks</t>
+                <t t-set="placeholder_count" t-value="'vendor_task_count'"/>
+            </t>
+        </xpath>
+    </template>
+    
+    <!-- ============================================================== -->
+    <!-- UPCOMING EVENTS PORTAL PAGE -->
+    <!-- ============================================================== -->
+    <template id="portal_upcoming_events" name="Upcoming Events">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Upcoming Events</t>
+            </t>
+            
+            <t t-if="not upcoming_events">
+                <div class="alert alert-info text-center my-4">
+                    <i class="fa fa-calendar-o fa-3x mb-3 d-block"></i>
+                    <h4>No Upcoming Events</h4>
+                    <p class="mb-0">You don't have any confirmed upcoming events at this time.</p>
+                    <a href="/my/work-orders?filter=pending" class="btn btn-primary mt-3">
+                        <i class="fa fa-inbox me-2"></i>Check Pending Requests
+                    </a>
+                </div>
+            </t>
+            
+            <t t-if="upcoming_events">
+                <div class="row">
+                    <t t-foreach="upcoming_events" t-as="event">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-header bg-success text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-light text-dark">
+                                            <t t-esc="event.project_id.name"/>
+                                        </span>
+                                        <small>
+                                            <i class="fa fa-calendar me-1"></i>
+                                            <t t-esc="event.event_date" t-options="{'widget': 'date'}"/>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="event.service_type_id.name"/>
+                                    </h5>
+                                    
+                                    <!-- Venue Info -->
+                                    <div class="mb-3">
+                                        <i class="fa fa-map-marker text-primary me-2"></i>
+                                        <strong>Venue:</strong>
+                                        <t t-if="event.project_id.venue_id">
+                                            <span t-esc="event.project_id.venue_id.name"/>
+                                            <t t-if="event.project_id.venue_id.city">
+                                                <small class="text-muted">
+                                                    (<t t-esc="event.project_id.venue_id.city"/>, 
+                                                    <t t-esc="event.project_id.venue_id.state_id.code or event.project_id.venue_id.state_id.name"/>)
+                                                </small>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">TBD</span>
+                                        </t>
+                                    </div>
+                                    
+                                    <!-- Time Info -->
+                                    <div class="mb-3">
+                                        <i class="fa fa-clock-o text-primary me-2"></i>
+                                        <strong>Time:</strong>
+                                        <t t-if="event.project_id.event_start_time">
+                                            <t t-esc="event.project_id.event_start_time" t-options="{'widget': 'float_time'}"/>
+                                            <t t-if="event.project_id.event_end_time">
+                                                - <t t-esc="event.project_id.event_end_time" t-options="{'widget': 'float_time'}"/>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">TBD</span>
+                                        </t>
+                                    </div>
+                                    
+                                    <!-- Payment Info -->
+                                    <div class="mb-3">
+                                        <i class="fa fa-dollar text-success me-2"></i>
+                                        <strong>Payment:</strong>
+                                        <span class="text-success fw-bold">
+                                            <t t-esc="event.agreed_rate" t-options="{'widget': 'monetary', 'display_currency': event.currency_id}"/>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Tasks Badge -->
+                                    <t t-if="event.vendor_task_count">
+                                        <div class="mb-2">
+                                            <span class="badge bg-info">
+                                                <i class="fa fa-tasks me-1"></i>
+                                                <t t-esc="event.vendor_task_count"/> Task(s)
+                                            </span>
+                                        </div>
+                                    </t>
+                                </div>
+                                <div class="card-footer bg-light">
+                                    <a t-attf-href="/my/work-orders/#{event.id}?access_token=#{event.access_token}" 
+                                       class="btn btn-primary btn-sm w-100">
+                                        <i class="fa fa-eye me-2"></i>View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                
+                <!-- Pager -->
+                <div class="d-flex justify-content-center mt-4">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+    <!-- ============================================================== -->
+    <!-- VENDOR TASKS PORTAL PAGE -->
+    <!-- ============================================================== -->
+    <template id="portal_vendor_tasks" name="My Tasks">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Tasks</t>
+            </t>
+            
+            <!-- Filter Tabs -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{filter == 'all' and 'active' or ''}" 
+                       href="/my/vendor-tasks?filter=all">
+                        All Tasks
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{filter == 'todo' and 'active' or ''}" 
+                       href="/my/vendor-tasks?filter=todo">
+                        <i class="fa fa-circle-o text-secondary me-1"></i>To Do
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{filter == 'in_progress' and 'active' or ''}" 
+                       href="/my/vendor-tasks?filter=in_progress">
+                        <i class="fa fa-spinner text-primary me-1"></i>In Progress
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{filter == 'done' and 'active' or ''}" 
+                       href="/my/vendor-tasks?filter=done">
+                        <i class="fa fa-check-circle text-success me-1"></i>Done
+                    </a>
+                </li>
+            </ul>
+            
+            <t t-if="not vendor_tasks">
+                <div class="alert alert-info text-center my-4">
+                    <i class="fa fa-tasks fa-3x mb-3 d-block"></i>
+                    <h4>No Tasks Found</h4>
+                    <p class="mb-0">
+                        <t t-if="filter == 'all'">You don't have any tasks assigned yet.</t>
+                        <t t-elif="filter == 'todo'">No pending tasks to complete.</t>
+                        <t t-elif="filter == 'in_progress'">No tasks currently in progress.</t>
+                        <t t-elif="filter == 'done'">No completed tasks yet.</t>
+                    </p>
+                </div>
+            </t>
+            
+            <t t-if="vendor_tasks">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Task</th>
+                                <th>Event</th>
+                                <th>Due Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="vendor_tasks" t-as="task">
+                                <tr>
+                                    <td>
+                                        <strong t-esc="task.name"/>
+                                        <t t-if="task.description">
+                                            <br/>
+                                            <small class="text-muted" t-esc="task.description[:100]"/>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-attf-href="/my/work-orders/#{task.assignment_id.id}?access_token=#{task.assignment_id.access_token}">
+                                            <t t-esc="task.assignment_id.project_id.name"/>
+                                        </a>
+                                        <br/>
+                                        <small class="text-muted">
+                                            <t t-esc="task.assignment_id.event_date" t-options="{'widget': 'date'}"/>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <t t-if="task.due_date">
+                                            <span t-attf-class="#{task.due_date &lt; datetime.date.today() and task.state not in ['done', 'cancelled'] and 'text-danger fw-bold' or ''}">
+                                                <t t-esc="task.due_date" t-options="{'widget': 'date'}"/>
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">-</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t t-if="task.priority == '2'">
+                                            <span class="badge bg-danger">High</span>
+                                        </t>
+                                        <t t-elif="task.priority == '1'">
+                                            <span class="badge bg-warning text-dark">Medium</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-secondary">Low</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t t-if="task.state == 'todo'">
+                                            <span class="badge bg-secondary">To Do</span>
+                                        </t>
+                                        <t t-elif="task.state == 'in_progress'">
+                                            <span class="badge bg-primary">In Progress</span>
+                                        </t>
+                                        <t t-elif="task.state == 'done'">
+                                            <span class="badge bg-success">Done</span>
+                                        </t>
+                                        <t t-elif="task.state == 'cancelled'">
+                                            <span class="badge bg-dark">Cancelled</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="task.state == 'todo'">
+                                            <form t-attf-action="/my/vendor-task/#{task.id}/update" method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="state" value="in_progress"/>
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="fa fa-play me-1"></i>Start
+                                                </button>
+                                            </form>
+                                        </t>
+                                        <t t-if="task.state == 'in_progress'">
+                                            <form t-attf-action="/my/vendor-task/#{task.id}/update" method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="state" value="done"/>
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fa fa-check me-1"></i>Done
+                                                </button>
+                                            </form>
+                                        </t>
+                                        <t t-if="task.state == 'done'">
+                                            <form t-attf-action="/my/vendor-task/#{task.id}/update" method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="state" value="todo"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fa fa-undo me-1"></i>Reopen
+                                                </button>
+                                            </form>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pager -->
+                <div class="d-flex justify-content-center mt-4">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+</odoo>
+

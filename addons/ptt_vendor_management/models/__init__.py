@@ -1,6 +1,9 @@
-# Part of Party Time Texas Event Management System
-# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
-
-from . import vendor_rfq
-from . import vendor_assignment_portal
+from . import ptt_document_type
+from . import ptt_vendor_document
+from . import ptt_vendor_service_pricing
+from . import ptt_vendor_rfq
+from . import ptt_vendor_quote_history
+from . import ptt_vendor_task
 from . import res_partner
+from . import ptt_project_vendor_assignment
+from . import project_project

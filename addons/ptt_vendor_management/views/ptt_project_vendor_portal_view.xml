@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Vendor Management - Project Form Extension
+        
+        Extends the VENDORS tab in project form to add work order features:
+        - Send Work Order button
+        - Resend button
+        - Signature date
+        - Decline reason
+        
+        NOTE: Uses 'status' field from base model (ptt_business_core)
+    -->
+    
+    <record id="view_project_form_vendor_portal" model="ir.ui.view">
+        <field name="name">project.project.form.vendor.portal</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="ptt_business_core.view_project_form_ptt"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <!-- Add RFQ smart button to button box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_rfqs" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="rfq_count"/>
+                        </span>
+                        <span class="o_stat_text">RFQs</span>
+                    </div>
+                </button>
+            </xpath>
+            
+            <!-- Replace the basic vendor assignment list with portal-enabled version -->
+            <xpath expr="//page[@name='ptt_vendors']//field[@name='ptt_vendor_assignment_ids']" position="replace">
+                <field name="ptt_vendor_assignment_ids" nolabel="1">
+                    <list editable="bottom">
+                        <field name="service_type"/>
+                        <field name="vendor_id"/>
+                        <field name="status" widget="badge" 
+                               decoration-warning="status == 'pending'"
+                               decoration-success="status in ('confirmed', 'completed')"
+                               decoration-danger="status == 'cancelled'"/>
+                        <field name="actual_cost" widget="monetary"/>
+                        <field name="vendor_signature_date" string="Signed" optional="show"/>
+                        <button name="action_send_work_order" type="object" 
+                                string="Send WO" class="btn-primary btn-sm"
+                                invisible="status != 'pending' or not vendor_id"/>
+                        <button name="action_resend_work_order" type="object" 
+                                string="Resend" class="btn-secondary btn-sm"
+                                invisible="status == 'completed'"
+                                optional="hide"/>
+                    </list>
+                    <form>
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="service_type"/>
+                                    <field name="vendor_id"/>
+                                    <field name="status" widget="badge"/>
+                                </group>
+                                <group>
+                                    <field name="actual_cost" widget="monetary"/>
+                                    <field name="ptt_arrival_time"/>
+                                    <field name="vendor_signature_date" readonly="1"/>
+                                </group>
+                            </group>
+                            <group string="Vendor Contact">
+                                <group>
+                                    <field name="vendor_contact"/>
+                                    <field name="vendor_phone"/>
+                                </group>
+                            </group>
+                            <group string="Notes">
+                                <field name="notes" nolabel="1"/>
+                                <field name="description" nolabel="1" placeholder="Service description..."/>
+                            </group>
+                            <group string="Vendor Response" invisible="status == 'pending'">
+                                <field name="vendor_decline_reason" readonly="1" 
+                                       invisible="status != 'cancelled'"/>
+                            </group>
+                            <!-- Vendor Tasks Section -->
+                            <separator string="Vendor Tasks"/>
+                            <field name="vendor_task_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="description" optional="show"/>
+                                    <field name="due_date"/>
+                                    <field name="priority" widget="priority"/>
+                                    <field name="state" widget="badge" 
+                                           decoration-info="state == 'in_progress'"
+                                           decoration-success="state == 'done'"
+                                           decoration-danger="state == 'cancelled'"/>
+                                </list>
+                            </field>
+                        </sheet>
+                    </form>
+                </field>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- ============================================================== -->
+    <!-- EXTEND VENDOR ASSIGNMENT FORM TO ADD TASKS TAB -->
+    <!-- ============================================================== -->
+    <record id="view_project_vendor_assignment_form_with_tasks" model="ir.ui.view">
+        <field name="name">ptt.project.vendor.assignment.form.tasks</field>
+        <field name="model">ptt.project.vendor.assignment</field>
+        <field name="inherit_id" ref="ptt_business_core.view_project_vendor_assignment_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Tasks page after Notes page -->
+            <xpath expr="//notebook/page[@name='notes']" position="after">
+                <page string="Vendor Tasks" name="vendor_tasks">
+                    <field name="vendor_task_ids" nolabel="1">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="due_date"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="state" widget="badge" 
+                                   decoration-info="state == 'in_progress'"
+                                   decoration-success="state == 'done'"
+                                   decoration-danger="state == 'cancelled'"/>
+                            <button name="action_start" type="object" string="Start" 
+                                    class="btn-primary btn-sm" invisible="state != 'todo'"/>
+                            <button name="action_done" type="object" string="Done" 
+                                    class="btn-success btn-sm" invisible="state != 'in_progress'"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <!-- Add task count badge near top -->
+            <xpath expr="//sheet/group[1]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button" type="object" name="action_view_tasks" icon="fa-tasks">
+                        <field name="vendor_task_count" widget="statinfo" string="Tasks"/>
+                    </button>
+                    <button class="oe_stat_button" type="object" name="action_preview_vendor_portal" 
+                            icon="fa-external-link" title="Preview what vendor sees">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Preview</span>
+                            <span class="o_stat_text">Portal</span>
+                        </div>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

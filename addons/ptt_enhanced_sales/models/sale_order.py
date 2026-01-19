@@ -521,34 +521,8 @@ class SaleOrder(models.Model):
         
         project.write(project_vals)
         
-        # Create tasks based on services required
-        self._create_project_tasks(project)
-    
-    def _create_project_tasks(self, project):
-        """Create project tasks based on required services"""
-        task_vals_list = []
-        
-        service_tasks = {
-            'service_dj': ['DJ Music Consultation', 'DJ Equipment Setup', 'DJ Event Service', 'DJ Equipment Breakdown'],
-            'service_photo': ['Photo Consultation', 'Event Photography', 'Photo Processing', 'Photo Delivery'],
-            'service_lighting': ['Lighting Design', 'Lighting Setup', 'Lighting Operation', 'Lighting Breakdown'],
-            'service_decor': ['Decor Planning', 'Decor Setup', 'Event Maintenance', 'Decor Breakdown'],
-            'service_photobooth': ['Photo Booth Setup', 'Photo Booth Operation', 'Photo Booth Breakdown'],
-            'service_casino': ['Casino Setup', 'Casino Operation', 'Casino Breakdown'],
-            'service_staffing': ['Staff Coordination', 'Event Staffing'],
-        }
-        
-        for service_field, task_names in service_tasks.items():
-            if getattr(self, service_field, False):
-                for i, task_name in enumerate(task_names):
-                    task_vals_list.append({
-                        'name': task_name,
-                        'project_id': project.id,
-                        'sequence': i * 10,
-                    })
-        
-        if task_vals_list:
-            self.env['project.task'].create(task_vals_list)
+        # Note: Task creation is now handled in sale_order_line.py 
+        # via _timesheet_create_project() when Event Kickoff product creates the project
 
 
 class SaleOrderRevision(models.Model):

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!--
+        PTT Vendor RFQ Views
+        
+        Request for Quote management - send quote requests to vendors,
+        collect responses, and select winners.
+    -->
+    
+    <!-- ==================== RFQ FORM VIEW ==================== -->
+    <record id="view_ptt_vendor_rfq_form" model="ir.ui.view">
+        <field name="name">ptt.vendor.rfq.form</field>
+        <field name="model">ptt.vendor.rfq</field>
+        <field name="arch" type="xml">
+            <form string="Vendor RFQ">
+                <header>
+                    <button name="action_send_invitations" 
+                            type="object" 
+                            string="Send Invitations" 
+                            class="oe_highlight"
+                            icon="fa-paper-plane"
+                            invisible="state not in ['draft', 'pending']"/>
+                    <button name="action_set_pending" 
+                            type="object" 
+                            string="Set to Pending"
+                            invisible="state not in ['draft']"/>
+                    <button name="action_mark_done" 
+                            type="object" 
+                            string="Select Winner" 
+                            class="oe_highlight"
+                            icon="fa-trophy"
+                            invisible="state not in ['in_progress']"/>
+                    <button name="action_create_purchase_order" 
+                            type="object" 
+                            string="Create Purchase Order" 
+                            class="oe_highlight"
+                            icon="fa-shopping-cart"
+                            invisible="state != 'done'"/>
+                    <button name="action_cancel" 
+                            type="object" 
+                            string="Cancel"
+                            invisible="state in ['done', 'cancel', 'order']"/>
+                    <field name="state" 
+                           widget="statusbar" 
+                           statusbar_visible="draft,in_progress,done,order"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_purchase_order"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-credit-card"
+                                invisible="not order_id">
+                            <span>Purchase Order</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group name="rfq_main">
+                        <group string="Event/Project">
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="event_date"/>
+                            <field name="customer_id" readonly="1"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="quote_date"/>
+                            <field name="closing_date"/>
+                            <field name="estimated_delivery_date"/>
+                            <field name="user_id"/>
+                            <field name="approved_vendor_id" 
+                                   readonly="1"
+                                   invisible="state not in ['done', 'order']"/>
+                        </group>
+                    </group>
+                    <group string="Invited Vendors">
+                        <field name="vendor_ids" 
+                               widget="many2many_tags"
+                               nolabel="1"
+                               placeholder="Select vendors to invite..."
+                               options="{'color_field': 'color'}"/>
+                    </group>
+                    <notebook>
+                        <page string="Quote Details" name="details">
+                            <group>
+                                <group>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                </group>
+                                <group>
+                                    <field name="estimated_quote"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="order_id" invisible="1"/>
+                                </group>
+                            </group>
+                            <field name="description" placeholder="Describe what you need from vendors..."/>
+                        </page>
+                        <page string="Vendor Quotes" name="quotes">
+                            <field name="quote_history_ids">
+                                <list editable="bottom">
+                                    <field name="vendor_id"/>
+                                    <field name="quoted_price"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="estimate_date"/>
+                                    <field name="note"/>
+                                    <field name="is_selected" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes or requirements..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- ==================== RFQ LIST VIEW ==================== -->
+    <record id="view_ptt_vendor_rfq_list" model="ir.ui.view">
+        <field name="name">ptt.vendor.rfq.list</field>
+        <field name="model">ptt.vendor.rfq</field>
+        <field name="arch" type="xml">
+            <list string="Vendor RFQs"
+                  decoration-success="state == 'done'"
+                  decoration-info="state == 'in_progress'"
+                  decoration-muted="state == 'cancel'"
+                  decoration-warning="state == 'pending'">
+                <field name="name" string="Reference"/>
+                <field name="project_id" string="Event"/>
+                <field name="event_date"/>
+                <field name="customer_id" optional="show"/>
+                <field name="product_id"/>
+                <field name="quantity" optional="hide"/>
+                <field name="estimated_quote" widget="monetary" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="closing_date"/>
+                <field name="vendor_ids" widget="many2many_tags"/>
+                <field name="quote_count" string="Quotes"/>
+                <field name="approved_vendor_id" optional="hide"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-warning="state == 'pending'"
+                       decoration-danger="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- ==================== RFQ KANBAN VIEW ==================== -->
+    <record id="view_ptt_vendor_rfq_kanban" model="ir.ui.view">
+        <field name="name">ptt.vendor.rfq.kanban</field>
+        <field name="model">ptt.vendor.rfq</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column" quick_create="false">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="project_id"/>
+                <field name="event_date"/>
+                <field name="customer_id"/>
+                <field name="product_id"/>
+                <field name="closing_date"/>
+                <field name="vendor_ids"/>
+                <field name="quote_count"/>
+                <field name="lowest_quote"/>
+                <field name="estimated_quote"/>
+                <field name="currency_id"/>
+                <field name="approved_vendor_id"/>
+                <progressbar field="state" 
+                             colors="{&quot;draft&quot;: &quot;muted&quot;, &quot;pending&quot;: &quot;warning&quot;, &quot;in_progress&quot;: &quot;info&quot;, &quot;done&quot;: &quot;success&quot;, &quot;order&quot;: &quot;success&quot;, &quot;cancel&quot;: &quot;danger&quot;}"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_title">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div class="o_kanban_record_subtitle text-muted mb-1">
+                                <field name="project_id"/> 
+                                <t t-if="record.event_date.raw_value">
+                                    • <field name="event_date"/>
+                                </t>
+                            </div>
+                            <div t-if="record.product_id.value" class="mb-1">
+                                <i class="fa fa-cube me-1" title="Product"/>
+                                <field name="product_id"/>
+                            </div>
+                            <div t-if="record.closing_date.raw_value" class="text-muted small">
+                                <i class="fa fa-clock-o me-1" title="Closing date"/>
+                                Closes: <field name="closing_date"/>
+                            </div>
+                            <div class="o_kanban_record_bottom mt-2">
+                                <div class="oe_kanban_bottom_left">
+                                    <span class="badge rounded-pill bg-secondary">
+                                        <field name="quote_count"/> quotes
+                                    </span>
+                                    <t t-if="record.lowest_quote.raw_value > 0">
+                                        <span class="badge rounded-pill bg-success ms-1">
+                                            Low: <field name="lowest_quote" widget="monetary"/>
+                                        </span>
+                                    </t>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="vendor_ids" widget="many2many_tags" 
+                                           options="{'color_field': 'color'}" 
+                                           readonly="1"/>
+                                </div>
+                            </div>
+                            <div t-if="record.approved_vendor_id.value" class="mt-2 text-success">
+                                <i class="fa fa-trophy me-1"/>
+                                Winner: <field name="approved_vendor_id"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- ==================== RFQ SEARCH VIEW ==================== -->
+    <record id="view_ptt_vendor_rfq_search" model="ir.ui.view">
+        <field name="name">ptt.vendor.rfq.search</field>
+        <field name="model">ptt.vendor.rfq</field>
+        <field name="arch" type="xml">
+            <search string="Search RFQs">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="customer_id"/>
+                <field name="product_id"/>
+                <field name="vendor_ids"/>
+                <field name="approved_vendor_id"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="filter_done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="filter_order" string="Purchase Order" domain="[('state', '=', 'order')]"/>
+                <separator/>
+                <filter name="filter_closing_today" string="Closing Today" 
+                        domain="[('closing_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_overdue" string="Past Closing Date" 
+                        domain="[('closing_date', '&lt;', context_today().strftime('%Y-%m-%d')), ('state', '=', 'in_progress')]"/>
+                <separator/>
+                <filter name="group_project" string="Group By Event/Project" context="{'group_by': 'project_id'}"/>
+                <filter name="group_customer" string="Group By Customer" context="{'group_by': 'customer_id'}"/>
+                <filter name="group_state" string="Group By Status" context="{'group_by': 'state'}"/>
+                <filter name="group_user" string="Group By Responsible" context="{'group_by': 'user_id'}"/>
+                <filter name="group_closing" string="Group By Closing Date" context="{'group_by': 'closing_date'}"/>
+                <filter name="group_event_date" string="Group By Event Date" context="{'group_by': 'event_date'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- ==================== RFQ ACTIONS ==================== -->
+    <record id="action_ptt_vendor_rfq" model="ir.actions.act_window">
+        <field name="name">Vendor RFQs</field>
+        <field name="res_model">ptt.vendor.rfq</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Request for Quote
+            </p>
+            <p>
+                Send quote requests to multiple vendors, collect their pricing,
+                and select the best offer.
+            </p>
+        </field>
+    </record>
+    
+    <record id="action_ptt_vendor_rfq_in_progress" model="ir.actions.act_window">
+        <field name="name">In Progress RFQs</field>
+        <field name="res_model">ptt.vendor.rfq</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'in_progress')]</field>
+    </record>
+    
+    <record id="action_ptt_vendor_rfq_done" model="ir.actions.act_window">
+        <field name="name">Completed RFQs</field>
+        <field name="res_model">ptt.vendor.rfq</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', 'in', ['done', 'order'])]</field>
+    </record>
+    
+    <!-- ==================== RFQ DONE WIZARD VIEW ==================== -->
+    <record id="view_ptt_rfq_done_wizard_form" model="ir.ui.view">
+        <field name="name">ptt.rfq.done.wizard.form</field>
+        <field name="model">ptt.rfq.done.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Winning Vendor">
+                <group>
+                    <field name="rfq_id" readonly="1"/>
+                    <field name="selected_quote_id" 
+                           domain="[('rfq_id', '=', rfq_id)]"
+                           options="{'no_create': True}"/>
+                </group>
+                <group string="Available Quotes">
+                    <field name="quote_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="vendor_id"/>
+                            <field name="quoted_price"/>
+                            <field name="estimate_date"/>
+                            <field name="note"/>
+                        </list>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_confirm" 
+                            string="Confirm Selection" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

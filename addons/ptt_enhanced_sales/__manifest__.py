@@ -19,6 +19,7 @@ Designed specifically for Party Time Texas event management workflow.
     "license": "LGPL-3",
     "depends": [
         "sale",
+        "sale_project",
         "crm",
         "project",
         "account",

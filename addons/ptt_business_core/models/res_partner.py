@@ -49,7 +49,7 @@ class ResPartner(models.Model):
     )
 
     ptt_opportunity_count = fields.Integer(
-        string="Opportunities",
+        string="PTT Opportunities",
         compute="_compute_ptt_opportunity_count",
     )
     

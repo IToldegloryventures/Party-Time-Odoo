@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 
+        Vendor Invite Wizard View
+        
+        This wizard allows users to send email invitations to potential vendors.
+    -->
+    
+    <record id="view_ptt_vendor_invite_wizard_form" model="ir.ui.view">
+        <field name="name">ptt.vendor.invite.wizard.form</field>
+        <field name="model">ptt.vendor.invite.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Invite Vendor to Apply">
+                <group>
+                    <group string="Recipient Information">
+                        <field name="recipient_name" placeholder="Company or Contact Name"/>
+                        <field name="recipient_email" placeholder="email@example.com"/>
+                        <field name="recipient_phone" placeholder="+1 (555) 123-4567"/>
+                    </group>
+                    <group string="Invitation Details">
+                        <field name="suggested_service_ids" 
+                               widget="many2many_tags"
+                               placeholder="Select services..."/>
+                        <field name="application_url" readonly="1" widget="url"/>
+                    </group>
+                </group>
+                <group string="Personal Message (Optional)">
+                    <field name="personal_message" 
+                           nolabel="1" 
+                           placeholder="Add a personal note to your invitation..."
+                           colspan="2"/>
+                </group>
+                <footer>
+                    <button name="action_send_invite" 
+                            string="Send Invitation" 
+                            type="object" 
+                            class="btn-primary"
+                            icon="fa-paper-plane"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action to open the invite wizard -->
+    <record id="action_ptt_vendor_invite_wizard" model="ir.actions.act_window">
+        <field name="name">Invite Vendor</field>
+        <field name="res_model">ptt.vendor.invite.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_ptt_vendor_invite_wizard_form"/>
+    </record>
+    
+</odoo>

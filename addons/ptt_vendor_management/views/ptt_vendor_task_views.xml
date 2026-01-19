@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- ============================================================== -->
+    <!-- VENDOR TASK TREE VIEW -->
+    <!-- ============================================================== -->
+    <record id="ptt_vendor_task_view_tree" model="ir.ui.view">
+        <field name="name">ptt.vendor.task.tree</field>
+        <field name="model">ptt.vendor.task</field>
+        <field name="arch" type="xml">
+            <list string="Vendor Tasks" decoration-danger="priority == '2'" decoration-warning="priority == '1'" decoration-muted="state in ['done', 'cancelled']">
+                <field name="name"/>
+                <field name="assignment_id"/>
+                <field name="vendor_id"/>
+                <field name="due_date"/>
+                <field name="priority"/>
+                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-danger="state == 'cancelled'"/>
+                <field name="create_date" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- ============================================================== -->
+    <!-- VENDOR TASK FORM VIEW -->
+    <!-- ============================================================== -->
+    <record id="ptt_vendor_task_view_form" model="ir.ui.view">
+        <field name="name">ptt.vendor.task.form</field>
+        <field name="model">ptt.vendor.task</field>
+        <field name="arch" type="xml">
+            <form string="Vendor Task">
+                <header>
+                    <button name="action_start" string="Start" type="object" class="btn-primary"
+                            invisible="state != 'todo'"/>
+                    <button name="action_done" string="Mark Done" type="object" class="btn-success"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ['done', 'cancelled']"/>
+                    <button name="action_reopen" string="Reopen" type="object"
+                            invisible="state not in ['done', 'cancelled']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="todo,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Task Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="assignment_id" options="{'no_create': True}"/>
+                            <field name="vendor_id" readonly="1"/>
+                            <field name="due_date"/>
+                        </group>
+                        <group>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Describe the task details..."/>
+                        </page>
+                        <page string="Vendor Notes" name="vendor_notes">
+                            <field name="vendor_notes" placeholder="Notes from the vendor..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- ============================================================== -->
+    <!-- VENDOR TASK SEARCH VIEW -->
+    <!-- ============================================================== -->
+    <record id="ptt_vendor_task_view_search" model="ir.ui.view">
+        <field name="name">ptt.vendor.task.search</field>
+        <field name="model">ptt.vendor.task</field>
+        <field name="arch" type="xml">
+            <search string="Search Vendor Tasks">
+                <field name="name"/>
+                <field name="assignment_id"/>
+                <field name="vendor_id"/>
+                <separator/>
+                <filter string="To Do" name="todo" domain="[('state', '=', 'todo')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="High Priority" name="high_priority" domain="[('priority', '=', '2')]"/>
+                <filter string="Due Today" name="due_today" domain="[('due_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Overdue" name="overdue" domain="[('due_date', '&lt;', context_today().strftime('%Y-%m-%d')), ('state', 'not in', ['done', 'cancelled'])]"/>
+                <separator/>
+                <separator/>
+                <filter string="Group By State" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Group By Vendor" name="group_vendor" context="{'group_by': 'vendor_id'}"/>
+                <filter string="Group By Assignment" name="group_assignment" context="{'group_by': 'assignment_id'}"/>
+                <filter string="Group By Priority" name="group_priority" context="{'group_by': 'priority'}"/>
+                <filter string="Group By Due Date" name="group_due_date" context="{'group_by': 'due_date'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- ============================================================== -->
+    <!-- VENDOR TASK KANBAN VIEW -->
+    <!-- ============================================================== -->
+    <record id="ptt_vendor_task_view_kanban" model="ir.ui.view">
+        <field name="name">ptt.vendor.task.kanban</field>
+        <field name="model">ptt.vendor.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="assignment_id"/>
+                <field name="vendor_id"/>
+                <field name="due_date"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_title">
+                                <field name="priority" widget="priority"/>
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div class="o_kanban_record_subtitle text-muted">
+                                <field name="vendor_id"/>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <t t-if="record.due_date.raw_value">
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fa fa-clock-o me-1" title="Due date"/>
+                                            <field name="due_date"/>
+                                        </span>
+                                    </t>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection" options="{'classes': {'todo': 'secondary', 'in_progress': 'primary', 'done': 'success', 'cancelled': 'dark'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- ============================================================== -->
+    <!-- VENDOR TASK ACTION -->
+    <!-- ============================================================== -->
+    <record id="ptt_vendor_task_action" model="ir.actions.act_window">
+        <field name="name">Vendor Tasks</field>
+        <field name="res_model">ptt.vendor.task</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="ptt_vendor_task_view_search"/>
+        <field name="context">{'search_default_todo': 1, 'search_default_in_progress': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create vendor tasks
+            </p>
+            <p>
+                Tasks can be assigned to vendors through their work order assignments.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

@@ -6,6 +6,26 @@
     -->
     <data noupdate="0">
         <!-- ============================================ -->
+        <!-- EVENT KICKOFF - Project Creation Product    -->
+        <!-- ============================================ -->
+        <!-- This is the MASTER product that creates the Event Project.
+             It should be the first line on every event sale order.
+             service_tracking='project_only' creates a new project.
+             Price is $0 - it's just for project creation. -->
+        <record id="product_template_event_kickoff" model="product.template">
+            <field name="name">** Event Kickoff</field>
+            <field name="default_code">EVENT-KICKOFF</field>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="service_tracking">project_only</field>
+            <field name="description_sale">Event project kickoff - creates the event project when the sale order is confirmed. This should be the first line on every event quote.</field>
+        </record>
+        
+        <!-- ============================================ -->
         <!-- ADDITIONAL INSURED COVERAGE EXTENSION       -->
         <!-- ============================================ -->
         <record id="product_template_additional_insured" model="product.template">

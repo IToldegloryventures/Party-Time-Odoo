@@ -13,6 +13,8 @@
         - Service Tier: Essentials=0, Classic=+$125, Premier=+$300
         
         Example: Wedding Premier = $300 + $50 + $300 = $650/hr
+        
+        NOTE: service_tracking='task_in_project' creates tasks when SO is confirmed.
     -->
     <data noupdate="0">
         <!-- ============================================ -->
@@ -30,6 +32,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional DJ services for your event. Pricing is per hour. Package inclusions and rates vary by Event Type and Service Tier selected. Minimum hours may apply based on tier.</field>
         </record>
 
@@ -70,6 +73,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional MC/Host services. Classic and Premier tiers available.</field>
         </record>
         <record id="mc_event_type_attribute_line" model="product.template.attribute.line">
@@ -95,6 +99,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Live band performance for your event. Select Event Type and Service Tier.</field>
         </record>
         

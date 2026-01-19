@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!--
+            Scheduled Jobs for Vendor Document Expiry Monitoring
+            
+            These cron jobs automatically check document expiry and update statuses.
+            Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html#scheduled-actions
+        -->
+        
+        <!-- Check for documents expiring in 30 days (runs daily at 6 AM) -->
+        <record id="cron_check_document_expiry_30day" model="ir.cron">
+            <field name="name">Vendor Documents: 30-Day Expiry Check</field>
+            <field name="model_id" ref="model_ptt_vendor_document"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_document_expiry_30day()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
+        
+        <!-- Check for documents expiring in 7 days - URGENT (runs daily at 7 AM) -->
+        <record id="cron_check_document_expiry_7day" model="ir.cron">
+            <field name="name">Vendor Documents: 7-Day URGENT Expiry Check</field>
+            <field name="model_id" ref="model_ptt_vendor_document"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_document_expiry_7day()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
+        
+        <!-- Check for expired documents and update status (runs daily at 1 AM) -->
+        <record id="cron_check_document_expired" model="ir.cron">
+            <field name="name">Vendor Documents: Expired Document Check</field>
+            <field name="model_id" ref="model_ptt_vendor_document"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_document_expired()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
+        
+    </data>
+</odoo>

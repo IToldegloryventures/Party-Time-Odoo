@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!--
+        Email Template: RFQ Invitation
+        
+        Sent to vendors when they are invited to submit a quote.
+    -->
+    <record id="email_template_vendor_rfq_invitation" model="mail.template">
+        <field name="name">Vendor RFQ: Quote Request Invitation</field>
+        <field name="model_id" ref="model_ptt_vendor_rfq"/>
+        <field name="email_from">{{ (user.email_formatted or company.email_formatted) }}</field>
+        <field name="subject">Quote Request: {{ object.name }} - {{ object.product_id.name or 'Service Request' }}</field>
+        <field name="body_html">
+<![CDATA[
+<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="background-color: white; padding: 20px;">
+                    <tr>
+                        <td align="center" style="padding-bottom: 20px;">
+                            <img src="/logo" alt="{{ company.name }}" style="max-height: 80px;"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h2 style="color: #875A7B; margin-bottom: 20px;">Request for Quote</h2>
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                Hello,
+                            </p>
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                <strong>{{ company.name }}</strong> is requesting a quote from you 
+                                for the following:
+                            </p>
+                            
+                            <div style="background-color: #f8f9fa; border-left: 4px solid #875A7B; padding: 15px; margin: 20px 0;">
+                                <table style="width: 100%; font-size: 14px; color: #555555;">
+                                    <tr>
+                                        <td style="padding: 5px 0;"><strong>RFQ Reference:</strong></td>
+                                        <td style="padding: 5px 0;">{{ object.name }}</td>
+                                    </tr>
+                                    % if object.product_id:
+                                    <tr>
+                                        <td style="padding: 5px 0;"><strong>Product/Service:</strong></td>
+                                        <td style="padding: 5px 0;">{{ object.product_id.name }}</td>
+                                    </tr>
+                                    % endif
+                                    <tr>
+                                        <td style="padding: 5px 0;"><strong>Quantity:</strong></td>
+                                        <td style="padding: 5px 0;">{{ object.quantity }}{% if object.uom_id %} {{ object.uom_id.name }}{% endif %}</td>
+                                    </tr>
+                                    % if object.estimated_delivery_date:
+                                    <tr>
+                                        <td style="padding: 5px 0;"><strong>Requested Delivery:</strong></td>
+                                        <td style="padding: 5px 0;">{{ object.estimated_delivery_date }}</td>
+                                    </tr>
+                                    % endif
+                                    % if object.closing_date:
+                                    <tr>
+                                        <td style="padding: 5px 0;"><strong>Quote Deadline:</strong></td>
+                                        <td style="padding: 5px 0; color: #dc3545;"><strong>{{ object.closing_date }}</strong></td>
+                                    </tr>
+                                    % endif
+                                </table>
+                            </div>
+                            
+                            % if object.description:
+                            <p style="font-size: 14px; color: #555555;">
+                                <strong>Description:</strong><br/>
+                                {{ object.description }}
+                            </p>
+                            % endif
+                            
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="{{ object.get_base_url() }}/my/vendor_rfq/{{ object.id }}" 
+                                   style="background-color: #875A7B; color: white; padding: 12px 30px; 
+                                          text-decoration: none; border-radius: 5px; font-weight: bold;
+                                          display: inline-block;">
+                                    Submit Your Quote
+                                </a>
+                            </div>
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                Please log into your vendor portal to view the full details and submit your quote.
+                            </p>
+                            
+                            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;"/>
+                            
+                            <p style="font-size: 12px; color: #888888;">
+                                If you have any questions, please contact {{ object.user_id.name or 'our team' }} 
+                                at <a href="mailto:{{ object.user_id.email or company.email }}">{{ object.user_id.email or company.email }}</a>.
+                            </p>
+                            
+                            <p style="font-size: 12px; color: #888888;">
+                                Best regards,<br/>
+                                <strong>{{ company.name }}</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #875A7B; padding: 15px; text-align: center;">
+                            <p style="color: white; font-size: 12px; margin: 0;">
+                                {{ company.name }} | {{ company.street or '' }} {{ company.city or '' }} {{ company.state_id.code or '' }} {{ company.zip or '' }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+]]>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+    
+</odoo>

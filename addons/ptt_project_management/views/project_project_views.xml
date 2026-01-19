@@ -12,6 +12,22 @@
                 
                 <!-- Add smart buttons for stakeholders -->
                 <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_crm_lead" type="object"
+                            class="oe_stat_button" icon="fa-bullseye"
+                            invisible="not ptt_crm_lead_id">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value">CRM</span>
+                            <span class="o_stat_text">Opportunity</span>
+                        </div>
+                    </button>
+                    <button name="action_view_sale_order" type="object"
+                            class="oe_stat_button" icon="fa-shopping-cart"
+                            invisible="not sale_order_id">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value">Sale</span>
+                            <span class="o_stat_text">Order</span>
+                        </div>
+                    </button>
                     <button name="action_view_stakeholders" type="object"
                             class="oe_stat_button" icon="fa-users">
                         <div class="o_stat_info">

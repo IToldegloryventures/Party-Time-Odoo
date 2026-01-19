@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 
+        Email Template: Vendor Application Invitation
+        
+        Sent when a user invites a potential vendor to apply through the portal.
+    -->
+    <record id="email_template_vendor_invite" model="mail.template">
+        <field name="name">Vendor: Application Invitation</field>
+        <field name="model_id" ref="ptt_vendor_management.model_ptt_vendor_invite_wizard"/>
+        <field name="email_from">{{ (user.email_formatted or company.email_formatted) }}</field>
+        <field name="email_to">{{ ctx.get('recipient_email') or object.recipient_email }}</field>
+        <field name="subject">Invitation to Become a Vendor Partner - {{ company.name }}</field>
+    <field name="body_html">
+<![CDATA[
+<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; width: 100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="background-color: white; padding: 20px;">
+                    <tr>
+                        <td align="center" style="padding-bottom: 20px;">
+                            <img src="/logo" alt="{{ company.name }}" style="max-height: 80px;"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h2 style="color: #875A7B; margin-bottom: 20px;">You're Invited to Join Our Vendor Network!</h2>
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                Hello {{ ctx.get('recipient_name', 'there') }},
+                            </p>
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                <strong>{{ ctx.get('sender_name', 'Our team') }}</strong> at 
+                                <strong>{{ ctx.get('company_name', company.name) }}</strong> 
+                                would like to invite you to become a vendor partner with us.
+                            </p>
+                            
+                            % if ctx.get('personal_message'):
+                            <div style="background-color: #f8f9fa; border-left: 4px solid #875A7B; padding: 15px; margin: 20px 0;">
+                                <p style="font-size: 14px; color: #555555; margin: 0; font-style: italic;">
+                                    "{{ ctx.get('personal_message') }}"
+                                </p>
+                            </div>
+                            % endif
+                            
+                            % if ctx.get('suggested_services'):
+                            <p style="font-size: 14px; color: #555555;">
+                                <strong>Services of Interest:</strong> {{ ctx.get('suggested_services') }}
+                            </p>
+                            % endif
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                We're always looking for quality vendors to partner with for our events. 
+                                If you're interested in working with us, please complete our vendor application.
+                            </p>
+                            
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="{{ ctx.get('application_url', '/vendor/apply') }}" 
+                                   style="background-color: #875A7B; color: white; padding: 12px 30px; 
+                                          text-decoration: none; border-radius: 5px; font-weight: bold;
+                                          display: inline-block;">
+                                    Apply Now
+                                </a>
+                            </div>
+                            
+                            <p style="font-size: 14px; color: #555555;">
+                                <strong>What happens next?</strong>
+                            </p>
+                            <ol style="font-size: 14px; color: #555555;">
+                                <li>Click the "Apply Now" button above</li>
+                                <li>Complete the vendor application form</li>
+                                <li>Upload required documents (W-9, Certificate of Insurance, etc.)</li>
+                                <li>Our team will review your application</li>
+                                <li>Once approved, you'll start receiving work order opportunities!</li>
+                            </ol>
+                            
+                            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;"/>
+                            
+                            <p style="font-size: 12px; color: #888888;">
+                                If you have any questions, please contact us at 
+                                <a href="mailto:{{ company.email or 'info@example.com' }}">{{ company.email or 'info@example.com' }}</a>
+                                or call {{ company.phone or '' }}.
+                            </p>
+                            
+                            <p style="font-size: 12px; color: #888888;">
+                                Best regards,<br/>
+                                <strong>{{ ctx.get('sender_name', 'The Team') }}</strong><br/>
+                                {{ ctx.get('company_name', company.name) }}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #875A7B; padding: 15px; text-align: center;">
+                            <p style="color: white; font-size: 12px; margin: 0;">
+                                {{ company.name }} | {{ company.street or '' }} {{ company.city or '' }} {{ company.state_id.code or '' }} {{ company.zip or '' }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+]]>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

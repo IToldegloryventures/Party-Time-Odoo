@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Res Partner Form View Extension
+        
+        Adds vendor-specific tabs visible when ptt_is_vendor = True.
+        Uses ptt_is_vendor field (defined in ptt_business_core) for vendor identification.
+        All custom fields use ptt_ prefix (Odoo best practice).
+    -->
+    <record id="view_partner_form_ptt" model="ir.ui.view">
+        <field name="name">res.partner.form.ptt</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Vendor toggle is defined in ptt_business_core (ptt_is_vendor field) -->
+            
+            <!-- Add smart buttons for vendor stats -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_vendor_work_orders" 
+                        type="object"
+                        class="oe_stat_button" 
+                        icon="fa-truck"
+                        invisible="not ptt_is_vendor">
+                    <div class="o_stat_info">
+                        <field name="ptt_assignment_count" class="o_stat_value"/>
+                        <span class="o_stat_text">Work Orders</span>
+                    </div>
+                </button>
+                <button name="action_view_vendor_work_orders" 
+                        type="object"
+                        class="oe_stat_button" 
+                        icon="fa-usd"
+                        invisible="not ptt_is_vendor"
+                        context="{'search_default_filter_completed': 1}">
+                    <div class="o_stat_info">
+                        <field name="ptt_total_paid" class="o_stat_value" widget="monetary"/>
+                        <span class="o_stat_text">Total Paid</span>
+                    </div>
+                </button>
+            </xpath>
+            
+            <!-- Add Vendor Contact Role field (only for Person contacts under a vendor company) -->
+            <xpath expr="//field[@name='function']" position="after">
+                <field name="ptt_vendor_contact_role" 
+                       placeholder="e.g., Owner, Talent, Accounting"
+                       invisible="not parent_id or company_type == 'company'"/>
+            </xpath>
+            
+            <!-- Add Vendor Info tab (visible when ptt_is_vendor is True) -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Vendor Info" name="ptt_vendor_info" invisible="not ptt_is_vendor">
+                    <group>
+                        <group string="Vendor Classification">
+                            <field name="ptt_vendor_tier" widget="radio" options="{'horizontal': true}"/>
+                            <field name="ptt_vendor_service_types" widget="many2many_tags"
+                                   options="{'no_create_edit': True}"
+                                   placeholder="Select services this vendor provides..."/>
+                        </group>
+                        <group string="Compliance Status">
+                            <field name="ptt_vendor_compliance_status" widget="badge"
+                                   decoration-success="ptt_vendor_compliance_status == 'compliant'"
+                                   decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
+                                   decoration-danger="ptt_vendor_compliance_status in ('missing_required', 'expired')"/>
+                            <!-- ptt_vendor_rating is shown in ptt_business_core Sales & Purchases tab -->
+                        </group>
+                    </group>
+                </page>
+                
+                <!-- Vendor Work History Tab -->
+                <page string="Work History" name="ptt_vendor_work_history" invisible="not ptt_is_vendor">
+                    <group>
+                        <group string="Performance Summary">
+                            <field name="ptt_assignment_count" string="Total Assignments"/>
+                            <field name="ptt_completed_assignment_count" string="Completed"/>
+                        </group>
+                        <group string="Financial Summary">
+                            <field name="ptt_total_paid" string="Total Paid"/>
+                            <field name="ptt_average_cost" string="Average per Job"/>
+                        </group>
+                    </group>
+                    <separator string="Work Order History"/>
+                    <field name="ptt_vendor_assignment_ids" readonly="1">
+                        <list decoration-success="status == 'completed'"
+                              decoration-info="status == 'confirmed'"
+                              decoration-warning="status == 'pending'"
+                              decoration-danger="status == 'cancelled'">
+                            <field name="project_id" string="Event"/>
+                            <field name="service_type"/>
+                            <field name="service_date"/>
+                            <field name="actual_cost" sum="Total Paid"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'completed'"
+                                   decoration-info="status == 'confirmed'"
+                                   decoration-warning="status == 'pending'"
+                                   decoration-danger="status == 'cancelled'"/>
+                        </list>
+                    </field>
+                </page>
+                
+                <!-- Vendor Documents Tab (visible when ptt_is_vendor is True) -->
+                <page string="Documents" name="ptt_vendor_documents" invisible="not ptt_is_vendor">
+                    <div class="mb-3">
+                        <button name="action_populate_document_lines" type="object"
+                                string="⟳ Populate Required Document Lines" 
+                                class="btn btn-secondary"
+                                title="Click to add missing required document types as lines. Your sales team can then just upload the files."
+                                invisible="ptt_vendor_document_count > 0"/>
+                        <span class="text-muted ms-2" invisible="ptt_vendor_document_count > 0">
+                            Click the button to add standard document lines (W-9, COI, ACH, etc.)
+                        </span>
+                    </div>
+                    <field name="ptt_vendor_document_count" invisible="1"/>
+                    <field name="ptt_vendor_document_ids" context="{'default_vendor_id': id}">
+                        <list editable="bottom"
+                              decoration-danger="status == 'non_compliant'"
+                              decoration-warning="status == 'expiring_soon'"
+                              decoration-success="status == 'compliant'">
+                            <field name="document_type_id" options="{'no_create': True}"/>
+                            <field name="validity"/>
+                            <field name="document_filename" column_invisible="1"/>
+                            <field name="attached_document" filename="document_filename"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'compliant'"
+                                   decoration-warning="status == 'expiring_soon'"
+                                   decoration-danger="status == 'non_compliant'"/>
+                            <field name="upload_date" readonly="1" optional="hide"/>
+                            <field name="notes" optional="hide"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

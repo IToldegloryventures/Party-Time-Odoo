@@ -3,6 +3,10 @@
     <!-- 
         Event Services Products
         Photography, Videography, Event Planning, Catering, etc.
+        
+        NOTE: service_tracking='task_in_project' creates a task in the project
+        when the sale order is confirmed. The project is created by the
+        "Event Kickoff" product which uses service_tracking='project_only'.
     -->
     <data noupdate="0">
         <!-- ============================================ -->
@@ -17,6 +21,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional photography services. Head Shots or Event Photography.</field>
         </record>
         <record id="photography_type_attribute_line" model="product.template.attribute.line">
@@ -37,6 +42,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional videography services. Event Videography, Highlight Reel, Content Collection, Promotional Reel.</field>
         </record>
         <record id="videography_type_attribute_line" model="product.template.attribute.line">
@@ -57,6 +63,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional event planning and coordination services. Onsite Coordinator and additional variants available.</field>
         </record>
 
@@ -72,6 +79,7 @@
             <field name="uom_id" ref="uom.product_uom_unit"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional catering services for your event.</field>
         </record>
 
@@ -87,6 +95,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional bartender services.</field>
         </record>
 
@@ -102,6 +111,7 @@
             <field name="uom_id" ref="uom.product_uom_hour"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Professional wait staff services.</field>
         </record>
 
@@ -117,6 +127,7 @@
             <field name="uom_id" ref="uom.product_uom_unit"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
+            <field name="service_tracking">task_in_project</field>
             <field name="description_sale">Equipment delivery, setup, and strike services.</field>
         </record>
 

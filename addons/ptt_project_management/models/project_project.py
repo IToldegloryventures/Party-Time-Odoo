@@ -105,6 +105,44 @@ class ProjectProject(models.Model):
             'target': 'current',
         }
     
+    def action_view_crm_lead(self):
+        """Open the source CRM opportunity for this project.
+        
+        Returns:
+            dict: Action to open the CRM lead form.
+        """
+        self.ensure_one()
+        if not self.ptt_crm_lead_id:
+            return {'type': 'ir.actions.act_window_close'}
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Source Opportunity'),
+            'res_model': 'crm.lead',
+            'view_mode': 'form',
+            'res_id': self.ptt_crm_lead_id.id,
+            'target': 'current',
+        }
+    
+    def action_view_sale_order(self):
+        """Open the source sale order for this project.
+        
+        Returns:
+            dict: Action to open the sale order form.
+        """
+        self.ensure_one()
+        if not self.sale_order_id:
+            return {'type': 'ir.actions.act_window_close'}
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Sale Order'),
+            'res_model': 'sale.order',
+            'view_mode': 'form',
+            'res_id': self.sale_order_id.id,
+            'target': 'current',
+        }
+    
     def action_view_vendors(self):
         """Open list view of vendor stakeholders only.
         

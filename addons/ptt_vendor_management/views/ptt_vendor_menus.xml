@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PTT Vendor Management - Main Menu
+        Purpose: Root menu for the standalone Vendor Management app
+        
+        STRUCTURE:
+        - Vendors (active vendors for assignment)
+        - Onboarding (new vendor applications / hiring workflow)
+        - Configuration (document types, service tags, etc.)
+    -->
+
+    <!-- Root Menu - Vendor Management App -->
+    <menuitem id="menu_ptt_vendor_management_root"
+        name="Vendor Management"
+        sequence="5"/>
+
+    <!-- Active Vendors List Menu (Home page - what sales team uses) -->
+    <menuitem id="menu_ptt_vendors_list"
+        name="Vendors"
+        parent="menu_ptt_vendor_management_root"
+        action="action_ptt_vendor_list"
+        sequence="10"/>
+
+    <!-- RFQ Menu (Request for Quotes) -->
+    <menuitem id="menu_ptt_vendor_rfq"
+        name="RFQ"
+        parent="menu_ptt_vendor_management_root"
+        action="action_ptt_vendor_rfq"
+        sequence="15"/>
+
+    <!-- Vendor Tasks -->
+    <menuitem id="menu_vendor_tasks"
+        name="Vendor Tasks"
+        parent="menu_ptt_vendor_management_root"
+        action="ptt_vendor_task_action"
+        sequence="25"/>
+
+    <!-- Vendor Onboarding Submenu (Hiring workflow) -->
+    <menuitem id="menu_ptt_vendor_onboarding_root"
+        name="Onboarding"
+        parent="menu_ptt_vendor_management_root"
+        sequence="20"/>
+
+    <!-- Onboarding: All Applications -->
+    <menuitem id="menu_ptt_vendor_onboarding_all"
+        name="All Applications"
+        parent="menu_ptt_vendor_onboarding_root"
+        action="action_ptt_vendor_onboarding"
+        sequence="10"/>
+
+    <!-- Onboarding: Invite Vendor -->
+    <menuitem id="menu_ptt_vendor_invite"
+        name="Invite Vendor"
+        parent="menu_ptt_vendor_onboarding_root"
+        action="ptt_vendor_management.action_ptt_vendor_invite_wizard"
+        sequence="20"/>
+
+    <!-- Configuration Submenu -->
+    <menuitem id="menu_ptt_vendor_config_root"
+        name="Configuration"
+        parent="menu_ptt_vendor_management_root"
+        sequence="100"/>
+
+    <!-- Configuration Items -->
+    <menuitem id="menu_ptt_vendor_document_config"
+        name="Vendor Documents"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_vendor_document"
+        sequence="5"/>
+
+    <menuitem id="menu_ptt_document_type_config"
+        name="Document Types"
+        parent="menu_ptt_vendor_config_root"
+        action="action_ptt_document_type"
+        sequence="10"/>
+
+    <menuitem id="menu_ptt_vendor_service_tag_config"
+        name="Service Types"
+        parent="menu_ptt_vendor_config_root"
+        action="ptt_business_core.action_vendor_service_type"
+        sequence="20"/>
+
+</odoo>
