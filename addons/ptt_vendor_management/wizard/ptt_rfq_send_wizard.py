@@ -27,12 +27,6 @@ class PttRfqSendWizard(models.TransientModel):
         required=True,
     )
     
-    service_type = fields.Selection(
-        related="rfq_id.service_type",
-        string="Service Type",
-        readonly=True,
-    )
-    
     @api.model
     def default_get(self, fields_list):
         """Pre-populate with vendors already selected on RFQ."""

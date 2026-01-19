@@ -9,7 +9,6 @@
             <form string="Send RFQ to Vendors">
                 <group>
                     <field name="rfq_id" invisible="1"/>
-                    <field name="service_type" readonly="1"/>
                 </group>
                 <group string="Select Vendors to Invite">
                     <field name="vendor_ids" 
