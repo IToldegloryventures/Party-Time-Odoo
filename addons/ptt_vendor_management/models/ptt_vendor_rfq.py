@@ -331,6 +331,8 @@ class PTTVendorRFQ(models.Model):
         po_vals = {
             "partner_id": self.approved_vendor_id.id,
         }
+        if self.project_id:
+            po_vals["ptt_project_id"] = self.project_id.id
         
         if self.product_id:
             po_vals["order_line"] = [(0, 0, {

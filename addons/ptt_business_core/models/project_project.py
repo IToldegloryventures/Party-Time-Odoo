@@ -43,7 +43,21 @@ class ProjectProject(models.Model):
     # The deprecated ptt_event_type selection field has been removed.
     
     x_studio_event_name = fields.Char(string="Event Name")
+    ptt_event_name = fields.Char(
+        string="Event Name",
+        related="x_studio_event_name",
+        store=True,
+        readonly=False,
+        help="Alias for the Studio event name field.",
+    )
     x_studio_event_date = fields.Date(string="Event Date")
+    ptt_event_date = fields.Date(
+        string="Event Date",
+        related="x_studio_event_date",
+        store=True,
+        readonly=False,
+        help="Alias for the Studio event date field.",
+    )
     ptt_guest_count = fields.Integer(string="Guest Count")
     
     # Timing fields - all Datetime for full scheduling
@@ -70,7 +84,21 @@ class ProjectProject(models.Model):
     
     # Venue
     x_studio_venue_name = fields.Char(string="Venue Name")
+    ptt_venue_name = fields.Char(
+        string="Venue Name",
+        related="x_studio_venue_name",
+        store=True,
+        readonly=False,
+        help="Alias for the Studio venue name field.",
+    )
     x_studio_venue_address = fields.Text(string="Venue Address")
+    ptt_venue_address = fields.Text(
+        string="Venue Address",
+        related="x_studio_venue_address",
+        store=True,
+        readonly=False,
+        help="Alias for the Studio venue address field.",
+    )
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Location Type",
