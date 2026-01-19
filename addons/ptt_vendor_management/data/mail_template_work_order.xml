@@ -34,11 +34,11 @@
             </tr>
             <tr>
                 <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Date</td>
-                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.x_studio_event_date or 'TBD' }}</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.ptt_event_date or 'TBD' }}</td>
             </tr>
             <tr>
                 <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Venue</td>
-                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.x_studio_venue_name or 'TBD' }}</td>
+                <td style="padding: 12px 15px; border: 1px solid #ddd;">{{ object.project_id.ptt_venue_name or 'TBD' }}</td>
             </tr>
             <tr>
                 <td style="padding: 12px 15px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Your Service</td>

@@ -319,16 +319,16 @@ class SaleOrder(models.Model):
             
             sync_vals = {}
             
-            if order.event_name and lead.x_studio_event_name != order.event_name:
-                sync_vals['x_studio_event_name'] = order.event_name
+            if order.event_name and lead.ptt_event_name != order.event_name:
+                sync_vals['ptt_event_name'] = order.event_name
             if order.event_date:
                 order_event_date = order.event_date.date() if hasattr(order.event_date, 'date') else order.event_date
-                if lead.x_studio_event_date != order_event_date:
-                    sync_vals['x_studio_event_date'] = order_event_date
+                if lead.ptt_event_date != order_event_date:
+                    sync_vals['ptt_event_date'] = order_event_date
             if order.event_guest_count and lead.ptt_guest_count != order.event_guest_count:
                 sync_vals['ptt_guest_count'] = order.event_guest_count
-            if order.event_venue and lead.x_studio_venue_name != order.event_venue:
-                sync_vals['x_studio_venue_name'] = order.event_venue
+            if order.event_venue and lead.ptt_venue_name != order.event_venue:
+                sync_vals['ptt_venue_name'] = order.event_venue
             
             if sync_vals:
                 lead.write(sync_vals)
@@ -492,16 +492,16 @@ class SaleOrder(models.Model):
         if isinstance(action, dict) and action.get('context'):
             event_context = {
                 'ptt_event_type_id': self.event_type_id.id if self.event_type_id else False,
-                'x_studio_event_name': self.event_name,
+                'ptt_event_name': self.event_name,
                 'ptt_guest_count': self.event_guest_count,
-                'x_studio_venue_name': self.event_venue,
+                'ptt_venue_name': self.event_venue,
                 'ptt_setup_start_time': self.setup_time,
                 'ptt_teardown_deadline': self.breakdown_time,
                 'ptt_total_hours': self.event_duration,
                 'ptt_sale_order_id': self.id,
             }
             if self.event_date:
-                event_context['x_studio_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
+                event_context['ptt_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
                 event_context['ptt_event_start_time'] = self.event_date
             
             action['context'] = {**action.get('context', {}), **event_context}
@@ -519,17 +519,17 @@ class SaleOrder(models.Model):
             
         project_vals = {
             'ptt_event_type_id': self.event_type_id.id,
-            'x_studio_event_name': self.event_name,
+            'ptt_event_name': self.event_name,
             'ptt_guest_count': self.event_guest_count,
-            'x_studio_venue_name': self.event_venue,
+            'ptt_venue_name': self.event_venue,
             'ptt_setup_start_time': self.setup_time,
             'ptt_teardown_deadline': self.breakdown_time,
             'ptt_total_hours': self.event_duration,
         }
         
-        # Handle event_date (Datetime) -> x_studio_event_date (Date) conversion
+        # Handle event_date (Datetime) -> ptt_event_date (Date) conversion
         if self.event_date:
-            project_vals['x_studio_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
+            project_vals['ptt_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
             project_vals['ptt_event_start_time'] = self.event_date
             if self.event_duration:
                 project_vals['ptt_event_end_time'] = fields.Datetime.add(self.event_date, hours=self.event_duration)

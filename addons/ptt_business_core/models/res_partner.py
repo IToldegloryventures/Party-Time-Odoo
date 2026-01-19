@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, _
+from odoo import models, fields, api, _
 
 from odoo.addons.ptt_business_core.constants import SERVICE_TYPES
 
@@ -12,6 +12,28 @@ class ResPartner(models.Model):
     - customer_rank > 0 indicates a customer
     """
     _inherit = "res.partner"
+
+    # === VENDOR/CLIENT TOGGLES ===
+    # These provide Boolean access to the native rank fields
+    ptt_is_vendor = fields.Boolean(
+        string="Is Vendor",
+        compute="_compute_ptt_is_vendor",
+        inverse="_inverse_ptt_is_vendor",
+        store=True,
+        help="Toggle to mark this contact as a vendor (sets supplier_rank = 1)",
+    )
+
+    @api.depends("supplier_rank")
+    def _compute_ptt_is_vendor(self):
+        for partner in self:
+            partner.ptt_is_vendor = partner.supplier_rank > 0
+
+    def _inverse_ptt_is_vendor(self):
+        for partner in self:
+            if partner.ptt_is_vendor and partner.supplier_rank == 0:
+                partner.supplier_rank = 1
+            elif not partner.ptt_is_vendor and partner.supplier_rank > 0:
+                partner.supplier_rank = 0
 
     # Vendor Classification (see supplier_rank for vendor toggle)
     ptt_vendor_service_types = fields.Many2many(

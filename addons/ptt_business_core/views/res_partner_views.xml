@@ -10,10 +10,11 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='company_type']" position="after">
                     <span class="ms-4 d-flex align-items-center gap-1">
-                        <field name="supplier_rank" widget="boolean_toggle"
+                        <field name="supplier_rank" invisible="1"/>
+                        <field name="ptt_is_vendor" widget="boolean_toggle"
                                options="{'autosave': false}"
                                class="o_field_boolean"/>
-                        <label for="supplier_rank" string="Vendor"/>
+                        <label for="ptt_is_vendor" string="Vendor"/>
                     </span>
                 </xpath>
 

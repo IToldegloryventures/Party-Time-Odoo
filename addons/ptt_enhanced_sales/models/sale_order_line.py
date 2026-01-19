@@ -27,9 +27,9 @@ class SaleOrderLine(models.Model):
         if order.event_type_id or order.event_name:
             # Add Party Time Texas event fields (use Studio fields directly)
             event_vals = {
-                'x_studio_event_name': order.event_name,
+                'ptt_event_name': order.event_name,
                 'ptt_guest_count': order.event_guest_count,
-                'x_studio_venue_name': order.event_venue,
+                'ptt_venue_name': order.event_venue,
                 'ptt_setup_start_time': order.setup_time,
                 'ptt_teardown_deadline': order.breakdown_time,
                 'ptt_total_hours': order.event_duration,
@@ -40,7 +40,7 @@ class SaleOrderLine(models.Model):
             
             # Handle event_date (Datetime) -> project date fields
             if order.event_date:
-                event_vals['x_studio_event_date'] = order.event_date.date() if hasattr(order.event_date, 'date') else order.event_date
+                event_vals['ptt_event_date'] = order.event_date.date() if hasattr(order.event_date, 'date') else order.event_date
                 event_vals['ptt_event_start_time'] = order.event_date
                 if order.event_duration:
                     event_vals['ptt_event_end_time'] = fields.Datetime.add(order.event_date, hours=order.event_duration)

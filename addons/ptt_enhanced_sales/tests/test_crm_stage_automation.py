@@ -89,7 +89,7 @@ class TestCrmStageAutomation(TransactionCase):
             'partner_id': self.partner.id,
             'user_id': self.user.id,
             'stage_id': self.stage_new.id,
-            'x_studio_event_name': 'Corporate Gala',
+            'ptt_event_name': 'Corporate Gala',
         })
         
         self.assertEqual(lead.stage_id, self.stage_new)
@@ -168,7 +168,7 @@ class TestCrmStageAutomation(TransactionCase):
             'user_id': self.user.id,
         })
         
-        self.assertFalse(lead.x_studio_event_name)
+        self.assertFalse(lead.ptt_event_name)
         
         # Create order with event details
         order = self.env['sale.order'].create({
@@ -183,9 +183,9 @@ class TestCrmStageAutomation(TransactionCase):
         order._sync_crm_lead_from_order()
         
         lead.invalidate_recordset()
-        self.assertEqual(lead.x_studio_event_name, 'Wedding Reception')
+        self.assertEqual(lead.ptt_event_name, 'Wedding Reception')
         self.assertEqual(lead.ptt_guest_count, 150)
-        self.assertEqual(lead.x_studio_venue_name, 'Grand Ballroom')
+        self.assertEqual(lead.ptt_venue_name, 'Grand Ballroom')
     
     def test_contract_sent_updates_crm_stage(self):
         """Test that sending a contract updates CRM to Contract Sent stage."""
@@ -316,7 +316,7 @@ class TestCrmProjectLink(TransactionCase):
             'name': 'Project Link Test',
             'partner_id': self.partner.id,
             'user_id': self.user.id,
-            'x_studio_event_name': 'Linked Event',
+            'ptt_event_name': 'Linked Event',
             'ptt_guest_count': 100,
         })
         
@@ -328,7 +328,7 @@ class TestCrmProjectLink(TransactionCase):
         project = lead.ptt_project_id
         
         self.assertEqual(project.ptt_crm_lead_id, lead)
-        self.assertEqual(project.x_studio_event_name, 'Linked Event')
+        self.assertEqual(project.ptt_event_name, 'Linked Event')
         
     def test_sale_order_project_event_details(self):
         """Test project created from sale order gets event details."""
@@ -357,7 +357,7 @@ class TestCrmProjectLink(TransactionCase):
         # Apply event details
         order._apply_event_details_to_project(project)
         
-        self.assertEqual(project.x_studio_event_name, 'Wedding Event')
+        self.assertEqual(project.ptt_event_name, 'Wedding Event')
         self.assertEqual(project.ptt_guest_count, 200)
-        self.assertEqual(project.x_studio_venue_name, 'Country Club')
+        self.assertEqual(project.ptt_venue_name, 'Country Club')
         self.assertEqual(project.ptt_total_hours, 6.0)

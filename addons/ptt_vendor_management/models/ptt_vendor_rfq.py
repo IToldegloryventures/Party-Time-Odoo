@@ -34,14 +34,15 @@ class PTTVendorRFQ(models.Model):
     project_id = fields.Many2one(
         "project.project",
         string="Event/Project",
-        help="The event or project this RFQ is for",
+        domain="[('is_template', '=', False)]",
+        help="The event or project this RFQ is for (excludes templates)",
         tracking=True,
     )
     
     # Related fields for easy display
     event_date = fields.Date(
         string="Event Date",
-        related="project_id.x_studio_event_date",
+        related="project_id.ptt_event_date",
         store=True,
         readonly=True,
     )
@@ -116,8 +117,8 @@ class PTTVendorRFQ(models.Model):
         "rfq_id",
         "partner_id",
         string="Invited Vendors",
-        domain="[('supplier_rank', '>', 0), ('ptt_vendor_status', '=', 'active')]",
-        help="Active vendors invited to quote on this RFQ",
+        domain="[('supplier_rank', '>', 0)]",
+        help="Vendors invited to quote on this RFQ",
     )
     
     # === QUOTE RESPONSES ===

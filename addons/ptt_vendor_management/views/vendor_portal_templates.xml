@@ -47,8 +47,8 @@
                                     </td>
                                     <td><t t-esc="wo.service_type"/></td>
                                     <td>
-                                        <t t-if="wo.project_id.x_studio_event_date">
-                                            <t t-esc="wo.project_id.x_studio_event_date" t-options="{'widget': 'date'}"/>
+                                        <t t-if="wo.project_id.ptt_event_date">
+                                            <t t-esc="wo.project_id.ptt_event_date" t-options="{'widget': 'date'}"/>
                                         </t>
                                         <t t-else="">TBD</t>
                                     </td>

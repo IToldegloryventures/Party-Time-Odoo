@@ -4,7 +4,6 @@ from odoo.exceptions import UserError
 
 from odoo.addons.ptt_business_core.constants import (
     CONTACT_METHODS,
-    EVENT_TYPES,
     LEAD_TYPES,
     LOCATION_TYPES,
     PAYMENT_STATUS,
@@ -60,29 +59,11 @@ class CrmLead(models.Model):
     # =========================================================================
     # EVENT OVERVIEW
     # =========================================================================
-    ptt_event_type = fields.Selection(
-        selection=EVENT_TYPES,
-        string="Event Type",
-        help="Event classification: Corporate, Social, or Wedding. Used for filtering and quote templates.",
-        tracking=True,
-    )
-    ptt_event_name = fields.Char(
-        string="Event Name",
-        help="Name or title of the event.",
-    )
-    ptt_event_date = fields.Date(
-        string="Event Date",
-        index=True,
-        help="Scheduled date for the event.",
-    )
-    ptt_venue_name = fields.Char(
-        string="Venue Name",
-        help="Name of the venue where the event will be held.",
-    )
-    ptt_venue_address = fields.Text(
-        string="Venue Address",
-        help="Full address of the event venue.",
-    )
+    # NOTE: Event type is managed via ptt_event_type_id (Many2one to sale.order.type)
+    # in ptt_enhanced_sales. Do not add a second event type field here.
+    #
+    # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
+    # x_studio_venue_address) already exist in DB from Odoo Studio - use them directly.
     ptt_event_goal = fields.Char(string="Event Goal")
     ptt_event_time = fields.Char(
         string="Event Time",
@@ -415,16 +396,12 @@ class CrmLead(models.Model):
         event_id = self._ensure_event_id()
 
         project_vals = {
-            "name": f"Event {event_id} - {self.partner_id.name} - {self.ptt_event_name or self.name}",
+            "name": f"Event {event_id} - {self.partner_id.name} - {self.x_studio_event_name or self.name}",
             "partner_id": self.partner_id.id,
             "user_id": self.user_id.id,
             "ptt_crm_lead_id": self.id,
             "ptt_event_id": event_id,
-            "ptt_event_type": self.ptt_event_type,
-            "ptt_event_name": self.ptt_event_name,
-            "ptt_event_date": self.ptt_event_date,
             "ptt_guest_count": self.ptt_guest_count,
-            "ptt_venue_name": self.ptt_venue_name,
             "ptt_total_hours": self.ptt_event_duration,
         }
 
