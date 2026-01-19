@@ -63,23 +63,11 @@ class CrmLead(models.Model):
     # which links to one of 3 types: Corporate, Social, Wedding
     # The deprecated ptt_event_type selection field has been removed.
     
-    x_studio_event_name = fields.Char(string="Event Name")
-    ptt_event_name = fields.Char(
-        string="Event Name",
-        related="x_studio_event_name",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio event name field.",
-    )
+    # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
+    # x_studio_venue_address) already exist in DB from Odoo Studio - no need to redeclare.
+    # Use them directly in views and code.
+    
     ptt_event_goal = fields.Char(string="Event Goal")
-    x_studio_event_date = fields.Date(string="Event Date")
-    ptt_event_date = fields.Date(
-        string="Event Date",
-        related="x_studio_event_date",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio event date field.",
-    )
     ptt_event_time = fields.Char(
         string="Event Time",
         help="Approximate event start time (e.g., '6:00 PM'). Used for initial planning."
@@ -92,22 +80,6 @@ class CrmLead(models.Model):
     
     # Venue Information
     ptt_venue_booked = fields.Boolean(string="Venue Booked?")
-    x_studio_venue_name = fields.Char(string="Venue Name")
-    ptt_venue_name = fields.Char(
-        string="Venue Name",
-        related="x_studio_venue_name",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio venue name field.",
-    )
-    x_studio_venue_address = fields.Text(string="Venue Address")
-    ptt_venue_address = fields.Text(
-        string="Venue Address",
-        related="x_studio_venue_address",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio venue address field.",
-    )
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Location Type",
@@ -450,10 +422,11 @@ class CrmLead(models.Model):
             "ptt_crm_lead_id": self.id,
             "ptt_event_id": event_id,
             # NOTE: ptt_event_type removed - use ptt_event_type_id (Many2one) instead
-            "ptt_event_name": self.ptt_event_name,
-            "ptt_event_date": self.ptt_event_date,
+            # Use Studio fields directly - no aliases
+            "x_studio_event_name": self.x_studio_event_name,
+            "x_studio_event_date": self.x_studio_event_date,
             "ptt_guest_count": self.ptt_guest_count,
-            "ptt_venue_name": self.ptt_venue_name,
+            "x_studio_venue_name": self.x_studio_venue_name,
             "ptt_total_hours": self.ptt_event_duration,  # Map legacy field to new field
         }
 

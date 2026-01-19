@@ -42,14 +42,14 @@ class CrmLeadEnhanced(models.Model):
             # Services will be added as product variants, not from checkboxes
             quotation_vals = {
                 'event_type_id': self.ptt_event_type_id.id if self.ptt_event_type_id else False,
-                'event_name': self.ptt_event_name or self.name,
+                'event_name': self.x_studio_event_name or self.name,
                 'event_guest_count': self.ptt_guest_count or 0,
-                'event_venue': self.ptt_venue_name or '',
+                'event_venue': self.x_studio_venue_name or '',
             }
             
             # Only set event_date if we have one (Date→Datetime conversion)
-            if self.ptt_event_date:
-                quotation_vals['event_date'] = fields.Datetime.to_datetime(self.ptt_event_date)
+            if self.x_studio_event_date:
+                quotation_vals['event_date'] = fields.Datetime.to_datetime(self.x_studio_event_date)
             
             quotation.write(quotation_vals)
             self._ptt_copy_service_lines_to_order(quotation)

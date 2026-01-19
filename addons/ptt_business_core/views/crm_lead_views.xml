@@ -70,16 +70,16 @@
                         <group>
                             <group>
                                 <field name="ptt_event_id" readonly="1"/>
-                                <field name="ptt_event_name"/>
+                                <field name="x_studio_event_name"/>
                                 <field name="ptt_event_goal"/>
-                                <field name="ptt_event_date"/>
+                                <field name="x_studio_event_date"/>
                                 <field name="ptt_event_time"/>
                                 <field name="ptt_event_duration"/>
                                 <field name="ptt_guest_count"/>
                             </group>
                             <group string="Venue">
                                 <field name="ptt_venue_booked"/>
-                                <field name="ptt_venue_name"/>
+                                <field name="x_studio_venue_name"/>
                                 <field name="ptt_location_type"/>
                                 <field name="x_studio_venue_address"/>
                             </group>
@@ -221,7 +221,7 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="ptt_event_id" optional="show"/>
-                    <field name="ptt_event_date" optional="show"/>
+                    <field name="x_studio_event_date" optional="show"/>
                     <field name="ptt_guest_count" optional="hide"/>
                     <field name="ptt_payment_status" optional="show"/>
                 </field>
@@ -236,22 +236,22 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="ptt_event_id"/>
-                    <field name="ptt_event_name"/>
-                    <field name="ptt_venue_name"/>
+                    <field name="x_studio_event_name"/>
+                    <field name="x_studio_venue_name"/>
                 </field>
                 <xpath expr="//filter[@name='filter_won_status_won']" position="after">
                     <separator/>
                     <filter name="filter_future_events" string="Future Events" 
-                            domain="[('ptt_event_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                            domain="[('x_studio_event_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
                     <filter name="filter_past_events" string="Past Events" 
-                            domain="[('ptt_event_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                            domain="[('x_studio_event_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                     <separator/>
                     <filter name="filter_dj" string="DJ Services" domain="[('ptt_service_dj', '=', True)]"/>
                     <filter name="filter_photo" string="Photo/Video" domain="[('ptt_service_photovideo', '=', True)]"/>
                     <filter name="filter_lighting" string="Lighting/AV" domain="[('ptt_service_lighting', '=', True)]"/>
                 </xpath>
                 <xpath expr="//group[filter[@name='salesperson']]" position="inside">
-                    <filter string="Event Date" name="group_event_date" context="{'group_by': 'ptt_event_date'}"/>
+                    <filter string="Event Date" name="group_event_date" context="{'group_by': 'x_studio_event_date'}"/>
                     <filter string="Payment Status" name="group_payment" context="{'group_by': 'ptt_payment_status'}"/>
                 </xpath>
             </field>

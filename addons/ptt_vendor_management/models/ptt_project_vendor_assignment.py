@@ -75,7 +75,7 @@ class ProjectVendorAssignment(models.Model):
     # === RELATED FIELDS FOR PORTAL ===
     event_date = fields.Date(
         string="Event Date",
-        related="project_id.ptt_event_date",
+        related="project_id.x_studio_event_date",
         store=True,
         readonly=True,
     )
@@ -186,7 +186,7 @@ class ProjectVendorAssignment(models.Model):
             body=_("✅ %s accepted %s assignment for %s") % (
                 self.vendor_id.name,
                 service_type_label,
-                self.project_id.ptt_event_date or 'TBD'
+                self.project_id.x_studio_event_date or 'TBD'
             ),
             subject=_("Vendor Accepted: %s") % service_type_label,
             message_type='notification',

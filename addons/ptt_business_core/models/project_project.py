@@ -42,22 +42,10 @@ class ProjectProject(models.Model):
     # which links to one of 3 types: Corporate, Social, Wedding
     # The deprecated ptt_event_type selection field has been removed.
     
-    x_studio_event_name = fields.Char(string="Event Name")
-    ptt_event_name = fields.Char(
-        string="Event Name",
-        related="x_studio_event_name",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio event name field.",
-    )
-    x_studio_event_date = fields.Date(string="Event Date")
-    ptt_event_date = fields.Date(
-        string="Event Date",
-        related="x_studio_event_date",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio event date field.",
-    )
+    # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
+    # x_studio_venue_address) already exist in DB from Odoo Studio - no need to redeclare.
+    # Use them directly in views and code.
+    
     ptt_guest_count = fields.Integer(string="Guest Count")
     
     # Timing fields - all Datetime for full scheduling
@@ -82,23 +70,7 @@ class ProjectProject(models.Model):
         help="Total duration of the event in hours"
     )
     
-    # Venue
-    x_studio_venue_name = fields.Char(string="Venue Name")
-    ptt_venue_name = fields.Char(
-        string="Venue Name",
-        related="x_studio_venue_name",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio venue name field.",
-    )
-    x_studio_venue_address = fields.Text(string="Venue Address")
-    ptt_venue_address = fields.Text(
-        string="Venue Address",
-        related="x_studio_venue_address",
-        store=True,
-        readonly=False,
-        help="Alias for the Studio venue address field.",
-    )
+    # Venue - x_studio_venue_name and x_studio_venue_address already exist in DB from Studio
     ptt_location_type = fields.Selection(
         selection=LOCATION_TYPES,
         string="Location Type",

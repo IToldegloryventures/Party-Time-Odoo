@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.4.2.1",
+    "version": "19.0.4.2.2",
     "summary": "Party Time Texas core business models for event management.",
     "description": """
 Party Time Texas Business Core Module
@@ -16,6 +16,10 @@ Core module that defines the foundational models for PTT event management:
 - Per-variant pricing fields (min hours, guest counts, cost guides)
 - Sale order line minimum hours validation
 - Project templates with 9 standard event tasks
+
+IMPORTANT: This module uses existing Studio fields (x_studio_*) directly:
+- x_studio_event_name, x_studio_event_date
+- x_studio_venue_name, x_studio_venue_address
 
 This module has NO dependencies on other PTT modules.
 Other PTT modules depend on this one.

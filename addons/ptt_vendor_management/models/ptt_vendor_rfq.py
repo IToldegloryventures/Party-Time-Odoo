@@ -41,7 +41,7 @@ class PTTVendorRFQ(models.Model):
     # Related fields for easy display
     event_date = fields.Date(
         string="Event Date",
-        related="project_id.ptt_event_date",
+        related="project_id.x_studio_event_date",
         store=True,
         readonly=True,
     )

@@ -49,7 +49,7 @@
                 </xpath>
                 
                 <!-- Add Event Status -->
-                <xpath expr="//field[@name='ptt_event_name']" position="after">
+                <xpath expr="//field[@name='x_studio_event_name']" position="after">
                     <field name="event_status" widget="badge"
                            decoration-info="event_status == 'planning'"
                            decoration-success="event_status in ('confirmed', 'completed')"
@@ -104,7 +104,7 @@
             <field name="inherit_id" ref="ptt_business_core.view_project_tree_ptt"/>
             <field name="priority">30</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='ptt_event_date']" position="after">
+                <xpath expr="//field[@name='x_studio_event_date']" position="after">
                     <field name="event_status" widget="badge" optional="show"
                            decoration-info="event_status == 'planning'"
                            decoration-success="event_status in ('confirmed', 'completed')"

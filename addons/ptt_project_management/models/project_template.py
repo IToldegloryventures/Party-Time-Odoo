@@ -145,8 +145,8 @@ class ProjectTemplate(models.Model):
             }
             
             # Calculate dates if event date is available
-            if hasattr(project, 'ptt_event_date') and project.ptt_event_date:
-                event_date = project.ptt_event_date
+            if hasattr(project, 'x_studio_event_date') and project.x_studio_event_date:
+                event_date = project.x_studio_event_date
                 if task_template.days_before_event:
                     task_vals['date_deadline'] = fields.Date.subtract(
                         event_date, 

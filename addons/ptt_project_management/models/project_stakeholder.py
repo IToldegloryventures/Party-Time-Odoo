@@ -252,9 +252,9 @@ class ProjectStakeholder(models.Model):
     def _send_confirmation_notification(self):
         """Send notification when stakeholder is confirmed"""
         if self.partner_id.email and self.communication_preference == 'email':
-            # Get event details from project (ptt_ prefixed fields from ptt_business_core)
-            event_date = getattr(self.project_id, 'ptt_event_date', None) or 'TBD'
-            venue_name = getattr(self.project_id, 'ptt_venue_name', None) or 'TBD'
+            # Get event details from project (x_studio_ prefixed fields from Studio)
+            event_date = getattr(self.project_id, 'x_studio_event_date', None) or 'TBD'
+            venue_name = getattr(self.project_id, 'x_studio_venue_name', None) or 'TBD'
             
             # Properly escape user-provided content to prevent XSS
             partner_name = html_escape(self.partner_id.name or '')

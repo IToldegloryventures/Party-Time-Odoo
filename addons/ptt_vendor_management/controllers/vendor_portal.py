@@ -277,11 +277,11 @@ class VendorPortal(CustomerPortal):
             'token': access_token,
             # Event info for vendor - venue details needed for arrival
             'event_name': project.name,
-            'event_date': project.ptt_event_date,
+            'event_date': project.x_studio_event_date,
             'event_time_start': project.ptt_event_start_time or '',
             'event_time_end': project.ptt_event_end_time or '',
-            'venue_name': project.ptt_venue_name or '',
-            'venue_address': project.ptt_venue_address or '',
+            'venue_name': project.x_studio_venue_name or '',
+            'venue_address': project.x_studio_venue_address or '',
             # VENDOR'S assignment only - NO customer pricing, NO other vendors
             'service_type': service_type_label,
             'vendor_payment': assignment.actual_cost,
