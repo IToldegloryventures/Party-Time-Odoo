@@ -220,7 +220,7 @@
         <!-- PHOTO BOOTH RENTALS - Booth Type × Event Type × Service Tier    -->
         <!-- ================================================================ -->
         <record id="product_template_photo_booth" model="product.template">
-            <field name="name">Photo Booth Rentals</field>
+            <field name="name">Photo Booths Rentals</field>
             <field name="default_code">BOOTH-SVC</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>

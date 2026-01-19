@@ -100,7 +100,7 @@
         </record>
         
         <record id="pav_booth_standard" model="product.attribute.value">
-            <field name="name">Photo Booth Rentals-Printouts w/ attendant</field>
+            <field name="name">Photo Booths Rentals-Printouts w/ attendant</field>
             <field name="attribute_id" ref="pa_booth_type"/>
             <field name="sequence">1</field>
         </record>

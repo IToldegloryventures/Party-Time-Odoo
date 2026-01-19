@@ -28,35 +28,5 @@
 
         <!-- NOTE: Additional Insured Coverage is defined in products_adjustments.xml with variants -->
 
-        <!-- ============================================ -->
-        <!-- MISC EVENT ENTERTAINMENT SERVICES (Untaxed) -->
-        <!-- ============================================ -->
-        <record id="product_template_misc_entertainment_untaxed" model="product.template">
-            <field name="name">* Misc Event Entertainment Services (Untaxed)</field>
-            <field name="default_code">MISC-ENT-UT</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="taxes_id" eval="[(5, 0, 0)]"/>
-            <field name="description_sale">Miscellaneous event entertainment services (non-taxable).</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- MISC EVENT SERVICES (Taxed)                 -->
-        <!-- ============================================ -->
-        <record id="product_template_misc_services_taxed" model="product.template">
-            <field name="name">* Misc Event Services (Taxed)</field>
-            <field name="default_code">MISC-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Miscellaneous event services (taxable).</field>
-        </record>
     </data>
 </odoo>

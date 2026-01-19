@@ -83,11 +83,36 @@ class CrmLead(models.Model):
         string="Event Time",
         help="Approximate event start time (e.g., '6:00 PM'). Used for initial planning."
     )
+    ptt_setup_time = fields.Float(
+        string="Setup Time",
+        help="Time when setup begins (decimal hours, e.g., 14.5 = 2:30 PM)",
+    )
+    ptt_start_time = fields.Float(
+        string="Start Time",
+        help="Event start time (decimal hours, e.g., 18.0 = 6:00 PM)",
+    )
+    ptt_end_time = fields.Float(
+        string="End Time",
+        help="Event end time (decimal hours, e.g., 22.0 = 10:00 PM)",
+    )
     ptt_event_duration = fields.Float(
         string="Duration (Hours)",
         help="Estimated event duration. Maps to ptt_total_hours on project."
     )
     ptt_guest_count = fields.Integer(string="Estimated Guest Count")
+    ptt_attire = fields.Selection(
+        selection=[
+            ('casual', 'Casual'),
+            ('business_casual', 'Business Casual'),
+            ('semi_formal', 'Semi-Formal'),
+            ('formal', 'Formal'),
+            ('black_tie', 'Black Tie'),
+            ('costume', 'Costume/Theme'),
+            ('other', 'Other'),
+        ],
+        string="Attire",
+        help="Dress code for the event",
+    )
     
     # Venue Information
     ptt_venue_name = fields.Char(

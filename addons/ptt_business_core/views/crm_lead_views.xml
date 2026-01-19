@@ -50,6 +50,37 @@
                     
                     <!-- PTT Event Intake - Consolidated Tab -->
                     <page string="Event Intake" name="ptt_lead_intake">
+                        
+                        <!-- Event Details Section -->
+                        <separator string="Event Details"/>
+                        <group>
+                            <group>
+                                <field name="ptt_event_name"/>
+                                <field name="ptt_event_type"/>
+                                <field name="ptt_attire"/>
+                                <field name="ptt_guest_count"/>
+                            </group>
+                            <group>
+                                <field name="ptt_event_date"/>
+                                <field name="ptt_setup_time" widget="float_time"/>
+                                <field name="ptt_start_time" widget="float_time"/>
+                                <field name="ptt_end_time" widget="float_time"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Venue Section -->
+                        <separator string="Venue"/>
+                        <group>
+                            <group>
+                                <field name="ptt_venue_booked"/>
+                                <field name="ptt_venue_name"/>
+                                <field name="ptt_location_type"/>
+                            </group>
+                            <group>
+                                <field name="ptt_venue_address"/>
+                            </group>
+                        </group>
+                        
                         <!-- Contact Information Section -->
                         <separator string="Contact Information"/>
                         <group>
@@ -65,31 +96,11 @@
                             </group>
                         </group>
                         
-                        <!-- Event Information Section -->
-                        <separator string="Event Information"/>
-                        <group>
-                            <group>
-                                <field name="ptt_event_id" readonly="1"/>
-                                <field name="ptt_event_name"/>
-                                <field name="ptt_event_type"/>
-                                <field name="ptt_event_goal"/>
-                                <field name="ptt_event_date"/>
-                                <field name="ptt_event_time"/>
-                                <field name="ptt_event_duration"/>
-                                <field name="ptt_guest_count"/>
-                            </group>
-                            <group string="Venue">
-                                <field name="ptt_venue_booked"/>
-                                <field name="ptt_venue_name"/>
-                                <field name="ptt_location_type"/>
-                                <field name="ptt_venue_address"/>
-                            </group>
-                        </group>
-                        
                         <!-- Follow-up Section -->
                         <separator string="Follow-up"/>
                         <group>
                             <group>
+                                <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_followup_email_sent"/>
                                 <field name="ptt_proposal_sent"/>
                                 <field name="ptt_next_contact_date"/>

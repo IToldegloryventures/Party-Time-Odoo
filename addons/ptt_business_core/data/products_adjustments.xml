@@ -51,18 +51,18 @@
         </record>
 
         <!-- ============================================ -->
-        <!-- CLIENT CONTRACT - $5                        -->
+        <!-- CLIENT CONTRACT - BS                        -->
         <!-- ============================================ -->
         <record id="product_template_client_contract" model="product.template">
-            <field name="name">* Client Contract - $5</field>
+            <field name="name">* Client Contract - BS</field>
             <field name="default_code">CONTRACT</field>
             <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">consu</field>
-            <field name="list_price">5.0</field>
+            <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Client contract processing fee.</field>
+            <field name="description_sale">Contracts Booked for BS Tracking.</field>
         </record>
 
         <!-- ============================================ -->
