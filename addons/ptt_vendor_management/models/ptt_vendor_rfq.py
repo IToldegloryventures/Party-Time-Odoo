@@ -212,6 +212,18 @@ class PTTVendorRFQ(models.Model):
         return super().create(vals_list)
     
     # === ACTIONS ===
+    def action_open_send_wizard(self):
+        """Open wizard to select vendors and send RFQ invitations."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Send RFQ to Vendors"),
+            "res_model": "ptt.rfq.send.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_rfq_id": self.id},
+        }
+    
     def action_send_invitations(self):
         """Send invitation emails to all selected vendors."""
         self.ensure_one()

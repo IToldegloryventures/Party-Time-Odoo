@@ -15,7 +15,7 @@
         <field name="arch" type="xml">
             <form string="Vendor RFQ">
                 <header>
-                    <button name="action_send_invitations" 
+                    <button name="action_open_send_wizard" 
                             type="object" 
                             string="Send Invitations" 
                             class="oe_highlight"

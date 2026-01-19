@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- RFQ Send Wizard Form -->
+    <record id="view_ptt_rfq_send_wizard_form" model="ir.ui.view">
+        <field name="name">ptt.rfq.send.wizard.form</field>
+        <field name="model">ptt.rfq.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Send RFQ to Vendors">
+                <group>
+                    <field name="rfq_id" invisible="1"/>
+                    <field name="service_type" readonly="1"/>
+                </group>
+                <group string="Select Vendors to Invite">
+                    <field name="vendor_ids" 
+                           widget="many2many_tags"
+                           nolabel="1"
+                           placeholder="Click to select vendors..."
+                           options="{'no_create': True, 'color_field': 'color'}"/>
+                </group>
+                <p class="text-muted">
+                    Select the vendors you want to send this RFQ to. 
+                    Each vendor will receive an email invitation to submit their quote.
+                </p>
+                <footer>
+                    <button name="action_send" 
+                            type="object" 
+                            string="Send Invitations" 
+                            class="btn-primary"
+                            icon="fa-paper-plane"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_ptt_rfq_send_wizard" model="ir.actions.act_window">
+        <field name="name">Send RFQ</field>
+        <field name="res_model">ptt.rfq.send.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

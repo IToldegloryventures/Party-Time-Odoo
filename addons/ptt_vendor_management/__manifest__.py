@@ -60,6 +60,7 @@
         "data/saved_filters.xml",
         # Wizard views
         "wizard/ptt_vendor_invite_wizard_view.xml",
+        "wizard/ptt_rfq_send_wizard_view.xml",
         # Views (configuration views first, then main views)
         "views/ptt_document_type_view.xml",
         "views/ptt_vendor_document_view.xml",
