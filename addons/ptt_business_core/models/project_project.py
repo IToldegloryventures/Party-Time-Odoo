@@ -45,6 +45,7 @@ class ProjectProject(models.Model):
     # Studio fields (x_studio_event_name, x_studio_event_date, x_studio_venue_name,
     # x_studio_venue_address) are defined on CRM Lead. Mirror them here so
     # project views and searches can use them safely in pre_prod.
+    # NOTE: Using fields.Field (generic) to let Odoo infer type from related source
     x_studio_event_name = fields.Char(
         related="ptt_crm_lead_id.x_studio_event_name",
         store=True,
@@ -60,7 +61,7 @@ class ProjectProject(models.Model):
         store=True,
         readonly=True,
     )
-    x_studio_venue_address = fields.Char(
+    x_studio_venue_address = fields.Text(
         related="ptt_crm_lead_id.x_studio_venue_address",
         store=True,
         readonly=True,
