@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <!-- 
+        PTT Dashboard Charts Configuration
+        30 Pre-configured widgets across 4 dashboards
+    -->
+
+    <!-- ========================================== -->
+    <!-- TAB 1: MY TASKS (5 widgets)               -->
+    <!-- ========================================== -->
+
+    <!-- Widget 1: My Tasks Today -->
+    <record id="chart_my_tasks_today" model="dashboard.chart">
+        <field name="name">My Tasks Today</field>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
+        <field name="date_filter_field_id" ref="project.field_project_task__date_deadline"/>
+        <field name="date_filter_option">today</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 2: My Overdue Tasks -->
+    <record id="chart_my_overdue_tasks" model="dashboard.chart">
+        <field name="name">My Overdue Tasks</field>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain">[('user_ids', 'in', [uid]), ('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 3: My Activities Due -->
+    <record id="chart_my_activities" model="dashboard.chart">
+        <field name="name">My Activities Due</field>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="mail.model_mail_activity"/>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="date_filter_field_id" ref="mail.field_mail_activity__date_deadline"/>
+        <field name="date_filter_option">today</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 4: My Assigned Comments -->
+    <record id="chart_my_comments" model="dashboard.chart">
+        <field name="name">My Assigned Comments</field>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="mail.model_mail_message"/>
+        <field name="domain">[('message_type', '=', 'comment')]</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 5: My To-Do's -->
+    <record id="chart_my_todos" model="dashboard.chart">
+        <field name="name">My To-Do's</field>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
+        <field name="chart_type">to_do</field>
+        <field name="todo_layout">default</field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: TEAM (3 widgets)                   -->
+    <!-- ========================================== -->
+
+    <!-- Widget 1: Team Workload -->
+    <record id="chart_team_workload" model="dashboard.chart">
+        <field name="name">Team Workload</field>
+        <field name="dashboard_id" ref="dashboard_team"/>
+        <field name="chart_type">column_chart</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain">[('stage_id.fold', '=', False)]</field>
+        <field name="group_by_field_id" ref="project.field_project_task__user_ids"/>
+        <field name="data_type">count</field>
+    </record>
+
+    <!-- Widget 2: All Overdue Tasks -->
+    <record id="chart_team_overdue" model="dashboard.chart">
+        <field name="name">All Overdue Tasks (Team)</field>
+        <field name="dashboard_id" ref="dashboard_team"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain">[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
+        <field name="limit_record">15</field>
+    </record>
+
+    <!-- Widget 3: Team To-Do's -->
+    <record id="chart_team_todos" model="dashboard.chart">
+        <field name="name">Team To-Do's</field>
+        <field name="dashboard_id" ref="dashboard_team"/>
+        <field name="chart_type">to_do</field>
+        <field name="todo_layout">default</field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: EVENTS (11 widgets)                -->
+    <!-- ========================================== -->
+
+    <!-- Widget 1: Upcoming Events KPI -->
+    <record id="chart_upcoming_events_kpi" model="dashboard.chart">
+        <field name="name">Upcoming Events</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="project.model_project_project"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_domain">[('active', '=', True)]</field>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="icon">fa fa-calendar</field>
+    </record>
+
+    <!-- Widget 2: Today's Events -->
+    <record id="chart_todays_events" model="dashboard.chart">
+        <field name="name">Today's Events</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="date_filter_option">today</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 3: Events This Week -->
+    <record id="chart_events_this_week" model="dashboard.chart">
+        <field name="name">Events This Week</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="date_filter_option">this_week</field>
+        <field name="limit_record">15</field>
+    </record>
+
+    <!-- Widget 4: Upcoming Events List -->
+    <record id="chart_upcoming_events_list" model="dashboard.chart">
+        <field name="name">Upcoming Events (30 Days)</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="date_filter_option">next_month</field>
+        <field name="limit_record">20</field>
+    </record>
+
+    <!-- Widget 5: Projects by Stage -->
+    <record id="chart_projects_by_stage" model="dashboard.chart">
+        <field name="name">Projects by Stage</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">column_chart</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="group_by_field_id" ref="project.field_project_project__stage_id"/>
+        <field name="data_type">count</field>
+    </record>
+
+    <!-- Widget 6: Work Orders by Status -->
+    <record id="chart_work_orders_status" model="dashboard.chart">
+        <field name="name">Work Orders by Status</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">column_chart</field>
+        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="group_by_field_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__status"/>
+        <field name="data_type">count</field>
+    </record>
+
+    <!-- Widget 7: Awaiting Vendor Response KPI -->
+    <record id="chart_awaiting_vendor" model="dashboard.chart">
+        <field name="name">Awaiting Vendor Response</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_domain">[('status', '=', 'sent')]</field>
+        <field name="icon">fa fa-clock-o</field>
+    </record>
+
+    <!-- Widget 8: Declined Work Orders -->
+    <record id="chart_declined_work_orders" model="dashboard.chart">
+        <field name="name">Declined Work Orders</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="domain">[('status', '=', 'declined')]</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 9: Unassigned Events -->
+    <record id="chart_unassigned_events" model="dashboard.chart">
+        <field name="name">Unassigned Events (No Vendors)</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain">[('ptt_vendor_count', '=', 0), ('active', '=', True)]</field>
+        <field name="date_filter_option">next_month</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 10: Vendor Schedule This Week -->
+    <record id="chart_vendor_schedule" model="dashboard.chart">
+        <field name="name">Vendor Schedule This Week</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="domain">[('status', 'in', ['confirmed', 'sent'])]</field>
+        <field name="date_filter_option">this_week</field>
+        <field name="limit_record">15</field>
+    </record>
+
+    <!-- Widget 11: Vendor Costs MTD KPI -->
+    <record id="chart_vendor_costs" model="dashboard.chart">
+        <field name="name">Vendor Costs MTD</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="icon">fa fa-money</field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: SALES METRICS (11 widgets)         -->
+    <!-- ========================================== -->
+
+    <!-- Widget 1: Revenue MTD KPI -->
+    <record id="chart_revenue_mtd" model="dashboard.chart">
+        <field name="name">Revenue MTD</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="sale.model_sale_order"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_domain">[('state', '=', 'sale')]</field>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="icon">fa fa-dollar</field>
+    </record>
+
+    <!-- Widget 2: Open Quotes KPI -->
+    <record id="chart_open_quotes" model="dashboard.chart">
+        <field name="name">Open Quotes</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="sale.model_sale_order"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_domain">[('state', 'in', ['draft', 'sent'])]</field>
+        <field name="icon">fa fa-file-text-o</field>
+    </record>
+
+    <!-- Widget 3: Pipeline Value KPI -->
+    <record id="chart_pipeline_value" model="dashboard.chart">
+        <field name="name">Pipeline Value</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="crm.model_crm_lead"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_domain">[('type', '=', 'opportunity'), ('probability', '&lt;', 100)]</field>
+        <field name="icon">fa fa-line-chart</field>
+    </record>
+
+    <!-- Widget 4: Bookings This Month KPI -->
+    <record id="chart_bookings_month" model="dashboard.chart">
+        <field name="name">Bookings This Month</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="project.model_project_project"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="icon">fa fa-calendar-check-o</field>
+    </record>
+
+    <!-- Widget 5: Outstanding Payments KPI -->
+    <record id="chart_outstanding_payments" model="dashboard.chart">
+        <field name="name">Outstanding Payments</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="account.model_account_move"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_domain">[('move_type', '=', 'out_invoice'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
+        <field name="icon">fa fa-exclamation-triangle</field>
+    </record>
+
+    <!-- Widget 6: Revenue by Month Line Chart -->
+    <record id="chart_revenue_by_month" model="dashboard.chart">
+        <field name="name">Revenue by Month</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">line_chart</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain">[('state', '=', 'sale')]</field>
+        <field name="group_by_field_id" ref="sale.field_sale_order__date_order"/>
+        <field name="data_type">sum</field>
+        <field name="time_range">month</field>
+    </record>
+
+    <!-- Widget 7: Sales by Event Type Pie Chart -->
+    <record id="chart_sales_by_event_type" model="dashboard.chart">
+        <field name="name">Sales by Event Type</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">pie_chart</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="domain">[('type', '=', 'opportunity')]</field>
+        <field name="data_type">sum</field>
+    </record>
+
+    <!-- Widget 8: New Leads KPI -->
+    <record id="chart_new_leads" model="dashboard.chart">
+        <field name="name">New Leads</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" ref="crm.model_crm_lead"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_domain">[('type', '=', 'lead')]</field>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="icon">fa fa-user-plus</field>
+    </record>
+
+    <!-- Widget 9: Leads by Stage Funnel -->
+    <record id="chart_leads_by_stage" model="dashboard.chart">
+        <field name="name">Leads by Stage</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">funnel_chart</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="domain">[('type', '=', 'opportunity')]</field>
+        <field name="group_by_field_id" ref="crm.field_crm_lead__stage_id"/>
+        <field name="data_type">count</field>
+    </record>
+
+    <!-- Widget 10: Follow-Up Activities List -->
+    <record id="chart_followup_activities" model="dashboard.chart">
+        <field name="name">Follow-Up Activities</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="mail.model_mail_activity"/>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="date_filter_option">today</field>
+        <field name="limit_record">10</field>
+    </record>
+
+    <!-- Widget 11: Unsigned Contracts List -->
+    <record id="chart_unsigned_contracts" model="dashboard.chart">
+        <field name="name">Unsigned Contracts</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain">[('state', 'in', ['draft', 'sent'])]</field>
+        <field name="limit_record">15</field>
+    </record>
+
+</odoo>

@@ -28,7 +28,7 @@ Based on Synconics BI Dashboard technology.
     "website": "https://www.partytimetexas.com",
     "category": "Productivity",
     "version": "19.0.1.0.0",
-    "depends": ["web", "mail"],
+    "depends": ["web", "mail", "project", "crm", "sale", "account", "ptt_business_core"],
     # "external_dependencies": {"python": ["imgkit"]},  # Removed - only needed for PDF export
     "assets": {
         "web.assets_backend": [
@@ -75,6 +75,7 @@ Based on Synconics BI Dashboard technology.
         "views/dashboard_view.xml",
         "data/dashboard_data.xml",
         "data/ptt_dashboards.xml",
+        "data/ptt_dashboard_charts.xml",
         "views/dashboard_chart_view.xml",
         "views/res_users_view.xml",
     ],
