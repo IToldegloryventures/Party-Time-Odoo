@@ -24,7 +24,7 @@ def migrate(cr, version):
     # =========================================================================
     _logger.info("Migrating x_studio_* fields to ptt_* fields on crm_lead...")
     
-    # Map of x_studio_* column to ptt_* column
+    # Map of x_studio_* column to ptt_* column (simple same-type fields)
     field_mappings = [
         ('x_studio_event_name', 'ptt_event_name'),
         ('x_studio_event_date', 'ptt_event_date'),
@@ -32,6 +32,10 @@ def migrate(cr, version):
         ('x_studio_venue_name', 'ptt_venue_name'),
         ('x_studio_venue_address', 'ptt_venue_address'),
         ('x_studio_attire', 'ptt_attire'),
+    ]
+    
+    # Time fields need special handling - x_studio is timestamp, ptt is float (hours)
+    time_field_mappings = [
         ('x_studio_setup_time', 'ptt_setup_time'),
         ('x_studio_start_time', 'ptt_start_time'),
         ('x_studio_end_time', 'ptt_end_time'),
@@ -61,6 +65,32 @@ def migrate(cr, version):
                 _logger.info(f"Copied {cr.rowcount} values from {x_studio_col} to {ptt_col}")
             
             # Drop the x_studio column to avoid label conflict
+            cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {x_studio_col}")
+            _logger.info(f"Dropped column {x_studio_col}")
+    
+    # Handle time fields - convert timestamp to float (decimal hours)
+    for x_studio_col, ptt_col in time_field_mappings:
+        cr.execute("""
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_name = 'crm_lead' AND column_name = %s
+        """, (x_studio_col,))
+        
+        if cr.fetchone():
+            cr.execute("""
+                SELECT column_name FROM information_schema.columns 
+                WHERE table_name = 'crm_lead' AND column_name = %s
+            """, (ptt_col,))
+            
+            if cr.fetchone():
+                # Convert timestamp to decimal hours (e.g., 14:30 -> 14.5)
+                cr.execute(f"""
+                    UPDATE crm_lead 
+                    SET {ptt_col} = EXTRACT(HOUR FROM {x_studio_col}) + EXTRACT(MINUTE FROM {x_studio_col}) / 60.0
+                    WHERE {ptt_col} IS NULL AND {x_studio_col} IS NOT NULL
+                """)
+                _logger.info(f"Converted {cr.rowcount} timestamp values from {x_studio_col} to float hours in {ptt_col}")
+            
+            # Drop the x_studio column
             cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {x_studio_col}")
             _logger.info(f"Dropped column {x_studio_col}")
     
