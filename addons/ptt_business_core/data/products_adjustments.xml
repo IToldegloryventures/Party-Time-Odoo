@@ -1,236 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 
-        Adjustment Products
-        Discounts, Fees, Refunds, Deposits, etc.
-    -->
     <data noupdate="1">
-        <!-- ============================================ -->
-        <!-- CLIENT DISCOUNTS                            -->
-        <!-- ============================================ -->
+        <!--
+        =============================================================================
+        ADJUSTMENTS & FEES - FROM QUICKBOOKS EXPORT (January 2026)
+        Source: ProductsServicesList_Party_Time_Texas_1_7_2026.csv
+        =============================================================================
+        -->
+
+        <!-- ================================================================= -->
+        <!-- CLIENT DISCOUNTS (Income: Client Discounts)                       -->
+        <!-- ================================================================= -->
+
         <record id="product_template_client_discounts" model="product.template">
-            <field name="name">* Client Discounts</field>
+            <field name="name">Client Discounts</field>
             <field name="default_code">DISC</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Client Discount</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Client discount adjustment.</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- CLIENT REFUND                               -->
-        <!-- ============================================ -->
+        <!-- ================================================================= -->
+        <!-- CLIENT REFUND (Income: Client Refunds)                            -->
+        <!-- ================================================================= -->
+
         <record id="product_template_client_refund" model="product.template">
-            <field name="name">* Client Refund</field>
+            <field name="name">Client Refund</field>
             <field name="default_code">REFUND</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Client Refund</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Client refund adjustment.</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- CUSTOMER DEPOSIT / RETAINER                 -->
-        <!-- ============================================ -->
+        <!-- ================================================================= -->
+        <!-- CUSTOMER DEPOSIT / RETAINER (Income: Deferred Income)             -->
+        <!-- ================================================================= -->
+
         <record id="product_template_customer_deposit" model="product.template">
-            <field name="name">* Customer Deposit / Retainer</field>
+            <field name="name">Customer Deposit / Retainer</field>
             <field name="default_code">DEPOSIT</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Customer deposit or retainer payment.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- CLIENT CONTRACT - BS                        -->
-        <!-- ============================================ -->
-        <record id="product_template_client_contract" model="product.template">
-            <field name="name">* Client Contract - BS</field>
-            <field name="default_code">CONTRACT</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
             <field name="type">consu</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Contracts Booked for BS Tracking.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- CANCELLATION EVENT FEES                     -->
-        <!-- ============================================ -->
-        <record id="product_template_cancellation_fees" model="product.template">
-            <field name="name">* Cancellation Event Fees</field>
-            <field name="default_code">CANCEL</field>
             <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Customer Deposit / Retainer Paid</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Event cancellation fee.</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- ADDITIONAL INSURED COVERAGE EXTENSION       -->
-        <!-- ============================================ -->
+        <!-- ================================================================= -->
+        <!-- CLIENT CONTRACT - BS (Income: Contracts with Customers)           -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_client_contract_bs" model="product.template">
+            <field name="name">Client Contract - BS</field>
+            <field name="default_code">CONTRACT</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Contracts Booked for BS Tracking</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <!-- ================================================================= -->
+        <!-- CANCELLATION EVENT FEES (Income: Cancellation Revenue)            -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_cancellation_fees" model="product.template">
+            <field name="name">Cancellation Event Fees</field>
+            <field name="default_code">CANCEL</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Fees for Cancellation and Postponements</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <!-- ================================================================= -->
+        <!-- LATE FEES (Income: Client Late Fees)                              -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_initial_late_fee" model="product.template">
+            <field name="name">Initial 10% Late Fee</field>
+            <field name="default_code">LATEFEE-10</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Initial 10% late fee for outstanding balance</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <record id="product_template_monthly_late_fee" model="product.template">
+            <field name="name">Monthly 1.5% Late Fee</field>
+            <field name="default_code">LATEFEE-15</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Monthly 1.5% late fee for outstanding balance</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <!-- ================================================================= -->
+        <!-- BAD DEBT (Income: Bad Debt Expense)                               -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_bad_debt" model="product.template">
+            <field name="name">Bad Debt</field>
+            <field name="default_code">BADDEBT</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Bad Debt</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <!-- ================================================================= -->
+        <!-- TIPS GIVEN (Income: Tips Income)                                  -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_tips_given" model="product.template">
+            <field name="name">Tips Given</field>
+            <field name="default_code">TIPS</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Tips Given from Client</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <!-- ================================================================= -->
+        <!-- VARIABLE CONSIDERATION (Income: Variable Consideration)           -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_variable_consideration" model="product.template">
+            <field name="name">Variable Consideration (Performance Bonus &amp; Penalties)</field>
+            <field name="default_code">VARIABLE</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="description_sale">Performance Bonus</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+        </record>
+
+        <!-- ================================================================= -->
+        <!-- ADDITIONAL INSURED (Income: Misc Event Entertainment Services)   -->
+        <!-- ================================================================= -->
+
         <record id="product_template_additional_insured" model="product.template">
             <field name="name">Additional Insured Coverage Extension</field>
             <field name="default_code">INSURED</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">158.0</field>
-            <field name="standard_price">105.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Additional insured coverage for venue requirements.</field>
-        </record>
-        <record id="additional_insured_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_additional_insured"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="additional_insured_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_additional_insured"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- INITIAL 10% LATE FEE                        -->
-        <!-- ============================================ -->
-        <record id="product_template_late_fee_initial" model="product.template">
-            <field name="name">* Initial 10% Late Fee</field>
-            <field name="default_code">LATE-10</field>
             <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Initial 10% late payment fee.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- MONTHLY 1.5% LATE FEE                       -->
-        <!-- ============================================ -->
-        <record id="product_template_late_fee_monthly" model="product.template">
-            <field name="name">* Monthly 1.5% Late Fee</field>
-            <field name="default_code">LATE-1.5</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Monthly 1.5% late payment fee.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- TIPS GIVEN                                  -->
-        <!-- ============================================ -->
-        <record id="product_template_tips" model="product.template">
-            <field name="name">* Tips Given</field>
-            <field name="default_code">TIPS</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Tips/gratuity for performers.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- VARIABLE CONSIDERATION (Bonus/Penalties)    -->
-        <!-- ============================================ -->
-        <record id="product_template_variable_consideration" model="product.template">
-            <field name="name">* Variable Consideration (Performance Bonus &amp; Penalties)</field>
-            <field name="default_code">VARIABLE</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
-            <field name="description_sale">Performance bonus or penalty adjustment.</field>
-        </record>
-
-        <!-- ============================================ -->
-        <!-- BAD DEBT                                    -->
-        <!-- ============================================ -->
-        <record id="product_template_bad_debt" model="product.template">
-            <field name="name">* Bad Debt</field>
-            <field name="default_code">BADDEBT</field>
-            <field name="categ_id" ref="product_category_adjustments"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0.00</field>
             <field name="taxes_id" eval="[(5, 0, 0)]"/>
-            <field name="description_sale">Bad debt write-off adjustment.</field>
+            <field name="description_sale">Additional Insured Coverage Extension</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- MISC EVENT ENTERTAINMENT SERVICES (UNTAXED) -->
-        <!-- ============================================ -->
+        <!-- ================================================================= -->
+        <!-- MISC SERVICES                                                     -->
+        <!-- ================================================================= -->
+
         <record id="product_template_misc_untaxed" model="product.template">
             <field name="name">Misc Event Entertainment Services (Untaxed)</field>
-            <field name="default_code">MISC-UNTAXED</field>
-            <field name="categ_id" ref="product_category_misc_untaxed"/>
+            <field name="default_code">MISC-UNTAX</field>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="taxes_id" eval="[(5, 0, 0)]"/>
-            <field name="description_sale">Miscellaneous untaxed event entertainment services.</field>
-        </record>
-        <record id="misc_untaxed_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_misc_untaxed"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="misc_untaxed_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_misc_untaxed"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- MISC EVENT SERVICES (TAXED)                 -->
-        <!-- ============================================ -->
         <record id="product_template_misc_taxed" model="product.template">
             <field name="name">Misc Event Services (Taxed)</field>
-            <field name="default_code">MISC-TAXED</field>
-            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="default_code">MISC-TAX</field>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_adjustments"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Miscellaneous taxed event services.</field>
         </record>
-        <record id="misc_taxed_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_misc_taxed"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="misc_taxed_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_misc_taxed"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
-        </record>
+
     </data>
 </odoo>

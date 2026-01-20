@@ -1,259 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 
-        Event Services Products
-        Photography, Videography, Event Planning, Catering, etc.
-        
-        ALL services have: Event Type (Social, Corporate, Wedding) × Service Tier (Essential, Classic, Premier)
-        Services with additional variants also have their type-specific attributes
-        
-        NOTE: service_tracking='task_in_project' creates a task in the project
-        when the sale order is confirmed. The project is created by the
-        "Event Kickoff" product which uses service_tracking='project_only'.
-    -->
     <data noupdate="1">
-        
-        <!-- ================================================================ -->
-        <!-- PHOTOGRAPHY SERVICES - Photo Type × Event Type × Service Tier   -->
-        <!-- ================================================================ -->
-        <record id="product_template_photography" model="product.template">
+        <!--
+        =============================================================================
+        SERVICES PRODUCTS - FROM QUICKBOOKS EXPORT (January 2026)
+        Source: ProductsServicesList_Party_Time_Texas_1_7_2026.csv
+        =============================================================================
+        -->
+
+        <!-- ================================================================= -->
+        <!-- PHOTOGRAPHY SERVICES (Income: Photography Services) - TAXABLE    -->
+        <!-- Variants: Head Shots, Event Photography                           -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_photography_services" model="product.template">
             <field name="name">Photography Services</field>
             <field name="default_code">PHOTO-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="description_sale">Photography services. Variants: Head Shots, Event Photography</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional photography services. Head Shots or Event Photography.</field>
-        </record>
-        <record id="photography_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_photography"/>
-            <field name="attribute_id" ref="pa_photo_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_photo_headshots'), ref('pav_photo_event')])]"/>
-        </record>
-        <record id="photography_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_photography"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="photography_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_photography"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- VIDEOGRAPHY SERVICES - Video Type × Event Type × Service Tier   -->
-        <!-- ================================================================ -->
-        <record id="product_template_videography" model="product.template">
+        <!-- ================================================================= -->
+        <!-- VIDEOGRAPHY SERVICES (Income: Videography Services) - TAXABLE    -->
+        <!-- Variants: Event Videography, Highlight Reel, Content Collection,  -->
+        <!--           Promotional Reel                                        -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_videography_services" model="product.template">
             <field name="name">Videography Services</field>
             <field name="default_code">VIDEO-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="description_sale">Videography services. Variants: Event Videography, Highlight Reel, Content Collection, Promotional Reel</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional videography services. Event Videography, Highlight Reel, Content Collection, Promotional Reel.</field>
-        </record>
-        <record id="videography_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_videography"/>
-            <field name="attribute_id" ref="pa_video_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_video_event'), ref('pav_video_highlight'), ref('pav_video_content'), ref('pav_video_promo')])]"/>
-        </record>
-        <record id="videography_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_videography"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="videography_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_videography"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- EVENT PLANNING SERVICES - Event Type × Service Tier             -->
-        <!-- ================================================================ -->
-        <record id="product_template_event_planning" model="product.template">
+        <!-- ================================================================= -->
+        <!-- EVENT PLANNING SERVICES (Income: Event Planning Services)         -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_event_planning_services" model="product.template">
             <field name="name">Event Planning Services</field>
             <field name="default_code">PLAN-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="description_sale">Event planning services. Variants: Onsite Coordinator, etc.</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional event planning and coordination services. Onsite Coordinator and additional variants available.</field>
-        </record>
-        <record id="event_planning_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_event_planning"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="event_planning_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_event_planning"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- CATERING SERVICES - Event Type × Service Tier                   -->
-        <!-- ================================================================ -->
-        <record id="product_template_catering" model="product.template">
+        <!-- ================================================================= -->
+        <!-- CATERING & BARTENDER SERVICES (Income: Catering & Bartender)      -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_catering_services" model="product.template">
             <field name="name">Catering Services</field>
             <field name="default_code">CATER-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional catering services for your event.</field>
-        </record>
-        <record id="catering_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_catering"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="catering_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_catering"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- BARTENDER SERVICES - Event Type × Service Tier                  -->
-        <!-- ================================================================ -->
-        <record id="product_template_bartender" model="product.template">
+        <record id="product_template_bartender_services" model="product.template">
             <field name="name">Bartender Services</field>
             <field name="default_code">BAR-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional bartender services.</field>
-        </record>
-        <record id="bartender_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_bartender"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="bartender_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_bartender"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- WAIT STAFF - Event Type × Service Tier                          -->
-        <!-- ================================================================ -->
         <record id="product_template_wait_staff" model="product.template">
             <field name="name">Wait Staff</field>
             <field name="default_code">WAIT-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional wait staff services.</field>
-        </record>
-        <record id="wait_staff_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_wait_staff"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="wait_staff_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_wait_staff"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- OFFICIANT SERVICES - Event Type × Service Tier                  -->
-        <!-- ================================================================ -->
-        <record id="product_template_officiant" model="product.template">
+        <!-- ================================================================= -->
+        <!-- OFFICIANT SERVICES (Income: Misc Event Entertainment Services)    -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_officiant_services" model="product.template">
             <field name="name">Officiant Services</field>
             <field name="default_code">OFCNT-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional officiant services for weddings and ceremonies.</field>
-        </record>
-        <record id="officiant_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_officiant"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="officiant_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_officiant"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- DELIVER, SETUP, STRIKE - Event Type × Service Tier              -->
-        <!-- ================================================================ -->
-        <record id="product_template_delivery_setup" model="product.template">
+        <!-- ================================================================= -->
+        <!-- DELIVER, SETUP, STRIKE (Income: Misc Decor & Decorations) TAXABLE -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_deliver_setup_strike" model="product.template">
             <field name="name">Deliver, Setup, Strike</field>
             <field name="default_code">SETUP-SVC</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Equipment delivery, setup, and strike services.</field>
-        </record>
-        <record id="delivery_setup_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_delivery_setup"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="delivery_setup_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_delivery_setup"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- TRAVEL AND EXPENSES - No variants (passthrough cost)            -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- TRAVEL AND EXPENSES (Income: Misc Event Entertainment Services)  -->
+        <!-- ================================================================= -->
+
         <record id="product_template_travel_expenses" model="product.template">
             <field name="name">Travel and Expenses</field>
             <field name="default_code">TRAVEL</field>
-            <field name="categ_id" ref="product_category_event_services"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_event_services"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Travel and expense reimbursement. Passthrough cost - no variants.</field>
-        </record>
-        <record id="travel_event_type_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_travel_expenses"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="travel_tier_attribute_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_travel_expenses"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
     </data>

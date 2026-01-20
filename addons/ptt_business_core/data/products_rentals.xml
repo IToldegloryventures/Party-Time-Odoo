@@ -1,514 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- 
-        Rental Products, A/V Equipment & Personnel, and Artist Services
-        
-        ALL services have: Event Type (Social, Corporate, Wedding) × Service Tier (Essential, Classic, Premier)
-        Products with additional variants also have their type-specific attributes
-    -->
     <data noupdate="1">
-        
-        <!-- ================================================================ -->
-        <!-- A/V RENTALS - PROJECTOR AND SCREEN - Event Type × Service Tier  -->
-        <!-- ================================================================ -->
+        <!--
+        =============================================================================
+        RENTAL PRODUCTS - FROM QUICKBOOKS EXPORT (January 2026)
+        Source: ProductsServicesList_Party_Time_Texas_1_7_2026.csv
+        =============================================================================
+        -->
+
+        <!-- ================================================================= -->
+        <!-- A/V RENTALS (Income: Misc Equipment & Lighting Rentals) - TAXABLE -->
+        <!-- ================================================================= -->
+
         <record id="product_template_av_projector_screen" model="product.template">
             <field name="name">A/V Rentals - Projector and Screen</field>
             <field name="default_code">AV-PROJ</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Projector and screen rental for events.</field>
-        </record>
-        <record id="av_projector_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_projector_screen"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_projector_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_projector_screen"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V RENTALS - MONITOR - Event Type × Service Tier               -->
-        <!-- ================================================================ -->
         <record id="product_template_av_monitor" model="product.template">
             <field name="name">A/V Rentals - Monitor</field>
             <field name="default_code">AV-MON</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Monitor rental for events.</field>
-        </record>
-        <record id="av_monitor_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_monitor"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_monitor_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_monitor"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V RENTALS - LED WALL PANEL - Event Type × Service Tier        -->
-        <!-- ================================================================ -->
         <record id="product_template_av_led_wall" model="product.template">
             <field name="name">A/V Rentals - LED Wall Panel</field>
             <field name="default_code">AV-LED</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">LED wall panel rental for events.</field>
-        </record>
-        <record id="av_led_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_led_wall"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_led_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_led_wall"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V RENTALS - AUDIO - Event Type × Service Tier                 -->
-        <!-- ================================================================ -->
         <record id="product_template_av_audio" model="product.template">
             <field name="name">A/V Rentals - Audio</field>
             <field name="default_code">AV-AUDIO</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="description_sale">A/V Audio rentals. Variants: Essential, Classic, Premier</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Audio equipment rental. Essentials, Classic, Premier tiers.</field>
-        </record>
-        <record id="av_audio_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_audio"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_audio_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_audio"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V RENTALS - MISC - Event Type × Service Tier                  -->
-        <!-- ================================================================ -->
         <record id="product_template_av_misc" model="product.template">
             <field name="name">A/V Rentals - Misc</field>
             <field name="default_code">AV-MISC</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Miscellaneous A/V equipment rental.</field>
-        </record>
-        <record id="av_misc_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_misc"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_misc_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_misc"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V TECHNICIAN - Tech Role × Event Type × Service Tier          -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- A/V PERSONNEL (Income: Misc Equipment & Lighting Rentals)         -->
+        <!-- ================================================================= -->
+
         <record id="product_template_av_technician" model="product.template">
             <field name="name">A/V Technician</field>
             <field name="default_code">AV-TECH</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="description_sale">A/V Technician. Variants: Setup Tech, Camera Operator, Audio Engineer</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">A/V Technician services. Setup Tech, Camera Operator, Audio Engineer.</field>
-        </record>
-        <record id="av_tech_role_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_technician"/>
-            <field name="attribute_id" ref="pa_av_tech_role"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tech_setup'), ref('pav_tech_camera'), ref('pav_tech_audio')])]"/>
-        </record>
-        <record id="av_tech_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_technician"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_tech_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_technician"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V PRODUCTION MANAGER - Event Type × Service Tier              -->
-        <!-- ================================================================ -->
         <record id="product_template_av_production_manager" model="product.template">
             <field name="name">A/V Production Manager</field>
             <field name="default_code">AV-PM</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">A/V Production Manager services.</field>
-        </record>
-        <record id="av_pm_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_production_manager"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_pm_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_production_manager"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- A/V TECHNICAL DIRECTOR - Event Type × Service Tier              -->
-        <!-- ================================================================ -->
         <record id="product_template_av_technical_director" model="product.template">
             <field name="name">A/V Technical Director</field>
             <field name="default_code">AV-TD</field>
-            <field name="categ_id" ref="product_category_av_rentals"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">A/V Technical Director services.</field>
-        </record>
-        <record id="av_td_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_technical_director"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="av_td_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_av_technical_director"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- PHOTO BOOTH RENTALS - Booth Type × Event Type × Service Tier    -->
-        <!-- ================================================================ -->
-        <record id="product_template_photo_booth" model="product.template">
+        <!-- ================================================================= -->
+        <!-- PHOTO BOOTHS (Income: Green Screen & Photo Booths Rentals) TAXABLE-->
+        <!-- Variants: Printouts w/ attendant, Green Screen/AI, 360 Photo Booth-->
+        <!-- ================================================================= -->
+
+        <record id="product_template_photo_booths" model="product.template">
             <field name="name">Photo Booths Rentals</field>
             <field name="default_code">BOOTH-SVC</field>
-            <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="description_sale">Photo Booth rentals. Variants: Printouts w/ attendant, Green Screen/AI Booths, 360 Photo Booth</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Photo booth rental services. Standard, Green Screen/AI, 360 options.</field>
-        </record>
-        <record id="photo_booth_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_photo_booth"/>
-            <field name="attribute_id" ref="pa_booth_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_booth_standard'), ref('pav_booth_greenscreen'), ref('pav_booth_greenscreen_printouts'), ref('pav_booth_360')])]"/>
-        </record>
-        <record id="photo_booth_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_photo_booth"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="photo_booth_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_photo_booth"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- INFLATABLES RENTALS - Event Type × Service Tier                 -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- INFLATABLES & GAMES (Income: Inflatables & Games Rentals) TAXABLE -->
+        <!-- ================================================================= -->
+
         <record id="product_template_inflatables" model="product.template">
             <field name="name">Inflatables Rentals</field>
             <field name="default_code">INFLATE</field>
-            <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Inflatable rentals for events.</field>
-        </record>
-        <record id="inflatables_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_inflatables"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="inflatables_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_inflatables"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- GAMES RENTALS - Event Type × Service Tier                       -->
-        <!-- ================================================================ -->
         <record id="product_template_games" model="product.template">
             <field name="name">Games Rentals</field>
             <field name="default_code">GAMES</field>
-            <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Game rentals for events.</field>
-        </record>
-        <record id="games_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_games"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="games_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_games"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- DECOR & DECORATIONS - Event Type × Service Tier                 -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- DECOR & DECORATIONS (Income: Misc Decor & Decorations) TAXABLE    -->
+        <!-- ================================================================= -->
+
         <record id="product_template_decor" model="product.template">
             <field name="name">Decor &amp; Decorations</field>
             <field name="default_code">DECOR</field>
-            <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Event decor and decoration services.</field>
-        </record>
-        <record id="decor_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_decor"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="decor_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_decor"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- BALLOON DECOR - Event Type × Service Tier                       -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- BALLOON DECOR (Income: Balloon Decor) TAXABLE                     -->
+        <!-- ================================================================= -->
+
         <record id="product_template_balloon_decor" model="product.template">
             <field name="name">Balloon Decor</field>
             <field name="default_code">BALLOON-DECOR</field>
-            <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Balloon decor and arrangements for events.</field>
-        </record>
-        <record id="balloon_decor_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_balloon_decor"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="balloon_decor_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_balloon_decor"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- EQUIPMENT RENTAL - Equipment Type × Event Type × Service Tier   -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- EQUIPMENT RENTAL (Income: Misc Equipment Rental) TAXABLE          -->
+        <!-- Variants: Generator Rental, Tents, Furniture Rentals              -->
+        <!-- ================================================================= -->
+
         <record id="product_template_equipment_rental" model="product.template">
             <field name="name">Equipment Rental</field>
             <field name="default_code">EQUIP</field>
-            <field name="categ_id" ref="product_category_rental_equipment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="description_sale">Equipment rentals. Variants: Generator Rental, Tents, Furniture Rentals</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">General equipment rental. Generator, Tents, Furniture options.</field>
-        </record>
-        <record id="equipment_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_equipment_rental"/>
-            <field name="attribute_id" ref="pa_equipment_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_equip_generator'), ref('pav_equip_tents'), ref('pav_equip_furniture')])]"/>
-        </record>
-        <record id="equipment_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_equipment_rental"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="equipment_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_equipment_rental"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- FURNITURE RENTALS - Event Type × Service Tier                   -->
-        <!-- ================================================================ -->
+        <!-- ================================================================= -->
+        <!-- FURNITURE RENTALS (Income: Misc Decor & Decorations) TAXABLE      -->
+        <!-- ================================================================= -->
+
         <record id="product_template_furniture" model="product.template">
             <field name="name">Furniture Rentals</field>
             <field name="default_code">FURN</field>
+            <field name="type">service</field>
             <field name="categ_id" ref="product_category_rental_equipment"/>
-            <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="list_price">0.00</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="description_sale">Furniture rentals for events.</field>
-        </record>
-        <record id="furniture_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_furniture"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="furniture_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_furniture"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- CARICATURE ARTIST - Caricature Type × Event Type × Service Tier -->
-        <!-- ================================================================ -->
-        <record id="product_template_caricature" model="product.template">
-            <field name="name">Caricature Artist</field>
-            <field name="default_code">CARIC-SVC</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
+        <!-- ================================================================= -->
+        <!-- ARTISTS (Income: Balloon & Face Painters / Caricature Artists)    -->
+        <!-- ================================================================= -->
+
+        <record id="product_template_traditional_caricature" model="product.template">
+            <field name="name">Traditional Caricature Artist</field>
+            <field name="default_code">CARIC-TRAD</field>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="sale_ok" eval="True"/>
-            <field name="purchase_ok" eval="True"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
             <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional caricature artist. Traditional or Digital styles.</field>
-        </record>
-        <record id="caricature_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_caricature"/>
-            <field name="attribute_id" ref="pa_caricature_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_caricature_traditional'), ref('pav_caricature_digital')])]"/>
-        </record>
-        <record id="caricature_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_caricature"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="caricature_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_caricature"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- BALLOON ARTIST - Event Type × Service Tier                      -->
-        <!-- ================================================================ -->
+        <record id="product_template_digital_caricature" model="product.template">
+            <field name="name">Digital Caricature Artist</field>
+            <field name="default_code">CARIC-DIG</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+
         <record id="product_template_balloon_artist" model="product.template">
             <field name="name">Balloon Artist</field>
             <field name="default_code">BALLOON-ART</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional balloon twister/artist for events.</field>
-        </record>
-        <record id="balloon_artist_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_balloon_artist"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="balloon_artist_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_balloon_artist"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- FACE PAINTERS - Event Type × Service Tier                       -->
-        <!-- ================================================================ -->
         <record id="product_template_face_painters" model="product.template">
             <field name="name">Face Painters</field>
             <field name="default_code">FACE-PAINT</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Professional face painting services for events.</field>
-        </record>
-        <record id="face_painters_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_face_painters"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="face_painters_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_face_painters"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
-        <!-- ================================================================ -->
-        <!-- AIRBRUSH TATTOO - Event Type × Service Tier                     -->
-        <!-- ================================================================ -->
         <record id="product_template_airbrush_tattoo" model="product.template">
             <field name="name">Airbrush Tattoo</field>
             <field name="default_code">AIRBRUSH</field>
-            <field name="categ_id" ref="product_category_event_entertainment"/>
             <field name="type">service</field>
-            <field name="list_price">0.0</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="categ_id" ref="product_category_rental_equipment"/>
+            <field name="list_price">0.00</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="service_tracking">task_in_project</field>
+            <field name="project_template_id" ref="ptt_project_template_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
-            <field name="service_tracking">task_in_project</field>
-            <field name="description_sale">Airbrush temporary tattoo services for events.</field>
-        </record>
-        <record id="airbrush_event_type_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_airbrush_tattoo"/>
-            <field name="attribute_id" ref="pa_event_type"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_event_social'), ref('pav_event_corporate'), ref('pav_event_wedding')])]"/>
-        </record>
-        <record id="airbrush_tier_line" model="product.template.attribute.line">
-            <field name="product_tmpl_id" ref="product_template_airbrush_tattoo"/>
-            <field name="attribute_id" ref="pa_service_tier"/>
-            <field name="value_ids" eval="[(6, 0, [ref('pav_tier_essentials'), ref('pav_tier_classic'), ref('pav_tier_premier')])]"/>
         </record>
 
     </data>
