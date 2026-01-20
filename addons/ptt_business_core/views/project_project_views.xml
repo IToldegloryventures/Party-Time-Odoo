@@ -10,12 +10,12 @@
             <field name="arch" type="xml">
                 
                 <!-- Rename Description tab to Notes and keep it -->
-                <xpath expr="//page[@name='description_page']" position="attributes">
+                <xpath expr="//page[@name='description']" position="attributes">
                     <attribute name="string">Notes</attribute>
                 </xpath>
                 
                 <!-- Add our custom note fields to the Notes tab (formerly Description) -->
-                <xpath expr="//page[@name='description_page']//field[@name='description']" position="after">
+                <xpath expr="//page[@name='description']//field[@name='description']" position="after">
                     <group string="Event Notes">
                         <field name="ptt_event_notes" nolabel="1" placeholder="General event notes..."/>
                     </group>
@@ -69,7 +69,7 @@
                 </xpath>
                 
                 <!-- Add Event Directory placeholder after where Notes will be -->
-                <xpath expr="//page[@name='description_page']" position="after">
+                <xpath expr="//page[@name='description']" position="after">
                     <!-- 3. Event Directory - placeholder, will be filled by ptt_project_management -->
                     <page string="Event Directory" name="stakeholders">
                         <div class="alert alert-info">
