@@ -20,7 +20,7 @@ class MailMail(models.Model):
     """Override mail.mail to optionally block all email sending."""
     _inherit = "mail.mail"
 
-    def send(self, auto_commit=False, raise_exception=False):
+    def send(self, auto_commit=False, raise_exception=False, post_send_callback=None):
         """Block email sending if kill switch is enabled."""
         if BLOCK_ALL_EMAILS:
             _logger.warning(
@@ -32,4 +32,4 @@ class MailMail(models.Model):
             self.write({'state': 'sent'})
             return True
         
-        return super().send(auto_commit=auto_commit, raise_exception=raise_exception)
+        return super().send(auto_commit=auto_commit, raise_exception=raise_exception, post_send_callback=post_send_callback)

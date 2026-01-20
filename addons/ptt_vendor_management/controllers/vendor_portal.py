@@ -298,7 +298,7 @@ class VendorPortal(CustomerPortal):
         return request.render("ptt_vendor_management.portal_work_order_detail", values)
     
     @http.route(['/my/work-orders/<int:assignment_id>/accept'], 
-                type='json', auth="public", methods=['POST'])
+                type='jsonrpc', auth="public", methods=['POST'])
     def portal_work_order_accept(self, assignment_id, access_token, signature=None, **kw):
         """Vendor accepts work order via JSON endpoint."""
         assignment = request.env['ptt.project.vendor.assignment'].sudo().browse(assignment_id)
@@ -313,7 +313,7 @@ class VendorPortal(CustomerPortal):
             return {'success': False, 'error': str(e)}
     
     @http.route(['/my/work-orders/<int:assignment_id>/decline'], 
-                type='json', auth="public", methods=['POST'])
+                type='jsonrpc', auth="public", methods=['POST'])
     def portal_work_order_decline(self, assignment_id, access_token, reason=None, **kw):
         """Vendor declines work order via JSON endpoint."""
         assignment = request.env['ptt.project.vendor.assignment'].sudo().browse(assignment_id)
