@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <!-- 
+        PTT Dashboard Configuration
+        4 Pre-configured dashboards for Party Time Texas
+        Widgets are added through the UI by admins
+    -->
+
+    <!-- Tab 1: My Tasks Dashboard -->
+    <record id="dashboard_my_tasks" model="dashboard.dashboard">
+        <field name="name">My Tasks</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Tab 2: Team Dashboard -->
+    <record id="dashboard_team" model="dashboard.dashboard">
+        <field name="name">Team</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Tab 3: Events Dashboard -->
+    <record id="dashboard_events" model="dashboard.dashboard">
+        <field name="name">Events</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Tab 4: Sales Metrics Dashboard -->
+    <record id="dashboard_sales_metrics" model="dashboard.dashboard">
+        <field name="name">Sales Metrics</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <!-- Create menu items for each dashboard -->
+    <function name="create_update_menu" model="dashboard.dashboard">
+        <value eval="[ref('dashboard_my_tasks')]" />
+    </function>
+    <function name="create_update_menu" model="dashboard.dashboard">
+        <value eval="[ref('dashboard_team')]" />
+    </function>
+    <function name="create_update_menu" model="dashboard.dashboard">
+        <value eval="[ref('dashboard_events')]" />
+    </function>
+    <function name="create_update_menu" model="dashboard.dashboard">
+        <value eval="[ref('dashboard_sales_metrics')]" />
+    </function>
+
+</odoo>

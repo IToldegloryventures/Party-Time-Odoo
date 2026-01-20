@@ -74,6 +74,7 @@ Based on Synconics BI Dashboard technology.
         "wizard/mail_compose_message_views.xml",
         "views/dashboard_view.xml",
         "data/dashboard_data.xml",
+        "data/ptt_dashboards.xml",
         "views/dashboard_chart_view.xml",
         "views/res_users_view.xml",
     ],
