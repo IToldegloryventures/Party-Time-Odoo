@@ -9,25 +9,21 @@
     <!-- Tab 1: My Tasks Dashboard -->
     <record id="dashboard_my_tasks" model="dashboard.dashboard">
         <field name="name">My Tasks</field>
-        <field name="sequence">10</field>
     </record>
 
     <!-- Tab 2: Team Dashboard -->
     <record id="dashboard_team" model="dashboard.dashboard">
         <field name="name">Team</field>
-        <field name="sequence">20</field>
     </record>
 
     <!-- Tab 3: Events Dashboard -->
     <record id="dashboard_events" model="dashboard.dashboard">
         <field name="name">Events</field>
-        <field name="sequence">30</field>
     </record>
 
     <!-- Tab 4: Sales Metrics Dashboard -->
     <record id="dashboard_sales_metrics" model="dashboard.dashboard">
         <field name="name">Sales Metrics</field>
-        <field name="sequence">40</field>
     </record>
 
     <!-- Create menu items for each dashboard -->
