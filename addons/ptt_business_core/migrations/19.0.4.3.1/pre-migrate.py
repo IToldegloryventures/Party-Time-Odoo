@@ -94,16 +94,24 @@ def migrate(cr, version):
             cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {x_studio_col}")
             _logger.info(f"Dropped column {x_studio_col}")
     
+    # =========================================================================
+    # STEP 0.5: Drop orphaned x_studio_* columns that still cause label conflicts
+    # These are leftover Studio fields that weren't mapped above
+    # =========================================================================
+    orphaned_columns = [
+        'x_studio_end_time_1',  # Duplicate of ptt_end_time
+        'x_studio_boolean_field_297_1jckjk5dc',  # Duplicate "New CheckBox"
+        'x_studio_boolean_field_1vp_1jckie6sq',  # Duplicate "New CheckBox"
+    ]
+    for col in orphaned_columns:
+        cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {col}")
+        _logger.info(f"Dropped orphaned column {col}")
+    
     # Also clean up ir.model.fields entries for x_studio_* fields on crm.lead
     cr.execute("""
         DELETE FROM ir_model_fields 
         WHERE model = 'crm.lead' 
         AND name LIKE 'x_studio_%'
-        AND name IN (
-            'x_studio_event_name', 'x_studio_event_date', 'x_studio_event_type',
-            'x_studio_venue_name', 'x_studio_venue_address', 'x_studio_attire',
-            'x_studio_setup_time', 'x_studio_start_time', 'x_studio_end_time'
-        )
     """)
     _logger.info(f"Cleaned up {cr.rowcount} ir.model.fields entries for x_studio_* fields")
     

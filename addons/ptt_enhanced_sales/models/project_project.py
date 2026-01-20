@@ -10,8 +10,8 @@ class ProjectProject(models.Model):
 
     ptt_event_type_id = fields.Many2one(
         'sale.order.type',
-        string="Event Type",
-        help="Event type classification (Corporate, Wedding, Social, etc.)"
+        string="Event Template",
+        help="Event type template from sale.order.type (Corporate, Wedding, Social, etc.)"
     )
 
     @api.onchange('ptt_event_type_id')

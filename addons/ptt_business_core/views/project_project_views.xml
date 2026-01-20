@@ -72,7 +72,7 @@
                 <xpath expr="//page[@name='description']" position="after">
                     <!-- 3. Event Directory - placeholder, will be filled by ptt_project_management -->
                     <page string="Event Directory" name="stakeholders">
-                        <div class="alert alert-info">
+                        <div class="alert alert-info" role="status">
                             Contact directory is available in PTT Project Management module.
                         </div>
                     </page>
