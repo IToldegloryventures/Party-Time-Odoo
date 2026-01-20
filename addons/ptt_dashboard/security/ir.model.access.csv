@@ -1,28 +1,19 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-# Dashboard - Users can only READ, Admins can EDIT
 access_dashboard_dashboard_user,dashboard.dashboard.user,model_dashboard_dashboard,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_dashboard_dashboard_admin,dashboard.dashboard.admin,model_dashboard_dashboard,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# Charts - Users can only READ, Admins can EDIT
 access_dashboard_chart_user,dashboard.chart.user,model_dashboard_chart,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_dashboard_chart_admin,dashboard.chart.admin,model_dashboard_chart,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# Item View Action - Users can only READ, Admins can EDIT
 access_item_view_action_user,item.view.action.user,model_item_view_action,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_item_view_action_admin,item.view.action.admin,model_item_view_action,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# Chart Multiplier - Users can only READ, Admins can EDIT
 access_chart_multiplier_user,chart.multiplier.user,model_chart_multiplier,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_chart_multiplier_admin,chart.multiplier.admin,model_chart_multiplier,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# List Fields - Users can only READ, Admins can EDIT
 access_list_fields_user,list.fields.user,model_list_fields,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_list_fields_admin,list.fields.admin,model_list_fields,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# To-Do Actions - EVERYONE can create/edit their own to-dos
 access_todo_actions_user,todo.actions.user,model_todo_action,ptt_dashboard.group_dashboard_user,1,1,1,1
 access_todo_action_line_user,todo.action.line.user,model_todo_action_line,ptt_dashboard.group_dashboard_user,1,1,1,1
-# Dashboard Mail - Users can only READ, Admins can EDIT
 access_dashboard_mail_user,dashboard.mail.user,model_dashboard_mail,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_dashboard_mail_admin,dashboard.mail.admin,model_dashboard_mail,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# Dashboard Access - Users can only READ, Admins can EDIT
 access_dashboard_access_user,dashboard.access.user,model_dashboard_access,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_dashboard_access_admin,dashboard.access.admin,model_dashboard_access,ptt_dashboard.group_dashboard_manager,1,1,1,1
-# IR Model access for dashboard functionality
 access_ir_model_fields_dashboard_user,ir_model_fields dashboard_user,base.model_ir_model_fields,ptt_dashboard.group_dashboard_user,1,0,0,0
 access_ir_model_dashboard_user,ir_model_dashboard_user,base.model_ir_model,ptt_dashboard.group_dashboard_user,1,0,0,0
