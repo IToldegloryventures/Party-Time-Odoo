@@ -20,7 +20,7 @@
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="list_price">0.00</field>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="description_sale">Photography services. Variants: Head Shots, Event Photography</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
@@ -39,7 +39,7 @@
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="list_price">0.00</field>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="description_sale">Videography services. Variants: Event Videography, Highlight Reel, Content Collection, Promotional Reel</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
@@ -57,7 +57,7 @@
             <field name="list_price">0.00</field>
             <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="description_sale">Event planning services. Variants: Onsite Coordinator, etc.</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
@@ -74,7 +74,7 @@
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="list_price">0.00</field>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
         </record>
@@ -87,7 +87,7 @@
             <field name="list_price">0.00</field>
             <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
         </record>
@@ -100,7 +100,7 @@
             <field name="list_price">0.00</field>
             <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
         </record>
@@ -117,7 +117,7 @@
             <field name="list_price">0.00</field>
             <field name="taxes_id" eval="[(5, 0, 0)]"/>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
         </record>
@@ -133,7 +133,7 @@
             <field name="categ_id" ref="product_category_event_services"/>
             <field name="list_price">0.00</field>
             <field name="service_tracking">task_in_project</field>
-            <field name="project_template_id" ref="ptt_project_template_event"/>
+            <field name="project_template_id" ref="project_template_standard_event"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="True"/>
         </record>
