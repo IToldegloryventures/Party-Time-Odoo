@@ -1,12 +1,10 @@
 """
-Migration 19.0.4.3.0 - Clean up fake AI-generated products
+Migration 19.0.4.3.0 - Clean up fake AI-generated products AND migrate x_studio_* fields
 
-This migration removes products that were incorrectly added and do not exist
-in the official QuickBooks product list (ProductsServicesList_Party_Time_Texas_1_7_2026.csv).
-
-Products being DELETED:
-- All 20 DJ Add-on products (DJ-ADDON-*)
-- Duplicate/incorrect product variants
+This migration:
+1. Removes products that were incorrectly added (DJ-ADDON-*)
+2. Migrates data from x_studio_* fields to ptt_* fields on crm.lead
+3. Drops duplicate x_studio_* columns to avoid label conflicts
 """
 import logging
 
@@ -14,10 +12,71 @@ _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    """Remove fake products that don't exist in QuickBooks."""
+    """Remove fake products and migrate x_studio_* fields to ptt_*."""
     if not version:
         return
 
+    _logger.info("PTT Migration 19.0.4.3.0: Starting migration...")
+
+    # =========================================================================
+    # STEP 0: Migrate x_studio_* data to ptt_* columns on crm_lead
+    # This prevents "Two fields have the same label" errors
+    # =========================================================================
+    _logger.info("Migrating x_studio_* fields to ptt_* fields on crm_lead...")
+    
+    # Map of x_studio_* column to ptt_* column
+    field_mappings = [
+        ('x_studio_event_name', 'ptt_event_name'),
+        ('x_studio_event_date', 'ptt_event_date'),
+        ('x_studio_event_type', 'ptt_event_type'),
+        ('x_studio_venue_name', 'ptt_venue_name'),
+        ('x_studio_venue_address', 'ptt_venue_address'),
+        ('x_studio_attire', 'ptt_attire'),
+        ('x_studio_setup_time', 'ptt_setup_time'),
+        ('x_studio_start_time', 'ptt_start_time'),
+        ('x_studio_end_time', 'ptt_end_time'),
+    ]
+    
+    for x_studio_col, ptt_col in field_mappings:
+        # Check if x_studio column exists
+        cr.execute("""
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_name = 'crm_lead' AND column_name = %s
+        """, (x_studio_col,))
+        
+        if cr.fetchone():
+            # Check if ptt column exists
+            cr.execute("""
+                SELECT column_name FROM information_schema.columns 
+                WHERE table_name = 'crm_lead' AND column_name = %s
+            """, (ptt_col,))
+            
+            if cr.fetchone():
+                # Both exist - copy data from x_studio to ptt where ptt is NULL
+                cr.execute(f"""
+                    UPDATE crm_lead 
+                    SET {ptt_col} = {x_studio_col}
+                    WHERE {ptt_col} IS NULL AND {x_studio_col} IS NOT NULL
+                """)
+                _logger.info(f"Copied {cr.rowcount} values from {x_studio_col} to {ptt_col}")
+            
+            # Drop the x_studio column to avoid label conflict
+            cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {x_studio_col}")
+            _logger.info(f"Dropped column {x_studio_col}")
+    
+    # Also clean up ir.model.fields entries for x_studio_* fields on crm.lead
+    cr.execute("""
+        DELETE FROM ir_model_fields 
+        WHERE model = 'crm.lead' 
+        AND name LIKE 'x_studio_%'
+        AND name IN (
+            'x_studio_event_name', 'x_studio_event_date', 'x_studio_event_type',
+            'x_studio_venue_name', 'x_studio_venue_address', 'x_studio_attire',
+            'x_studio_setup_time', 'x_studio_start_time', 'x_studio_end_time'
+        )
+    """)
+    _logger.info(f"Cleaned up {cr.rowcount} ir.model.fields entries for x_studio_* fields")
+    
     _logger.info("PTT Migration 19.0.4.3.0: Cleaning up fake AI-generated products...")
 
     # =========================================================================
