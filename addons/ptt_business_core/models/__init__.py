@@ -7,7 +7,6 @@ from . import mail_mail  # Email kill switch - MUST BE FIRST
 from . import res_partner  # Partner extensions
 from . import ptt_crm_vendor_estimate  # CRM vendor estimates (before crm_lead)
 from . import ptt_crm_service_line  # CRM service lines (before crm_lead)
-from . import ptt_crm_vendor_assignment  # CRM vendor assignments (before crm_lead)
 from . import ptt_project_vendor_assignment  # Project vendor assignments (before project)
 from . import crm_stage  # CRM stage extensions
 from . import crm_lead  # CRM lead extensions

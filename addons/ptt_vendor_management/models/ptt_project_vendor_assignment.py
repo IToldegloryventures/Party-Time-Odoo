@@ -129,8 +129,8 @@ class ProjectVendorAssignment(models.Model):
         if not self.vendor_id.email:
             raise UserError(_("Vendor %s has no email address.") % self.vendor_id.name)
         
-        # Update status to pending (base model uses 'status' field)
-        self.status = 'pending'
+        # Update status to sent (work order sent, awaiting vendor response)
+        self.status = 'sent'
         
         # Generate access token
         self._get_access_token()
@@ -203,7 +203,7 @@ class ProjectVendorAssignment(models.Model):
         self.ensure_one()
         
         self.write({
-            'status': 'cancelled',
+            'status': 'declined',
             'vendor_decline_reason': reason or _("No reason provided"),
         })
         

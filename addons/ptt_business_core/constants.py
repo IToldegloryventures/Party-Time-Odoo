@@ -126,13 +126,12 @@ LOCATION_TYPES = [
 # VENDOR MANAGEMENT
 # =============================================================================
 VENDOR_ASSIGNMENT_STATUS = [
-    ("pending", "Pending"),
-    ("quoted", "Quoted"),
-    ("contracted", "Contracted"),
-    ("confirmed", "Confirmed"),
-    ("in_progress", "In Progress"),
-    ("completed", "Completed"),
-    ("cancelled", "Cancelled"),
+    ("pending", "Pending"),         # Assignment created, WO not sent
+    ("sent", "Work Order Sent"),    # WO emailed to vendor, awaiting response
+    ("confirmed", "Accepted"),      # Vendor accepted via portal
+    ("declined", "Declined"),       # Vendor declined via portal
+    ("in_progress", "In Progress"), # Work has started
+    ("completed", "Completed"),     # Work finished
 ]
 
 # =============================================================================
@@ -163,16 +162,6 @@ EVENT_STATUS = [
     ("confirmed", "Confirmed"),
     ("in_progress", "In Progress"),
     ("completed", "Completed"),
-    ("cancelled", "Cancelled"),
-]
-
-# =============================================================================
-# STAKEHOLDER STATUS
-# =============================================================================
-STAKEHOLDER_STATUS = [
-    ("pending", "Pending Confirmation"),
-    ("confirmed", "Confirmed"),
-    ("unavailable", "Unavailable"),
     ("cancelled", "Cancelled"),
 ]
 

@@ -1,24 +1,29 @@
 # Part of Party Time Texas Event Management System
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
+"""
+Project Stakeholder Model - Event Contact Directory
 
-from markupsafe import Markup, escape as html_escape
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+Simple contact directory for tracking all people involved in an event:
+- Clients (the person who paid, the coordinator, bride, best POC, etc.)
+- Vendors (linked to vendor assignments)
 
-from odoo.addons.ptt_business_core.constants import (
-    SERVICE_TYPES,
-    COMMUNICATION_PREFERENCES,
-    STAKEHOLDER_STATUS,
-)
+This is NOT a workflow/confirmation system - just a contact reference list.
+"""
+
+from odoo import models, fields, api
+
+from odoo.addons.ptt_business_core.constants import SERVICE_TYPES
 
 
 class ProjectStakeholder(models.Model):
-    """Project Stakeholders for Event Management"""
+    """Project Stakeholders - Event Contact Directory"""
     _name = 'project.stakeholder'
     _description = 'Project Stakeholder'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'project_id, sequence, role'
+    _order = 'project_id, is_client desc, is_vendor, role'
 
+    # =========================================================================
+    # CORE FIELDS
+    # =========================================================================
     project_id = fields.Many2one(
         'project.project',
         string="Project",
@@ -27,281 +32,115 @@ class ProjectStakeholder(models.Model):
         index=True,
     )
     
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10
-    )
-    
     partner_id = fields.Many2one(
         'res.partner',
         string="Contact",
         required=True,
-        help="The partner/contact for this stakeholder"
+        help="The contact person"
     )
     
     role = fields.Char(
         string="Role",
-        required=True,
-        help="Role of this stakeholder (e.g., Event Coordinator, DJ, Photographer)"
+        help="Their role for this event (e.g., Bride, Event Coordinator, DJ, Photographer)"
     )
     
-    responsibility = fields.Text(
-        string="Responsibility",
-        help="Description of this stakeholder's responsibilities"
+    # =========================================================================
+    # STAKEHOLDER TYPE
+    # =========================================================================
+    is_client = fields.Boolean(
+        string="Is Client",
+        default=False,
+        help="This person is on the client side (payer, coordinator, bride, etc.)"
     )
     
-    # Stakeholder Type
     is_vendor = fields.Boolean(
         string="Is Vendor",
-        default=False
-    )
-    
-    is_client = fields.Boolean(
-        string="Is Client", 
-        default=False
-    )
-    
-    is_internal = fields.Boolean(
-        string="Is Internal Team",
-        default=False
-    )
-    
-    # Contact Information (from partner)
-    email = fields.Char(
-        related='partner_id.email',
-        string="Email",
-        readonly=True
-    )
-    
-    phone = fields.Char(
-        related='partner_id.phone',
-        string="Phone",
-        readonly=True
-    )
-    
-    mobile = fields.Char(
-        related='partner_id.phone',
-        string="Mobile",
-        readonly=True
-    )
-    
-    # Communication Preferences
-    communication_preference = fields.Selection(
-        selection=COMMUNICATION_PREFERENCES,
-        string="Preferred Communication",
-        default='email'
+        default=False,
+        help="This person is a vendor providing services"
     )
     
     # Service Category for Vendors - uses SERVICE_TYPES from constants.py
     vendor_category = fields.Selection(
         selection=SERVICE_TYPES,
-        string="Service Category"
+        string="Service Category",
+        help="Type of service this vendor provides"
     )
     
-    # Status and Availability
-    status = fields.Selection(
-        selection=STAKEHOLDER_STATUS,
-        string="Status",
-        default='pending',
-        tracking=True
+    # =========================================================================
+    # CONTACT INFO (Auto-populated from Contact)
+    # =========================================================================
+    email = fields.Char(
+        related='partner_id.email',
+        string="Email",
+        readonly=True,
+        store=True,
     )
     
-    confirmed_date = fields.Datetime(
-        string="Confirmation Date",
-        help="When this stakeholder confirmed their participation"
+    phone = fields.Char(
+        related='partner_id.phone',
+        string="Phone",
+        readonly=True,
+        store=True,
     )
     
-    # Requirements and Notes
-    required_for_event = fields.Boolean(
-        string="Required for Event",
-        default=True,
-        help="This stakeholder is required for the event to proceed"
-    )
-    
-    special_requirements = fields.Text(
-        string="Special Requirements",
-        help="Any special requirements or notes for this stakeholder"
-    )
-    
-    # Event-specific details
-    arrival_time = fields.Datetime(
-        string="Expected Arrival Time",
-        help="When this stakeholder should arrive at the venue"
-    )
-    
-    departure_time = fields.Datetime(
-        string="Expected Departure Time",
-        help="When this stakeholder is expected to leave"
-    )
-    
-    # Portal Access
-    has_portal_access = fields.Boolean(
-        string="Has Portal Access",
-        compute='_compute_has_portal_access',
-        readonly=True
-    )
-    
-    @api.depends('partner_id', 'partner_id.user_ids')
-    def _compute_has_portal_access(self):
-        """Check if stakeholder's partner has portal user access."""
-        for stakeholder in self:
-            stakeholder.has_portal_access = bool(stakeholder.partner_id.user_ids)
-    
-    # Related vendor assignment from ptt_business_core
-    vendor_assignment_id = fields.Many2one(
-        'ptt.project.vendor.assignment',
-        string="Vendor Assignment",
-        help="Related vendor assignment for cost tracking"
-    )
-    
+    # =========================================================================
+    # ONCHANGE - Auto-populate based on contact
+    # =========================================================================
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
-        """Auto-populate fields based on partner.
-        
-        Sets vendor flag if partner is marked as vendor and
-        determines default communication preference.
-        """
+        """Auto-set vendor flag if partner is a supplier."""
         if self.partner_id:
-            # Mark as vendor when partner is a supplier
             if self.partner_id.supplier_rank > 0:
                 self.is_vendor = True
-                self.is_internal = False
-            
-            # Set default communication preference based on partner settings
-            if self.partner_id.email:
-                self.communication_preference = 'email'
-            elif self.partner_id.phone:
-                self.communication_preference = 'phone'
+                self.is_client = False
     
     @api.onchange('is_vendor', 'vendor_category')
     def _onchange_vendor_details(self):
-        """Auto-set role based on vendor category.
-        
-        Maps vendor service categories to appropriate role names.
-        """
-        if self.is_vendor and self.vendor_category:
+        """Auto-set role based on vendor category."""
+        if self.is_vendor and self.vendor_category and not self.role:
             category_roles = {
-                'dj': 'DJ/MC',
+                'dj': 'DJ',
+                'mc': 'MC/Host',
                 'band': 'Band Leader',
                 'musicians': 'Musician',
-                'dancers_characters': 'Performer',
+                'dancers': 'Dancer',
+                'characters': 'Character Performer',
                 'casino': 'Casino Manager',
+                'psychics': 'Psychic',
+                'magicians': 'Magician',
+                'comedian': 'Comedian',
                 'photography': 'Photographer',
                 'videography': 'Videographer',
                 'photobooth': 'Photo Booth Attendant',
-                'caricature': 'Caricature Artist',
-                'balloon_face_painters': 'Balloon/Face Painter',
-                'catering': 'Catering/Bartending Coordinator',
-                'av_rentals': 'A/V Technician',
-                'lighting': 'Lighting Technician',
+                'caricature_traditional': 'Traditional Caricature Artist',
+                'caricature_digital': 'Digital Caricature Artist',
+                'balloon_artist': 'Balloon Artist',
+                'face_painters': 'Face Painter',
+                'airbrush_tattoo': 'Airbrush Tattoo Artist',
+                'catering': 'Caterer',
+                'bartender': 'Bartender',
+                'wait_staff': 'Wait Staff',
+                'av_projector': 'A/V Technician',
+                'av_monitor': 'A/V Technician',
+                'av_led_wall': 'A/V Technician',
+                'av_audio': 'A/V Technician',
+                'av_misc': 'A/V Technician',
+                'av_technician': 'A/V Technician',
+                'av_production_mgr': 'A/V Production Manager',
+                'av_technical_dir': 'A/V Technical Director',
                 'balloon_decor': 'Balloon Decor Specialist',
-                'misc_rental': 'Rental Vendor',
-                'coordination': 'Event Planner',
-                'transportation': 'Transportation Coordinator',
-                'staffing': 'Staffing Coordinator',
-                'venue_sourcing': 'Venue Coordinator',
-                'insurance': 'Insurance Coordinator',
-                'deposit': 'Deposit Item',
-                'discount': 'Discount Item',
-                'refund': 'Refund Item',
-                'cancellation': 'Cancellation Fee',
-                'bad_debt': 'Bad Debt',
+                'furniture_rentals': 'Rental Vendor',
+                'inflatables': 'Rental Vendor',
+                'games': 'Rental Vendor',
+                'equipment_rental': 'Rental Vendor',
+                'decor': 'Decor Specialist',
+                'event_planning': 'Event Planner',
+                'officiant': 'Officiant',
+                'petting_zoo': 'Petting Zoo Vendor',
+                'deliver_setup_strike': 'Setup/Strike Crew',
                 'other': 'Vendor',
             }
-            if not self.role:
-                self.role = category_roles.get(self.vendor_category, 'Vendor')
-    
-    def action_confirm_stakeholder(self):
-        """Confirm stakeholder participation in the event.
-        
-        Sets status to confirmed, records confirmation timestamp,
-        and sends notification email to the stakeholder.
-        """
-        self.status = 'confirmed'
-        self.confirmed_date = fields.Datetime.now()
-        
-        # Send confirmation notification
-        self._send_confirmation_notification()
-    
-    def action_mark_unavailable(self):
-        """Mark stakeholder as unavailable"""
-        self.status = 'unavailable'
-        
-        # Log message about unavailability (escaped for safety)
-        self.project_id.message_post(
-            body=Markup(_("Stakeholder <b>{}</b> ({}) marked as unavailable")).format(
-                html_escape(self.partner_id.name or ''),
-                html_escape(self.role or '')
-            ),
-            message_type='notification'
-        )
-    
-    def action_cancel(self):
-        """Cancel stakeholder participation"""
-        self.status = 'cancelled'
-        
-        # Log cancellation (escaped for safety)
-        self.project_id.message_post(
-            body=Markup(_("Stakeholder <b>{}</b> ({}) cancelled")).format(
-                html_escape(self.partner_id.name or ''),
-                html_escape(self.role or '')
-            ),
-            message_type='notification'
-        )
-    
-    def _send_confirmation_notification(self):
-        """Send notification when stakeholder is confirmed"""
-        if self.partner_id.email and self.communication_preference == 'email':
-            # Get event details from project
-            event_date = getattr(self.project_id, 'ptt_event_date', None) or 'TBD'
-            venue_name = getattr(self.project_id, 'ptt_venue_name', None) or 'TBD'
-            
-            # Properly escape user-provided content to prevent XSS
-            partner_name = html_escape(self.partner_id.name or '')
-            role_escaped = html_escape(self.role or '')
-            project_name = html_escape(self.project_id.name or '')
-            event_date_escaped = html_escape(str(event_date))
-            venue_escaped = html_escape(str(venue_name))
-            
-            # Create mail message with escaped content
-            body_html = Markup('''
-                <p>Dear {partner_name},</p>
-                <p>You have been confirmed as <strong>{role}</strong> for the event:</p>
-                <p><strong>Event:</strong> {project_name}</p>
-                <p><strong>Date:</strong> {event_date}</p>
-                <p><strong>Venue:</strong> {venue_name}</p>
-                <p>We will contact you with additional details as the event approaches.</p>
-                <p>Thank you for your participation!</p>
-                <p>- Party Time Texas Team</p>
-            ''').format(
-                partner_name=partner_name,
-                role=role_escaped,
-                project_name=project_name,
-                event_date=event_date_escaped,
-                venue_name=venue_escaped,
-            )
-            
-            # Use Odoo's configured email settings
-            # Priority: User email → Company email → Catchall alias
-            company = self.env.company
-            email_from = (
-                self.env.user.email
-                or company.email
-                or company.catchall_formatted
-            )
-            
-            if not email_from:
-                raise UserError(_('No email configured. Please set an email in your user profile or company settings.'))
-            
-            mail_values = {
-                'subject': _('Event Confirmation - %s') % self.project_id.name,
-                'body_html': body_html,
-                'email_to': self.partner_id.email,
-                'email_from': email_from,
-            }
-            
-            mail = self.env['mail.mail'].create(mail_values)
-            mail.send()
+            self.role = category_roles.get(self.vendor_category, 'Vendor')
     
     def action_open_partner(self):
         """Open the partner form"""
@@ -313,25 +152,3 @@ class ProjectStakeholder(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
-    
-    def action_create_vendor_assignment(self):
-        """Create vendor assignment for cost tracking"""
-        if not self.is_vendor:
-            return
-        
-        # Check if vendor assignment already exists
-        if self.vendor_assignment_id:
-            return self.vendor_assignment_id.action_open_form()
-        
-        # Create new vendor assignment
-        assignment_vals = {
-            'project_id': self.project_id.id,
-            'vendor_id': self.partner_id.id,
-            'service_type': self.vendor_category,
-            'description': f"{self.role} - {self.responsibility or ''}",
-        }
-        
-        assignment = self.env['ptt.project.vendor.assignment'].create(assignment_vals)
-        self.vendor_assignment_id = assignment.id
-        
-        return assignment.action_open_form()

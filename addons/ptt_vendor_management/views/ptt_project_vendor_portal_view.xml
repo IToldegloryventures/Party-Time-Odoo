@@ -58,9 +58,9 @@
                         <field name="vendor_id"/>
                         <field name="vendor_pricing_hint" optional="hide"/>
                         <field name="status" widget="badge" 
-                               decoration-warning="status == 'pending'"
+                               decoration-warning="status in ('pending', 'sent')"
                                decoration-success="status in ('confirmed', 'completed')"
-                               decoration-danger="status == 'cancelled'"/>
+                               decoration-danger="status == 'declined'"/>
                         <field name="actual_cost" widget="monetary"/>
                         <field name="vendor_signature_date" string="Signed" optional="show"/>
                         <button name="action_send_work_order" type="object" 
@@ -96,9 +96,9 @@
                                 <field name="notes" nolabel="1"/>
                                 <field name="description" nolabel="1" placeholder="Service description..."/>
                             </group>
-                            <group string="Vendor Response" invisible="status == 'pending'">
+                            <group string="Vendor Response" invisible="status in ('pending', 'sent')">
                                 <field name="vendor_decline_reason" readonly="1" 
-                                       invisible="status != 'cancelled'"/>
+                                       invisible="status != 'declined'"/>
                             </group>
                             <!-- Vendor Tasks Section -->
                             <separator string="Vendor Tasks"/>

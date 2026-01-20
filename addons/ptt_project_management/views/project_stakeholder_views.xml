@@ -2,126 +2,53 @@
 <odoo>
     <data>
         
-        <!-- Project Stakeholder Tree View -->
+        <!-- Project Stakeholder Tree View (Simple Contact Directory) -->
         <record id="view_project_stakeholder_tree" model="ir.ui.view">
             <field name="name">project.stakeholder.tree</field>
             <field name="model">project.stakeholder</field>
             <field name="arch" type="xml">
-                <list string="Stakeholders" editable="top">
-                    <field name="sequence" widget="handle"/>
+                <list string="Stakeholders" editable="bottom">
                     <field name="partner_id"/>
                     <field name="role"/>
-                    <field name="is_vendor"/>
                     <field name="is_client"/>
-                    <field name="is_internal"/>
-                    <field name="vendor_category" optional="show"
-                           invisible="not is_vendor"/>
-                    <field name="status" widget="badge"
-                           decoration-success="status == 'confirmed'"
-                           decoration-warning="status == 'pending'"
-                           decoration-danger="status in ('unavailable', 'cancelled')"/>
-                    <field name="email" optional="show"/>
-                    <field name="phone" optional="hide"/>
-                    <field name="project_id" optional="hide"/>
+                    <field name="is_vendor"/>
+                    <field name="vendor_category" optional="show"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="project_id" column_invisible="1"/>
                 </list>
             </field>
         </record>
         
-        <!-- Project Stakeholder Form View -->
+        <!-- Project Stakeholder Form View (Simple) -->
         <record id="view_project_stakeholder_form" model="ir.ui.view">
             <field name="name">project.stakeholder.form</field>
             <field name="model">project.stakeholder</field>
             <field name="arch" type="xml">
                 <form string="Stakeholder">
-                    <header>
-                        <button name="action_confirm_stakeholder" type="object"
-                                string="Confirm" class="btn-primary"
-                                invisible="status != 'pending'"/>
-                        <button name="action_mark_unavailable" type="object"
-                                string="Mark Unavailable"
-                                invisible="status in ('unavailable', 'cancelled')"/>
-                        <button name="action_cancel" type="object"
-                                string="Cancel"
-                                invisible="status == 'cancelled'"/>
-                        <field name="status" widget="statusbar"
-                               statusbar_visible="pending,confirmed"/>
-                    </header>
                     <sheet>
-                        <div class="oe_title">
-                            <h1>
-                                <field name="partner_id" options="{'no_create': True}"/>
-                            </h1>
-                            <h3>
-                                <field name="role" placeholder="Role..."/>
-                            </h3>
-                        </div>
-                        
                         <group>
-                            <group string="Stakeholder Type">
-                                <field name="project_id" readonly="1"/>
-                                <field name="is_vendor"/>
+                            <group string="Contact">
+                                <field name="partner_id" options="{'no_create': False}"/>
+                                <field name="role" placeholder="e.g., Bride, Event Coordinator, DJ"/>
+                            </group>
+                            <group string="Type">
                                 <field name="is_client"/>
-                                <field name="is_internal"/>
+                                <field name="is_vendor"/>
                                 <field name="vendor_category" invisible="not is_vendor"/>
                             </group>
-                            <group string="Contact Information">
-                                <field name="email"/>
-                                <field name="phone"/>
-                                <field name="mobile"/>
-                                <field name="communication_preference"/>
-                            </group>
                         </group>
-                        
                         <group>
-                            <group string="Status">
-                                <field name="required_for_event"/>
-                                <field name="confirmed_date" readonly="1"/>
+                            <group string="Contact Info (auto-populated)">
+                                <field name="email" readonly="1"/>
+                                <field name="phone" readonly="1"/>
                             </group>
-                            <group string="Sequence">
-                                <field name="sequence"/>
+                            <group>
+                                <field name="project_id" readonly="1"/>
                             </group>
                         </group>
-                        
-                        <notebook>
-                            <page string="Responsibility" name="responsibility">
-                                <field name="responsibility" placeholder="Describe responsibilities..."/>
-                            </page>
-                            <page string="Special Requirements" name="requirements">
-                                <field name="special_requirements" placeholder="Special requirements or notes..."/>
-                            </page>
-                        </notebook>
                     </sheet>
-                    <chatter/>
                 </form>
-            </field>
-        </record>
-        
-        <!-- Project Stakeholder Kanban View -->
-        <record id="view_project_stakeholder_kanban" model="ir.ui.view">
-            <field name="name">project.stakeholder.kanban</field>
-            <field name="model">project.stakeholder</field>
-            <field name="arch" type="xml">
-                <kanban default_group_by="status" class="o_kanban_small_column">
-                    <field name="partner_id"/>
-                    <field name="role"/>
-                    <field name="status"/>
-                    <field name="is_vendor"/>
-                    <field name="email"/>
-                    <templates>
-                        <t t-name="card">
-                            <field name="partner_id" widget="res_partner_many2one"/>
-                            <div class="mt-1">
-                                <strong><field name="role"/></strong>
-                            </div>
-                            <div class="text-muted" t-if="record.is_vendor.raw_value">
-                                <i class="fa fa-truck"/> Vendor
-                            </div>
-                            <footer class="pt-2">
-                                <field name="email" widget="email"/>
-                            </footer>
-                        </t>
-                    </templates>
-                </kanban>
             </field>
         </record>
         
@@ -129,14 +56,14 @@
         <record id="action_project_stakeholder" model="ir.actions.act_window">
             <field name="name">Event Stakeholders</field>
             <field name="res_model">project.stakeholder</field>
-            <field name="view_mode">list,kanban,form</field>
+            <field name="view_mode">list,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Add stakeholders to your event project
+                    Add contacts to your event
                 </p>
                 <p>
-                    Stakeholders include vendors, clients, and internal team members
-                    involved in delivering the event.
+                    Track all the people you need to communicate with - 
+                    clients, vendors, and other key contacts.
                 </p>
             </field>
         </record>

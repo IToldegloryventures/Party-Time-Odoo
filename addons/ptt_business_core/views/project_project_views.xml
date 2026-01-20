@@ -8,21 +8,44 @@
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.edit_project"/>
             <field name="arch" type="xml">
-                <xpath expr="//notebook" position="inside">
+                
+                <!-- Rename Description tab to Notes and keep it -->
+                <xpath expr="//page[@name='description_page']" position="attributes">
+                    <attribute name="string">Notes</attribute>
+                </xpath>
+                
+                <!-- Add our custom note fields to the Notes tab (formerly Description) -->
+                <xpath expr="//page[@name='description_page']//field[@name='description']" position="after">
+                    <group string="Event Notes">
+                        <field name="ptt_event_notes" nolabel="1" placeholder="General event notes..."/>
+                    </group>
+                    <group string="Special Requirements">
+                        <field name="ptt_special_requirements" nolabel="1" placeholder="Special requirements..."/>
+                    </group>
+                    <group string="Client Preferences">
+                        <field name="ptt_client_preferences" nolabel="1" placeholder="Client preferences..."/>
+                    </group>
+                </xpath>
+                
+                <!-- Add our tabs BEFORE the notebook's first page to control order -->
+                <xpath expr="//notebook/page[1]" position="before">
                     
-                    <!-- PTT Event Details -->
+                    <!-- 1. PTT Event Details (FIRST) -->
                     <page string="Event Details" name="ptt_event_details">
                         <group>
                             <group string="Event Identity" name="event_identity">
                                 <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_crm_lead_id"/>
                                 <field name="ptt_event_name"/>
+                                <field name="ptt_event_type"/>
                             </group>
                             <group string="Event Schedule" name="event_schedule">
                                 <field name="ptt_event_date"/>
-                                <field name="ptt_event_start_time"/>
-                                <field name="ptt_event_end_time"/>
-                                <field name="ptt_total_hours"/>
+                                <field name="ptt_setup_time" widget="float_time"/>
+                                <field name="ptt_event_start_time_float" widget="float_time"/>
+                                <field name="ptt_event_end_time_float" widget="float_time"/>
+                                <field name="ptt_teardown_deadline"/>
+                                <field name="ptt_total_hours" widget="float_time"/>
                                 <field name="ptt_guest_count"/>
                             </group>
                         </group>
@@ -32,15 +55,34 @@
                                 <field name="ptt_location_type"/>
                                 <field name="ptt_venue_address"/>
                             </group>
+                            <group string="Vendor Notes">
+                                <field name="ptt_vendor_notes" nolabel="1" 
+                                       placeholder="Notes for all vendors (parking, load-in, building access, etc.)..."/>
+                            </group>
                         </group>
                     </page>
-
-                    <!-- Vendor Assignments -->
+                </xpath>
+                
+                <!-- Move Notes tab (formerly Description) after Event Details -->
+                <xpath expr="//page[@name='ptt_event_details']" position="after">
+                    <!-- Notes tab will appear here due to Odoo's view inheritance -->
+                </xpath>
+                
+                <!-- Add Event Directory placeholder after where Notes will be -->
+                <xpath expr="//page[@name='description_page']" position="after">
+                    <!-- 3. Event Directory - placeholder, will be filled by ptt_project_management -->
+                    <page string="Event Directory" name="stakeholders">
+                        <div class="alert alert-info">
+                            Contact directory is available in PTT Project Management module.
+                        </div>
+                    </page>
+                    
+                    <!-- 4. Vendor Assignments -->
                     <page string="Vendor Assignments" name="ptt_vendors">
                         <!-- Profitability Dashboard -->
                         <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="card bg-primary text-white">
+                            <div class="col-md-3 d-flex">
+                                <div class="card bg-primary text-white flex-fill h-100">
                                     <div class="card-body text-center py-3">
                                         <h6 class="card-subtitle mb-1 opacity-75">Client Revenue</h6>
                                         <h4 class="card-title mb-0">
@@ -49,8 +91,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card bg-info text-white">
+                            <div class="col-md-3 d-flex">
+                                <div class="card bg-info text-white flex-fill h-100">
                                     <div class="card-body text-center py-3">
                                         <h6 class="card-subtitle mb-1 opacity-75">Est. Vendor Costs</h6>
                                         <h4 class="card-title mb-0">
@@ -59,8 +101,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card bg-warning">
+                            <div class="col-md-3 d-flex">
+                                <div class="card bg-warning flex-fill h-100">
                                     <div class="card-body text-center py-3">
                                         <h6 class="card-subtitle mb-1">Actual Costs</h6>
                                         <h4 class="card-title mb-0">
@@ -72,8 +114,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card bg-success text-white">
+                            <div class="col-md-3 d-flex">
+                                <div class="card bg-success text-white flex-fill h-100">
                                     <div class="card-body text-center py-3">
                                         <h6 class="card-subtitle mb-1 opacity-75">Profit Margin</h6>
                                         <h4 class="card-title mb-0">
@@ -106,19 +148,8 @@
                             </list>
                         </field>
                     </page>
-
-                    <!-- Event Notes -->
-                    <page string="Event Notes" name="ptt_notes">
-                        <group>
-                            <field name="ptt_event_notes" placeholder="General event notes..."/>
-                        </group>
-                        <group>
-                            <field name="ptt_special_requirements" placeholder="Special requirements..."/>
-                        </group>
-                        <group>
-                            <field name="ptt_client_preferences" placeholder="Client preferences..."/>
-                        </group>
-                    </page>
+                    
+                    <!-- 5. Settings tab comes last (it's from Odoo standard, we just moved it via attributes) -->
 
                 </xpath>
             </field>

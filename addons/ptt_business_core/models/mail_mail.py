@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 # Set to True to BLOCK all outgoing emails
 # Set to False to allow normal email operation
 # ============================================================
-BLOCK_ALL_EMAILS = True  # <-- CHANGE TO False WHEN READY TO SEND EMAILS
+BLOCK_ALL_EMAILS = False  # Production: emails enabled
 # ============================================================
 
 

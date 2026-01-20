@@ -161,19 +161,40 @@ class PttVendorDocument(models.Model):
     #         else:
     #             doc.status = "compliant"
     
-    @api.constrains("vendor_id", "document_type_id")
+    @api.constrains("vendor_id", "document_type_id", "contact_id")
     def _check_unique_vendor_doctype(self):
-        """Ensure each vendor can only have one document per type."""
+        """Ensure document uniqueness per vendor/contact and type.
+        
+        Uniqueness scope:
+        - Vendor-level documents: unique per vendor + document_type
+        - Contact-level documents: unique per vendor + contact + document_type
+        
+        This allows a vendor to have a W9 and each contact to also have their own W9.
+        """
         for record in self:
-            existing = self.search([
+            domain = [
                 ("vendor_id", "=", record.vendor_id.id),
                 ("document_type_id", "=", record.document_type_id.id),
                 ("id", "!=", record.id),
-            ])
+            ]
+            
+            # Include contact_id in uniqueness check
+            # None/False values should be compared equally
+            if record.contact_id:
+                domain.append(("contact_id", "=", record.contact_id.id))
+            else:
+                domain.append(("contact_id", "=", False))
+            
+            existing = self.search(domain)
             if existing:
-                raise ValidationError(
-                    _("Each vendor can only have one document per type. Update the existing one.")
-                )
+                if record.contact_id:
+                    raise ValidationError(
+                        _("This contact already has a document of this type. Update the existing one.")
+                    )
+                else:
+                    raise ValidationError(
+                        _("This vendor already has a document of this type. Update the existing one.")
+                    )
     
     @api.model
     def _cron_check_document_expiry_30day(self):

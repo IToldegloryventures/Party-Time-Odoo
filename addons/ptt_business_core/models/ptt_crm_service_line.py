@@ -189,7 +189,7 @@ class PttCrmServiceLine(models.Model):
                 # Map attribute values to our tier selections
                 if 'tier' in attr_name:
                     if 'essential' in val_name:
-                        self.service_tier = 'essentials'
+                        self.service_tier = 'essential'
                     elif 'classic' in val_name:
                         self.service_tier = 'classic'
                     elif 'premier' in val_name:

@@ -57,16 +57,17 @@
                                     </td>
                                     <td class="text-center">
                                         <span t-attf-class="badge rounded-pill #{
-                                            'bg-warning text-dark' if wo.status == 'pending' else
+                                            'bg-warning text-dark' if wo.status in ('pending', 'sent') else
                                             'bg-success' if wo.status == 'confirmed' else
-                                            'bg-danger' if wo.status == 'cancelled' else
+                                            'bg-danger' if wo.status == 'declined' else
                                             'bg-info' if wo.status == 'completed' else
                                             'bg-secondary'
                                         }">
-                                            <t t-if="wo.status == 'pending'">Pending Response</t>
+                                            <t t-if="wo.status == 'pending'">Not Sent</t>
+                                            <t t-elif="wo.status == 'sent'">Awaiting Response</t>
                                             <t t-elif="wo.status == 'confirmed'">Accepted</t>
                                             <t t-elif="wo.status == 'completed'">Completed</t>
-                                            <t t-elif="wo.status == 'cancelled'">Cancelled</t>
+                                            <t t-elif="wo.status == 'declined'">Declined</t>
                                             <t t-else="">Draft</t>
                                         </span>
                                     </td>
@@ -103,15 +104,16 @@
                                 <i class="fa fa-clipboard me-2"/>Work Order
                             </h3>
                             <span t-attf-class="badge fs-6 #{
-                                'bg-warning text-dark' if assignment.status == 'pending' else
+                                'bg-warning text-dark' if assignment.status in ('pending', 'sent') else
                                 'bg-success' if assignment.status == 'confirmed' else
-                                'bg-danger' if assignment.status == 'cancelled' else
+                                'bg-danger' if assignment.status == 'declined' else
                                 'bg-info' if assignment.status == 'completed' else
                                 'bg-light text-dark'
                             }">
-                                <t t-if="assignment.status == 'pending'">ACTION REQUIRED</t>
+                                <t t-if="assignment.status == 'pending'">NOT SENT</t>
+                                <t t-elif="assignment.status == 'sent'">ACTION REQUIRED</t>
                                 <t t-elif="assignment.status == 'confirmed'">ACCEPTED</t>
-                                <t t-elif="assignment.status == 'cancelled'">DECLINED</t>
+                                <t t-elif="assignment.status == 'declined'">DECLINED</t>
                                 <t t-elif="assignment.status == 'completed'">COMPLETED</t>
                                 <t t-else="">DRAFT</t>
                             </span>
@@ -179,6 +181,20 @@
                                 </table>
                             </div>
                         </div>
+                        
+                        <!-- Vendor Notes (from Event) -->
+                        <t t-if="vendor_notes">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-muted mb-3">
+                                        <i class="fa fa-info-circle me-2"/>Important Notes
+                                    </h5>
+                                    <div class="alert alert-info border-start border-4 border-info">
+                                        <span style="white-space: pre-line;"><t t-esc="vendor_notes"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
                         
                         <hr class="my-4"/>
                         
@@ -257,7 +273,7 @@
                             </div>
                         </t>
                         
-                        <t t-if="assignment.status == 'cancelled'">
+                        <t t-if="assignment.status == 'declined'">
                             <div class="alert alert-danger d-flex align-items-center mt-4" role="alert">
                                 <i class="fa fa-times-circle fa-2x me-3"/>
                                 <div>

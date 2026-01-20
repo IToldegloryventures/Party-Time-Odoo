@@ -10,7 +10,7 @@
             <field name="priority">30</field>
             <field name="arch" type="xml">
                 
-                <!-- Add smart buttons for stakeholders -->
+                <!-- Add smart buttons -->
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button name="action_view_crm_lead" type="object"
                             class="oe_stat_button" icon="fa-bullseye"
@@ -29,17 +29,10 @@
                         </div>
                     </button>
                     <button name="action_view_stakeholders" type="object"
-                            class="oe_stat_button" icon="fa-users">
+                            class="oe_stat_button" icon="fa-address-book">
                         <div class="o_stat_info">
-                            <span class="o_stat_value">
-                                <field name="confirmed_stakeholders"/>/<field name="pending_stakeholders" class="ms-1"/>
-                            </span>
-                            <span class="o_stat_text">Stakeholders</span>
+                            <span class="o_stat_text">Contacts</span>
                         </div>
-                    </button>
-                    <button name="action_view_vendors" type="object"
-                            class="oe_stat_button" icon="fa-truck">
-                        <field name="vendor_count" widget="statinfo" string="Vendors"/>
                     </button>
                 </xpath>
                 
@@ -57,40 +50,20 @@
                            decoration-danger="event_status == 'cancelled'"/>
                 </xpath>
                 
-                <!-- Add Stakeholders Page -->
-                <xpath expr="//page[@name='ptt_vendors']" position="after">
-                    <page string="Stakeholders" name="stakeholders">
-                        <group>
-                            <group>
-                                <field name="vendor_count" readonly="1"/>
-                                <field name="client_count" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="internal_count" readonly="1"/>
-                            </group>
-                        </group>
+                <!-- Replace the placeholder Event Directory Page with real content -->
+                <xpath expr="//page[@name='stakeholders']" position="replace">
+                    <page string="Event Directory" name="stakeholders">
                         <field name="stakeholder_ids" context="{'default_project_id': id}">
                             <list editable="bottom">
-                                <field name="sequence" widget="handle"/>
                                 <field name="partner_id"/>
                                 <field name="role"/>
-                                <field name="is_vendor"/>
                                 <field name="is_client"/>
-                                <field name="is_internal"/>
+                                <field name="is_vendor"/>
                                 <field name="vendor_category" optional="show"/>
-                                <field name="status" widget="badge"/>
-                                <field name="required_for_event"/>
+                                <field name="email"/>
+                                <field name="phone"/>
                             </list>
                         </field>
-                        
-                        <div class="oe_button_box mt-3">
-                            <button name="action_confirm_all_stakeholders" type="object"
-                                    string="Confirm All Pending" class="btn-secondary"
-                                    icon="fa-check"/>
-                            <button name="action_send_stakeholder_notifications" type="object"
-                                    string="Send Notifications" class="btn-secondary"
-                                    icon="fa-envelope"/>
-                        </div>
                     </page>
                 </xpath>
                 
@@ -110,8 +83,6 @@
                            decoration-success="event_status in ('confirmed', 'completed')"
                            decoration-warning="event_status == 'in_progress'"
                            decoration-danger="event_status == 'cancelled'"/>
-                    <field name="vendor_count" optional="hide"/>
-                    <field name="confirmed_stakeholders" optional="hide"/>
                 </xpath>
             </field>
         </record>

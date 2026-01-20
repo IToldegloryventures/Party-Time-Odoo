@@ -25,7 +25,43 @@ class CrmLeadEnhanced(models.Model):
     )
     
     # NOTE: Category field removed - event type name (Corporate/Social/Wedding) is the category
-    
+
+    @api.onchange('ptt_event_type_id')
+    def _onchange_ptt_event_type_id(self):
+        """Sync ptt_event_type selection field when template is changed.
+        
+        Maps the sale.order.type name to the corresponding selection value
+        so both fields stay consistent.
+        """
+        if self.ptt_event_type_id:
+            type_name = self.ptt_event_type_id.name.lower() if self.ptt_event_type_id.name else ''
+            if 'corporate' in type_name:
+                self.ptt_event_type = 'corporate'
+            elif 'wedding' in type_name:
+                self.ptt_event_type = 'wedding'
+            elif 'social' in type_name:
+                self.ptt_event_type = 'social'
+
+    @api.onchange('ptt_event_type')
+    def _onchange_ptt_event_type(self):
+        """Sync ptt_event_type_id template when selection field is changed.
+        
+        Auto-links to the matching sale.order.type template based on selection.
+        This ensures the template is set when users pick from the simple dropdown.
+        """
+        if self.ptt_event_type and not self.ptt_event_type_id:
+            # Map selection to XML ID
+            xmlid_map = {
+                'corporate': 'ptt_enhanced_sales.event_type_corporate',
+                'social': 'ptt_enhanced_sales.event_type_social',
+                'wedding': 'ptt_enhanced_sales.event_type_wedding',
+            }
+            xmlid = xmlid_map.get(self.ptt_event_type)
+            if xmlid:
+                event_type = self.env.ref(xmlid, raise_if_not_found=False)
+                if event_type:
+                    self.ptt_event_type_id = event_type
+
     def action_create_quotation(self):
         """Override to include event type information in quotation.
         

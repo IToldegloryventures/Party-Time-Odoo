@@ -164,11 +164,6 @@ class CrmLead(models.Model):
     # =========================================================================
     ptt_budget_range = fields.Char(string="Budget Range")
     ptt_services_already_booked = fields.Text(string="Services Already Booked")
-    
-    # Finance Contact
-    ptt_finance_contact_name = fields.Char(string="Finance Contact Name")
-    ptt_finance_contact_phone = fields.Char(string="Finance Contact Phone")
-    ptt_finance_contact_email = fields.Char(string="Finance Contact Email")
 
     # =========================================================================
     # SERVICE LINES (Structured service selection before quote)
@@ -431,45 +426,5 @@ class CrmLead(models.Model):
         self._ensure_event_id()
         return {"type": "ir.actions.client", "tag": "reload"}
 
-    def action_create_project(self):
-        """Create project from this opportunity."""
-        self.ensure_one()
-        if self.ptt_project_id:
-            raise UserError(_("A project already exists for this opportunity."))
-        if not self.partner_id:
-            raise UserError(_("Please set a customer before creating a project."))
-
-        # Ensure event ID exists (generate if needed)
-        event_id = self._ensure_event_id()
-
-        project_vals = {
-            "name": f"Event {event_id} - {self.partner_id.name} - {self.ptt_event_name or self.name}",
-            "partner_id": self.partner_id.id,
-            "user_id": self.user_id.id,
-            "ptt_crm_lead_id": self.id,
-            "ptt_event_id": event_id,
-            "ptt_guest_count": self.ptt_guest_count,
-            "ptt_total_hours": self.ptt_event_duration,
-        }
-
-        project = self.env["project.project"].create(project_vals)
-        self.ptt_project_id = project.id
-
-        # Copy vendor estimates to project assignments
-        for estimate in self.ptt_vendor_estimate_ids:
-            self.env["ptt.project.vendor.assignment"].create({
-                "project_id": project.id,
-                "service_type": estimate.service_type,
-                "estimated_cost": estimate.estimated_cost,
-                "notes": f"Transferred from CRM: {estimate.vendor_name or ''}",
-            })
-
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Project Created",
-            "res_model": "project.project",
-            "res_id": project.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
+    # NOTE: Projects are created automatically when a Sale Order with 
+    # "Event Kickoff" product is confirmed. See sale_order.py for logic.

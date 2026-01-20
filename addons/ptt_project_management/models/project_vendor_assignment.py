@@ -50,12 +50,16 @@ class PttProjectVendorAssignmentExtended(models.Model):
         for record in self:
             record.task_count = len(record.task_ids)
     
-    def action_view_tasks(self):
-        """View tasks related to this vendor assignment."""
+    def action_view_project_tasks(self):
+        """View project.task records related to this vendor assignment.
+        
+        Note: Renamed from action_view_tasks to avoid conflict with 
+        ptt_vendor_management which uses action_view_tasks for ptt.vendor.task.
+        """
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Vendor Tasks',
+            'name': 'Project Tasks',
             'res_model': 'project.task',
             'view_mode': 'list,form',
             'domain': [('ptt_vendor_assignment_id', '=', self.id)],

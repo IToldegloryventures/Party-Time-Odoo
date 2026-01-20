@@ -110,7 +110,7 @@ class SaleOrder(models.Model):
         
         When a service product with "Create on Order" is confirmed, Odoo creates
         a project. This method links that project back to the CRM opportunity
-        and copies event details.
+        and transfers vendor estimates to project vendor assignments.
         """
         for order in self:
             if not order.opportunity_id:
@@ -125,7 +125,7 @@ class SaleOrder(models.Model):
             
             for project in projects:
                 if project and not project.ptt_crm_lead_id:
-                    # Link project to CRM
+                    # Link project to CRM (event details are related fields - auto-populated)
                     project.write({
                         'ptt_crm_lead_id': order.opportunity_id.id,
                         'ptt_event_id': order.opportunity_id.ptt_event_id,
@@ -134,6 +134,15 @@ class SaleOrder(models.Model):
                     # Update CRM with project link (if not already set)
                     if not order.opportunity_id.ptt_project_id:
                         order.opportunity_id.ptt_project_id = project.id
+                    
+                    # Transfer vendor estimates to project vendor assignments
+                    for estimate in order.opportunity_id.ptt_vendor_estimate_ids:
+                        self.env["ptt.project.vendor.assignment"].create({
+                            "project_id": project.id,
+                            "service_type": estimate.service_type,
+                            "estimated_cost": estimate.estimated_cost,
+                            "notes": f"From CRM estimate: {estimate.vendor_name or ''}",
+                        })
 
     # =========================================================================
     # COMPUTED FIELDS

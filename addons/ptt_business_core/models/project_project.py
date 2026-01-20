@@ -39,63 +39,102 @@ class ProjectProject(models.Model):
         help="Unique event identifier (e.g., EVT-2026-0001). Links to CRM Lead, Sale Orders, Tasks.",
     )
     
-    # Event Type (same 3 types as CRM Lead and Product Variants)
+    # =========================================================================
+    # EVENT DETAILS - Related fields from CRM Lead (single source of truth)
+    # =========================================================================
     ptt_event_type = fields.Selection(
-        selection=[
-            ("corporate", "Corporate"),
-            ("social", "Social"),
-            ("wedding", "Wedding"),
-        ],
+        related="ptt_crm_lead_id.ptt_event_type",
         string="Event Type",
-        help="Event classification copied from CRM Lead.",
+        store=True,
+        readonly=False,
     )
-    
-    # Event details - proper ptt_ prefixed fields
     ptt_event_name = fields.Char(
+        related="ptt_crm_lead_id.ptt_event_name",
         string="Event Name",
-        help="Name or title of the event.",
+        store=True,
+        readonly=False,
     )
     ptt_event_date = fields.Date(
+        related="ptt_crm_lead_id.ptt_event_date",
         string="Event Date",
+        store=True,
+        readonly=False,
         index=True,
-        help="Scheduled date for the event.",
     )
     ptt_venue_name = fields.Char(
+        related="ptt_crm_lead_id.ptt_venue_name",
         string="Venue Name",
-        help="Name of the venue where the event will be held.",
+        store=True,
+        readonly=False,
     )
     ptt_venue_address = fields.Text(
+        related="ptt_crm_lead_id.ptt_venue_address",
         string="Venue Address",
-        help="Full address of the event venue.",
+        store=True,
+        readonly=False,
+    )
+    ptt_guest_count = fields.Integer(
+        related="ptt_crm_lead_id.ptt_guest_count",
+        string="Guest Count",
+        store=True,
+        readonly=False,
+    )
+    ptt_location_type = fields.Selection(
+        related="ptt_crm_lead_id.ptt_location_type",
+        string="Location Type",
+        store=True,
+        readonly=False,
     )
     
-    ptt_guest_count = fields.Integer(string="Guest Count")
+    # Timing fields - CRM has Float times, we convert to display
+    # These pull the Float times from CRM and combine with event_date
+    ptt_setup_time = fields.Float(
+        related="ptt_crm_lead_id.ptt_setup_time",
+        string="Setup Time",
+        store=True,
+        readonly=False,
+    )
+    ptt_event_start_time_float = fields.Float(
+        related="ptt_crm_lead_id.ptt_start_time",
+        string="Start Time",
+        store=True,
+        readonly=False,
+    )
+    ptt_event_end_time_float = fields.Float(
+        related="ptt_crm_lead_id.ptt_end_time",
+        string="End Time",
+        store=True,
+        readonly=False,
+    )
+    ptt_total_hours = fields.Float(
+        related="ptt_crm_lead_id.ptt_event_duration",
+        string="Total Event Hours",
+        store=True,
+        readonly=True,
+    )
     
-    # Timing fields - all Datetime for full scheduling
+    # Project-only fields (not from CRM)
     ptt_setup_start_time = fields.Datetime(
-        string="Setup Start Time",
-        help="When setup should begin"
+        string="Setup Start (Datetime)",
+        help="Computed setup start - combines event date with setup time"
     )
     ptt_event_start_time = fields.Datetime(
-        string="Event Start Time",
-        help="When the event officially starts"
+        string="Event Start (Datetime)",
+        help="Computed event start - combines event date with start time"
     )
     ptt_event_end_time = fields.Datetime(
-        string="Event End Time",
-        help="When the event officially ends"
+        string="Event End (Datetime)",
+        help="Computed event end - combines event date with end time"
     )
     ptt_teardown_deadline = fields.Datetime(
         string="Teardown Deadline",
-        help="When teardown must be completed"
-    )
-    ptt_total_hours = fields.Float(
-        string="Total Event Hours",
-        help="Total duration of the event in hours"
+        help="When teardown must be completed - set manually on project"
     )
     
-    ptt_location_type = fields.Selection(
-        selection=LOCATION_TYPES,
-        string="Location Type",
+    # Vendor Notes - Project-only field (shows on work orders)
+    ptt_vendor_notes = fields.Text(
+        string="Vendor Notes",
+        help="Notes that will appear on all vendor work orders for this event (parking, load-in instructions, etc.)"
     )
 
     # =========================================================================
@@ -130,10 +169,13 @@ class ProjectProject(models.Model):
         currency_field="currency_id",
     )
     
-    # Client financials
+    # Client financials - auto-populated from linked Sale Order
     ptt_client_total = fields.Monetary(
-        string="Client Total",
+        string="Client Revenue",
+        compute="_compute_client_total",
+        store=True,
         currency_field="currency_id",
+        help="Total revenue from the linked Sale Order (amount_total)",
     )
     ptt_actual_margin = fields.Monetary(
         string="Actual Margin",
@@ -159,10 +201,26 @@ class ProjectProject(models.Model):
     ptt_event_notes = fields.Text(string="Event Notes")
     ptt_special_requirements = fields.Text(string="Special Requirements")
     ptt_client_preferences = fields.Text(string="Client Preferences")
+    ptt_vendor_notes = fields.Text(
+        string="Vendor Notes",
+        help="Notes that will appear on all vendor work orders for this event"
+    )
 
     # =========================================================================
     # COMPUTED METHODS
     # =========================================================================
+    @api.depends("sale_order_id", "sale_order_id.amount_total")
+    def _compute_client_total(self):
+        """Compute client revenue from linked Sale Order.
+        
+        Automatically pulls the total from the Sale Order attached to this project.
+        """
+        for project in self:
+            if project.sale_order_id:
+                project.ptt_client_total = project.sale_order_id.amount_total
+            else:
+                project.ptt_client_total = 0.0
+
     @api.depends(
         "ptt_vendor_assignment_ids",
         "ptt_vendor_assignment_ids.estimated_cost",

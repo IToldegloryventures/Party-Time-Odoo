@@ -98,8 +98,8 @@
                     <field name="ptt_vendor_assignment_ids" readonly="1">
                         <list decoration-success="status == 'completed'"
                               decoration-info="status == 'confirmed'"
-                              decoration-warning="status == 'pending'"
-                              decoration-danger="status == 'cancelled'">
+                              decoration-warning="status in ('pending', 'sent')"
+                              decoration-danger="status == 'declined'">
                             <field name="project_id" string="Event"/>
                             <field name="service_type"/>
                             <field name="service_date"/>
@@ -107,8 +107,8 @@
                             <field name="status" widget="badge"
                                    decoration-success="status == 'completed'"
                                    decoration-info="status == 'confirmed'"
-                                   decoration-warning="status == 'pending'"
-                                   decoration-danger="status == 'cancelled'"/>
+                                   decoration-warning="status in ('pending', 'sent')"
+                                   decoration-danger="status == 'declined'"/>
                         </list>
                     </field>
                 </page>
