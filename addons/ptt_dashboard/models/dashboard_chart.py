@@ -2,8 +2,15 @@ import io
 import csv
 import base64
 import xlsxwriter
-import imgkit
 import logging
+
+# imgkit is optional - only needed for PDF export
+try:
+    import imgkit
+    IMGKIT_AVAILABLE = True
+except ImportError:
+    imgkit = None
+    IMGKIT_AVAILABLE = False
 
 from math import gcd
 from markupsafe import Markup
@@ -1446,6 +1453,12 @@ class DashboardChart(models.Model):
         return conf, conf.domain.copy()
 
     def html_to_image(self):
+        if not IMGKIT_AVAILABLE:
+            raise ValidationError(_(
+                "PDF/Image export requires the 'imgkit' Python library. "
+                "Please install it with: pip install imgkit\n"
+                "Also requires wkhtmltopdf to be installed on the server."
+            ))
         chart_data = self.get_chart_data(self.chart_type, self.name)
         recordsets = {
             "chart_id": self.id,

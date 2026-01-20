@@ -29,7 +29,7 @@ Based on Synconics BI Dashboard technology.
     "category": "Productivity",
     "version": "19.0.1.0.0",
     "depends": ["web", "mail"],
-    "external_dependencies": {"python": ["imgkit"]},
+    # "external_dependencies": {"python": ["imgkit"]},  # Removed - only needed for PDF export
     "assets": {
         "web.assets_backend": [
             "ptt_dashboard/static/src/lib/html2canvas.js",
