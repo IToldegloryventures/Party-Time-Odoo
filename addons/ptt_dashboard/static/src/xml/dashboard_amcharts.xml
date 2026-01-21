@@ -2,7 +2,7 @@
 
 <templates xml:space="preserve">
     <t t-name="ptt_dashboard.DashboardAmcharts">
-        <section class="row container-fluid" class="ptt-dashboard-header" style="height: 50px; border-bottom: 1px #dfdfdff5 solid; border-top: 1px #dfdfdff5 solid;">
+        <section class="row container-fluid ptt-dashboard-header" style="height: 50px; border-bottom: 1px #dfdfdff5 solid; border-top: 1px #dfdfdff5 solid;">
             <div class="left-panel col-md-6 d-flex gap-2 align-items-center mt-auto mb-auto">
                 <h3 class="mb0 mr16 ml16"><strong t-out="state.name"></strong></h3>
                 <button t-if="!state.editMode &amp;&amp; state.charts.length" class="btn btn-secondary" title="Print" t-on-click="onPrintDashboard">

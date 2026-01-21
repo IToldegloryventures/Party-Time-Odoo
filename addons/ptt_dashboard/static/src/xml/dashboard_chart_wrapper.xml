@@ -2,7 +2,7 @@
 
 <templates xml:space="preserve">
     <t t-name="ptt_dashboard.DashboardChartWrapper">
-        <div t-attf-class="#{['tile','kpi'].includes(state.chart_type) &amp;&amp; !state.isKpiError ? 'grid-stack-item-content' : 'grid-stack-item-content p-2'}" class="ptt-dashboard-card" style="border-radius: 10px; border: 1px #dfdfdff5 solid;">
+        <div t-attf-class="#{['tile','kpi'].includes(state.chart_type) &amp;&amp; !state.isKpiError ? 'grid-stack-item-content ptt-dashboard-card' : 'grid-stack-item-content p-2 ptt-dashboard-card'}" style="border-radius: 10px;">
             <div style="height: 100%; position: relative;">
                 <div class="chart-header" t-att-style="['tile', 'kpi'].includes(state.chart_type) &amp;&amp; !state.isKpiError ? 'position: absolute; right: 0; z-index: 9; background-color:' + state.background_color +'!important;' : 'height: 6%;'">
                     <span class="title" t-out="(state.isKpiError || !['tile', 'kpi'].includes(state.chart_type)) ? state.name : ''"></span>
