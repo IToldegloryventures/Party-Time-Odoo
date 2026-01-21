@@ -146,6 +146,7 @@
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('user_id', '=', uid), ('active', '=', True)]</field>
+        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="date_filter_option">this_week</field>
         <field name="limit_record">10</field>
     </record>
@@ -292,7 +293,7 @@
         <field name="kpi_model_id" ref="project.model_project_project"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('active', '=', True)]</field>
-        <field name="kpi_date_filter_field_id" ref="project.field_project_project__create_date"/>
+        <field name="kpi_date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="kpi_date_filter_option">today</field>
         <field name="default_icon">fa fa-calendar</field>
         <field name="background_color">#9b59b6</field>
@@ -306,6 +307,7 @@
         <field name="kpi_model_id" ref="project.model_project_project"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('active', '=', True)]</field>
+        <field name="kpi_date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="kpi_date_filter_option">this_week</field>
         <field name="default_icon">fa fa-calendar-o</field>
         <field name="background_color">#3498db</field>
@@ -343,6 +345,7 @@
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('active', '=', True)]</field>
+        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="date_filter_option">today</field>
         <field name="limit_record">10</field>
     </record>
@@ -353,6 +356,7 @@
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('active', '=', True)]</field>
+        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="date_filter_option">this_week</field>
         <field name="limit_record">15</field>
     </record>
@@ -363,6 +367,7 @@
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('active', '=', True)]</field>
+        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="date_filter_option">next_month</field>
         <field name="limit_record">20</field>
     </record>
@@ -373,6 +378,7 @@
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('ptt_vendor_count', '=', 0), ('active', '=', True)]</field>
+        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="date_filter_option">next_month</field>
         <field name="limit_record">10</field>
     </record>
@@ -704,6 +710,7 @@
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('ptt_vendor_count', '=', 0), ('active', '=', True)]</field>
+        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
         <field name="date_filter_option">next_month</field>
         <field name="limit_record">15</field>
     </record>
