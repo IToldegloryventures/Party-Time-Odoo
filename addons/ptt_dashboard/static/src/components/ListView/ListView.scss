@@ -1,7 +1,7 @@
 .table-container {
   max-width: 100%;
   overflow-x: auto;
-  background: #fff;
+  background: var(--ptt-card-bg, #fff);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);

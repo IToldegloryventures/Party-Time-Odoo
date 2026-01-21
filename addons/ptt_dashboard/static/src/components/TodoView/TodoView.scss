@@ -9,7 +9,7 @@
     .list-btn {
       padding: 6px 12px;
       border: 1px solid #e2e8f0;
-      background: white;
+      background: var(--ptt-card-bg, white);
       border-radius: 6px;
       font-size: 0.85rem;
       cursor: pointer;

@@ -13,11 +13,11 @@
                             <table t-attf-id="listPreview-{{props.chartId}}" t-if="state.data" class="table styled-table oe_dashboard_table">
                                 <thead>
                                     <tr>
-                                        <th t-foreach="this.state.columns" t-as="column" t-key="column.id" t-on-click="(ev) => sortTable(ev, column)" style="position: sticky; top: 0; background: white; z-index: 2; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">
+                                        <th t-foreach="this.state.columns" t-as="column" t-key="column.id" t-on-click="(ev) => sortTable(ev, column)" class="ptt-table-header" style="position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">
                                             <t t-out="column.name" />
                                             <span t-attf-class="sort-icon fa {{state.columns_order[column['column_name']] == undefined || state.columns_order[column['column_name']] == 'desc' ? 'fa-angle-down' : 'fa-angle-up'}} ml16">  </span>
                                         </th>
-                                        <th class="o_icon" style="position: sticky; top: 0; background: white; z-index: 2; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);"></th>
+                                        <th class="o_icon" class="ptt-table-header" style="position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-body">

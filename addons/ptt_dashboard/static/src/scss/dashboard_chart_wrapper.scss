@@ -1,3 +1,30 @@
+// =============================================================================
+// PTT DASHBOARD STYLES
+// =============================================================================
+
+// CSS Variables for theming
+:root {
+  --ptt-card-bg: #ffffff;
+  --ptt-card-text: #212529;
+  --ptt-card-border: #dfdfdff5;
+  --ptt-header-bg: #ffffff;
+  --ptt-table-header-bg: #ffffff;
+}
+
+// Light mode defaults
+.ptt-dashboard-card {
+  background-color: var(--ptt-card-bg) !important;
+  color: var(--ptt-card-text) !important;
+}
+
+.ptt-dashboard-header {
+  background-color: var(--ptt-header-bg) !important;
+}
+
+.ptt-table-header {
+  background-color: var(--ptt-table-header-bg) !important;
+}
+
 .grid-stack-item-content {
   transition:
     left 0.3s,
@@ -19,7 +46,6 @@
       font-size: 1rem;
     }
     .button-box {
-      // display: none;
       display: none;
       &:hover {
       }
@@ -28,38 +54,46 @@
 }
 
 // =============================================================================
-// DARK MODE SUPPORT - AGGRESSIVE OVERRIDE
+// DARK MODE - Using #040303 as requested
 // =============================================================================
-// Force ALL dashboard cards to have visible backgrounds and text in dark mode
-
-// Target html.o_dark (Odoo 19 dark mode class)
 html.o_dark {
-  // FORCE dark background on ALL grid items - override inline styles
+  // Override CSS variables for dark mode
+  --ptt-card-bg: #040303;
+  --ptt-card-text: #f3f4f6;
+  --ptt-card-border: #333333;
+  --ptt-header-bg: #040303;
+  --ptt-table-header-bg: #0a0a0a;
+
+  // Force dark background on ALL dashboard cards
+  .ptt-dashboard-card,
   .grid-stack-item-content,
-  .grid-stack-item-content[style],
+  .grid-stack-item-content.ptt-dashboard-card {
+    background-color: #040303 !important;
+    color: #f3f4f6 !important;
+    border-color: #333333 !important;
+  }
+
+  // Dashboard header bar
+  .ptt-dashboard-header {
+    background-color: #040303 !important;
+    color: #f3f4f6 !important;
+  }
+
+  // ALL nested elements inside cards
+  .grid-stack-item-content,
   .grid-stack-item-content > div,
-  .grid-stack-item-content > div[style] {
-    background-color: #374151 !important;
-    color: #f3f4f6 !important;
-    border: 1px solid #4b5563 !important;
-    border-radius: 8px !important;
-  }
-
-  // ALL cards, wrappers, containers
-  .card,
-  .shadow,
-  .tile_layout_1,
-  .oe_inner,
-  .oe_card_layout,
-  .card-body,
-  [class*="layout"],
-  [class*="wrapper"],
-  [class*="container"] {
-    background-color: #374151 !important;
+  .grid-stack-item-content .card,
+  .grid-stack-item-content .card-body,
+  .grid-stack-item-content .shadow,
+  .grid-stack-item-content .oe_inner,
+  .grid-stack-item-content .oe_card_layout,
+  .grid-stack-item-content [class*="layout"],
+  .grid-stack-item-content [class*="wrapper"] {
+    background-color: #040303 !important;
     color: #f3f4f6 !important;
   }
 
-  // ALL text elements - force white/light text
+  // ALL text elements - force light text
   .grid-stack-item-content h1,
   .grid-stack-item-content h2,
   .grid-stack-item-content h3,
@@ -76,7 +110,7 @@ html.o_dark {
   .grid-stack-item-content .title,
   .grid-stack-item-content .kpi-value,
   .grid-stack-item-content .kpi-title {
-    color: #ffffff !important;
+    color: #f3f4f6 !important;
   }
 
   // Chart header titles
@@ -86,30 +120,33 @@ html.o_dark {
     background-color: transparent !important;
   }
 
+  // Table headers
+  .ptt-table-header,
+  th {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+    border-color: #333333 !important;
+  }
+
   // Tables/Lists
   table,
+  .table-container,
   .o_list_view,
   .list-container,
   tbody,
   thead {
-    background-color: #374151 !important;
+    background-color: #040303 !important;
     color: #f3f4f6 !important;
   }
 
-  th {
-    background-color: #1f2937 !important;
-    color: #ffffff !important;
-    border-color: #4b5563 !important;
-  }
-
   td {
-    background-color: #374151 !important;
+    background-color: #040303 !important;
     color: #e5e7eb !important;
-    border-color: #4b5563 !important;
+    border-color: #333333 !important;
   }
 
   tr:hover td {
-    background-color: #4b5563 !important;
+    background-color: #1a1a1a !important;
   }
 
   // Icons
@@ -132,11 +169,11 @@ html.o_dark {
 
   // Progress bars
   .oe_progress div[role="progressbar"] {
-    background: radial-gradient(closest-side, #374151 74%, transparent 0 102.9%, #374151 0),
+    background: radial-gradient(closest-side, #040303 74%, transparent 0 102.9%, #040303 0),
       conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0) !important;
   }
   .oe_progress div[role="progressbar"]::before {
-    background-color: #374151 !important;
+    background-color: #040303 !important;
     color: #ffffff !important;
   }
 
@@ -144,28 +181,54 @@ html.o_dark {
   .pagination-container,
   .pager {
     color: #e5e7eb !important;
+    background-color: #040303 !important;
+    
     button, .btn {
-      background: #1f2937 !important;
-      border-color: #4b5563 !important;
+      background: #0a0a0a !important;
+      border-color: #333333 !important;
       color: #e5e7eb !important;
-      &:hover { background: #374151 !important; }
+      &:hover { background: #1a1a1a !important; }
+    }
+    
+    input {
+      background: #0a0a0a !important;
+      border-color: #333333 !important;
+      color: #e5e7eb !important;
     }
   }
 
   // Hover effects
   .grid-stack-item-content:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1) !important;
   }
-}
 
-// Also target body.o_dark as fallback
-body.o_dark {
-  .grid-stack-item-content,
-  .grid-stack-item-content[style] {
-    background-color: #374151 !important;
+  // Todo view
+  .bi-todo-preview,
+  .todo-list,
+  .list-navigation {
+    background-color: #040303 !important;
+    color: #f3f4f6 !important;
+  }
+
+  .todo-item {
+    background-color: #0a0a0a !important;
+    border-color: #333333 !important;
     color: #f3f4f6 !important;
   }
 }
+
+// Fallback for body.o_dark
+body.o_dark {
+  .grid-stack-item-content,
+  .ptt-dashboard-card {
+    background-color: #040303 !important;
+    color: #f3f4f6 !important;
+  }
+}
+
+// =============================================================================
+// PROGRESS BAR STYLES (Light Mode)
+// =============================================================================
 .oe_progress {
   @keyframes growProgressBar {
     0%,
