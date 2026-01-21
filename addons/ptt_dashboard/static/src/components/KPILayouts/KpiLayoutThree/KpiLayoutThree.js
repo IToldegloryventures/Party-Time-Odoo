@@ -18,7 +18,7 @@ export class KpiLayoutThree extends Component {
       () => {
         this.state.data = this.props.data;
         if (this.state.data && this.state.data.default_icon) {
-          this.state.kpi_icon = markup(this.state.data.default_icon);
+          this.state.kpi_icon = markup(`<i class="${this.state.data.default_icon}" style="font-size: 2em;"></i>`);
         }
       },
       () => [this.props.data],
