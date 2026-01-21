@@ -86,7 +86,6 @@ Based on Synconics BI Dashboard technology.
     ],
     "images": ["static/description/main_screen.gif"],
     "license": "OPL-1",
-    "post_init_hook": "post_init_hook",
     "uninstall_hook": "uninstall_hook",
     "installable": True,
     "application": True,

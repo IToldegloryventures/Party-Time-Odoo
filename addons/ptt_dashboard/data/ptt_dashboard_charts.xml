@@ -344,7 +344,7 @@
         <field name="model_id" search="[('model', '=', 'project.project')]"/>
         <field name="domain">[('active', '=', True)]</field>
         <field name="date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
-        <field name="date_filter_option">next_30_days</field>
+        <field name="date_filter_option">next_month</field>
         <field name="limit_record">20</field>
     </record>
 
