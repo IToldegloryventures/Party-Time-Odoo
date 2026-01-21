@@ -27,7 +27,7 @@ Based on Synconics BI Dashboard technology.
     "author": "Party Time Texas / Synconics Technologies Pvt. Ltd.",
     "website": "https://www.partytimetexas.com",
     "category": "Productivity",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "depends": [
         "web",
         "mail",
