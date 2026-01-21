@@ -2,25 +2,23 @@
 <odoo noupdate="0">
     <!-- 
         PTT Dashboard Charts Configuration - Enhanced Home Hub
-        ~50 Pre-configured widgets across 5 dashboards
-        All external IDs and domains validated for Odoo 19
+        Using search="" instead of ref="" for model/field references
+        This ensures proper resolution in Odoo 19
     -->
 
     <!-- ========================================== -->
     <!-- TAB 1: MY TASKS - Personal Inbox          -->
-    <!-- Like ClickUp's "My Tasks" home screen     -->
     <!-- ========================================== -->
 
     <!-- KPI Row -->
     <record id="chart_my_tasks_today_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Due Today</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_task"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.task')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
-        <field name="kpi_date_filter_field_id" ref="project.field_project_task__date_deadline"/>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'project.task'), ('name', '=', 'date_deadline')]"/>
         <field name="kpi_date_filter_option">today</field>
         <field name="default_icon">fa fa-calendar-check-o</field>
         <field name="background_color">#3498db</field>
@@ -28,11 +26,10 @@
     </record>
 
     <record id="chart_my_overdue_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Overdue</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_task"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.task')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('user_ids', 'in', [uid]), ('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
         <field name="default_icon">fa fa-exclamation-circle</field>
@@ -41,14 +38,13 @@
     </record>
 
     <record id="chart_my_activities_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Activities Due</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="mail.model_mail_activity"/>
+        <field name="kpi_model_id" search="[('model', '=', 'mail.activity')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('user_id', '=', uid)]</field>
-        <field name="kpi_date_filter_field_id" ref="mail.field_mail_activity__date_deadline"/>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'mail.activity'), ('name', '=', 'date_deadline')]"/>
         <field name="kpi_date_filter_option">today</field>
         <field name="default_icon">fa fa-bell</field>
         <field name="background_color">#f39c12</field>
@@ -56,14 +52,13 @@
     </record>
 
     <record id="chart_my_week_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">This Week</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_task"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.task')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
-        <field name="kpi_date_filter_field_id" ref="project.field_project_task__date_deadline"/>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'project.task'), ('name', '=', 'date_deadline')]"/>
         <field name="kpi_date_filter_option">this_week</field>
         <field name="default_icon">fa fa-tasks</field>
         <field name="background_color">#27ae60</field>
@@ -72,100 +67,81 @@
 
     <!-- Task Lists -->
     <record id="chart_my_tasks_today" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My Tasks Today</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
-        <field name="date_filter_field_id" ref="project.field_project_task__date_deadline"/>
+        <field name="date_filter_field_id" search="[('model', '=', 'project.task'), ('name', '=', 'date_deadline')]"/>
         <field name="date_filter_option">today</field>
         <field name="limit_record">10</field>
     </record>
 
     <record id="chart_my_overdue_tasks" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My Overdue Tasks</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
         <field name="limit_record">10</field>
     </record>
 
     <record id="chart_my_urgent_tasks" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Urgent Tasks (High Priority)</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('priority', '=', '1'), ('stage_id.fold', '=', False)]</field>
         <field name="limit_record">10</field>
     </record>
 
-    <!-- Activities and Comments -->
+    <!-- Activities -->
     <record id="chart_my_activities" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My Activities Due</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="mail.model_mail_activity"/>
+        <field name="model_id" search="[('model', '=', 'mail.activity')]"/>
         <field name="domain">[('user_id', '=', uid)]</field>
-        <field name="date_filter_field_id" ref="mail.field_mail_activity__date_deadline"/>
+        <field name="date_filter_field_id" search="[('model', '=', 'mail.activity'), ('name', '=', 'date_deadline')]"/>
         <field name="date_filter_option">today</field>
         <field name="limit_record">10</field>
     </record>
 
     <!-- Task Charts -->
     <record id="chart_my_tasks_by_stage" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My Tasks by Stage</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
-        <field name="group_by_id" ref="project.field_project_task__stage_id"/>
+        <field name="group_by_id" search="[('model', '=', 'project.task'), ('name', '=', 'stage_id')]"/>
         <field name="data_type">count</field>
     </record>
 
     <record id="chart_my_tasks_by_priority" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My Tasks by Priority</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">pie_chart</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
-        <field name="group_by_id" ref="project.field_project_task__priority"/>
+        <field name="group_by_id" search="[('model', '=', 'project.task'), ('name', '=', 'priority')]"/>
         <field name="data_type">count</field>
-    </record>
-
-    <!-- My Assigned Comments -->
-    <record id="chart_my_comments" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">My Assigned Comments</field>
-        <field name="dashboard_id" ref="dashboard_my_tasks"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="mail.model_mail_message"/>
-        <field name="domain">[('message_type', '=', 'comment')]</field>
-        <field name="limit_record">10</field>
     </record>
 
     <!-- My Events This Week -->
     <record id="chart_my_events_week" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My Events This Week</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_project"/>
+        <field name="model_id" search="[('model', '=', 'project.project')]"/>
         <field name="domain">[('user_id', '=', uid), ('active', '=', True)]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
+        <field name="date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
         <field name="date_filter_option">this_week</field>
         <field name="limit_record">10</field>
     </record>
 
     <!-- Personal To-Do -->
     <record id="chart_my_todos" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">My To-Do's</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">to_do</field>
@@ -178,11 +154,10 @@
 
     <!-- Team KPIs -->
     <record id="chart_team_total_tasks_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Total Open Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_task"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.task')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('stage_id.fold', '=', False)]</field>
         <field name="default_icon">fa fa-tasks</field>
@@ -191,11 +166,10 @@
     </record>
 
     <record id="chart_team_overdue_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Total Overdue</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_task"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.task')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
         <field name="default_icon">fa fa-exclamation-triangle</field>
@@ -204,11 +178,10 @@
     </record>
 
     <record id="chart_team_unassigned_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Unassigned Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_task"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.task')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('user_ids', '=', False), ('stage_id.fold', '=', False)]</field>
         <field name="default_icon">fa fa-user-times</field>
@@ -216,677 +189,476 @@
         <field name="font_color">#ffffff</field>
     </record>
 
+    <record id="chart_team_active_projects_kpi" model="dashboard.chart">
+        <field name="name">Active Projects</field>
+        <field name="dashboard_id" ref="dashboard_team"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" search="[('model', '=', 'project.project')]"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_domain">[('active', '=', True)]</field>
+        <field name="default_icon">fa fa-folder-open</field>
+        <field name="background_color">#27ae60</field>
+        <field name="font_color">#ffffff</field>
+    </record>
+
     <!-- Team Charts -->
     <record id="chart_team_workload" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="name">Team Workload</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('stage_id.fold', '=', False)]</field>
-        <field name="group_by_id" ref="project.field_project_task__user_ids"/>
+        <field name="group_by_id" search="[('model', '=', 'project.task'), ('name', '=', 'user_ids')]"/>
         <field name="data_type">count</field>
     </record>
 
     <record id="chart_team_tasks_by_stage" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">All Tasks by Stage</field>
+        <field name="name">Tasks by Stage</field>
         <field name="dashboard_id" ref="dashboard_team"/>
-        <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="chart_type">doughnut_chart</field>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('stage_id.fold', '=', False)]</field>
-        <field name="group_by_id" ref="project.field_project_task__stage_id"/>
+        <field name="group_by_id" search="[('model', '=', 'project.task'), ('name', '=', 'stage_id')]"/>
         <field name="data_type">count</field>
     </record>
 
     <!-- Team Lists -->
-    <record id="chart_team_overdue" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+    <record id="chart_team_overdue_tasks" model="dashboard.chart">
         <field name="name">All Overdue Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_team_unassigned" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+    <record id="chart_team_unassigned_tasks" model="dashboard.chart">
         <field name="name">Unassigned Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_task"/>
+        <field name="model_id" search="[('model', '=', 'project.task')]"/>
         <field name="domain">[('user_ids', '=', False), ('stage_id.fold', '=', False)]</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_team_activities_overdue" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">All Overdue Activities</field>
+    <record id="chart_team_all_activities" model="dashboard.chart">
+        <field name="name">Team Activities Due Today</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="mail.model_mail_activity"/>
-        <field name="domain">[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]</field>
+        <field name="model_id" search="[('model', '=', 'mail.activity')]"/>
+        <field name="domain">[]</field>
+        <field name="date_filter_field_id" search="[('model', '=', 'mail.activity'), ('name', '=', 'date_deadline')]"/>
+        <field name="date_filter_option">today</field>
         <field name="limit_record">15</field>
-    </record>
-
-    <!-- Events by Coordinator -->
-    <record id="chart_team_events_by_user" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Events by Coordinator</field>
-        <field name="dashboard_id" ref="dashboard_team"/>
-        <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="project.model_project_project"/>
-        <field name="domain">[('active', '=', True)]</field>
-        <field name="group_by_id" ref="project.field_project_project__user_id"/>
-        <field name="data_type">count</field>
-    </record>
-
-    <!-- Revenue by Sales Rep -->
-    <record id="chart_team_revenue_by_rep" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Revenue by Sales Rep</field>
-        <field name="dashboard_id" ref="dashboard_team"/>
-        <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="domain">[('state', '=', 'sale')]</field>
-        <field name="group_by_id" ref="sale.field_sale_order__user_id"/>
-        <field name="data_type">sum</field>
-        <field name="date_filter_field_id" ref="sale.field_sale_order__date_order"/>
-        <field name="date_filter_option">this_month</field>
-    </record>
-
-    <!-- Team To-Do's -->
-    <record id="chart_team_todos" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Team To-Do's</field>
-        <field name="dashboard_id" ref="dashboard_team"/>
-        <field name="chart_type">to_do</field>
-        <field name="todo_layout">default</field>
     </record>
 
     <!-- ========================================== -->
     <!-- TAB 3: EVENTS - Event Calendar Hub        -->
     <!-- ========================================== -->
 
-    <!-- Event KPIs -->
+    <!-- Events KPIs -->
     <record id="chart_events_today_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Today's Events</field>
+        <field name="name">Events Today</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_project"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.project')]"/>
         <field name="kpi_data_type">count</field>
         <field name="kpi_domain">[('active', '=', True)]</field>
-        <field name="kpi_date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
         <field name="kpi_date_filter_option">today</field>
         <field name="default_icon">fa fa-calendar</field>
-        <field name="background_color">#9b59b6</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
-    <record id="chart_events_week_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">This Week</field>
-        <field name="dashboard_id" ref="dashboard_events"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_project"/>
-        <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('active', '=', True)]</field>
-        <field name="kpi_date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
-        <field name="kpi_date_filter_option">this_week</field>
-        <field name="default_icon">fa fa-calendar-o</field>
         <field name="background_color">#3498db</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_events_no_vendors_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Needs Vendors</field>
+    <record id="chart_events_week_kpi" model="dashboard.chart">
+        <field name="name">Events This Week</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="project.model_project_project"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.project')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('ptt_vendor_count', '=', 0), ('active', '=', True)]</field>
-        <field name="default_icon">fa fa-user-plus</field>
-        <field name="background_color">#e74c3c</field>
+        <field name="kpi_domain">[('active', '=', True)]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
+        <field name="kpi_date_filter_option">this_week</field>
+        <field name="default_icon">fa fa-calendar-o</field>
+        <field name="background_color">#27ae60</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_awaiting_vendor" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Awaiting Response</field>
+    <record id="chart_events_month_kpi" model="dashboard.chart">
+        <field name="name">Events This Month</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="kpi_model_id" search="[('model', '=', 'project.project')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('status', '=', 'sent')]</field>
-        <field name="default_icon">fa fa-clock-o</field>
+        <field name="kpi_domain">[('active', '=', True)]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="default_icon">fa fa-calendar-plus-o</field>
+        <field name="background_color">#9b59b6</field>
+        <field name="font_color">#ffffff</field>
+    </record>
+
+    <record id="chart_events_total_guests_kpi" model="dashboard.chart">
+        <field name="name">Total Guests This Month</field>
+        <field name="dashboard_id" ref="dashboard_events"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" search="[('model', '=', 'project.project')]"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_measurement_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_guest_count')]"/>
+        <field name="kpi_domain">[('active', '=', True)]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
+        <field name="kpi_date_filter_option">this_month</field>
+        <field name="default_icon">fa fa-users</field>
         <field name="background_color">#f39c12</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <!-- Event Lists -->
-    <record id="chart_todays_events" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+    <!-- Events Lists -->
+    <record id="chart_events_today" model="dashboard.chart">
         <field name="name">Today's Events</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_project"/>
+        <field name="model_id" search="[('model', '=', 'project.project')]"/>
         <field name="domain">[('active', '=', True)]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
+        <field name="date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
         <field name="date_filter_option">today</field>
         <field name="limit_record">10</field>
     </record>
 
     <record id="chart_events_this_week" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Events This Week</field>
+        <field name="name">This Week's Events</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_project"/>
+        <field name="model_id" search="[('model', '=', 'project.project')]"/>
         <field name="domain">[('active', '=', True)]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
+        <field name="date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
         <field name="date_filter_option">this_week</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_upcoming_events_list" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Upcoming Events (30 Days)</field>
+    <record id="chart_events_upcoming" model="dashboard.chart">
+        <field name="name">Upcoming Events (Next 30 Days)</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_project"/>
+        <field name="model_id" search="[('model', '=', 'project.project')]"/>
         <field name="domain">[('active', '=', True)]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
-        <field name="date_filter_option">next_month</field>
+        <field name="date_filter_field_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
+        <field name="date_filter_option">next_30_days</field>
         <field name="limit_record">20</field>
     </record>
 
-    <record id="chart_unassigned_events" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Events Needing Vendors</field>
-        <field name="dashboard_id" ref="dashboard_events"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_project"/>
-        <field name="domain">[('ptt_vendor_count', '=', 0), ('active', '=', True)]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
-        <field name="date_filter_option">next_month</field>
-        <field name="limit_record">10</field>
-    </record>
-
-    <!-- Event Charts -->
-    <record id="chart_projects_by_stage" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Events by Stage</field>
+    <!-- Events Charts -->
+    <record id="chart_events_by_month" model="dashboard.chart">
+        <field name="name">Events by Month</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="project.model_project_project"/>
+        <field name="model_id" search="[('model', '=', 'project.project')]"/>
         <field name="domain">[('active', '=', True)]</field>
-        <field name="group_by_id" ref="project.field_project_project__stage_id"/>
+        <field name="group_by_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_date')]"/>
         <field name="data_type">count</field>
     </record>
 
-    <!-- Vendor Widgets -->
-    <record id="chart_work_orders_status" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Work Orders by Status</field>
+    <record id="chart_events_by_type" model="dashboard.chart">
+        <field name="name">Events by Type</field>
         <field name="dashboard_id" ref="dashboard_events"/>
-        <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="group_by_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__status"/>
+        <field name="chart_type">pie_chart</field>
+        <field name="model_id" search="[('model', '=', 'project.project')]"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="group_by_id" search="[('model', '=', 'project.project'), ('name', '=', 'ptt_event_type')]"/>
         <field name="data_type">count</field>
-    </record>
-
-    <record id="chart_vendor_schedule" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Vendor Schedule This Week</field>
-        <field name="dashboard_id" ref="dashboard_events"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="domain">[('status', 'in', ['confirmed', 'sent'])]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__service_date"/>
-        <field name="date_filter_option">this_week</field>
-        <field name="limit_record">15</field>
-    </record>
-
-    <record id="chart_declined_work_orders" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Declined Work Orders</field>
-        <field name="dashboard_id" ref="dashboard_events"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="domain">[('status', '=', 'declined')]</field>
-        <field name="limit_record">10</field>
-    </record>
-
-    <record id="chart_pending_work_orders" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Pending Work Orders</field>
-        <field name="dashboard_id" ref="dashboard_events"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="domain">[('status', '=', 'pending')]</field>
-        <field name="limit_record">15</field>
     </record>
 
     <!-- ========================================== -->
-    <!-- TAB 4: PIPELINE - CRM + Sales Hub         -->
+    <!-- TAB 4: PIPELINE - CRM + Sales             -->
     <!-- ========================================== -->
 
     <!-- Pipeline KPIs -->
-    <record id="chart_new_leads_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">New Leads MTD</field>
+    <record id="chart_pipeline_open_leads_kpi" model="dashboard.chart">
+        <field name="name">Open Leads</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="crm.model_crm_lead"/>
+        <field name="kpi_model_id" search="[('model', '=', 'crm.lead')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('type', '=', 'lead')]</field>
-        <field name="kpi_date_filter_field_id" ref="crm.field_crm_lead__create_date"/>
-        <field name="kpi_date_filter_option">this_month</field>
-        <field name="previous_period_comparision" eval="True"/>
-        <field name="previous_period_duration">1</field>
-        <field name="previous_period_type">percentage</field>
-        <field name="default_icon">fa fa-user-plus</field>
-        <field name="background_color">#27ae60</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
-    <record id="chart_pipeline_value" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Pipeline Value</field>
-        <field name="dashboard_id" ref="dashboard_pipeline"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="crm.model_crm_lead"/>
-        <field name="kpi_data_type">sum</field>
-        <field name="kpi_domain">[('type', '=', 'opportunity'), ('probability', '&lt;', 100)]</field>
-        <field name="default_icon">fa fa-dollar</field>
+        <field name="kpi_domain">[('type', '=', 'lead'), ('active', '=', True)]</field>
+        <field name="default_icon">fa fa-bullseye</field>
         <field name="background_color">#3498db</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_open_quotes_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Open Quotes</field>
+    <record id="chart_pipeline_opportunities_kpi" model="dashboard.chart">
+        <field name="name">Open Opportunities</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="sale.model_sale_order"/>
+        <field name="kpi_model_id" search="[('model', '=', 'crm.lead')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('state', 'in', ['draft', 'sent'])]</field>
-        <field name="default_icon">fa fa-file-text-o</field>
+        <field name="kpi_domain">[('type', '=', 'opportunity'), ('active', '=', True)]</field>
+        <field name="default_icon">fa fa-trophy</field>
+        <field name="background_color">#27ae60</field>
+        <field name="font_color">#ffffff</field>
+    </record>
+
+    <record id="chart_pipeline_expected_revenue_kpi" model="dashboard.chart">
+        <field name="name">Expected Revenue</field>
+        <field name="dashboard_id" ref="dashboard_pipeline"/>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" search="[('model', '=', 'crm.lead')]"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_measurement_field_id" search="[('model', '=', 'crm.lead'), ('name', '=', 'expected_revenue')]"/>
+        <field name="kpi_domain">[('type', '=', 'opportunity'), ('active', '=', True)]</field>
+        <field name="default_icon">fa fa-dollar</field>
         <field name="background_color">#f39c12</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_bookings_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Bookings MTD</field>
+    <record id="chart_pipeline_quotes_sent_kpi" model="dashboard.chart">
+        <field name="name">Quotes Sent (This Month)</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="sale.model_sale_order"/>
+        <field name="kpi_model_id" search="[('model', '=', 'sale.order')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('state', '=', 'sale')]</field>
-        <field name="kpi_date_filter_field_id" ref="sale.field_sale_order__date_order"/>
+        <field name="kpi_domain">[('state', '=', 'sent')]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
         <field name="kpi_date_filter_option">this_month</field>
-        <field name="default_icon">fa fa-check-circle</field>
+        <field name="default_icon">fa fa-file-text-o</field>
         <field name="background_color">#9b59b6</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <!-- Pipeline Funnel -->
-    <record id="chart_leads_by_stage" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Pipeline Funnel</field>
+    <!-- Pipeline Charts -->
+    <record id="chart_pipeline_by_stage" model="dashboard.chart">
+        <field name="name">Pipeline by Stage</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">funnel_chart</field>
-        <field name="model_id" ref="crm.model_crm_lead"/>
-        <field name="domain">[('type', '=', 'opportunity')]</field>
-        <field name="group_by_id" ref="crm.field_crm_lead__stage_id"/>
+        <field name="model_id" search="[('model', '=', 'crm.lead')]"/>
+        <field name="domain">[('type', '=', 'opportunity'), ('active', '=', True)]</field>
+        <field name="group_by_id" search="[('model', '=', 'crm.lead'), ('name', '=', 'stage_id')]"/>
+        <field name="data_type">count</field>
+    </record>
+
+    <record id="chart_pipeline_by_salesperson" model="dashboard.chart">
+        <field name="name">Pipeline by Salesperson</field>
+        <field name="dashboard_id" ref="dashboard_pipeline"/>
+        <field name="chart_type">column_chart</field>
+        <field name="model_id" search="[('model', '=', 'crm.lead')]"/>
+        <field name="domain">[('type', '=', 'opportunity'), ('active', '=', True)]</field>
+        <field name="group_by_id" search="[('model', '=', 'crm.lead'), ('name', '=', 'user_id')]"/>
         <field name="data_type">count</field>
     </record>
 
     <!-- Pipeline Lists -->
-    <record id="chart_my_leads" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+    <record id="chart_pipeline_my_leads" model="dashboard.chart">
         <field name="name">My Open Leads</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="crm.model_crm_lead"/>
-        <field name="domain">[('user_id', '=', uid), ('type', '=', 'opportunity'), ('probability', '&lt;', 100)]</field>
-        <field name="limit_record">15</field>
+        <field name="model_id" search="[('model', '=', 'crm.lead')]"/>
+        <field name="domain">[('type', '=', 'lead'), ('user_id', '=', uid), ('active', '=', True)]</field>
+        <field name="limit_record">10</field>
     </record>
 
-    <record id="chart_my_quotes" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">My Open Quotes</field>
+    <record id="chart_pipeline_my_opportunities" model="dashboard.chart">
+        <field name="name">My Open Opportunities</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="domain">[('user_id', '=', uid), ('state', 'in', ['draft', 'sent'])]</field>
-        <field name="limit_record">15</field>
+        <field name="model_id" search="[('model', '=', 'crm.lead')]"/>
+        <field name="domain">[('type', '=', 'opportunity'), ('user_id', '=', uid), ('active', '=', True)]</field>
+        <field name="limit_record">10</field>
     </record>
 
-    <record id="chart_unsigned_contracts" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Unsigned Contracts</field>
+    <record id="chart_pipeline_unsigned_quotes" model="dashboard.chart">
+        <field name="name">Unsigned Quotes</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="model_id" search="[('model', '=', 'sale.order')]"/>
         <field name="domain">[('state', 'in', ['draft', 'sent'])]</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_followup_activities" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Follow-Up Activities Today</field>
+    <record id="chart_pipeline_activities_due" model="dashboard.chart">
+        <field name="name">CRM Activities Due Today</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="mail.model_mail_activity"/>
-        <field name="domain">[('user_id', '=', uid)]</field>
-        <field name="date_filter_field_id" ref="mail.field_mail_activity__date_deadline"/>
+        <field name="model_id" search="[('model', '=', 'mail.activity')]"/>
+        <field name="domain">[('res_model', '=', 'crm.lead'), ('user_id', '=', uid)]</field>
+        <field name="date_filter_field_id" search="[('model', '=', 'mail.activity'), ('name', '=', 'date_deadline')]"/>
         <field name="date_filter_option">today</field>
         <field name="limit_record">10</field>
     </record>
 
-    <!-- Revenue by Month Chart -->
-    <record id="chart_pipeline_revenue_month" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Revenue by Month</field>
-        <field name="dashboard_id" ref="dashboard_pipeline"/>
-        <field name="chart_type">line_chart</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="domain">[('state', '=', 'sale')]</field>
-        <field name="group_by_id" ref="sale.field_sale_order__date_order"/>
-        <field name="data_type">sum</field>
-        <field name="time_range">month</field>
-    </record>
-
-    <!-- Sales by Event Type (using CRM lead type) -->
-    <record id="chart_pipeline_by_type" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Opportunities by Stage</field>
-        <field name="dashboard_id" ref="dashboard_pipeline"/>
-        <field name="chart_type">pie_chart</field>
-        <field name="model_id" ref="crm.model_crm_lead"/>
-        <field name="domain">[('type', '=', 'opportunity')]</field>
-        <field name="group_by_id" ref="crm.field_crm_lead__stage_id"/>
-        <field name="data_type">count</field>
-    </record>
-
-    <!-- Outstanding Payments KPI for Pipeline -->
-    <record id="chart_pipeline_outstanding" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Outstanding Payments</field>
-        <field name="dashboard_id" ref="dashboard_pipeline"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="account.model_account_move"/>
-        <field name="kpi_data_type">sum</field>
-        <field name="kpi_domain">[('move_type', '=', 'out_invoice'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
-        <field name="default_icon">fa fa-exclamation-triangle</field>
-        <field name="background_color">#e74c3c</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
     <!-- ========================================== -->
     <!-- TAB 5: VENDORS - Vendor Management Hub    -->
-    <!-- Like a dedicated vendor operations center -->
     <!-- ========================================== -->
 
     <!-- Vendor KPIs -->
-    <record id="chart_vendor_pending_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Pending Work Orders</field>
+    <record id="chart_vendors_total_kpi" model="dashboard.chart">
+        <field name="name">Total Vendors</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="kpi_model_id" search="[('model', '=', 'res.partner')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('status', '=', 'pending')]</field>
-        <field name="default_icon">fa fa-hourglass-start</field>
-        <field name="background_color">#95a5a6</field>
+        <field name="kpi_domain">[('supplier_rank', '>', 0), ('is_company', '=', True)]</field>
+        <field name="default_icon">fa fa-truck</field>
+        <field name="background_color">#3498db</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_vendor_awaiting_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Awaiting Response</field>
+    <record id="chart_vendors_active_kpi" model="dashboard.chart">
+        <field name="name">Active Vendors</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="kpi_model_id" search="[('model', '=', 'res.partner')]"/>
         <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('status', '=', 'sent')]</field>
-        <field name="default_icon">fa fa-clock-o</field>
-        <field name="background_color">#f39c12</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
-    <record id="chart_vendor_confirmed_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Confirmed Vendors</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('status', '=', 'confirmed')]</field>
+        <field name="kpi_domain">[('supplier_rank', '>', 0), ('is_company', '=', True), ('active', '=', True)]</field>
         <field name="default_icon">fa fa-check-circle</field>
         <field name="background_color">#27ae60</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_vendor_declined_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Declined</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="kpi_data_type">count</field>
-        <field name="kpi_domain">[('status', '=', 'declined')]</field>
-        <field name="default_icon">fa fa-times-circle</field>
-        <field name="background_color">#e74c3c</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
-    <record id="chart_vendor_costs_mtd_kpi" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Vendor Costs MTD</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="kpi_data_type">sum</field>
-        <field name="kpi_date_filter_field_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__service_date"/>
-        <field name="kpi_date_filter_option">this_month</field>
-        <field name="default_icon">fa fa-money</field>
-        <field name="background_color">#3498db</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
-    <!-- Vendor Charts -->
-    <record id="chart_vendor_wo_by_status" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Work Orders by Status</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="group_by_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__status"/>
-        <field name="data_type">count</field>
-    </record>
-
-    <record id="chart_vendor_wo_by_service" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Work Orders by Service Type</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">pie_chart</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="group_by_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__service_type"/>
-        <field name="data_type">count</field>
-    </record>
-
     <!-- Vendor Lists -->
-    <record id="chart_vendor_pending_list" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Pending Work Orders</field>
+    <record id="chart_vendors_all" model="dashboard.chart">
+        <field name="name">All Vendors</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
+        <field name="model_id" search="[('model', '=', 'res.partner')]"/>
+        <field name="domain">[('supplier_rank', '>', 0), ('is_company', '=', True)]</field>
+        <field name="limit_record">20</field>
+    </record>
+
+    <!-- Vendor Assignments -->
+    <record id="chart_vendors_assignments_pending" model="dashboard.chart">
+        <field name="name">Pending Vendor Assignments</field>
+        <field name="dashboard_id" ref="dashboard_vendors"/>
+        <field name="chart_type">list</field>
+        <field name="model_id" search="[('model', '=', 'ptt.project.vendor.assignment')]"/>
         <field name="domain">[('status', '=', 'pending')]</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_vendor_awaiting_list" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Awaiting Vendor Response</field>
+    <record id="chart_vendors_assignments_confirmed" model="dashboard.chart">
+        <field name="name">Confirmed Vendor Assignments</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="domain">[('status', '=', 'sent')]</field>
+        <field name="model_id" search="[('model', '=', 'ptt.project.vendor.assignment')]"/>
+        <field name="domain">[('status', '=', 'confirmed')]</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_vendor_declined_list" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Declined Work Orders</field>
+    <!-- Vendor Charts -->
+    <record id="chart_vendors_by_category" model="dashboard.chart">
+        <field name="name">Vendors by Category</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="domain">[('status', '=', 'declined')]</field>
-        <field name="limit_record">10</field>
-    </record>
-
-    <record id="chart_vendor_schedule_week" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Vendor Schedule This Week</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="domain">[('status', 'in', ['confirmed', 'sent'])]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__service_date"/>
-        <field name="date_filter_option">this_week</field>
-        <field name="limit_record">20</field>
-    </record>
-
-    <record id="chart_vendor_events_needing" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Events Without Vendors</field>
-        <field name="dashboard_id" ref="dashboard_vendors"/>
-        <field name="chart_type">list</field>
-        <field name="model_id" ref="project.model_project_project"/>
-        <field name="domain">[('ptt_vendor_count', '=', 0), ('active', '=', True)]</field>
-        <field name="date_filter_field_id" ref="ptt_business_core.field_project_project__ptt_event_date"/>
-        <field name="date_filter_option">next_month</field>
-        <field name="limit_record">15</field>
+        <field name="chart_type">pie_chart</field>
+        <field name="model_id" search="[('model', '=', 'res.partner')]"/>
+        <field name="domain">[('supplier_rank', '>', 0), ('is_company', '=', True)]</field>
+        <field name="group_by_id" search="[('model', '=', 'res.partner'), ('name', '=', 'category_id')]"/>
+        <field name="data_type">count</field>
     </record>
 
     <!-- ========================================== -->
     <!-- TAB 6: SALES METRICS - Revenue + KPIs     -->
     <!-- ========================================== -->
 
-    <!-- Revenue KPIs -->
-    <record id="chart_revenue_mtd" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Revenue MTD</field>
+    <!-- Sales KPIs -->
+    <record id="chart_sales_revenue_month_kpi" model="dashboard.chart">
+        <field name="name">Revenue This Month</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="sale.model_sale_order"/>
+        <field name="kpi_model_id" search="[('model', '=', 'sale.order')]"/>
         <field name="kpi_data_type">sum</field>
-        <field name="kpi_domain">[('state', '=', 'sale')]</field>
-        <field name="kpi_date_filter_field_id" ref="sale.field_sale_order__date_order"/>
+        <field name="kpi_measurement_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'amount_total')]"/>
+        <field name="kpi_domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
         <field name="kpi_date_filter_option">this_month</field>
-        <field name="previous_period_comparision" eval="True"/>
-        <field name="previous_period_duration">1</field>
-        <field name="previous_period_type">percentage</field>
         <field name="default_icon">fa fa-dollar</field>
         <field name="background_color">#27ae60</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_outstanding_payments" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Outstanding Payments</field>
+    <record id="chart_sales_orders_month_kpi" model="dashboard.chart">
+        <field name="name">Orders This Month</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="account.model_account_move"/>
-        <field name="kpi_data_type">sum</field>
-        <field name="kpi_domain">[('move_type', '=', 'out_invoice'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
-        <field name="default_icon">fa fa-exclamation-triangle</field>
-        <field name="background_color">#e74c3c</field>
-        <field name="font_color">#ffffff</field>
-    </record>
-
-    <record id="chart_avg_deal_size" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Avg Deal Size</field>
-        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
-        <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="sale.model_sale_order"/>
-        <field name="kpi_data_type">average</field>
-        <field name="kpi_domain">[('state', '=', 'sale')]</field>
-        <field name="kpi_date_filter_field_id" ref="sale.field_sale_order__date_order"/>
+        <field name="kpi_model_id" search="[('model', '=', 'sale.order')]"/>
+        <field name="kpi_data_type">count</field>
+        <field name="kpi_domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
         <field name="kpi_date_filter_option">this_month</field>
-        <field name="default_icon">fa fa-bar-chart</field>
+        <field name="default_icon">fa fa-shopping-cart</field>
         <field name="background_color">#3498db</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_vendor_costs" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Vendor Costs MTD</field>
+    <record id="chart_sales_avg_order_kpi" model="dashboard.chart">
+        <field name="name">Avg Order Value</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
-        <field name="kpi_model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
-        <field name="kpi_data_type">sum</field>
-        <field name="kpi_date_filter_field_id" ref="ptt_business_core.field_ptt_project_vendor_assignment__service_date"/>
+        <field name="kpi_model_id" search="[('model', '=', 'sale.order')]"/>
+        <field name="kpi_data_type">average</field>
+        <field name="kpi_measurement_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'amount_total')]"/>
+        <field name="kpi_domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="kpi_date_filter_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
         <field name="kpi_date_filter_option">this_month</field>
-        <field name="default_icon">fa fa-money</field>
+        <field name="default_icon">fa fa-bar-chart</field>
         <field name="background_color">#f39c12</field>
         <field name="font_color">#ffffff</field>
     </record>
 
-    <!-- Revenue Charts -->
-    <record id="chart_revenue_by_month" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Revenue by Month</field>
+    <record id="chart_sales_outstanding_kpi" model="dashboard.chart">
+        <field name="name">Outstanding Payments</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
-        <field name="chart_type">line_chart</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="domain">[('state', '=', 'sale')]</field>
-        <field name="group_by_id" ref="sale.field_sale_order__date_order"/>
-        <field name="data_type">sum</field>
-        <field name="time_range">month</field>
+        <field name="chart_type">kpi</field>
+        <field name="kpi_model_id" search="[('model', '=', 'account.move')]"/>
+        <field name="kpi_data_type">sum</field>
+        <field name="kpi_measurement_field_id" search="[('model', '=', 'account.move'), ('name', '=', 'amount_residual')]"/>
+        <field name="kpi_domain">[('move_type', '=', 'out_invoice'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
+        <field name="default_icon">fa fa-exclamation-circle</field>
+        <field name="background_color">#e74c3c</field>
+        <field name="font_color">#ffffff</field>
     </record>
 
-    <record id="chart_sales_by_user" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Sales by Rep</field>
+    <!-- Sales Charts -->
+    <record id="chart_sales_by_month" model="dashboard.chart">
+        <field name="name">Sales by Month</field>
+        <field name="dashboard_id" ref="dashboard_sales_metrics"/>
+        <field name="chart_type">area_chart</field>
+        <field name="model_id" search="[('model', '=', 'sale.order')]"/>
+        <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="group_by_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
+        <field name="measurement_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'amount_total')]"/>
+        <field name="data_type">sum</field>
+    </record>
+
+    <record id="chart_sales_by_salesperson" model="dashboard.chart">
+        <field name="name">Sales by Salesperson</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">column_chart</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="domain">[('state', '=', 'sale')]</field>
-        <field name="group_by_id" ref="sale.field_sale_order__user_id"/>
+        <field name="model_id" search="[('model', '=', 'sale.order')]"/>
+        <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="group_by_id" search="[('model', '=', 'sale.order'), ('name', '=', 'user_id')]"/>
+        <field name="measurement_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'amount_total')]"/>
         <field name="data_type">sum</field>
-        <field name="date_filter_field_id" ref="sale.field_sale_order__date_order"/>
+        <field name="date_filter_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
         <field name="date_filter_option">this_month</field>
     </record>
 
-    <!-- Outstanding Invoices List -->
-    <record id="chart_outstanding_invoices" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Outstanding Invoices</field>
+    <!-- Sales Lists -->
+    <record id="chart_sales_recent_orders" model="dashboard.chart">
+        <field name="name">Recent Confirmed Orders</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="domain">[('move_type', '=', 'out_invoice'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
+        <field name="model_id" search="[('model', '=', 'sale.order')]"/>
+        <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="date_filter_field_id" search="[('model', '=', 'sale.order'), ('name', '=', 'date_order')]"/>
+        <field name="date_filter_option">this_month</field>
         <field name="limit_record">15</field>
     </record>
 
-    <record id="chart_recent_bookings" model="dashboard.chart">
-        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="name">Recent Bookings</field>
+    <record id="chart_sales_unpaid_invoices" model="dashboard.chart">
+        <field name="name">Unpaid Invoices</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">list</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="domain">[('state', '=', 'sale')]</field>
-        <field name="date_filter_field_id" ref="sale.field_sale_order__date_order"/>
-        <field name="date_filter_option">this_month</field>
+        <field name="model_id" search="[('model', '=', 'account.move')]"/>
+        <field name="domain">[('move_type', '=', 'out_invoice'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
         <field name="limit_record">15</field>
     </record>
 
