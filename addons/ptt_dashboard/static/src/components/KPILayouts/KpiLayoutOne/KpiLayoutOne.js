@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onMounted, useEffect, useState, markup } from "@odoo/owl";
+import { Component, onMounted, useEffect, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 export class KpiLayoutOne extends Component {
@@ -12,14 +12,12 @@ export class KpiLayoutOne extends Component {
   setup() {
     this.state = useState({
       data: this.props.data,
-      kpi_icon: "",
+      kpi_icon: this.props.data.kpi_icon || "",
     });
     useEffect(
       () => {
         this.state.data = this.props.data;
-        if (this.state.data && this.state.data.default_icon) {
-          this.state.kpi_icon = markup(`<i class="${this.state.data.default_icon}" style="font-size: 2em;"></i>`);
-        }
+        this.state.kpi_icon = this.props.data.kpi_icon || "";
       },
       () => [this.props.data],
     );
