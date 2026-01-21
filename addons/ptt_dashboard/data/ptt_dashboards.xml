@@ -26,7 +26,12 @@
         <field name="name">Pipeline</field>
     </record>
 
-    <!-- Tab 5: Sales Metrics Dashboard (Revenue + KPIs) -->
+    <!-- Tab 5: Vendors Dashboard (Vendor Management Hub) -->
+    <record id="dashboard_vendors" model="dashboard.dashboard">
+        <field name="name">Vendors</field>
+    </record>
+
+    <!-- Tab 6: Sales Metrics Dashboard (Revenue + KPIs) -->
     <record id="dashboard_sales_metrics" model="dashboard.dashboard">
         <field name="name">Sales Metrics</field>
     </record>
@@ -43,6 +48,9 @@
     </function>
     <function name="create_update_menu" model="dashboard.dashboard">
         <value eval="[ref('dashboard_pipeline')]" />
+    </function>
+    <function name="create_update_menu" model="dashboard.dashboard">
+        <value eval="[ref('dashboard_vendors')]" />
     </function>
     <function name="create_update_menu" model="dashboard.dashboard">
         <value eval="[ref('dashboard_sales_metrics')]" />
