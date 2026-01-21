@@ -591,8 +591,32 @@ class Dashboard(models.Model):
 
     def unlink(self):
         """
-        Delete dashboard menu
+        Delete dashboard menu - auto-delete menus during module update
         """
+        # During module update/install, delete associated menus automatically
+        # Check multiple context flags that indicate system operations
+        is_system_operation = (
+            self.env.context.get('module') or 
+            self.env.context.get('install_mode') or
+            self.env.context.get('_force_unlink') or
+            self.env.su  # System user / superuser mode during upgrades
+        )
+        
+        if is_system_operation:
+            for rec in self:
+                if rec.created_menu_id:
+                    try:
+                        rec.created_menu_id.unlink()
+                    except Exception:
+                        pass  # Menu may already be deleted
+                if rec.created_action_id:
+                    try:
+                        rec.created_action_id.unlink()
+                    except Exception:
+                        pass  # Action may already be deleted
+            return super(Dashboard, self).unlink()
+        
+        # Normal operation - require manual menu deletion first
         for rec in self:
             if rec.created_menu_id:
                 raise ValidationError(
@@ -600,7 +624,6 @@ class Dashboard(models.Model):
                         "To delete selected dashboard, kindly click on Delete Menu first!"
                     )
                 )
-            # rec.action_delete_menu()
         return super(Dashboard, self).unlink()
 
     def action_view_charts(self):
