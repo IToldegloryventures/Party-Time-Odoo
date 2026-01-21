@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="module_category_dashboard" model="ir.module.category">
-        <field name="name">PTT Dashboard</field>
-        <field name="description">Party Time Texas Dashboard - Track events, sales, vendors, and KPIs.</field>
+        <field name="name">BI Dashboard</field>
+        <field name="description">Allows you to manage your Dashboard.</field>
         <field name="sequence">1</field>
     </record>
 
@@ -25,21 +25,74 @@
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
-    <data noupdate="0">
-        <!-- ALL internal users can see ALL charts -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+    </record>
+
+    <data noupdate="1">
         <record id="dashboard_chart_user_rule" model="ir.rule">
-            <field name="name">Dashboard Chart - All Users</field>
+            <field name="name">Dashboard Chart</field>
             <field name="model_id" ref="ptt_dashboard.model_dashboard_chart"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="domain_force">[
+'|', '|', '|',
+    '&amp;','&amp;',
+        ('chart_type', '=', 'to_do'),
+        ('todo_layout', '=', 'activity'),
+        '|',
+        ('model_id', 'in', [model.model_id.id for model in user.group_ids.model_access]),
+        ('model_id', 'in', [model.model_id.id for model in user.model_access]),
+    '&amp;','&amp;',
+        ('chart_type', '=', 'to_do'),
+        ('todo_layout', '!=', 'activity'),
+        ('model_id', '=', False),
+    '&amp;',
+        ('chart_type', '!=', 'to_do'),
+        '|',
+        ('model_id', 'in', [model.model_id.id for model in user.group_ids.model_access]),
+        ('model_id', 'in', [model.model_id.id for model in user.model_access]),
+
+    '|',
+        '|',
+        ('company_id','=',False),
+        ('company_id', 'in', company_ids),
+        '|', '|',
+        ('kpi_model_id','=',False),
+        ('kpi_model_id', 'in', [model.model_id.id for model in user.group_ids.model_access]),
+        ('kpi_model_id', 'in', [model.model_id.id for model in user.model_access])
+]
+            </field>
         </record>
 
-        <!-- ALL internal users can see ALL dashboards -->
-        <record id="dashboard_user_rule" model="ir.rule">
-            <field name="name">Dashboard - All Users</field>
-            <field name="model_id" ref="ptt_dashboard.model_dashboard_dashboard"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <record id="dashboard_chart_global_multi_company_rule" model="ir.rule">
+            <field name="name">Dashboard Chart Global Multi Company</field>
+            <field name="model_id" ref="ptt_dashboard.model_dashboard_chart"/>
+            <field name="domain_force">['|', ('company_id','=',False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('ptt_dashboard.group_dashboard_manager'))]"/>
         </record>
+
+        <record id="dashboard_user_rule" model="ir.rule">
+            <field name="name">Dashboard</field>
+            <field name="model_id" ref="ptt_dashboard.model_dashboard_dashboard"/>
+            <field name="domain_force">[
+    '|', '|', '|',
+        ('user_ids', 'in', user.ids),
+        ('user_ids', '=', False),
+        '&amp;',
+            ('access_by', '=', 'access_group'),
+            ('group_ids', 'in', user.group_ids.ids),
+    '|',
+        ('company_id', '=', False),
+        ('company_id', 'in', company_ids)
+]</field>
+            <field name="groups" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        </record>
+
+        <record id="dashboard_multi_company_rule" model="ir.rule">
+            <field name="name">Dashboard Multi Company</field>
+            <field name="model_id" ref="ptt_dashboard.model_dashboard_dashboard"/>
+            <field name="domain_force">['|', ('company_id','=',False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('ptt_dashboard.group_dashboard_manager'))]"/>
+        </record>
+
     </data>
 </odoo>

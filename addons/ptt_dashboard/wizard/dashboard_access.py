@@ -73,7 +73,7 @@ class DashboardAccess(models.TransientModel):
     dashboard_id = fields.Many2one(
         "dashboard.dashboard",
         string="Dashboard",
-        domain=[("is_save_template", "=", False)],
+        domain=[],
     )
 
     @api.onchange("is_remove")
