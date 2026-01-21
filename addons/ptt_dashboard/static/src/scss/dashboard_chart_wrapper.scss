@@ -28,132 +28,142 @@
 }
 
 // =============================================================================
-// DARK MODE SUPPORT
+// DARK MODE SUPPORT - AGGRESSIVE OVERRIDE
 // =============================================================================
-// Odoo 19 uses .o_dark class on html element for dark mode
-html.o_dark, .o_dark {
-  // Dashboard grid item - force dark background for cards without explicit colors
-  .grid-stack-item-content {
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    
-    &:hover {
-      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
-    }
+// Force ALL dashboard cards to have visible backgrounds and text in dark mode
+
+// Target html.o_dark (Odoo 19 dark mode class)
+html.o_dark {
+  // FORCE dark background on ALL grid items - override inline styles
+  .grid-stack-item-content,
+  .grid-stack-item-content[style],
+  .grid-stack-item-content > div,
+  .grid-stack-item-content > div[style] {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
+    border: 1px solid #4b5563 !important;
+    border-radius: 8px !important;
   }
 
-  // KPI Cards - ensure text is readable on both colored and default backgrounds
-  .oe_inner, .kpi-card, .chart-wrapper, .bi-chart-wrapper {
-    // Cards WITH background colors keep their colors - just fix text
+  // ALL cards, wrappers, containers
+  .card,
+  .shadow,
+  .tile_layout_1,
+  .oe_inner,
+  .oe_card_layout,
+  .card-body,
+  [class*="layout"],
+  [class*="wrapper"],
+  [class*="container"] {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
+  }
+
+  // ALL text elements - force white/light text
+  .grid-stack-item-content h1,
+  .grid-stack-item-content h2,
+  .grid-stack-item-content h3,
+  .grid-stack-item-content h4,
+  .grid-stack-item-content h5,
+  .grid-stack-item-content h6,
+  .grid-stack-item-content p,
+  .grid-stack-item-content span,
+  .grid-stack-item-content div,
+  .grid-stack-item-content label,
+  .grid-stack-item-content .oe_name,
+  .grid-stack-item-content .oe_title,
+  .grid-stack-item-content .oe_tile,
+  .grid-stack-item-content .title,
+  .grid-stack-item-content .kpi-value,
+  .grid-stack-item-content .kpi-title {
     color: #ffffff !important;
-    
-    h1, h2, h3, h4, h5, h6, span, p, div {
-      color: inherit !important;
-    }
-    
-    .kpi-value, .kpi-title, .chart-title {
-      color: #ffffff !important;
-    }
   }
 
-  // Cards without explicit background color - give them dark bg
-  .grid-stack-item-content:not([style*="background"]) {
-    background-color: #2d2d2d !important;
-  }
-
-  // Chart/Widget title in header
-  .chart-header {
-    .title {
-      color: #ffffff !important;
-    }
-  }
-
-  // List views - dark background friendly
-  .o_list_renderer, .o_list_view, .list-container, table {
-    background-color: #2d2d2d !important;
-    color: #e0e0e0 !important;
-    
-    th {
-      background-color: #1e1e1e !important;
-      color: #ffffff !important;
-      border-color: rgba(255, 255, 255, 0.15) !important;
-    }
-    
-    td {
-      color: #e0e0e0 !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-    }
-    
-    tr:hover {
-      background-color: rgba(255, 255, 255, 0.08) !important;
-    }
-  }
-
-  // Chart backgrounds
-  .chart-container, .amcharts-main-div, canvas {
+  // Chart header titles
+  .chart-header,
+  .chart-header .title {
+    color: #ffffff !important;
     background-color: transparent !important;
   }
 
-  // Todo widget
-  .todo-item, .bi-todo-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #e0e0e0 !important;
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+  // Tables/Lists
+  table,
+  .o_list_view,
+  .list-container,
+  tbody,
+  thead {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
   }
 
-  // Comparison indicators (green/red arrows)
-  .comparison-up {
-    color: #2ecc71 !important; // Brighter green for dark mode
-  }
-  .comparison-down {
-    color: #e74c3c !important; // Keep red visible
+  th {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+    border-color: #4b5563 !important;
   }
 
-  // Progress bars in dark mode
-  .oe_progress div[role="progressbar"] {
-    background: radial-gradient(
-        closest-side,
-        #2d2d2d 74%,
-        transparent 0 102.9%,
-        #2d2d2d 0
-      ),
-      conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0);
+  td {
+    background-color: #374151 !important;
+    color: #e5e7eb !important;
+    border-color: #4b5563 !important;
   }
 
-  .oe_progress div[role="progressbar"]::before {
-    background-color: #2d2d2d;
-    color: #ffffff;
+  tr:hover td {
+    background-color: #4b5563 !important;
   }
 
-  // Font Awesome icons should be visible
-  .fa, [class*="fa-"] {
+  // Icons
+  i.fa,
+  .fa,
+  [class*="fa-"] {
     color: inherit !important;
   }
 
-  // Pagination in list widgets
-  .pagination-container, .pager {
-    color: #e0e0e0 !important;
-    
+  // Comparison arrows
+  .comparison-up { color: #34d399 !important; }
+  .comparison-down { color: #f87171 !important; }
+
+  // Empty states
+  .o_nocontent_help,
+  .empty-state,
+  .text-muted {
+    color: #9ca3af !important;
+  }
+
+  // Progress bars
+  .oe_progress div[role="progressbar"] {
+    background: radial-gradient(closest-side, #374151 74%, transparent 0 102.9%, #374151 0),
+      conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0) !important;
+  }
+  .oe_progress div[role="progressbar"]::before {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+  }
+
+  // Pagination
+  .pagination-container,
+  .pager {
+    color: #e5e7eb !important;
     button, .btn {
-      background: #1e1e1e !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
-      color: #e0e0e0 !important;
-      
-      &:hover {
-        background: #3a3a3a !important;
-      }
+      background: #1f2937 !important;
+      border-color: #4b5563 !important;
+      color: #e5e7eb !important;
+      &:hover { background: #374151 !important; }
     }
   }
 
-  // Empty state messages
-  .o_nocontent_help, .empty-state {
-    color: #a0a0a0 !important;
+  // Hover effects
+  .grid-stack-item-content:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+// Also target body.o_dark as fallback
+body.o_dark {
+  .grid-stack-item-content,
+  .grid-stack-item-content[style] {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
   }
 }
 .oe_progress {

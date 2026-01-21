@@ -2,8 +2,8 @@
 <odoo noupdate="0">
     <!-- 
         PTT Dashboard Configuration
-        5 Pre-configured dashboards for Party Time Texas Home Hub
-        Enhanced with validated Odoo 19 compatible widgets
+        6 Pre-configured dashboards for Party Time Texas Home Hub
+        NOTE: "My Dashboard" (from dashboard_data.xml) is for users to create custom views
     -->
 
     <!-- Tab 1: My Tasks Dashboard (Personal Inbox) -->
