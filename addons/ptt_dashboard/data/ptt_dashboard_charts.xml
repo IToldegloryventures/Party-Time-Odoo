@@ -13,6 +13,7 @@
 
     <!-- KPI Row -->
     <record id="chart_my_tasks_today_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Due Today</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
@@ -27,6 +28,7 @@
     </record>
 
     <record id="chart_my_overdue_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Overdue</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
@@ -39,6 +41,7 @@
     </record>
 
     <record id="chart_my_activities_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Activities Due</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
@@ -53,6 +56,7 @@
     </record>
 
     <record id="chart_my_week_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">This Week</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
@@ -68,6 +72,7 @@
 
     <!-- Task Lists -->
     <record id="chart_my_tasks_today" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Tasks Today</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
@@ -79,6 +84,7 @@
     </record>
 
     <record id="chart_my_overdue_tasks" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Overdue Tasks</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
@@ -88,6 +94,7 @@
     </record>
 
     <record id="chart_my_urgent_tasks" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Urgent Tasks (High Priority)</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
@@ -98,6 +105,7 @@
 
     <!-- Activities and Comments -->
     <record id="chart_my_activities" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Activities Due</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
@@ -110,6 +118,7 @@
 
     <!-- Task Charts -->
     <record id="chart_my_tasks_by_stage" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Tasks by Stage</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">column_chart</field>
@@ -120,6 +129,7 @@
     </record>
 
     <record id="chart_my_tasks_by_priority" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Tasks by Priority</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">pie_chart</field>
@@ -131,6 +141,7 @@
 
     <!-- My Assigned Comments -->
     <record id="chart_my_comments" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Assigned Comments</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
@@ -141,6 +152,7 @@
 
     <!-- My Events This Week -->
     <record id="chart_my_events_week" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Events This Week</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
@@ -153,6 +165,7 @@
 
     <!-- Personal To-Do -->
     <record id="chart_my_todos" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My To-Do's</field>
         <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">to_do</field>
@@ -165,6 +178,7 @@
 
     <!-- Team KPIs -->
     <record id="chart_team_total_tasks_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Total Open Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">kpi</field>
@@ -177,6 +191,7 @@
     </record>
 
     <record id="chart_team_overdue_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Total Overdue</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">kpi</field>
@@ -189,6 +204,7 @@
     </record>
 
     <record id="chart_team_unassigned_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Unassigned Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">kpi</field>
@@ -202,6 +218,7 @@
 
     <!-- Team Charts -->
     <record id="chart_team_workload" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Team Workload</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">column_chart</field>
@@ -212,6 +229,7 @@
     </record>
 
     <record id="chart_team_tasks_by_stage" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">All Tasks by Stage</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">column_chart</field>
@@ -223,6 +241,7 @@
 
     <!-- Team Lists -->
     <record id="chart_team_overdue" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">All Overdue Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">list</field>
@@ -232,6 +251,7 @@
     </record>
 
     <record id="chart_team_unassigned" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Unassigned Tasks</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">list</field>
@@ -241,6 +261,7 @@
     </record>
 
     <record id="chart_team_activities_overdue" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">All Overdue Activities</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">list</field>
@@ -251,6 +272,7 @@
 
     <!-- Events by Coordinator -->
     <record id="chart_team_events_by_user" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Events by Coordinator</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">column_chart</field>
@@ -262,6 +284,7 @@
 
     <!-- Revenue by Sales Rep -->
     <record id="chart_team_revenue_by_rep" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Revenue by Sales Rep</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">column_chart</field>
@@ -275,6 +298,7 @@
 
     <!-- Team To-Do's -->
     <record id="chart_team_todos" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Team To-Do's</field>
         <field name="dashboard_id" ref="dashboard_team"/>
         <field name="chart_type">to_do</field>
@@ -287,6 +311,7 @@
 
     <!-- Event KPIs -->
     <record id="chart_events_today_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Today's Events</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
@@ -301,6 +326,7 @@
     </record>
 
     <record id="chart_events_week_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">This Week</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
@@ -315,6 +341,7 @@
     </record>
 
     <record id="chart_events_no_vendors_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Needs Vendors</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
@@ -327,6 +354,7 @@
     </record>
 
     <record id="chart_awaiting_vendor" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Awaiting Response</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">kpi</field>
@@ -340,6 +368,7 @@
 
     <!-- Event Lists -->
     <record id="chart_todays_events" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Today's Events</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -351,6 +380,7 @@
     </record>
 
     <record id="chart_events_this_week" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Events This Week</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -362,6 +392,7 @@
     </record>
 
     <record id="chart_upcoming_events_list" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Upcoming Events (30 Days)</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -373,6 +404,7 @@
     </record>
 
     <record id="chart_unassigned_events" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Events Needing Vendors</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -385,6 +417,7 @@
 
     <!-- Event Charts -->
     <record id="chart_projects_by_stage" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Events by Stage</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">column_chart</field>
@@ -396,6 +429,7 @@
 
     <!-- Vendor Widgets -->
     <record id="chart_work_orders_status" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Work Orders by Status</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">column_chart</field>
@@ -405,6 +439,7 @@
     </record>
 
     <record id="chart_vendor_schedule" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Vendor Schedule This Week</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -416,6 +451,7 @@
     </record>
 
     <record id="chart_declined_work_orders" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Declined Work Orders</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -425,6 +461,7 @@
     </record>
 
     <record id="chart_pending_work_orders" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Pending Work Orders</field>
         <field name="dashboard_id" ref="dashboard_events"/>
         <field name="chart_type">list</field>
@@ -439,6 +476,7 @@
 
     <!-- Pipeline KPIs -->
     <record id="chart_new_leads_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">New Leads MTD</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
@@ -456,6 +494,7 @@
     </record>
 
     <record id="chart_pipeline_value" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Pipeline Value</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
@@ -468,6 +507,7 @@
     </record>
 
     <record id="chart_open_quotes_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Open Quotes</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
@@ -480,6 +520,7 @@
     </record>
 
     <record id="chart_bookings_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Bookings MTD</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
@@ -495,6 +536,7 @@
 
     <!-- Pipeline Funnel -->
     <record id="chart_leads_by_stage" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Pipeline Funnel</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">funnel_chart</field>
@@ -506,6 +548,7 @@
 
     <!-- Pipeline Lists -->
     <record id="chart_my_leads" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Open Leads</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
@@ -515,6 +558,7 @@
     </record>
 
     <record id="chart_my_quotes" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">My Open Quotes</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
@@ -524,6 +568,7 @@
     </record>
 
     <record id="chart_unsigned_contracts" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Unsigned Contracts</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
@@ -533,6 +578,7 @@
     </record>
 
     <record id="chart_followup_activities" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Follow-Up Activities Today</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">list</field>
@@ -545,6 +591,7 @@
 
     <!-- Revenue by Month Chart -->
     <record id="chart_pipeline_revenue_month" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Revenue by Month</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">line_chart</field>
@@ -557,6 +604,7 @@
 
     <!-- Sales by Event Type (using CRM lead type) -->
     <record id="chart_pipeline_by_type" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Opportunities by Stage</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">pie_chart</field>
@@ -568,6 +616,7 @@
 
     <!-- Outstanding Payments KPI for Pipeline -->
     <record id="chart_pipeline_outstanding" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Outstanding Payments</field>
         <field name="dashboard_id" ref="dashboard_pipeline"/>
         <field name="chart_type">kpi</field>
@@ -586,6 +635,7 @@
 
     <!-- Vendor KPIs -->
     <record id="chart_vendor_pending_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Pending Work Orders</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
@@ -598,6 +648,7 @@
     </record>
 
     <record id="chart_vendor_awaiting_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Awaiting Response</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
@@ -610,6 +661,7 @@
     </record>
 
     <record id="chart_vendor_confirmed_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Confirmed Vendors</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
@@ -622,6 +674,7 @@
     </record>
 
     <record id="chart_vendor_declined_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Declined</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
@@ -634,6 +687,7 @@
     </record>
 
     <record id="chart_vendor_costs_mtd_kpi" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Vendor Costs MTD</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">kpi</field>
@@ -648,6 +702,7 @@
 
     <!-- Vendor Charts -->
     <record id="chart_vendor_wo_by_status" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Work Orders by Status</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">column_chart</field>
@@ -657,6 +712,7 @@
     </record>
 
     <record id="chart_vendor_wo_by_service" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Work Orders by Service Type</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">pie_chart</field>
@@ -667,6 +723,7 @@
 
     <!-- Vendor Lists -->
     <record id="chart_vendor_pending_list" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Pending Work Orders</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
@@ -676,6 +733,7 @@
     </record>
 
     <record id="chart_vendor_awaiting_list" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Awaiting Vendor Response</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
@@ -685,6 +743,7 @@
     </record>
 
     <record id="chart_vendor_declined_list" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Declined Work Orders</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
@@ -694,6 +753,7 @@
     </record>
 
     <record id="chart_vendor_schedule_week" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Vendor Schedule This Week</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
@@ -705,6 +765,7 @@
     </record>
 
     <record id="chart_vendor_events_needing" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Events Without Vendors</field>
         <field name="dashboard_id" ref="dashboard_vendors"/>
         <field name="chart_type">list</field>
@@ -721,6 +782,7 @@
 
     <!-- Revenue KPIs -->
     <record id="chart_revenue_mtd" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Revenue MTD</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
@@ -738,6 +800,7 @@
     </record>
 
     <record id="chart_outstanding_payments" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Outstanding Payments</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
@@ -750,6 +813,7 @@
     </record>
 
     <record id="chart_avg_deal_size" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Avg Deal Size</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
@@ -764,6 +828,7 @@
     </record>
 
     <record id="chart_vendor_costs" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Vendor Costs MTD</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
@@ -778,6 +843,7 @@
 
     <!-- Revenue Charts -->
     <record id="chart_revenue_by_month" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Revenue by Month</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">line_chart</field>
@@ -789,6 +855,7 @@
     </record>
 
     <record id="chart_sales_by_user" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Sales by Rep</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">column_chart</field>
@@ -802,6 +869,7 @@
 
     <!-- Outstanding Invoices List -->
     <record id="chart_outstanding_invoices" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Outstanding Invoices</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">list</field>
@@ -811,6 +879,7 @@
     </record>
 
     <record id="chart_recent_bookings" model="dashboard.chart">
+        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         <field name="name">Recent Bookings</field>
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">list</field>
