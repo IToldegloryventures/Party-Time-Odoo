@@ -59,7 +59,6 @@ class PttVendorServicePricing(models.Model):
             service = record.service_type_id.name or "?"
             record.display_name = f"{vendor} - {service}"
 
-    _unique_vendor_service_type = models.Constraint(
-        "UNIQUE(vendor_id, service_type_id)",
-        "Each vendor can only have one pricing entry per service type.",
-    )
+    _sql_constraints = [
+        ('unique_vendor_service_type', 'UNIQUE(vendor_id, service_type_id)', 'Each vendor can only have one pricing entry per service type.'),
+    ]

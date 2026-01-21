@@ -11,14 +11,10 @@ class PttProjectVendorAssignment(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "service_type, id"
 
-    _positive_estimated_cost = models.Constraint(
-        "CHECK (estimated_cost >= 0)",
-        "Estimated cost cannot be negative.",
-    )
-    _positive_actual_cost = models.Constraint(
-        "CHECK (actual_cost >= 0)",
-        "Actual cost cannot be negative.",
-    )
+    _sql_constraints = [
+        ('positive_estimated_cost', 'CHECK (estimated_cost >= 0)', 'Estimated cost cannot be negative.'),
+        ('positive_actual_cost', 'CHECK (actual_cost >= 0)', 'Actual cost cannot be negative.'),
+    ]
 
     project_id = fields.Many2one(
         "project.project",
