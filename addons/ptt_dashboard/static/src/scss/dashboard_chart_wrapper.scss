@@ -26,6 +26,90 @@
     }
   }
 }
+
+// =============================================================================
+// DARK MODE SUPPORT
+// =============================================================================
+// Odoo 19 uses .o_dark class on html element for dark mode
+html.o_dark, .o_dark {
+  // Dashboard container adjustments
+  .grid-stack-item-content {
+    &:hover {
+      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // KPI Cards - ensure text is readable
+  .oe_inner {
+    // Add subtle border for definition in dark mode
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    
+    // Ensure white text stays white
+    color: #ffffff !important;
+    
+    h1, h2, h3, h4, h5, h6, span, p, .kpi-value, .kpi-title {
+      color: inherit !important;
+    }
+  }
+
+  // List views - dark background friendly
+  .o_list_renderer, .o_list_view {
+    background-color: var(--o-view-background-color, #1e1e1e) !important;
+    
+    th, td {
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+  }
+
+  // Chart backgrounds
+  .chart-container, .amcharts-main-div {
+    background-color: transparent !important;
+  }
+
+  // Todo widget
+  .todo-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // Dashboard header/title
+  .chart-header .title {
+    color: var(--o-color-text, #ffffff) !important;
+  }
+
+  // Comparison indicators (green/red arrows)
+  .comparison-up {
+    color: #2ecc71 !important; // Brighter green for dark mode
+  }
+  .comparison-down {
+    color: #e74c3c !important; // Keep red visible
+  }
+
+  // Progress bars in dark mode
+  .oe_progress div[role="progressbar"] {
+    background: radial-gradient(
+        closest-side,
+        #2d2d2d 74%,
+        transparent 0 102.9%,
+        #2d2d2d 0
+      ),
+      conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0);
+  }
+
+  .oe_progress div[role="progressbar"]::before {
+    background-color: #2d2d2d;
+    color: #ffffff;
+  }
+}
 .oe_progress {
   @keyframes growProgressBar {
     0%,

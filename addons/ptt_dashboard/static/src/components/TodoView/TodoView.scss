@@ -70,3 +70,53 @@
     }
   }
 }
+
+// =============================================================================
+// DARK MODE - Todo View
+// =============================================================================
+html.o_dark, .o_dark {
+  .bi-todo-preview {
+    .list-navigation {
+      background: #1e1e1e;
+      border-bottom: 1px solid #333;
+      
+      .list-btn {
+        border: 1px solid #444;
+        background: #2d2d2d;
+        color: #a0aec0;
+        
+        &:hover {
+          background: #3d3d3d;
+        }
+        
+        &.active {
+          background: #667eea;
+          border-color: #667eea;
+          color: white;
+        }
+      }
+    }
+    
+    .todo-list {
+      background: #1e1e1e;
+      
+      .todo-item {
+        border-bottom: 1px solid #333;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .todo-text {
+          color: #e0e0e0;
+        }
+        
+        &.completed {
+          .todo-text {
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+}

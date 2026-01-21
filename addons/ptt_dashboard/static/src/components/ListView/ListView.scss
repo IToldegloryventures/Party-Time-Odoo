@@ -56,3 +56,58 @@
     }
   }
 }
+
+// =============================================================================
+// DARK MODE - List View
+// =============================================================================
+html.o_dark, .o_dark {
+  .table-container {
+    background: #1e1e1e;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+    
+    .styled-table {
+      color: #e0e0e0;
+      
+      thead {
+        background-color: #2d2d2d;
+      }
+      
+      th {
+        color: #ffffff;
+        border-bottom: 2px solid #444;
+        
+        .sort-icon {
+          color: #aaa;
+        }
+      }
+      
+      td {
+        border-bottom: 1px solid #333;
+      }
+      
+      tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+    
+    .pagination-container {
+      color: #e0e0e0;
+      
+      button {
+        border: 1px solid #444;
+        background: #2d2d2d;
+        color: #e0e0e0;
+        
+        &:hover {
+          background: #3d3d3d;
+        }
+      }
+      
+      #currentPage {
+        border: 1px solid #444;
+        background: #2d2d2d;
+        color: #e0e0e0;
+      }
+    }
+  }
+}
