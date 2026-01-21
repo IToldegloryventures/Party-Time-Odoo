@@ -539,7 +539,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div t-if="recordSets.get('icon') or recordsets.get('default_icon')" class="p-0 pr-2 col-md-4 p-0 col-md-4 d-flex align-items-center justify-content-center" t-attf-style="font-size: 2vw;color: #{recordsets.get('font_color')}">
+                        <div t-if="recordsets.get('icon') or recordsets.get('default_icon')" class="p-0 pr-2 col-md-4 p-0 col-md-4 d-flex align-items-center justify-content-center" t-attf-style="font-size: 2vw;color: #{recordsets.get('font_color')}">
                             <img  t-if="recordsets.get('icon_option') == 'custom' and recordsets.get('icon')" class="img" style="height: 45px;width: 45px;" t-attf-src="data:images/png;base64,#{recordsets.get('icon')}"/>
                             <t t-att-style="'color:' + recordsets.get('font_color')+';'" t-elif="recordsets.get('icon_option') == 'default' and recordsets.get('default_icon')" t-raw="recordsets.get('kpi_icon')"/>
                             <i t-else="" t-att-style="'color:' + recordsets.get('font_color')+';'" class="fa fa-user"/>

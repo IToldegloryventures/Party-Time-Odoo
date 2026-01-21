@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.tools.safe_eval import safe_eval
 from markupsafe import Markup
 from odoo.exceptions import ValidationError
 
@@ -35,7 +36,7 @@ class Dashboard(models.Model):
     menu_sequence = fields.Integer(string="Sequence", default=1, tracking=True)
     menu_active = fields.Boolean(string="Menu Active", default=True)
     grid_stack_dimensions = fields.Json(
-        string="Grid Stack Dimensions", default=[], copy=False
+        string="Grid Stack Dimensions", default=list, copy=False
     )
     auto_reload_duration = fields.Selection(
         [
@@ -648,8 +649,12 @@ class Dashboard(models.Model):
             action["res_id"] = chart_ids.id
         else:
             action = {"type": "ir.actions.act_window_close"}
-        if action.get("context"):
-            context.update(eval(action.get("context")))
+        action_context = action.get("context")
+        if action_context:
+            if isinstance(action_context, str):
+                context.update(safe_eval(action_context, {"uid": self.env.uid}))
+            elif isinstance(action_context, dict):
+                context.update(action_context)
         context.update(
             {
                 "search_default_dashboard_id": self.id,
