@@ -26,37 +26,19 @@
     </record>
 
     <data noupdate="1">
+        <!-- Chart access rule: user sees charts if their groups match chart's group_ids OR group_ids is empty -->
         <record id="dashboard_chart_user_rule" model="ir.rule">
             <field name="name">Dashboard Chart</field>
             <field name="model_id" ref="ptt_dashboard.model_dashboard_chart"/>
             <field name="domain_force">[
-'|', '|', '|',
-    '&amp;','&amp;',
-        ('chart_type', '=', 'to_do'),
-        ('todo_layout', '=', 'activity'),
-        '|',
-        ('model_id', 'in', [model.model_id.id for model in user.group_ids.model_access]),
-        ('model_id', 'in', [model.model_id.id for model in user.model_access]),
-    '&amp;','&amp;',
-        ('chart_type', '=', 'to_do'),
-        ('todo_layout', '!=', 'activity'),
-        ('model_id', '=', False),
-    '&amp;',
-        ('chart_type', '!=', 'to_do'),
-        '|',
-        ('model_id', 'in', [model.model_id.id for model in user.group_ids.model_access]),
-        ('model_id', 'in', [model.model_id.id for model in user.model_access]),
-
-    '|',
-        '|',
-        ('company_id','=',False),
-        ('company_id', 'in', company_ids),
-        '|', '|',
-        ('kpi_model_id','=',False),
-        ('kpi_model_id', 'in', [model.model_id.id for model in user.group_ids.model_access]),
-        ('kpi_model_id', 'in', [model.model_id.id for model in user.model_access])
-]
-            </field>
+                '|',
+                ('group_ids', 'in', user.groups_id.ids),
+                ('group_ids', '=', False),
+                '|',
+                ('company_id', '=', False),
+                ('company_id', 'in', company_ids)
+            ]</field>
+            <field name="groups" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         </record>
 
         <record id="dashboard_chart_global_multi_company_rule" model="ir.rule">
@@ -69,7 +51,16 @@
         <record id="dashboard_user_rule" model="ir.rule">
             <field name="name">Dashboard</field>
             <field name="model_id" ref="ptt_dashboard.model_dashboard_dashboard"/>
-            <field name="domain_force">['|', ('user_ids', 'in', user.ids), ('user_ids', '=', False), '|', ('company_id','=',False), ('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">[
+                '|', '|', '|',
+                ('user_ids', 'in', user.ids),
+                ('user_ids', '=', False),
+                ('group_ids', 'in', user.groups_id.ids),
+                ('group_ids', '=', False),
+                '|',
+                ('company_id', '=', False),
+                ('company_id', 'in', company_ids)
+            ]</field>
             <field name="groups" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
         </record>
 
