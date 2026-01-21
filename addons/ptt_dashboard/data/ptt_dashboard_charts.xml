@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<odoo noupdate="1">
+<odoo noupdate="0">
     <!-- 
         PTT Dashboard Charts Configuration - Enhanced Home Hub
         ~50 Pre-configured widgets across 5 dashboards
