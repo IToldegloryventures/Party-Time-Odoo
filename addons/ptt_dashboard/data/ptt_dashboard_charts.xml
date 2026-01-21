@@ -747,7 +747,7 @@
         <field name="dashboard_id" ref="dashboard_sales_metrics"/>
         <field name="chart_type">kpi</field>
         <field name="kpi_model_id" ref="sale.model_sale_order"/>
-        <field name="kpi_data_type">avg</field>
+        <field name="kpi_data_type">average</field>
         <field name="kpi_domain">[('state', '=', 'sale')]</field>
         <field name="kpi_date_filter_field_id" ref="sale.field_sale_order__date_order"/>
         <field name="kpi_date_filter_option">this_month</field>
