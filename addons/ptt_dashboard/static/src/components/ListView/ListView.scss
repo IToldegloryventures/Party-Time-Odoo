@@ -1,3 +1,6 @@
+// =============================================================================
+// LIST VIEW - Party Time Texas Brand Colors
+// =============================================================================
 .table-container {
   max-width: 100%;
   overflow-x: auto;
@@ -58,7 +61,8 @@
 }
 
 // =============================================================================
-// DARK MODE - List View (using #040303)
+// DARK MODE - Party Time Texas Brand Colors
+// #040303 - Black, #D4BF91 - Gold, #A4031F - Burgundy, #B2B4B3 - Gray
 // =============================================================================
 html.o_dark, .o_dark {
   .table-container {
@@ -66,52 +70,53 @@ html.o_dark, .o_dark {
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
     
     .styled-table {
-      color: #f3f4f6 !important;
+      color: #ffffff !important;
       background: #040303 !important;
       
       thead {
-        background-color: #0a0a0a !important;
+        background-color: #040303 !important;
       }
       
       th {
         color: #ffffff !important;
-        background-color: #0a0a0a !important;
-        border-bottom: 2px solid #4b5563 !important;
+        background-color: #040303 !important;
+        border-bottom: 2px solid #B2B4B3 !important;
         
         .sort-icon {
-          color: #9ca3af !important;
+          color: #B2B4B3 !important;
         }
       }
       
       td {
-        color: #f3f4f6 !important;
+        color: #ffffff !important;
         background-color: #040303 !important;
-        border-bottom: 1px solid #4b5563 !important;
+        border-bottom: 1px solid #B2B4B3 !important;
       }
       
       tbody tr:hover {
-        background-color: #1a1a1a !important;
+        background-color: rgba(212, 191, 145, 0.1) !important; // Gold tint on hover
       }
     }
     
     .pagination-container {
-      color: #f3f4f6 !important;
+      color: #ffffff !important;
       background: #040303 !important;
       
       button {
-        border: 1px solid #4b5563 !important;
-        background: #0a0a0a !important;
-        color: #f3f4f6 !important;
+        border: 1px solid #B2B4B3 !important;
+        background: #040303 !important;
+        color: #ffffff !important;
         
         &:hover {
-          background: #1a1a1a !important;
+          background: #A4031F !important; // Burgundy on hover
+          border-color: #A4031F !important;
         }
       }
       
       #currentPage {
-        border: 1px solid #4b5563 !important;
-        background: #0a0a0a !important;
-        color: #f3f4f6 !important;
+        border: 1px solid #B2B4B3 !important;
+        background: #040303 !important;
+        color: #ffffff !important;
       }
     }
   }

@@ -1,3 +1,6 @@
+// =============================================================================
+// TODO VIEW - Party Time Texas Brand Colors
+// =============================================================================
 .bi-todo-preview {
   .list-navigation {
     background: #f8fafc;
@@ -72,36 +75,38 @@
 }
 
 // =============================================================================
-// DARK MODE - Todo View (using #040303)
+// DARK MODE - Party Time Texas Brand Colors
+// #040303 - Black, #D4BF91 - Gold, #A4031F - Burgundy, #B2B4B3 - Gray
 // =============================================================================
 html.o_dark, .o_dark {
   .bi-todo-preview {
     background: #040303 !important;
     
     .list-navigation {
-      background: #0a0a0a !important;
-      border-bottom: 1px solid #4b5563 !important;
+      background: #040303 !important;
+      border-bottom: 1px solid #B2B4B3 !important;
       
       .list-btn {
-        border: 1px solid #4b5563 !important;
+        border: 1px solid #B2B4B3 !important;
         background: #040303 !important;
-        color: #9ca3af !important;
+        color: #B2B4B3 !important;
         
         &:hover {
-          background: #1a1a1a !important;
+          background: rgba(212, 191, 145, 0.1) !important; // Gold tint
+          border-color: #D4BF91 !important;
         }
         
         &.active {
-          background: #667eea !important;
-          border-color: #667eea !important;
+          background: #A4031F !important; // Burgundy for active
+          border-color: #A4031F !important;
           color: white !important;
         }
       }
     }
     
     .todo-header {
-      // Keep gradient for visual interest
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      // Use brand burgundy gradient
+      background: linear-gradient(135deg, #A4031F 0%, #040303 100%) !important;
     }
     
     .todo-list {
@@ -109,19 +114,22 @@ html.o_dark, .o_dark {
       
       .todo-item {
         background: #040303 !important;
-        border-bottom: 1px solid #4b5563 !important;
+        border-bottom: 1px solid #B2B4B3 !important;
         
         &:hover {
-          background: #1a1a1a !important;
+          background: rgba(212, 191, 145, 0.1) !important; // Gold tint on hover
         }
         
         .todo-text {
-          color: #f3f4f6 !important;
+          color: #ffffff !important;
         }
         
         &.completed {
+          &::before {
+            color: #D4BF91 !important; // Gold checkmark
+          }
           .todo-text {
-            color: #6b7280 !important;
+            color: #B2B4B3 !important;
           }
         }
       }

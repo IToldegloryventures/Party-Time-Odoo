@@ -1,3 +1,6 @@
+// =============================================================================
+// DASHBOARD SELECTION - Party Time Texas Brand Colors
+// =============================================================================
 .dashboard-selection {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -24,25 +27,27 @@
 }
 
 // =============================================================================
-// DARK MODE - Dashboard Selection (using #040303)
+// DARK MODE - Party Time Texas Brand Colors
+// #040303 - Black, #D4BF91 - Gold, #A4031F - Burgundy, #B2B4B3 - Gray
 // =============================================================================
 html.o_dark, .o_dark {
   .dashboard-selection {
     background: #040303 !important;
     
     .select-option {
-      background-color: #0a0a0a !important;
-      color: #f3f4f6 !important;
-      border: 1px solid #4b5563;
+      background-color: #040303 !important;
+      color: #ffffff !important;
+      border: 1px solid #B2B4B3;
       
       &:hover {
-        background-color: #1a1a1a !important;
+        background-color: rgba(212, 191, 145, 0.1) !important; // Gold tint
+        border-color: #D4BF91 !important;
       }
       
       &.selected {
-        background-color: #714b67 !important;
+        background-color: #A4031F !important; // Burgundy for selected
         color: white !important;
-        border-color: #714b67 !important;
+        border-color: #A4031F !important;
       }
     }
   }

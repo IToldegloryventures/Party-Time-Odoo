@@ -1,8 +1,12 @@
 // =============================================================================
-// PTT DASHBOARD STYLES
+// PTT DASHBOARD STYLES - Party Time Texas Brand Colors
 // =============================================================================
+// Brand Colors:
+// #040303 - Black (backgrounds)
+// #D4BF91 - Gold (accent)
+// #A4031F - Burgundy (active/important)
+// #B2B4B3 - Gray (borders, secondary text)
 
-// CSS Variables for theming
 :root {
   --ptt-card-bg: #ffffff;
   --ptt-card-text: #212529;
@@ -11,7 +15,6 @@
   --ptt-table-header-bg: #ffffff;
 }
 
-// Light mode defaults
 .ptt-dashboard-card {
   background-color: var(--ptt-card-bg) !important;
   color: var(--ptt-card-text) !important;
@@ -26,11 +29,7 @@
 }
 
 .grid-stack-item-content {
-  transition:
-    left 0.3s,
-    top 0.3s,
-    height 0.3s,
-    width 0.3s;
+  transition: left 0.3s, top 0.3s, height 0.3s, width 0.3s;
   inset: 5px !important;
   &:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -47,39 +46,35 @@
     }
     .button-box {
       display: none;
-      &:hover {
-      }
     }
   }
 }
 
 // =============================================================================
-// DARK MODE - Using #040303 as requested
+// DARK MODE - Party Time Texas Brand Colors
 // =============================================================================
 html.o_dark {
-  // Override CSS variables for dark mode
   --ptt-card-bg: #040303;
-  --ptt-card-text: #f3f4f6;
-  --ptt-card-border: #4b5563;
+  --ptt-card-text: #ffffff;
+  --ptt-card-border: #B2B4B3;
   --ptt-header-bg: #040303;
-  --ptt-table-header-bg: #1f2937;
+  --ptt-table-header-bg: #040303;
 
-  // Force dark background on ALL dashboard cards
+  // Main card backgrounds
   .ptt-dashboard-card,
   .grid-stack-item-content,
   .grid-stack-item-content.ptt-dashboard-card {
     background-color: #040303 !important;
-    color: #f3f4f6 !important;
-    border-color: #4b5563 !important;
+    color: #ffffff !important;
+    border-color: #B2B4B3 !important;
   }
 
-  // Dashboard header bar
   .ptt-dashboard-header {
     background-color: #040303 !important;
-    color: #f3f4f6 !important;
+    color: #ffffff !important;
   }
 
-  // ALL nested elements inside cards
+  // All nested elements
   .grid-stack-item-content,
   .grid-stack-item-content > div,
   .grid-stack-item-content .card,
@@ -90,10 +85,10 @@ html.o_dark {
   .grid-stack-item-content [class*="layout"],
   .grid-stack-item-content [class*="wrapper"] {
     background-color: #040303 !important;
-    color: #f3f4f6 !important;
+    color: #ffffff !important;
   }
 
-  // ALL text elements - force light text
+  // Text elements
   .grid-stack-item-content h1,
   .grid-stack-item-content h2,
   .grid-stack-item-content h3,
@@ -110,10 +105,9 @@ html.o_dark {
   .grid-stack-item-content .title,
   .grid-stack-item-content .kpi-value,
   .grid-stack-item-content .kpi-title {
-    color: #f3f4f6 !important;
+    color: #ffffff !important;
   }
 
-  // Chart header titles
   .chart-header,
   .chart-header .title {
     color: #ffffff !important;
@@ -123,12 +117,12 @@ html.o_dark {
   // Table headers
   .ptt-table-header,
   th {
-    background-color: #0a0a0a !important;
+    background-color: #040303 !important;
     color: #ffffff !important;
-    border-color: #4b5563 !important;
+    border-color: #B2B4B3 !important;
   }
 
-  // Tables/Lists
+  // Tables
   table,
   .table-container,
   .o_list_view,
@@ -136,13 +130,13 @@ html.o_dark {
   tbody,
   thead {
     background-color: #040303 !important;
-    color: #f3f4f6 !important;
+    color: #ffffff !important;
   }
 
   td {
     background-color: #040303 !important;
-    color: #e5e7eb !important;
-    border-color: #4b5563 !important;
+    color: #ffffff !important;
+    border-color: #B2B4B3 !important;
   }
 
   tr:hover td {
@@ -150,21 +144,19 @@ html.o_dark {
   }
 
   // Icons
-  i.fa,
-  .fa,
-  [class*="fa-"] {
+  i.fa, .fa, [class*="fa-"] {
     color: inherit !important;
   }
 
-  // Comparison arrows
-  .comparison-up { color: #34d399 !important; }
-  .comparison-down { color: #f87171 !important; }
+  // Comparison arrows - use brand colors
+  .comparison-up { color: #D4BF91 !important; } // Gold for positive
+  .comparison-down { color: #A4031F !important; } // Burgundy for negative
 
-  // Empty states
+  // Secondary text
   .o_nocontent_help,
   .empty-state,
   .text-muted {
-    color: #9ca3af !important;
+    color: #B2B4B3 !important;
   }
 
   // Progress bars
@@ -178,28 +170,30 @@ html.o_dark {
   }
 
   // Pagination
-  .pagination-container,
-  .pager {
-    color: #e5e7eb !important;
+  .pagination-container, .pager {
+    color: #ffffff !important;
     background-color: #040303 !important;
     
     button, .btn {
-      background: #0a0a0a !important;
-      border-color: #4b5563 !important;
-      color: #e5e7eb !important;
-      &:hover { background: #1a1a1a !important; }
+      background: #040303 !important;
+      border-color: #B2B4B3 !important;
+      color: #ffffff !important;
+      &:hover { 
+        background: #A4031F !important; // Burgundy on hover
+        border-color: #A4031F !important;
+      }
     }
     
     input {
-      background: #0a0a0a !important;
-      border-color: #4b5563 !important;
-      color: #e5e7eb !important;
+      background: #040303 !important;
+      border-color: #B2B4B3 !important;
+      color: #ffffff !important;
     }
   }
 
   // Hover effects
   .grid-stack-item-content:hover {
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 24px rgba(212, 191, 145, 0.2) !important; // Gold glow
   }
 
   // Todo view
@@ -207,22 +201,21 @@ html.o_dark {
   .todo-list,
   .list-navigation {
     background-color: #040303 !important;
-    color: #f3f4f6 !important;
+    color: #ffffff !important;
   }
 
   .todo-item {
-    background-color: #0a0a0a !important;
-    border-color: #4b5563 !important;
-    color: #f3f4f6 !important;
+    background-color: #040303 !important;
+    border-color: #B2B4B3 !important;
+    color: #ffffff !important;
   }
 }
 
-// Fallback for body.o_dark
 body.o_dark {
   .grid-stack-item-content,
   .ptt-dashboard-card {
     background-color: #040303 !important;
-    color: #f3f4f6 !important;
+    color: #ffffff !important;
   }
 }
 
@@ -231,13 +224,8 @@ body.o_dark {
 // =============================================================================
 .oe_progress {
   @keyframes growProgressBar {
-    0%,
-    33% {
-      --pgPercentage: 0;
-    }
-    100% {
-      --pgPercentage: var(--value);
-    }
+    0%, 33% { --pgPercentage: 0; }
+    100% { --pgPercentage: var(--value); }
   }
 
   div[role="progressbar"] {
@@ -252,12 +240,7 @@ body.o_dark {
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: radial-gradient(
-        closest-side,
-        white 74%,
-        transparent 0 102.9%,
-        white 0
-      ),
+    background: radial-gradient(closest-side, white 74%, transparent 0 102.9%, white 0),
       conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0);
     font-size: calc(var(--size) / 4);
     color: var(--fg);
