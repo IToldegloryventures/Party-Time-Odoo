@@ -79,7 +79,7 @@
         ('user_ids', '=', False),
         '&amp;',
             ('access_by', '=', 'access_group'),
-            ('group_ids', 'in', user.groups_id.ids),
+            ('group_ids', 'in', user.group_ids.ids),
     '|',
         ('company_id', '=', False),
         ('company_id', 'in', company_ids)
