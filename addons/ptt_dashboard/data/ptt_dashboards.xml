@@ -16,42 +16,42 @@
     <record id="dashboard_my_tasks" model="dashboard.dashboard">
         <field name="name">My Tasks</field>
         <field name="access_by">access_group</field>
-        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <!-- Tab 3: Team Dashboard (Manager View) -->
     <record id="dashboard_team" model="dashboard.dashboard">
         <field name="name">Team</field>
         <field name="access_by">access_group</field>
-        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <!-- Tab 4: Events Dashboard (Event Calendar Hub) -->
     <record id="dashboard_events" model="dashboard.dashboard">
         <field name="name">Events</field>
         <field name="access_by">access_group</field>
-        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <!-- Tab 5: Pipeline Dashboard (CRM + Sales) -->
     <record id="dashboard_pipeline" model="dashboard.dashboard">
         <field name="name">Pipeline</field>
         <field name="access_by">access_group</field>
-        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <!-- Tab 6: Vendors Dashboard (Vendor Management Hub) -->
     <record id="dashboard_vendors" model="dashboard.dashboard">
         <field name="name">Vendors</field>
         <field name="access_by">access_group</field>
-        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <!-- Tab 7: Sales Metrics Dashboard (Revenue + KPIs) -->
     <record id="dashboard_sales_metrics" model="dashboard.dashboard">
         <field name="name">Sales Metrics</field>
         <field name="access_by">access_group</field>
-        <field name="group_ids" eval="[(4, ref('ptt_dashboard.group_dashboard_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <!-- Create menu items for each dashboard -->

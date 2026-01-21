@@ -25,7 +25,7 @@
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- Chart access rule: user sees charts if their groups match chart's group_ids OR group_ids is empty -->
         <record id="dashboard_chart_user_rule" model="ir.rule">
             <field name="name">Dashboard Chart</field>
