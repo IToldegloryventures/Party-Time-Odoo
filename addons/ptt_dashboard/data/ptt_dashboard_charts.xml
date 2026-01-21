@@ -14,7 +14,7 @@
     <!-- KPI Row -->
     <record id="chart_my_tasks_today_kpi" model="dashboard.chart">
         <field name="name">Due Today</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
         <field name="kpi_model_id" ref="project.model_project_task"/>
         <field name="kpi_data_type">count</field>
@@ -28,7 +28,7 @@
 
     <record id="chart_my_overdue_kpi" model="dashboard.chart">
         <field name="name">Overdue</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
         <field name="kpi_model_id" ref="project.model_project_task"/>
         <field name="kpi_data_type">count</field>
@@ -40,7 +40,7 @@
 
     <record id="chart_my_activities_kpi" model="dashboard.chart">
         <field name="name">Activities Due</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
         <field name="kpi_model_id" ref="mail.model_mail_activity"/>
         <field name="kpi_data_type">count</field>
@@ -54,7 +54,7 @@
 
     <record id="chart_my_week_kpi" model="dashboard.chart">
         <field name="name">This Week</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">kpi</field>
         <field name="kpi_model_id" ref="project.model_project_task"/>
         <field name="kpi_data_type">count</field>
@@ -69,7 +69,7 @@
     <!-- Task Lists -->
     <record id="chart_my_tasks_today" model="dashboard.chart">
         <field name="name">My Tasks Today</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_task"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
@@ -80,7 +80,7 @@
 
     <record id="chart_my_overdue_tasks" model="dashboard.chart">
         <field name="name">My Overdue Tasks</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_task"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d')), ('stage_id.fold', '=', False)]</field>
@@ -89,7 +89,7 @@
 
     <record id="chart_my_urgent_tasks" model="dashboard.chart">
         <field name="name">Urgent Tasks (High Priority)</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_task"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('priority', '=', '1'), ('stage_id.fold', '=', False)]</field>
@@ -99,7 +99,7 @@
     <!-- Activities and Comments -->
     <record id="chart_my_activities" model="dashboard.chart">
         <field name="name">My Activities Due</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
         <field name="model_id" ref="mail.model_mail_activity"/>
         <field name="domain">[('user_id', '=', uid)]</field>
@@ -111,7 +111,7 @@
     <!-- Task Charts -->
     <record id="chart_my_tasks_by_stage" model="dashboard.chart">
         <field name="name">My Tasks by Stage</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">column_chart</field>
         <field name="model_id" ref="project.model_project_task"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
@@ -121,7 +121,7 @@
 
     <record id="chart_my_tasks_by_priority" model="dashboard.chart">
         <field name="name">My Tasks by Priority</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">pie_chart</field>
         <field name="model_id" ref="project.model_project_task"/>
         <field name="domain">[('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]</field>
@@ -132,7 +132,7 @@
     <!-- My Assigned Comments -->
     <record id="chart_my_comments" model="dashboard.chart">
         <field name="name">My Assigned Comments</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
         <field name="model_id" ref="mail.model_mail_message"/>
         <field name="domain">[('message_type', '=', 'comment')]</field>
@@ -142,7 +142,7 @@
     <!-- My Events This Week -->
     <record id="chart_my_events_week" model="dashboard.chart">
         <field name="name">My Events This Week</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">list</field>
         <field name="model_id" ref="project.model_project_project"/>
         <field name="domain">[('user_id', '=', uid), ('active', '=', True)]</field>
@@ -154,7 +154,7 @@
     <!-- Personal To-Do -->
     <record id="chart_my_todos" model="dashboard.chart">
         <field name="name">My To-Do's</field>
-        <field name="dashboard_id" ref="my_dashboard_default"/>
+        <field name="dashboard_id" ref="dashboard_my_tasks"/>
         <field name="chart_type">to_do</field>
         <field name="todo_layout">default</field>
     </record>
