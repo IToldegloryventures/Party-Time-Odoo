@@ -1,7 +1,6 @@
 import io
 import csv
 import base64
-import xlsxwriter
 import logging
 
 # imgkit is optional - only needed for PDF export
@@ -11,6 +10,14 @@ try:
 except ImportError:
     imgkit = None
     IMGKIT_AVAILABLE = False
+
+# xlsxwriter is optional - only needed for Excel export
+try:
+    import xlsxwriter
+    XLSXWRITER_AVAILABLE = True
+except ImportError:
+    xlsxwriter = None
+    XLSXWRITER_AVAILABLE = False
 
 from math import gcd
 from markupsafe import Markup
@@ -1035,6 +1042,10 @@ class DashboardChart(models.Model):
         data = self.get_chart_data(chart_type, name, print_options=print_options)
         if isinstance(data, dict) and data.get("type") == "error":
             return {"error": True}
+        if not XLSXWRITER_AVAILABLE:
+            raise ValidationError(
+                _("Excel export requires the Python package 'xlsxwriter'.")
+            )
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output)
         worksheet = workbook.add_worksheet(name)
