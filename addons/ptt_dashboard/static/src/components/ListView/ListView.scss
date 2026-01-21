@@ -58,55 +58,60 @@
 }
 
 // =============================================================================
-// DARK MODE - List View
+// DARK MODE - List View (using #040303)
 // =============================================================================
 html.o_dark, .o_dark {
   .table-container {
-    background: #1e1e1e;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+    background: #040303 !important;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
     
     .styled-table {
-      color: #e0e0e0;
+      color: #f3f4f6 !important;
+      background: #040303 !important;
       
       thead {
-        background-color: #2d2d2d;
+        background-color: #0a0a0a !important;
       }
       
       th {
-        color: #ffffff;
-        border-bottom: 2px solid #444;
+        color: #ffffff !important;
+        background-color: #0a0a0a !important;
+        border-bottom: 2px solid #333333 !important;
         
         .sort-icon {
-          color: #aaa;
+          color: #9ca3af !important;
         }
       }
       
       td {
-        border-bottom: 1px solid #333;
+        color: #f3f4f6 !important;
+        background-color: #040303 !important;
+        border-bottom: 1px solid #333333 !important;
       }
       
       tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: #1a1a1a !important;
       }
     }
     
     .pagination-container {
-      color: #e0e0e0;
+      color: #f3f4f6 !important;
+      background: #040303 !important;
       
       button {
-        border: 1px solid #444;
-        background: #2d2d2d;
-        color: #e0e0e0;
+        border: 1px solid #333333 !important;
+        background: #0a0a0a !important;
+        color: #f3f4f6 !important;
         
         &:hover {
-          background: #3d3d3d;
+          background: #1a1a1a !important;
         }
       }
       
       #currentPage {
-        border: 1px solid #444;
-        background: #2d2d2d;
-        color: #e0e0e0;
+        border: 1px solid #333333 !important;
+        background: #0a0a0a !important;
+        color: #f3f4f6 !important;
       }
     }
   }

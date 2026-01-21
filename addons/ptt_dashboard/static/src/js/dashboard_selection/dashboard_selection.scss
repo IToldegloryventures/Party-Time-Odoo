@@ -24,21 +24,25 @@
 }
 
 // =============================================================================
-// DARK MODE - Dashboard Selection
+// DARK MODE - Dashboard Selection (using #040303)
 // =============================================================================
 html.o_dark, .o_dark {
   .dashboard-selection {
+    background: #040303 !important;
+    
     .select-option {
-      background-color: #2d2d2d;
-      color: #e0e0e0;
+      background-color: #0a0a0a !important;
+      color: #f3f4f6 !important;
+      border: 1px solid #333333;
       
       &:hover {
-        background-color: #3d3d3d;
+        background-color: #1a1a1a !important;
       }
       
       &.selected {
-        background-color: #714b67;
-        color: white;
+        background-color: #714b67 !important;
+        color: white !important;
+        border-color: #714b67 !important;
       }
     }
   }

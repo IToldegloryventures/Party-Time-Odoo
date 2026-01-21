@@ -72,48 +72,56 @@
 }
 
 // =============================================================================
-// DARK MODE - Todo View
+// DARK MODE - Todo View (using #040303)
 // =============================================================================
 html.o_dark, .o_dark {
   .bi-todo-preview {
+    background: #040303 !important;
+    
     .list-navigation {
-      background: #1e1e1e;
-      border-bottom: 1px solid #333;
+      background: #0a0a0a !important;
+      border-bottom: 1px solid #333333 !important;
       
       .list-btn {
-        border: 1px solid #444;
-        background: #2d2d2d;
-        color: #a0aec0;
+        border: 1px solid #333333 !important;
+        background: #040303 !important;
+        color: #9ca3af !important;
         
         &:hover {
-          background: #3d3d3d;
+          background: #1a1a1a !important;
         }
         
         &.active {
-          background: #667eea;
-          border-color: #667eea;
-          color: white;
+          background: #667eea !important;
+          border-color: #667eea !important;
+          color: white !important;
         }
       }
     }
     
+    .todo-header {
+      // Keep gradient for visual interest
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
     .todo-list {
-      background: #1e1e1e;
+      background: #040303 !important;
       
       .todo-item {
-        border-bottom: 1px solid #333;
+        background: #040303 !important;
+        border-bottom: 1px solid #333333 !important;
         
         &:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: #1a1a1a !important;
         }
         
         .todo-text {
-          color: #e0e0e0;
+          color: #f3f4f6 !important;
         }
         
         &.completed {
           .todo-text {
-            color: #666;
+            color: #6b7280 !important;
           }
         }
       }
