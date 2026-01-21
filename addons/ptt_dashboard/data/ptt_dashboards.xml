@@ -2,26 +2,31 @@
 <odoo noupdate="1">
     <!-- 
         PTT Dashboard Configuration
-        4 Pre-configured dashboards for Party Time Texas
-        Widgets are added through the UI by admins
+        5 Pre-configured dashboards for Party Time Texas Home Hub
+        Enhanced with validated Odoo 19 compatible widgets
     -->
 
-    <!-- Tab 1: My Tasks Dashboard -->
+    <!-- Tab 1: My Tasks Dashboard (Personal Inbox) -->
     <record id="dashboard_my_tasks" model="dashboard.dashboard">
         <field name="name">My Tasks</field>
     </record>
 
-    <!-- Tab 2: Team Dashboard -->
+    <!-- Tab 2: Team Dashboard (Manager View) -->
     <record id="dashboard_team" model="dashboard.dashboard">
         <field name="name">Team</field>
     </record>
 
-    <!-- Tab 3: Events Dashboard -->
+    <!-- Tab 3: Events Dashboard (Event Calendar Hub) -->
     <record id="dashboard_events" model="dashboard.dashboard">
         <field name="name">Events</field>
     </record>
 
-    <!-- Tab 4: Sales Metrics Dashboard -->
+    <!-- Tab 4: Pipeline Dashboard (CRM + Sales) -->
+    <record id="dashboard_pipeline" model="dashboard.dashboard">
+        <field name="name">Pipeline</field>
+    </record>
+
+    <!-- Tab 5: Sales Metrics Dashboard (Revenue + KPIs) -->
     <record id="dashboard_sales_metrics" model="dashboard.dashboard">
         <field name="name">Sales Metrics</field>
     </record>
@@ -35,6 +40,9 @@
     </function>
     <function name="create_update_menu" model="dashboard.dashboard">
         <value eval="[ref('dashboard_events')]" />
+    </function>
+    <function name="create_update_menu" model="dashboard.dashboard">
+        <value eval="[ref('dashboard_pipeline')]" />
     </function>
     <function name="create_update_menu" model="dashboard.dashboard">
         <value eval="[ref('dashboard_sales_metrics')]" />
