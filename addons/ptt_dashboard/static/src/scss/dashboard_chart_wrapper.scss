@@ -60,9 +60,9 @@ html.o_dark {
   // Override CSS variables for dark mode
   --ptt-card-bg: #040303;
   --ptt-card-text: #f3f4f6;
-  --ptt-card-border: #333333;
+  --ptt-card-border: #4b5563;
   --ptt-header-bg: #040303;
-  --ptt-table-header-bg: #0a0a0a;
+  --ptt-table-header-bg: #1f2937;
 
   // Force dark background on ALL dashboard cards
   .ptt-dashboard-card,
@@ -70,7 +70,7 @@ html.o_dark {
   .grid-stack-item-content.ptt-dashboard-card {
     background-color: #040303 !important;
     color: #f3f4f6 !important;
-    border-color: #333333 !important;
+    border-color: #4b5563 !important;
   }
 
   // Dashboard header bar
@@ -125,7 +125,7 @@ html.o_dark {
   th {
     background-color: #0a0a0a !important;
     color: #ffffff !important;
-    border-color: #333333 !important;
+    border-color: #4b5563 !important;
   }
 
   // Tables/Lists
@@ -142,7 +142,7 @@ html.o_dark {
   td {
     background-color: #040303 !important;
     color: #e5e7eb !important;
-    border-color: #333333 !important;
+    border-color: #4b5563 !important;
   }
 
   tr:hover td {
@@ -185,14 +185,14 @@ html.o_dark {
     
     button, .btn {
       background: #0a0a0a !important;
-      border-color: #333333 !important;
+      border-color: #4b5563 !important;
       color: #e5e7eb !important;
       &:hover { background: #1a1a1a !important; }
     }
     
     input {
       background: #0a0a0a !important;
-      border-color: #333333 !important;
+      border-color: #4b5563 !important;
       color: #e5e7eb !important;
     }
   }
@@ -212,7 +212,7 @@ html.o_dark {
 
   .todo-item {
     background-color: #0a0a0a !important;
-    border-color: #333333 !important;
+    border-color: #4b5563 !important;
     color: #f3f4f6 !important;
   }
 }
