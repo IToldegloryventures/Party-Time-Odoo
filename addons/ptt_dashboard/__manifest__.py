@@ -57,9 +57,14 @@ Based on Synconics BI Dashboard technology.
             "ptt_dashboard/static/src/js/dashboard_amcharts.js",
             "ptt_dashboard/static/src/xml/dashboard_amcharts.xml",
             "ptt_dashboard/static/src/js/dashboard_selection/*",
-            "ptt_dashboard/static/src/components/**/*",
+            "ptt_dashboard/static/src/js/dashboard_selection/dashboard_selection.scss",
+            "ptt_dashboard/static/src/components/**/*.js",
+            "ptt_dashboard/static/src/components/**/*.xml",
+            "ptt_dashboard/static/src/components/**/*.scss",
             "ptt_dashboard/static/src/components/KPILayouts/**/*",
             "ptt_dashboard/static/src/components/TileLayouts/**/*",
+            "ptt_dashboard/static/src/components/ListView/ListView.scss",
+            "ptt_dashboard/static/src/components/TodoView/TodoView.scss",
         ]
     },
     "cloc_exclude": [

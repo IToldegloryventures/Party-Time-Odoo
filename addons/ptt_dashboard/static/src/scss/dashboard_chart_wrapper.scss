@@ -32,58 +32,79 @@
 // =============================================================================
 // Odoo 19 uses .o_dark class on html element for dark mode
 html.o_dark, .o_dark {
-  // Dashboard container adjustments
+  // Dashboard grid item - force dark background for cards without explicit colors
   .grid-stack-item-content {
-    &:hover {
-      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
-    }
-  }
-
-  // KPI Cards - ensure text is readable
-  .oe_inner {
-    // Add subtle border for definition in dark mode
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     
-    // Ensure white text stays white
+    &:hover {
+      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // KPI Cards - ensure text is readable on both colored and default backgrounds
+  .oe_inner, .kpi-card, .chart-wrapper, .bi-chart-wrapper {
+    // Cards WITH background colors keep their colors - just fix text
     color: #ffffff !important;
     
-    h1, h2, h3, h4, h5, h6, span, p, .kpi-value, .kpi-title {
+    h1, h2, h3, h4, h5, h6, span, p, div {
       color: inherit !important;
+    }
+    
+    .kpi-value, .kpi-title, .chart-title {
+      color: #ffffff !important;
+    }
+  }
+
+  // Cards without explicit background color - give them dark bg
+  .grid-stack-item-content:not([style*="background"]) {
+    background-color: #2d2d2d !important;
+  }
+
+  // Chart/Widget title in header
+  .chart-header {
+    .title {
+      color: #ffffff !important;
     }
   }
 
   // List views - dark background friendly
-  .o_list_renderer, .o_list_view {
-    background-color: var(--o-view-background-color, #1e1e1e) !important;
+  .o_list_renderer, .o_list_view, .list-container, table {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
     
-    th, td {
+    th {
+      background-color: #1e1e1e !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    td {
+      color: #e0e0e0 !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
     }
     
     tr:hover {
-      background-color: rgba(255, 255, 255, 0.05) !important;
+      background-color: rgba(255, 255, 255, 0.08) !important;
     }
   }
 
   // Chart backgrounds
-  .chart-container, .amcharts-main-div {
+  .chart-container, .amcharts-main-div, canvas {
     background-color: transparent !important;
   }
 
   // Todo widget
-  .todo-item {
+  .todo-item, .bi-todo-item {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0 !important;
     
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
-  }
-
-  // Dashboard header/title
-  .chart-header .title {
-    color: var(--o-color-text, #ffffff) !important;
   }
 
   // Comparison indicators (green/red arrows)
@@ -108,6 +129,31 @@ html.o_dark, .o_dark {
   .oe_progress div[role="progressbar"]::before {
     background-color: #2d2d2d;
     color: #ffffff;
+  }
+
+  // Font Awesome icons should be visible
+  .fa, [class*="fa-"] {
+    color: inherit !important;
+  }
+
+  // Pagination in list widgets
+  .pagination-container, .pager {
+    color: #e0e0e0 !important;
+    
+    button, .btn {
+      background: #1e1e1e !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: #e0e0e0 !important;
+      
+      &:hover {
+        background: #3a3a3a !important;
+      }
+    }
+  }
+
+  // Empty state messages
+  .o_nocontent_help, .empty-state {
+    color: #a0a0a0 !important;
   }
 }
 .oe_progress {
