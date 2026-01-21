@@ -333,7 +333,7 @@ class DashboardChart(models.Model):
         string="Data Type",
         tracking=True,
     )
-    background_color = fields.Char(string="Background Color", default="")
+    background_color = fields.Char(string="Background Color", default="#040303")
     is_kpi_border = fields.Boolean(string="Enable Border")
     kpi_border_type = fields.Selection(
         [
