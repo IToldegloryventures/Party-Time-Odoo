@@ -106,7 +106,7 @@
         </field>
     </record>
 
-    <menuitem id="parent_dashboard_menu" name="BI Dashboard" web_icon="ptt_dashboard,static/description/icon.png" />
+    <menuitem id="parent_dashboard_menu" name="PTT Dashboard" web_icon="ptt_dashboard,static/description/icon.png" />
     <menuitem id="dashboard_configuration_menu" parent="parent_dashboard_menu" name="Configuration" groups="ptt_dashboard.group_dashboard_manager" />
     <menuitem id="dashboard_dashboard_menu" name="Dashboards" parent="dashboard_configuration_menu" action="dashboard_dashboard_action" />
 

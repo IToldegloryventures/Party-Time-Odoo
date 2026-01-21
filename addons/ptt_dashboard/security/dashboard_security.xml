@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="module_category_dashboard" model="ir.module.category">
-        <field name="name">BI Dashboard</field>
-        <field name="description">Allows you to manage your Dashboard.</field>
+        <field name="name">PTT Dashboard</field>
+        <field name="description">Party Time Texas Dashboard - Track events, sales, vendors, and KPIs.</field>
         <field name="sequence">1</field>
     </record>
 
