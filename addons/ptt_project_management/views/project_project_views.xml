@@ -36,11 +36,6 @@
                     </button>
                 </xpath>
                 
-                <!-- Add Template field (event type is ptt_event_type_id from ptt_enhanced_sales) -->
-                <xpath expr="//field[@name='ptt_crm_lead_id']" position="after">
-                    <field name="template_id" options="{'no_create': True}"/>
-                </xpath>
-                
                 <!-- Add Event Status after Event Identity group -->
                 <xpath expr="//page[@name='ptt_event_details']//group[@name='event_identity']" position="inside">
                     <field name="event_status" widget="badge"
