@@ -4,11 +4,8 @@
         PTT Event Details on Sale Order / Quote Report
         =============================================
         
-        This extends the standard sale order report to include event details
-        that are visible to customers on quotes and contracts.
-        
-        The event_details_summary field is computed from all event fields
-        and formatted nicely for customer-facing documents.
+        This extends the standard sale order report (PDF) to include event details
+        that are visible to customers on printed quotes and contracts.
     -->
     
     <!-- Extend Sale Order Report to include Event Details -->
@@ -40,25 +37,20 @@
                                 </t>
                                 <t t-if="doc.event_date">
                                     <tr>
-                                        <td style="font-weight: bold;">Event Date:</td>
-                                        <td><t t-esc="doc.event_date" t-options='{"widget": "date"}'/></td>
+                                        <td style="font-weight: bold;">Event Start:</td>
+                                        <td><t t-esc="doc.event_date" t-options='{"widget": "datetime", "format": "MMMM d, yyyy h:mm a"}'/></td>
                                     </tr>
                                 </t>
-                                <t t-if="doc.event_start_time">
+                                <t t-if="doc.event_end_datetime">
                                     <tr>
-                                        <td style="font-weight: bold;">Event Time:</td>
-                                        <td>
-                                            <t t-esc="doc._float_to_time_str(doc.event_start_time)"/>
-                                            <t t-if="doc.event_end_time">
-                                                - <t t-esc="doc._float_to_time_str(doc.event_end_time)"/>
-                                            </t>
-                                        </td>
+                                        <td style="font-weight: bold;">Event End:</td>
+                                        <td><t t-esc="doc.event_end_datetime" t-options='{"widget": "datetime", "format": "h:mm a"}'/></td>
                                     </tr>
                                 </t>
-                                <t t-if="doc.setup_time_float">
+                                <t t-if="doc.setup_time">
                                     <tr>
-                                        <td style="font-weight: bold;">Setup Time:</td>
-                                        <td><t t-esc="doc._float_to_time_str(doc.setup_time_float)"/></td>
+                                        <td style="font-weight: bold;">Setup Starts:</td>
+                                        <td><t t-esc="doc.setup_time" t-options='{"widget": "datetime", "format": "h:mm a"}'/></td>
                                     </tr>
                                 </t>
                                 <t t-if="doc.event_guest_count">
@@ -108,6 +100,12 @@
                                     <tr>
                                         <td style="font-weight: bold;">Duration:</td>
                                         <td><t t-esc="doc.event_duration"/> hours</td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.breakdown_time">
+                                    <tr>
+                                        <td style="font-weight: bold;">Breakdown:</td>
+                                        <td><t t-esc="doc.breakdown_time" t-options='{"widget": "datetime", "format": "h:mm a"}'/></td>
                                     </tr>
                                 </t>
                             </tbody>

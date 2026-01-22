@@ -101,16 +101,44 @@ class CrmLeadEnhanced(models.Model):
                 'event_venue_type': self.ptt_location_type or False,
                 'event_venue_booked': self.ptt_venue_booked or False,
                 
-                # Event Times (Float hours)
+                # Event Duration
+                'event_duration': self.ptt_event_duration or 0.0,
+                
+                # Legacy Float fields (for backward compatibility)
                 'setup_time_float': self.ptt_setup_time or 0.0,
                 'event_start_time': self.ptt_start_time or 0.0,
                 'event_end_time': self.ptt_end_time or 0.0,
-                'event_duration': self.ptt_event_duration or 0.0,
             }
             
-            # Only set event_date if we have one (Date→Datetime conversion)
+            # Convert CRM Date + Float times to proper Datetime fields on SO
             if self.ptt_event_date:
-                quotation_vals['event_date'] = fields.Datetime.to_datetime(self.ptt_event_date)
+                event_date = self.ptt_event_date
+                
+                # Event Start: Date + Start Time (Float hours)
+                if self.ptt_start_time:
+                    start_hour = int(self.ptt_start_time)
+                    start_min = int((self.ptt_start_time - start_hour) * 60)
+                    quotation_vals['event_date'] = fields.Datetime.to_datetime(event_date).replace(
+                        hour=start_hour, minute=start_min, second=0
+                    )
+                else:
+                    quotation_vals['event_date'] = fields.Datetime.to_datetime(event_date)
+                
+                # Event End: Date + End Time (Float hours)
+                if self.ptt_end_time:
+                    end_hour = int(self.ptt_end_time)
+                    end_min = int((self.ptt_end_time - end_hour) * 60)
+                    quotation_vals['event_end_datetime'] = fields.Datetime.to_datetime(event_date).replace(
+                        hour=end_hour, minute=end_min, second=0
+                    )
+                
+                # Setup Time: Date + Setup Time (Float hours)
+                if self.ptt_setup_time:
+                    setup_hour = int(self.ptt_setup_time)
+                    setup_min = int((self.ptt_setup_time - setup_hour) * 60)
+                    quotation_vals['setup_time'] = fields.Datetime.to_datetime(event_date).replace(
+                        hour=setup_hour, minute=setup_min, second=0
+                    )
             
             quotation.write(quotation_vals)
             

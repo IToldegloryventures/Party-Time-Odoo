@@ -19,33 +19,31 @@
                     <page string="Event Information" name="event_info">
                         <group>
                             <group string="Event Details">
-                                <field name="event_name"/>
+                                <field name="event_name" placeholder="e.g., Smith Wedding Reception"/>
                                 <field name="event_type_id" readonly="1"/>
-                                <field name="event_date"/>
-                                <field name="event_guest_count"/>
+                                <field name="event_guest_count" placeholder="Expected number of guests"/>
                                 <field name="event_attire"/>
                             </group>
-                            <group string="Event Timing">
-                                <field name="event_start_time" widget="float_time"/>
-                                <field name="event_end_time" widget="float_time"/>
-                                <field name="event_duration"/>
-                                <field name="setup_time_float" widget="float_time"/>
+                            <group string="Event Date &amp; Time">
+                                <field name="event_date" string="Event Start"/>
+                                <field name="event_end_datetime" string="Event End"/>
+                                <field name="event_duration" string="Duration (Hours)"/>
                             </group>
                         </group>
                         <group>
-                            <group string="Venue">
-                                <field name="event_venue"/>
+                            <group string="Venue Information">
+                                <field name="event_venue" placeholder="Venue name"/>
                                 <field name="event_venue_type"/>
                                 <field name="event_venue_booked"/>
-                                <field name="event_venue_address"/>
+                                <field name="event_venue_address" placeholder="Full venue address"/>
                             </group>
-                            <group string="Setup/Breakdown (Datetime)">
-                                <field name="setup_time"/>
-                                <field name="breakdown_time"/>
+                            <group string="Setup &amp; Breakdown">
+                                <field name="setup_time" string="Setup Starts"/>
+                                <field name="breakdown_time" string="Breakdown/Strike"/>
                             </group>
                         </group>
-                        <separator string="Event Details Summary (for Customer Documents)"/>
-                        <field name="event_details_summary" readonly="1" nolabel="1"/>
+                        <separator string="Event Summary (shown on customer quotes)"/>
+                        <field name="event_details_summary" readonly="1" nolabel="1" widget="text"/>
                     </page>
 
                     <!-- Service Lines (from CRM Opportunity) -->
