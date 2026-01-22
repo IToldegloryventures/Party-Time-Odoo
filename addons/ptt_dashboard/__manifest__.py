@@ -27,9 +27,20 @@ Based on Synconics BI Dashboard technology.
     "author": "Party Time Texas / Synconics Technologies Pvt. Ltd.",
     "website": "https://www.partytimetexas.com",
     "category": "Productivity",
-    "version": "19.0.1.0.0",
-    "depends": ["web", "mail", "project", "crm", "sale", "account", "ptt_business_core"],
-    # "external_dependencies": {"python": ["imgkit"]},  # Removed - only needed for PDF export
+    "version": "19.0.1.0.1",
+    "depends": [
+        "web",
+        "mail",
+        "project",
+        "crm",
+        "sale",
+        "account",
+        "ptt_business_core",
+        "ptt_enhanced_sales",
+        "ptt_vendor_management",
+        "ptt_project_management",
+    ],
+    "external_dependencies": {"python": ["xlsxwriter"]},
     "assets": {
         "web.assets_backend": [
             "ptt_dashboard/static/src/lib/html2canvas.js",
