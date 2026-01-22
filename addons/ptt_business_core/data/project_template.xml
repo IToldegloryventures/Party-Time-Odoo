@@ -1,334 +1,844 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- 
-        Standard Event Project Template
+        Event Project Templates (3 Event Types)
+        ========================================
         
         Reference:
         https://www.odoo.com/documentation/19.0/developer/reference/backend/data.html
         
-        This template is copied when Event Kickoff product triggers project creation.
-        Contains 9 main tasks with subtasks for event planning workflow.
+        These templates are copied when Event Kickoff product triggers project creation.
+        Each contains the same 9 main tasks with subtasks for event planning workflow.
+        The template used depends on the Sale Order's event_type_id.
+        
+        Templates:
+        - project_template_corporate: Corporate events
+        - project_template_wedding: Wedding events
+        - project_template_social: Social events
         
         NOTE: Odoo 19 native feature - when service_tracking='project_only' and
         project_template_id is set on a product, Odoo automatically copies this
         template when the Sales Order is confirmed.
     -->
     <data noupdate="1">
-        <!-- ============================================ -->
-        <!-- PROJECT TEMPLATE                            -->
-        <!-- ============================================ -->
-        <record id="project_template_standard_event" model="project.project">
-            <field name="name">Standard Event Project Template</field>
+        
+        <!-- ################################################################## -->
+        <!-- CORPORATE EVENT PROJECT TEMPLATE                                   -->
+        <!-- ################################################################## -->
+        <record id="project_template_corporate" model="project.project">
+            <field name="name">Corporate Event Project Template</field>
             <field name="is_template" eval="True"/>
             <field name="privacy_visibility">followers</field>
             <field name="active" eval="True"/>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 1: Confirm Booking with Client         -->
-        <!-- ============================================ -->
-        <record id="task_template_confirm_booking" model="project.task">
+        <!-- TASK 1: Confirm Booking with Client (Corporate) -->
+        <record id="task_corp_confirm_booking" model="project.task">
             <field name="name">Confirm Booking with Client</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">10</field>
             <field name="description">Verify contract signed and retainer received</field>
         </record>
-        
-        <record id="task_template_confirm_booking_sub1" model="project.task">
+        <record id="task_corp_confirm_booking_sub1" model="project.task">
             <field name="name">Verify Retainer has been paid. Verify remaining balance owed.</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_confirm_booking"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_confirm_booking"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_confirm_booking_sub2" model="project.task">
+        <record id="task_corp_confirm_booking_sub2" model="project.task">
             <field name="name">Send confirmation email stating contract signed + retainer received</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_confirm_booking"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_confirm_booking"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_confirm_booking_sub3" model="project.task">
+        <record id="task_corp_confirm_booking_sub3" model="project.task">
             <field name="name">Reiterate event date, venue, time, and agreed services</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_confirm_booking"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_confirm_booking"/>
             <field name="sequence">3</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 2: Collect Tier-3 Fulfillment Details  -->
-        <!-- ============================================ -->
-        <record id="task_template_tier3_details" model="project.task">
+        <!-- TASK 2: Collect Tier-3 Fulfillment Details (Corporate) -->
+        <record id="task_corp_tier3_details" model="project.task">
             <field name="name">Collect Tier-3 Fulfillment Details</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">20</field>
             <field name="description">Gather venue access info, rider/equipment specifications, vendor needs, and logistics</field>
         </record>
-        
-        <record id="task_template_tier3_sub1" model="project.task">
+        <record id="task_corp_tier3_sub1" model="project.task">
             <field name="name">Venue access info (load-in times, restrictions, contacts)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_tier3_details"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_tier3_details"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_tier3_sub2" model="project.task">
+        <record id="task_corp_tier3_sub2" model="project.task">
             <field name="name">Rider / Equipment Setup specifications</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_tier3_details"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_tier3_details"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_tier3_sub3" model="project.task">
+        <record id="task_corp_tier3_sub3" model="project.task">
             <field name="name">Vendor needs, power, staging, logistics</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_tier3_details"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_tier3_details"/>
             <field name="sequence">3</field>
         </record>
-        
-        <record id="task_template_tier3_sub4" model="project.task">
+        <record id="task_corp_tier3_sub4" model="project.task">
             <field name="name">Special requests (e.g. backup, transportation)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_tier3_details"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_tier3_details"/>
             <field name="sequence">4</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 3: Review Client Deliverables          -->
-        <!-- ============================================ -->
-        <record id="task_template_deliverables" model="project.task">
+        <!-- TASK 3: Review Client Deliverables (Corporate) -->
+        <record id="task_corp_deliverables" model="project.task">
             <field name="name">Review Client Deliverables Checklist</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">30</field>
             <field name="description">Review and confirm all client-provided deliverables</field>
         </record>
-        
-        <record id="task_template_deliverables_sub1" model="project.task">
+        <record id="task_corp_deliverables_sub1" model="project.task">
             <field name="name">Song selections (first dance, special requests)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_deliverables"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_deliverables"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_deliverables_sub2" model="project.task">
+        <record id="task_corp_deliverables_sub2" model="project.task">
             <field name="name">Timeline (ceremony, reception, breaks)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_deliverables"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_deliverables"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_deliverables_sub3" model="project.task">
+        <record id="task_corp_deliverables_sub3" model="project.task">
             <field name="name">Venue logistics (floor plan, layout)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_deliverables"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_deliverables"/>
             <field name="sequence">3</field>
         </record>
-        
-        <record id="task_template_deliverables_sub4" model="project.task">
+        <record id="task_corp_deliverables_sub4" model="project.task">
             <field name="name">Contact point on event day</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_deliverables"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_deliverables"/>
             <field name="sequence">4</field>
         </record>
-        
-        <record id="task_template_deliverables_sub5" model="project.task">
+        <record id="task_corp_deliverables_sub5" model="project.task">
             <field name="name">Guest count confirmation</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_deliverables"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_deliverables"/>
             <field name="sequence">5</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 4: Coordinate Vendor Assignments       -->
-        <!-- ============================================ -->
-        <record id="task_template_vendor_assign" model="project.task">
+        <!-- TASK 4: Coordinate Vendor Assignments (Corporate) -->
+        <record id="task_corp_vendor_assign" model="project.task">
             <field name="name">Coordinate Vendor Assignments</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">40</field>
             <field name="description">Assign vendors to event and provide task lists</field>
         </record>
-        
-        <record id="task_template_vendor_assign_sub1" model="project.task">
+        <record id="task_corp_vendor_assign_sub1" model="project.task">
             <field name="name">Assign vendor(s) to event</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_vendor_assign"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_vendor_assign"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_vendor_assign_sub2" model="project.task">
+        <record id="task_corp_vendor_assign_sub2" model="project.task">
             <field name="name">Provide vendors with relevant task list, rider info, schedule</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_vendor_assign"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_vendor_assign"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_vendor_assign_sub3" model="project.task">
+        <record id="task_corp_vendor_assign_sub3" model="project.task">
             <field name="name">Confirm vendors' availability, rates, and contracts</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_vendor_assign"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_vendor_assign"/>
             <field name="sequence">3</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 5: Vendor Brief & Confirmation         -->
-        <!-- ============================================ -->
-        <record id="task_template_vendor_brief" model="project.task">
+        <!-- TASK 5: Vendor Brief & Confirmation (Corporate) -->
+        <record id="task_corp_vendor_brief" model="project.task">
             <field name="name">Vendor Brief &amp; Confirmation</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">50</field>
             <field name="description">Confirm vendor requirements and acceptance</field>
         </record>
-        
-        <record id="task_template_vendor_brief_sub1" model="project.task">
+        <record id="task_corp_vendor_brief_sub1" model="project.task">
             <field name="name">Confirm vendor requirements for equipment, load-in, contact person</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_vendor_brief"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_vendor_brief"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_vendor_brief_sub2" model="project.task">
+        <record id="task_corp_vendor_brief_sub2" model="project.task">
             <field name="name">Confirm required documents (COI, contract, tax info)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_vendor_brief"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_vendor_brief"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_vendor_brief_sub3" model="project.task">
+        <record id="task_corp_vendor_brief_sub3" model="project.task">
             <field name="name">Confirm vendor acceptance</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_vendor_brief"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_vendor_brief"/>
             <field name="sequence">3</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 6: Prepare Event Resources             -->
-        <!-- ============================================ -->
-        <record id="task_template_resources" model="project.task">
+        <!-- TASK 6: Prepare Event Resources (Corporate) -->
+        <record id="task_corp_resources" model="project.task">
             <field name="name">Prepare Event Resources &amp; Logistics</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">60</field>
             <field name="description">Prepare inventory, transport, and backup resources</field>
         </record>
-        
-        <record id="task_template_resources_sub1" model="project.task">
+        <record id="task_corp_resources_sub1" model="project.task">
             <field name="name">Inventory / equipment prep</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_resources"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_resources"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_resources_sub2" model="project.task">
+        <record id="task_corp_resources_sub2" model="project.task">
             <field name="name">Transport / loading plan</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_resources"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_resources"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_resources_sub3" model="project.task">
+        <record id="task_corp_resources_sub3" model="project.task">
             <field name="name">Backup gear / redundancy checks</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_resources"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_resources"/>
             <field name="sequence">3</field>
         </record>
-        
-        <record id="task_template_resources_sub4" model="project.task">
+        <record id="task_corp_resources_sub4" model="project.task">
             <field name="name">Power &amp; staging setup plan</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_resources"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_resources"/>
             <field name="sequence">4</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 7: Client Communications               -->
-        <!-- ============================================ -->
-        <record id="task_template_communications" model="project.task">
+        <!-- TASK 7: Client Communications (Corporate) -->
+        <record id="task_corp_communications" model="project.task">
             <field name="name">Client Communications &amp; Check-Ins</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">70</field>
             <field name="description">Execute appropriate check-ins and confirm logistics</field>
         </record>
-        
-        <record id="task_template_communications_sub1" model="project.task">
+        <record id="task_corp_communications_sub1" model="project.task">
             <field name="name">Execute appropriate check-ins</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_communications"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_communications"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_communications_sub2" model="project.task">
+        <record id="task_corp_communications_sub2" model="project.task">
             <field name="name">Confirm all logistics 1-2 weeks prior</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_communications"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_communications"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_communications_sub3" model="project.task">
+        <record id="task_corp_communications_sub3" model="project.task">
             <field name="name">Issue reminders for outstanding client tasks (song lists, special requests)</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_communications"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_communications"/>
             <field name="sequence">3</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 8: Final Payment Check                 -->
-        <!-- ============================================ -->
-        <record id="task_template_payment" model="project.task">
+        <!-- TASK 8: Final Payment Check (Corporate) -->
+        <record id="task_corp_payment" model="project.task">
             <field name="name">Final Payment Check &amp; Invoice Follow-up</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">80</field>
             <field name="description">Review invoice balance and confirm full payment status</field>
         </record>
-        
-        <record id="task_template_payment_sub1" model="project.task">
+        <record id="task_corp_payment_sub1" model="project.task">
             <field name="name">Review invoice balance and confirm full payment status</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_payment"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_payment"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_payment_sub2" model="project.task">
+        <record id="task_corp_payment_sub2" model="project.task">
             <field name="name">Flag and follow up on unpaid balances</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_payment"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_payment"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_payment_sub3" model="project.task">
+        <record id="task_corp_payment_sub3" model="project.task">
             <field name="name">Update system status to Final Payment Received</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_payment"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_payment"/>
             <field name="sequence">3</field>
         </record>
 
-        <!-- ============================================ -->
-        <!-- TASK 9: Post-Event Closure                  -->
-        <!-- ============================================ -->
-        <record id="task_template_post_event" model="project.task">
+        <!-- TASK 9: Post-Event Closure (Corporate) -->
+        <record id="task_corp_post_event" model="project.task">
             <field name="name">Post-Event Closure / Review</field>
-            <field name="project_id" ref="project_template_standard_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
             <field name="sequence">90</field>
             <field name="description">Confirm event completion and gather feedback</field>
         </record>
-        
-        <record id="task_template_post_event_sub1" model="project.task">
+        <record id="task_corp_post_event_sub1" model="project.task">
             <field name="name">Confirm event ended as scheduled</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_post_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_post_event"/>
             <field name="sequence">1</field>
         </record>
-        
-        <record id="task_template_post_event_sub2" model="project.task">
+        <record id="task_corp_post_event_sub2" model="project.task">
             <field name="name">Gather client feedback / survey link</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_post_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_post_event"/>
             <field name="sequence">2</field>
         </record>
-        
-        <record id="task_template_post_event_sub3" model="project.task">
+        <record id="task_corp_post_event_sub3" model="project.task">
             <field name="name">Document lessons learned or special notes for future events</field>
-            <field name="project_id" ref="project_template_standard_event"/>
-            <field name="parent_id" ref="task_template_post_event"/>
+            <field name="project_id" ref="project_template_corporate"/>
+            <field name="parent_id" ref="task_corp_post_event"/>
             <field name="sequence">3</field>
         </record>
+
+
+        <!-- ################################################################## -->
+        <!-- WEDDING EVENT PROJECT TEMPLATE                                     -->
+        <!-- ################################################################## -->
+        <record id="project_template_wedding" model="project.project">
+            <field name="name">Wedding Event Project Template</field>
+            <field name="is_template" eval="True"/>
+            <field name="privacy_visibility">followers</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- TASK 1: Confirm Booking with Client (Wedding) -->
+        <record id="task_wed_confirm_booking" model="project.task">
+            <field name="name">Confirm Booking with Client</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">10</field>
+            <field name="description">Verify contract signed and retainer received</field>
+        </record>
+        <record id="task_wed_confirm_booking_sub1" model="project.task">
+            <field name="name">Verify Retainer has been paid. Verify remaining balance owed.</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_confirm_booking"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_confirm_booking_sub2" model="project.task">
+            <field name="name">Send confirmation email stating contract signed + retainer received</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_confirm_booking"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_confirm_booking_sub3" model="project.task">
+            <field name="name">Reiterate event date, venue, time, and agreed services</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_confirm_booking"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 2: Collect Tier-3 Fulfillment Details (Wedding) -->
+        <record id="task_wed_tier3_details" model="project.task">
+            <field name="name">Collect Tier-3 Fulfillment Details</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">20</field>
+            <field name="description">Gather venue access info, rider/equipment specifications, vendor needs, and logistics</field>
+        </record>
+        <record id="task_wed_tier3_sub1" model="project.task">
+            <field name="name">Venue access info (load-in times, restrictions, contacts)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_tier3_details"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_tier3_sub2" model="project.task">
+            <field name="name">Rider / Equipment Setup specifications</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_tier3_details"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_tier3_sub3" model="project.task">
+            <field name="name">Vendor needs, power, staging, logistics</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_tier3_details"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="task_wed_tier3_sub4" model="project.task">
+            <field name="name">Special requests (e.g. backup, transportation)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_tier3_details"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- TASK 3: Review Client Deliverables (Wedding) -->
+        <record id="task_wed_deliverables" model="project.task">
+            <field name="name">Review Client Deliverables Checklist</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">30</field>
+            <field name="description">Review and confirm all client-provided deliverables</field>
+        </record>
+        <record id="task_wed_deliverables_sub1" model="project.task">
+            <field name="name">Song selections (first dance, special requests)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_deliverables"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_deliverables_sub2" model="project.task">
+            <field name="name">Timeline (ceremony, reception, breaks)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_deliverables"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_deliverables_sub3" model="project.task">
+            <field name="name">Venue logistics (floor plan, layout)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_deliverables"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="task_wed_deliverables_sub4" model="project.task">
+            <field name="name">Contact point on event day</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_deliverables"/>
+            <field name="sequence">4</field>
+        </record>
+        <record id="task_wed_deliverables_sub5" model="project.task">
+            <field name="name">Guest count confirmation</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_deliverables"/>
+            <field name="sequence">5</field>
+        </record>
+
+        <!-- TASK 4: Coordinate Vendor Assignments (Wedding) -->
+        <record id="task_wed_vendor_assign" model="project.task">
+            <field name="name">Coordinate Vendor Assignments</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">40</field>
+            <field name="description">Assign vendors to event and provide task lists</field>
+        </record>
+        <record id="task_wed_vendor_assign_sub1" model="project.task">
+            <field name="name">Assign vendor(s) to event</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_vendor_assign"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_vendor_assign_sub2" model="project.task">
+            <field name="name">Provide vendors with relevant task list, rider info, schedule</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_vendor_assign"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_vendor_assign_sub3" model="project.task">
+            <field name="name">Confirm vendors' availability, rates, and contracts</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_vendor_assign"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 5: Vendor Brief & Confirmation (Wedding) -->
+        <record id="task_wed_vendor_brief" model="project.task">
+            <field name="name">Vendor Brief &amp; Confirmation</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">50</field>
+            <field name="description">Confirm vendor requirements and acceptance</field>
+        </record>
+        <record id="task_wed_vendor_brief_sub1" model="project.task">
+            <field name="name">Confirm vendor requirements for equipment, load-in, contact person</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_vendor_brief"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_vendor_brief_sub2" model="project.task">
+            <field name="name">Confirm required documents (COI, contract, tax info)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_vendor_brief"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_vendor_brief_sub3" model="project.task">
+            <field name="name">Confirm vendor acceptance</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_vendor_brief"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 6: Prepare Event Resources (Wedding) -->
+        <record id="task_wed_resources" model="project.task">
+            <field name="name">Prepare Event Resources &amp; Logistics</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">60</field>
+            <field name="description">Prepare inventory, transport, and backup resources</field>
+        </record>
+        <record id="task_wed_resources_sub1" model="project.task">
+            <field name="name">Inventory / equipment prep</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_resources"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_resources_sub2" model="project.task">
+            <field name="name">Transport / loading plan</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_resources"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_resources_sub3" model="project.task">
+            <field name="name">Backup gear / redundancy checks</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_resources"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="task_wed_resources_sub4" model="project.task">
+            <field name="name">Power &amp; staging setup plan</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_resources"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- TASK 7: Client Communications (Wedding) -->
+        <record id="task_wed_communications" model="project.task">
+            <field name="name">Client Communications &amp; Check-Ins</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">70</field>
+            <field name="description">Execute appropriate check-ins and confirm logistics</field>
+        </record>
+        <record id="task_wed_communications_sub1" model="project.task">
+            <field name="name">Execute appropriate check-ins</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_communications"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_communications_sub2" model="project.task">
+            <field name="name">Confirm all logistics 1-2 weeks prior</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_communications"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_communications_sub3" model="project.task">
+            <field name="name">Issue reminders for outstanding client tasks (song lists, special requests)</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_communications"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 8: Final Payment Check (Wedding) -->
+        <record id="task_wed_payment" model="project.task">
+            <field name="name">Final Payment Check &amp; Invoice Follow-up</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">80</field>
+            <field name="description">Review invoice balance and confirm full payment status</field>
+        </record>
+        <record id="task_wed_payment_sub1" model="project.task">
+            <field name="name">Review invoice balance and confirm full payment status</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_payment"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_payment_sub2" model="project.task">
+            <field name="name">Flag and follow up on unpaid balances</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_payment"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_payment_sub3" model="project.task">
+            <field name="name">Update system status to Final Payment Received</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_payment"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 9: Post-Event Closure (Wedding) -->
+        <record id="task_wed_post_event" model="project.task">
+            <field name="name">Post-Event Closure / Review</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="sequence">90</field>
+            <field name="description">Confirm event completion and gather feedback</field>
+        </record>
+        <record id="task_wed_post_event_sub1" model="project.task">
+            <field name="name">Confirm event ended as scheduled</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_post_event"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_wed_post_event_sub2" model="project.task">
+            <field name="name">Gather client feedback / survey link</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_post_event"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_wed_post_event_sub3" model="project.task">
+            <field name="name">Document lessons learned or special notes for future events</field>
+            <field name="project_id" ref="project_template_wedding"/>
+            <field name="parent_id" ref="task_wed_post_event"/>
+            <field name="sequence">3</field>
+        </record>
+
+
+        <!-- ################################################################## -->
+        <!-- SOCIAL EVENT PROJECT TEMPLATE                                      -->
+        <!-- ################################################################## -->
+        <record id="project_template_social" model="project.project">
+            <field name="name">Social Event Project Template</field>
+            <field name="is_template" eval="True"/>
+            <field name="privacy_visibility">followers</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- TASK 1: Confirm Booking with Client (Social) -->
+        <record id="task_soc_confirm_booking" model="project.task">
+            <field name="name">Confirm Booking with Client</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">10</field>
+            <field name="description">Verify contract signed and retainer received</field>
+        </record>
+        <record id="task_soc_confirm_booking_sub1" model="project.task">
+            <field name="name">Verify Retainer has been paid. Verify remaining balance owed.</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_confirm_booking"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_confirm_booking_sub2" model="project.task">
+            <field name="name">Send confirmation email stating contract signed + retainer received</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_confirm_booking"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_confirm_booking_sub3" model="project.task">
+            <field name="name">Reiterate event date, venue, time, and agreed services</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_confirm_booking"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 2: Collect Tier-3 Fulfillment Details (Social) -->
+        <record id="task_soc_tier3_details" model="project.task">
+            <field name="name">Collect Tier-3 Fulfillment Details</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">20</field>
+            <field name="description">Gather venue access info, rider/equipment specifications, vendor needs, and logistics</field>
+        </record>
+        <record id="task_soc_tier3_sub1" model="project.task">
+            <field name="name">Venue access info (load-in times, restrictions, contacts)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_tier3_details"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_tier3_sub2" model="project.task">
+            <field name="name">Rider / Equipment Setup specifications</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_tier3_details"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_tier3_sub3" model="project.task">
+            <field name="name">Vendor needs, power, staging, logistics</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_tier3_details"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="task_soc_tier3_sub4" model="project.task">
+            <field name="name">Special requests (e.g. backup, transportation)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_tier3_details"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- TASK 3: Review Client Deliverables (Social) -->
+        <record id="task_soc_deliverables" model="project.task">
+            <field name="name">Review Client Deliverables Checklist</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">30</field>
+            <field name="description">Review and confirm all client-provided deliverables</field>
+        </record>
+        <record id="task_soc_deliverables_sub1" model="project.task">
+            <field name="name">Song selections (first dance, special requests)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_deliverables"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_deliverables_sub2" model="project.task">
+            <field name="name">Timeline (ceremony, reception, breaks)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_deliverables"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_deliverables_sub3" model="project.task">
+            <field name="name">Venue logistics (floor plan, layout)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_deliverables"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="task_soc_deliverables_sub4" model="project.task">
+            <field name="name">Contact point on event day</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_deliverables"/>
+            <field name="sequence">4</field>
+        </record>
+        <record id="task_soc_deliverables_sub5" model="project.task">
+            <field name="name">Guest count confirmation</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_deliverables"/>
+            <field name="sequence">5</field>
+        </record>
+
+        <!-- TASK 4: Coordinate Vendor Assignments (Social) -->
+        <record id="task_soc_vendor_assign" model="project.task">
+            <field name="name">Coordinate Vendor Assignments</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">40</field>
+            <field name="description">Assign vendors to event and provide task lists</field>
+        </record>
+        <record id="task_soc_vendor_assign_sub1" model="project.task">
+            <field name="name">Assign vendor(s) to event</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_vendor_assign"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_vendor_assign_sub2" model="project.task">
+            <field name="name">Provide vendors with relevant task list, rider info, schedule</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_vendor_assign"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_vendor_assign_sub3" model="project.task">
+            <field name="name">Confirm vendors' availability, rates, and contracts</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_vendor_assign"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 5: Vendor Brief & Confirmation (Social) -->
+        <record id="task_soc_vendor_brief" model="project.task">
+            <field name="name">Vendor Brief &amp; Confirmation</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">50</field>
+            <field name="description">Confirm vendor requirements and acceptance</field>
+        </record>
+        <record id="task_soc_vendor_brief_sub1" model="project.task">
+            <field name="name">Confirm vendor requirements for equipment, load-in, contact person</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_vendor_brief"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_vendor_brief_sub2" model="project.task">
+            <field name="name">Confirm required documents (COI, contract, tax info)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_vendor_brief"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_vendor_brief_sub3" model="project.task">
+            <field name="name">Confirm vendor acceptance</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_vendor_brief"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 6: Prepare Event Resources (Social) -->
+        <record id="task_soc_resources" model="project.task">
+            <field name="name">Prepare Event Resources &amp; Logistics</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">60</field>
+            <field name="description">Prepare inventory, transport, and backup resources</field>
+        </record>
+        <record id="task_soc_resources_sub1" model="project.task">
+            <field name="name">Inventory / equipment prep</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_resources"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_resources_sub2" model="project.task">
+            <field name="name">Transport / loading plan</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_resources"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_resources_sub3" model="project.task">
+            <field name="name">Backup gear / redundancy checks</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_resources"/>
+            <field name="sequence">3</field>
+        </record>
+        <record id="task_soc_resources_sub4" model="project.task">
+            <field name="name">Power &amp; staging setup plan</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_resources"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- TASK 7: Client Communications (Social) -->
+        <record id="task_soc_communications" model="project.task">
+            <field name="name">Client Communications &amp; Check-Ins</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">70</field>
+            <field name="description">Execute appropriate check-ins and confirm logistics</field>
+        </record>
+        <record id="task_soc_communications_sub1" model="project.task">
+            <field name="name">Execute appropriate check-ins</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_communications"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_communications_sub2" model="project.task">
+            <field name="name">Confirm all logistics 1-2 weeks prior</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_communications"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_communications_sub3" model="project.task">
+            <field name="name">Issue reminders for outstanding client tasks (song lists, special requests)</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_communications"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 8: Final Payment Check (Social) -->
+        <record id="task_soc_payment" model="project.task">
+            <field name="name">Final Payment Check &amp; Invoice Follow-up</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">80</field>
+            <field name="description">Review invoice balance and confirm full payment status</field>
+        </record>
+        <record id="task_soc_payment_sub1" model="project.task">
+            <field name="name">Review invoice balance and confirm full payment status</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_payment"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_payment_sub2" model="project.task">
+            <field name="name">Flag and follow up on unpaid balances</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_payment"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_payment_sub3" model="project.task">
+            <field name="name">Update system status to Final Payment Received</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_payment"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- TASK 9: Post-Event Closure (Social) -->
+        <record id="task_soc_post_event" model="project.task">
+            <field name="name">Post-Event Closure / Review</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="sequence">90</field>
+            <field name="description">Confirm event completion and gather feedback</field>
+        </record>
+        <record id="task_soc_post_event_sub1" model="project.task">
+            <field name="name">Confirm event ended as scheduled</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_post_event"/>
+            <field name="sequence">1</field>
+        </record>
+        <record id="task_soc_post_event_sub2" model="project.task">
+            <field name="name">Gather client feedback / survey link</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_post_event"/>
+            <field name="sequence">2</field>
+        </record>
+        <record id="task_soc_post_event_sub3" model="project.task">
+            <field name="name">Document lessons learned or special notes for future events</field>
+            <field name="project_id" ref="project_template_social"/>
+            <field name="parent_id" ref="task_soc_post_event"/>
+            <field name="sequence">3</field>
+        </record>
+
+
+        <!-- ################################################################## -->
+        <!-- BACKWARD COMPATIBILITY ALIAS                                       -->
+        <!-- Keep old XML ID pointing to Corporate template as default          -->
+        <!-- ################################################################## -->
+        <record id="project_template_standard_event" model="project.project">
+            <field name="name">Standard Event Project Template (Legacy - Use Corporate)</field>
+            <field name="is_template" eval="True"/>
+            <field name="privacy_visibility">followers</field>
+            <field name="active" eval="False"/>
+        </record>
+
     </data>
 </odoo>

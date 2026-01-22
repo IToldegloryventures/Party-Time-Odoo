@@ -31,22 +31,6 @@
                                 <field name="breakdown_time"/>
                             </group>
                         </group>
-                        
-                        <separator string="Requested Services"/>
-                        <group>
-                            <group>
-                                <field name="service_dj"/>
-                                <field name="service_photo"/>
-                                <field name="service_live"/>
-                                <field name="service_lighting"/>
-                            </group>
-                            <group>
-                                <field name="service_decor"/>
-                                <field name="service_photobooth"/>
-                                <field name="service_casino"/>
-                                <field name="service_staffing"/>
-                            </group>
-                        </group>
                     </page>
 
                     <!-- Service Lines (from CRM Opportunity) -->

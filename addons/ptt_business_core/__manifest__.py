@@ -12,10 +12,11 @@ Core module that defines the foundational models for PTT event management:
 - CRM Stage automation (auto-advance on quote/confirm)
 - Project extensions (event tracking, vendor assignments)
 - Vendor estimate and assignment models
-- Product variants with Event Type × Service Tier attributes
-- Per-variant pricing fields (min hours, guest counts, cost guides)
 - Sale order line minimum hours validation
-- Project templates with 9 standard event tasks
+- Project templates with 9 standard event tasks (Corporate, Wedding, Social)
+
+NOTE: Products, attributes, categories, and variants are managed NATIVELY
+by the accounting team in Odoo - NOT via this module's code.
 
 IMPORTANT: This module uses existing Studio fields (x_studio_*) directly:
 - x_studio_event_name, x_studio_event_date
@@ -60,15 +61,10 @@ Other PTT modules depend on this one.
         "data/email_templates.xml",
         # Data - Scheduled Actions
         "data/cron_jobs.xml",
-        # Data - Product Configuration (load order matters)
-        "data/product_attributes.xml",
-        "data/product_categories.xml",
-        "data/products_entertainment.xml",
-        "data/products_services.xml",
-        "data/products_rentals.xml",
-        "data/products_adjustments.xml",
+        # Data - Product Configuration
+        # NOTE: Product attributes, categories, and products are managed NATIVELY
+        # by the accounting team - NOT via code. Only Event Kickoff product remains.
         "data/products_administrative.xml",
-        "data/dj_variant_config.xml",
         # Views
         "views/res_partner_views.xml",
         "views/crm_lead_views.xml",

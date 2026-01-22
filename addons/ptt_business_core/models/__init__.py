@@ -16,5 +16,4 @@ from . import product_product  # Product variant extensions (ptt_min_hours, pric
 from . import sale_order  # Sale order CRM automation
 from . import sale_order_line  # Sale order line min hours validation
 from . import purchase_order  # Purchase order event tracking
-
-
+from . import native_data_registry  # Native data registry for all PTT modules

@@ -60,40 +60,6 @@ class SaleOrder(models.Model):
         string="Breakdown Time",
         help="When breakdown should be completed"
     )
-    
-    # Services Required (from Event Type)
-    service_dj = fields.Boolean(
-        string="DJ/MC Services",
-        help="DJ and MC services required"
-    )
-    service_photo = fields.Boolean(
-        string="Photo/Video Services", 
-        help="Photography/videography services required"
-    )
-    service_live = fields.Boolean(
-        string="Live Entertainment",
-        help="Live entertainment (bands, musicians) required"
-    )
-    service_lighting = fields.Boolean(
-        string="Lighting/AV Services",
-        help="Lighting and AV services required"
-    )
-    service_decor = fields.Boolean(
-        string="Decor & Theming",
-        help="Decoration and theming services required"
-    )
-    service_photobooth = fields.Boolean(
-        string="Photo Booth Rental",
-        help="Photo booth services required"
-    )
-    service_casino = fields.Boolean(
-        string="Casino Services",
-        help="Casino entertainment services required"
-    )
-    service_staffing = fields.Boolean(
-        string="Event Staffing",
-        help="Additional event staffing required"
-    )
 
     # =========================================================================
     # CRM SERVICE LINES (Read-Only Reference)
@@ -374,22 +340,9 @@ class SaleOrder(models.Model):
     
     @api.onchange('event_type_id')
     def _onchange_event_type_id(self):
-        """Auto-populate services and duration based on event type.
-        
-        Copies default service flags and duration hours from the
-        selected event type template.
-        """
+        """Auto-populate duration based on event type."""
         if self.event_type_id:
-            self.service_dj = self.event_type_id.default_service_dj
-            self.service_photo = self.event_type_id.default_service_photo
-            self.service_live = self.event_type_id.default_service_live
-            self.service_lighting = self.event_type_id.default_service_lighting
-            self.service_decor = self.event_type_id.default_service_decor
-            self.service_photobooth = self.event_type_id.default_service_photobooth
-            self.service_casino = self.event_type_id.default_service_casino
-            self.service_staffing = self.event_type_id.default_service_staffing
-            
-            # Set default duration
+            # Set default duration from event type
             if self.event_type_id.default_duration_hours:
                 self.event_duration = self.event_type_id.default_duration_hours
     
@@ -474,7 +427,7 @@ class SaleOrder(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Quote Revisions',
             'res_model': 'sale.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', revisions.ids)],
             'target': 'current',
         }

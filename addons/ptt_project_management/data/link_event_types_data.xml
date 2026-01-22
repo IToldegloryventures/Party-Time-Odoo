@@ -2,22 +2,29 @@
 <odoo>
     <data noupdate="0">
         
-        <!-- Update Sale Order Types to link with Project Templates -->
-        <!-- Maps to the 3 event types defined in ptt_enhanced_sales/data/event_types_data.xml -->
+        <!-- 
+        Link Event Types to Native Odoo Project Templates
+        ==================================================
+        Maps the 3 event types to their corresponding native project templates
+        (project.project with is_template=True) defined in ptt_business_core.
         
-        <!-- Corporate -> Corporate Template -->
+        When an Event Kickoff product creates a project, it will use the
+        template linked to the Sale Order's event type.
+        -->
+        
+        <!-- Corporate -> Corporate Event Project Template -->
         <record id="ptt_enhanced_sales.event_type_corporate" model="sale.order.type">
-            <field name="project_template_id" ref="template_corporate"/>
+            <field name="native_project_template_id" ref="ptt_business_core.project_template_corporate"/>
         </record>
 
-        <!-- Wedding -> Wedding Template -->
+        <!-- Wedding -> Wedding Event Project Template -->
         <record id="ptt_enhanced_sales.event_type_wedding" model="sale.order.type">
-            <field name="project_template_id" ref="template_wedding"/>
+            <field name="native_project_template_id" ref="ptt_business_core.project_template_wedding"/>
         </record>
 
-        <!-- Social -> Social Template -->
+        <!-- Social -> Social Event Project Template -->
         <record id="ptt_enhanced_sales.event_type_social" model="sale.order.type">
-            <field name="project_template_id" ref="template_social"/>
+            <field name="native_project_template_id" ref="ptt_business_core.project_template_social"/>
         </record>
 
     </data>

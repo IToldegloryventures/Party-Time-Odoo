@@ -11,22 +11,32 @@
         <!-- This is the MASTER product that creates the Event Project.
              It should be the first line on every event sale order.
              service_tracking='project_only' creates a new project.
-             Price is $0 - it's just for project creation. -->
+             Price is $0 - it's just for project creation.
+             
+             TEMPLATE SELECTION:
+             The actual template used depends on the Sale Order's event_type_id:
+             - Corporate → project_template_corporate
+             - Wedding → project_template_wedding
+             - Social → project_template_social
+             
+             The project_template_id below is the FALLBACK used when no event
+             type is selected. It uses Corporate as a sensible default.
+             See sale_order_line.py _timesheet_create_project() for the logic.
+        -->
         <record id="product_template_event_kickoff" model="product.template">
             <field name="name">** Event Kickoff</field>
             <field name="default_code">EVENT-KICKOFF</field>
-            <field name="categ_id" ref="product_category_event_services"/>
+            <!-- Category managed natively - uses default Odoo category -->
+            <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
             <field name="service_tracking">project_only</field>
-            <field name="project_template_id" ref="project_template_standard_event"/>
-            <field name="description_sale">Event project kickoff - creates the event project when the sale order is confirmed. This should be the first line on every event quote.</field>
+            <field name="project_template_id" ref="project_template_corporate"/>
+            <field name="description_sale">Event project kickoff - creates the event project when the sale order is confirmed. This should be the first line on every event quote. The project template is selected based on the event type (Corporate/Wedding/Social).</field>
         </record>
-
-        <!-- NOTE: Additional Insured Coverage is defined in products_adjustments.xml with variants -->
 
     </data>
 </odoo>

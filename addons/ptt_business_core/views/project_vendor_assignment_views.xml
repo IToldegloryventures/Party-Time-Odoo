@@ -73,7 +73,7 @@
         <record id="action_project_vendor_assignment" model="ir.actions.act_window">
             <field name="name">Vendor Assignments</field>
             <field name="res_model">ptt.project.vendor.assignment</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create your first vendor assignment
