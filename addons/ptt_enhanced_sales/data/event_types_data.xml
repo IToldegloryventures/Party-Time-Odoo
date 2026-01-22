@@ -9,7 +9,11 @@
         - Social  
         - Wedding
         
-        These map to the Event Type product attribute values in product_attributes.xml
+        These map to the Event Type product attribute values.
+        Each event type has its own Event Kickoff product with a direct template link:
+        - Event Kickoff - Corporate → Corporate Event Project Template
+        - Event Kickoff - Wedding → Wedding Event Project Template
+        - Event Kickoff - Social → Social Event Project Template
         -->
 
         <!-- Corporate Event Type -->
@@ -18,9 +22,6 @@
             <field name="code">CORP</field>
             <field name="sequence">10</field>
             <field name="description">Corporate events including conferences, product launches, team building, holiday parties, and awards ceremonies.</field>
-            <field name="default_service_dj">True</field>
-            <field name="default_service_lighting">True</field>
-            <field name="default_service_photo">True</field>
             <field name="default_duration_hours">6</field>
             <field name="default_setup_hours">2</field>
             <field name="default_breakdown_hours">1</field>
@@ -33,10 +34,6 @@
             <field name="code">SOCIAL</field>
             <field name="sequence">20</field>
             <field name="description">Social events including birthday parties, anniversaries, reunions, graduations, and community gatherings.</field>
-            <field name="default_service_dj">True</field>
-            <field name="default_service_photo">True</field>
-            <field name="default_service_photobooth">True</field>
-            <field name="default_service_decor">True</field>
             <field name="default_duration_hours">4</field>
             <field name="default_setup_hours">2</field>
             <field name="default_breakdown_hours">1</field>
@@ -49,11 +46,6 @@
             <field name="code">WEDDING</field>
             <field name="sequence">30</field>
             <field name="description">Wedding ceremonies and receptions including engagement parties, rehearsal dinners, and wedding celebrations.</field>
-            <field name="default_service_dj">True</field>
-            <field name="default_service_photo">True</field>
-            <field name="default_service_lighting">True</field>
-            <field name="default_service_decor">True</field>
-            <field name="default_service_photobooth">True</field>
             <field name="default_duration_hours">8</field>
             <field name="default_setup_hours">4</field>
             <field name="default_breakdown_hours">2</field>

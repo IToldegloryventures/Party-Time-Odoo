@@ -67,6 +67,16 @@ class CrmLeadEnhanced(models.Model):
         
         Services are NOT copied from CRM checkboxes - they are selected
         as product variants during quotation building.
+        
+        Flow:
+        1. Create the quotation (super())
+        2. Copy event details from CRM Lead to Sale Order
+        3. Auto-add the correct Event Kickoff product based on event type
+        4. Copy any CRM service lines to the quotation
+        
+        This ensures the Event Kickoff product is added automatically when
+        creating a quote from CRM, matching the behavior when the user
+        selects an event type directly on the Sale Order form.
         """
         quotation_action = super().action_create_quotation()
         
@@ -74,20 +84,70 @@ class CrmLeadEnhanced(models.Model):
         if quotation_action.get('res_id'):
             quotation = self.env['sale.order'].browse(quotation_action['res_id'])
             
-            # Populate event type and basic details from lead
-            # Services will be added as product variants, not from checkboxes
+            # Populate ALL event details from lead to SO
+            # This creates a complete event record on the quotation/contract
             quotation_vals = {
+                # Event Type & Identity
                 'event_type_id': self.ptt_event_type_id.id if self.ptt_event_type_id else False,
                 'event_name': self.ptt_event_name or self.name,
+                
+                # Guest & Attire
                 'event_guest_count': self.ptt_guest_count or 0,
+                'event_attire': self.ptt_attire or False,
+                
+                # Venue Details
                 'event_venue': self.ptt_venue_name or '',
+                'event_venue_address': self.ptt_venue_address or '',
+                'event_venue_type': self.ptt_location_type or False,
+                'event_venue_booked': self.ptt_venue_booked or False,
+                
+                # Event Duration
+                'event_duration': self.ptt_event_duration or 0.0,
+                
+                # Legacy Float fields (for backward compatibility)
+                'setup_time_float': self.ptt_setup_time or 0.0,
+                'event_start_time': self.ptt_start_time or 0.0,
+                'event_end_time': self.ptt_end_time or 0.0,
             }
             
-            # Only set event_date if we have one (Date→Datetime conversion)
+            # Convert CRM Date + Float times to proper Datetime fields on SO
             if self.ptt_event_date:
-                quotation_vals['event_date'] = fields.Datetime.to_datetime(self.ptt_event_date)
+                event_date = self.ptt_event_date
+                
+                # Event Start: Date + Start Time (Float hours)
+                if self.ptt_start_time:
+                    start_hour = int(self.ptt_start_time)
+                    start_min = int((self.ptt_start_time - start_hour) * 60)
+                    quotation_vals['event_date'] = fields.Datetime.to_datetime(event_date).replace(
+                        hour=start_hour, minute=start_min, second=0
+                    )
+                else:
+                    quotation_vals['event_date'] = fields.Datetime.to_datetime(event_date)
+                
+                # Event End: Date + End Time (Float hours)
+                if self.ptt_end_time:
+                    end_hour = int(self.ptt_end_time)
+                    end_min = int((self.ptt_end_time - end_hour) * 60)
+                    quotation_vals['event_end_datetime'] = fields.Datetime.to_datetime(event_date).replace(
+                        hour=end_hour, minute=end_min, second=0
+                    )
+                
+                # Setup Time: Date + Setup Time (Float hours)
+                if self.ptt_setup_time:
+                    setup_hour = int(self.ptt_setup_time)
+                    setup_min = int((self.ptt_setup_time - setup_hour) * 60)
+                    quotation_vals['setup_time'] = fields.Datetime.to_datetime(event_date).replace(
+                        hour=setup_hour, minute=setup_min, second=0
+                    )
             
             quotation.write(quotation_vals)
+            
+            # Auto-add the correct Event Kickoff product based on event type
+            # This matches the behavior of the onchange in sale_order.py
+            if self.ptt_event_type_id:
+                quotation._add_event_kickoff_from_crm()
+            
+            # Copy any CRM service lines to the quotation
             self._ptt_copy_service_lines_to_order(quotation)
         
         return quotation_action

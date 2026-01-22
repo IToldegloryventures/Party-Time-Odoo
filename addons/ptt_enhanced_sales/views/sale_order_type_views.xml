@@ -45,22 +45,6 @@
                             <field name="description"/>
                         </group>
                         <notebook>
-                            <page string="Default Services" name="services">
-                                <group>
-                                    <group string="Entertainment">
-                                        <field name="default_service_dj"/>
-                                        <field name="default_service_live"/>
-                                        <field name="default_service_photobooth"/>
-                                        <field name="default_service_casino"/>
-                                    </group>
-                                    <group string="Production &amp; Logistics">
-                                        <field name="default_service_photo"/>
-                                        <field name="default_service_lighting"/>
-                                        <field name="default_service_decor"/>
-                                        <field name="default_service_staffing"/>
-                                    </group>
-                                </group>
-                            </page>
                             <page string="Duration Settings" name="duration">
                                 <group>
                                     <field name="default_duration_hours"/>

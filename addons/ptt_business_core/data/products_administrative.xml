@@ -1,32 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- 
-        Administrative and Billing Products
-        Fees, Deposits, Discounts, Insurance, etc.
+        Administrative Products - Event Kickoff Products
+        These products create the event project when added to a Sale Order.
+        Each event type has its own kickoff product linked to the appropriate template.
     -->
     <data noupdate="1">
+        
         <!-- ============================================ -->
-        <!-- EVENT KICKOFF - Project Creation Product    -->
+        <!-- EVENT KICKOFF PRODUCTS                       -->
         <!-- ============================================ -->
-        <!-- This is the MASTER product that creates the Event Project.
-             It should be the first line on every event sale order.
-             service_tracking='project_only' creates a new project.
-             Price is $0 - it's just for project creation. -->
-        <record id="product_template_event_kickoff" model="product.template">
-            <field name="name">** Event Kickoff</field>
-            <field name="default_code">EVENT-KICKOFF</field>
-            <field name="categ_id" ref="product_category_event_services"/>
+        <!-- 
+            Three separate Event Kickoff products - one per event type.
+            Sales reps add the appropriate kickoff product to create the 
+            event project with the correct template.
+            
+            service_tracking='project_only' creates a new project.
+            Price is $0 - it's just for project creation.
+            
+            Each product is DIRECTLY linked to its project template:
+            - Event Kickoff - Corporate → project_template_corporate
+            - Event Kickoff - Wedding → project_template_wedding
+            - Event Kickoff - Social → project_template_social
+            
+            This eliminates the need for complex template-swapping code.
+            
+            NOTE: Category is not set - will use system default.
+            Set category manually in Odoo if needed.
+        -->
+
+        <!-- CORPORATE EVENT KICKOFF -->
+        <record id="product_event_kickoff_corporate" model="product.template">
+            <field name="name">Event Kickoff - Corporate</field>
+            <field name="default_code">EVENT-KICKOFF-CORP</field>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
             <field name="service_tracking">project_only</field>
-            <field name="project_template_id" ref="project_template_standard_event"/>
-            <field name="description_sale">Event project kickoff - creates the event project when the sale order is confirmed. This should be the first line on every event quote.</field>
+            <field name="project_template_id" ref="project_template_corporate"/>
+            <field name="description_sale">Creates a Corporate Event project when the sale order is confirmed. Add this as the first line on corporate event quotes.</field>
         </record>
 
-        <!-- NOTE: Additional Insured Coverage is defined in products_adjustments.xml with variants -->
+        <!-- WEDDING EVENT KICKOFF -->
+        <record id="product_event_kickoff_wedding" model="product.template">
+            <field name="name">Event Kickoff - Wedding</field>
+            <field name="default_code">EVENT-KICKOFF-WEDD</field>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="service_tracking">project_only</field>
+            <field name="project_template_id" ref="project_template_wedding"/>
+            <field name="description_sale">Creates a Wedding Event project when the sale order is confirmed. Add this as the first line on wedding event quotes.</field>
+        </record>
+
+        <!-- SOCIAL EVENT KICKOFF -->
+        <record id="product_event_kickoff_social" model="product.template">
+            <field name="name">Event Kickoff - Social</field>
+            <field name="default_code">EVENT-KICKOFF-SOCL</field>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="service_tracking">project_only</field>
+            <field name="project_template_id" ref="project_template_social"/>
+            <field name="description_sale">Creates a Social Event project when the sale order is confirmed. Add this as the first line on social event quotes (birthdays, parties, celebrations).</field>
+        </record>
+
+        <!-- 
+            LEGACY: The old "** Event Kickoff" product (ID: 144) remains in the database
+            but should be manually archived via Odoo Shell:
+            
+            env['product.template'].browse(144).active = False
+            env.cr.commit()
+        -->
 
     </data>
 </odoo>

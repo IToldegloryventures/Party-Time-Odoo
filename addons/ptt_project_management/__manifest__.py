@@ -1,16 +1,19 @@
 {
     "name": "PTT Project Management",
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.3.0",
     "summary": "Enhanced project management for Party Time Texas event execution",
     "description": """
 Event Project Management Enhancement
 ====================================
 
 This module provides:
-* Project templates for different event types
 * Stakeholder management for vendors and clients
 * Timeline and milestone tracking
 * Task and resource management for events
+* Project views and enhancements for event planning
+
+NOTE: Project templates are defined in ptt_business_core/data/project_template.xml
+(Corporate/Wedding/Social). Each Event Kickoff product directly links to its template.
 
 Integrates with PTT Enhanced Sales for complete event lifecycle management.
     """,
@@ -25,16 +28,10 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
     ],
     "data": [
         "security/ir.model.access.csv",
-        "data/project_templates_data.xml",
-        "data/template_id_aliases.xml",
-        "data/link_event_types_data.xml",
-        "views/project_template_views.xml",
         "views/project_stakeholder_views.xml",
         "views/project_vendor_assignment_views.xml",
         "views/project_project_views.xml",
-        "views/sale_order_type_views.xml",
     ],
-    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": True,
     "auto_install": False,

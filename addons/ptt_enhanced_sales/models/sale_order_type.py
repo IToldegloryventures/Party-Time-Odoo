@@ -1,7 +1,7 @@
 # Part of Party Time Texas Event Management System
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 
 
 class SaleOrderType(models.Model):
@@ -42,19 +42,6 @@ class SaleOrderType(models.Model):
     # NOTE: Category field removed - the event type name (Corporate/Social/Wedding)
     # itself serves as the category. This simplifies the model to match
     # the 3 event types defined in product_attributes.xml
-    
-    # Default Services for this Event Type
-    default_service_dj = fields.Boolean(string="DJ/MC Services", default=False)
-    default_service_photo = fields.Boolean(string="Photo/Video Services", default=False)
-    default_service_live = fields.Boolean(string="Live Entertainment", default=False)
-    default_service_lighting = fields.Boolean(string="Lighting/AV Services", default=False)
-    default_service_decor = fields.Boolean(string="Decor & Theming", default=False)
-    default_service_photobooth = fields.Boolean(string="Photo Booth Rental", default=False)
-    default_service_casino = fields.Boolean(string="Casino Services", default=False)
-    default_service_staffing = fields.Boolean(string="Event Staffing", default=False)
-    
-    # NOTE: project_template_id field is added by ptt_project_management module
-    # to avoid circular dependency (project.template is defined there)
     
     # Workflow Settings
     requires_approval = fields.Boolean(
@@ -98,41 +85,3 @@ class SaleOrderType(models.Model):
             List of dicts with event type info (id, name, code)
         """
         return self.search([('active', '=', True)]).read(['name', 'code'])
-    
-    def create_default_project_tasks(self):
-        """Create default tasks based on selected services"""
-        tasks = []
-        
-        if self.default_service_dj:
-            tasks.extend([
-                'Initial Music Consultation',
-                'Equipment Setup and Sound Check',
-                'Event DJ/MC Service',
-                'Equipment Breakdown'
-            ])
-        
-        if self.default_service_photo:
-            tasks.extend([
-                'Pre-Event Photo Consultation',
-                'Event Photography/Videography',
-                'Photo/Video Processing',
-                'Delivery of Final Media'
-            ])
-        
-        if self.default_service_lighting:
-            tasks.extend([
-                'Lighting Design Consultation',
-                'Equipment Setup',
-                'Event Lighting Operation',
-                'Equipment Breakdown'
-            ])
-        
-        if self.default_service_decor:
-            tasks.extend([
-                'Decor Design Planning',
-                'Decor Setup',
-                'Event Day Maintenance',
-                'Decor Breakdown'
-            ])
-            
-        return tasks

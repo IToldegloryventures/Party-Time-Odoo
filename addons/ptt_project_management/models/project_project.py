@@ -1,5 +1,17 @@
 # Part of Party Time Texas Event Management System
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
+"""
+Enhanced Project model for Party Time Texas event management.
+
+NOTE: Project templates are now native Odoo project.project records with is_template=True.
+Templates are defined in ptt_business_core/data/project_template.xml:
+- project_template_corporate
+- project_template_wedding  
+- project_template_social
+
+When a Sale Order with Event Kickoff product is confirmed, Odoo's native template
+copying mechanism creates the project with all tasks and subtasks from the template.
+"""
 
 from odoo import models, fields, api, _
 
@@ -10,13 +22,6 @@ class ProjectProject(models.Model):
     """Enhanced Project for Event Management"""
     _inherit = 'project.project'
 
-    # Template Integration
-    template_id = fields.Many2one(
-        'project.template',
-        string="Project Template",
-        help="Template used to create this project"
-    )
-    
     # Stakeholder Management (Simple Contact Directory)
     stakeholder_ids = fields.One2many(
         'project.stakeholder',
@@ -61,7 +66,7 @@ class ProjectProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Event Contacts',
             'res_model': 'project.stakeholder',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id)],
             'context': {'default_project_id': self.id},
             'target': 'current',
@@ -115,7 +120,7 @@ class ProjectProject(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Event Vendors',
             'res_model': 'project.stakeholder',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id), ('is_vendor', '=', True)],
             'context': {'default_project_id': self.id, 'default_is_vendor': True},
             'target': 'current',
@@ -130,34 +135,5 @@ class ProjectProject(models.Model):
             'view_mode': 'list,form',
             'domain': [('project_id', '=', self.id), ('is_client', '=', True)],
             'context': {'default_project_id': self.id, 'default_is_client': True},
-            'target': 'current',
-        }
-    
-    @api.model
-    def create_from_template(self, template_id, project_vals=None):
-        """Create a new project from a template.
-        
-        Args:
-            template_id: ID of the project.template to use.
-            project_vals: Optional dict of additional project values.
-            
-        Returns:
-            project.project: The newly created project record.
-        """
-        template = self.env['project.template'].browse(template_id)
-        return template.create_project_from_template(project_vals)
-    
-    def action_apply_template(self):
-        """Apply a template to existing project.
-        
-        Note: This opens a selection view to pick a template.
-        The actual template application is handled by project.template.apply_to_project()
-        """
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Select Template',
-            'res_model': 'project.template',
-            'view_mode': 'tree,form',
-            'context': {'apply_to_project_id': self.id},
             'target': 'current',
         }
