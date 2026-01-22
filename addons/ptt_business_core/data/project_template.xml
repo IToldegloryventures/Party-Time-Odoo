@@ -19,8 +19,10 @@
         NOTE: Odoo 19 native feature - when service_tracking='project_only' and
         project_template_id is set on a product, Odoo automatically copies this
         template when the Sales Order is confirmed.
+        
+        noupdate="0" ensures templates are created on module upgrade.
     -->
-    <data noupdate="1">
+    <data noupdate="0">
         
         <!-- ################################################################## -->
         <!-- CORPORATE EVENT PROJECT TEMPLATE                                   -->
