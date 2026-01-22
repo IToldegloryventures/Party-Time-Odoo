@@ -436,6 +436,65 @@ class SaleOrder(models.Model):
             })
             # Prepend to existing lines
             self.order_line = new_line | self.order_line
+
+    def _add_event_kickoff_from_crm(self):
+        """Add the correct Event Kickoff product when creating a quote from CRM.
+        
+        This is called programmatically (not via onchange) when a quotation
+        is created from a CRM Lead that has an event type set.
+        
+        Unlike _auto_add_event_kickoff_product() which works with pseudo-records
+        in onchange context, this method creates real sale.order.line records.
+        
+        Odoo 19 Reference:
+        https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#create
+        """
+        self.ensure_one()
+        
+        if not self.event_type_id or not self.event_type_id.code:
+            return
+        
+        # Get the correct Event Kickoff product code for this event type
+        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type_id.code)
+        if not kickoff_code:
+            return
+        
+        # Find the Event Kickoff product
+        kickoff_product = self.env['product.product'].search([
+            ('default_code', '=', kickoff_code),
+            ('active', '=', True),
+        ], limit=1)
+        
+        if not kickoff_product:
+            # Product not found - may not be installed yet, skip silently
+            return
+        
+        # Check if an Event Kickoff already exists
+        existing_kickoff = self.order_line.filtered(
+            lambda l: l.product_id and l.product_id.default_code in ALL_EVENT_KICKOFF_CODES
+        )
+        
+        if existing_kickoff:
+            # Already has an Event Kickoff - check if it's the correct one
+            if existing_kickoff[0].product_id.default_code == kickoff_code:
+                return  # Already correct
+            # Wrong Event Kickoff - update it
+            existing_kickoff[0].write({
+                'product_id': kickoff_product.id,
+                'name': kickoff_product.get_product_multiline_description_sale(),
+                'product_uom_qty': 1.0,
+                'sequence': 0,
+            })
+        else:
+            # Create a new line for the Event Kickoff product
+            self.env['sale.order.line'].create({
+                'order_id': self.id,
+                'product_id': kickoff_product.id,
+                'name': kickoff_product.get_product_multiline_description_sale(),
+                'product_uom_qty': 1.0,
+                'price_unit': 0.0,
+                'sequence': 0,  # First line
+            })
     
     @api.onchange('event_date', 'event_type_id')
     def _onchange_event_timing(self):

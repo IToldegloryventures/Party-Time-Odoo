@@ -67,6 +67,16 @@ class CrmLeadEnhanced(models.Model):
         
         Services are NOT copied from CRM checkboxes - they are selected
         as product variants during quotation building.
+        
+        Flow:
+        1. Create the quotation (super())
+        2. Copy event details from CRM Lead to Sale Order
+        3. Auto-add the correct Event Kickoff product based on event type
+        4. Copy any CRM service lines to the quotation
+        
+        This ensures the Event Kickoff product is added automatically when
+        creating a quote from CRM, matching the behavior when the user
+        selects an event type directly on the Sale Order form.
         """
         quotation_action = super().action_create_quotation()
         
@@ -88,6 +98,13 @@ class CrmLeadEnhanced(models.Model):
                 quotation_vals['event_date'] = fields.Datetime.to_datetime(self.ptt_event_date)
             
             quotation.write(quotation_vals)
+            
+            # Auto-add the correct Event Kickoff product based on event type
+            # This matches the behavior of the onchange in sale_order.py
+            if self.ptt_event_type_id:
+                quotation._add_event_kickoff_from_crm()
+            
+            # Copy any CRM service lines to the quotation
             self._ptt_copy_service_lines_to_order(quotation)
         
         return quotation_action
