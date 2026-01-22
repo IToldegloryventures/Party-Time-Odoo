@@ -6,6 +6,11 @@ Extend sale.order.type with native Odoo project template integration.
 This links event types to native Odoo project templates (project.project 
 with is_template=True) so the Event Kickoff product can dynamically
 select the correct template based on the Sale Order's event type.
+
+Templates are defined in ptt_business_core/data/project_template.xml:
+- project_template_corporate
+- project_template_wedding
+- project_template_social
 """
 
 from odoo import models, fields
@@ -22,13 +27,4 @@ class SaleOrderType(models.Model):
         domain=[('is_template', '=', True)],
         help="Native Odoo project template to use when creating projects for this event type. "
              "The Event Kickoff product will use this template when creating the event project."
-    )
-    
-    # DEPRECATED: Old custom project.template field - kept for backward compatibility
-    # Remove this field after migration to native templates is complete
-    project_template_id = fields.Many2one(
-        'project.template',
-        string="Legacy Project Template (Deprecated)",
-        help="DEPRECATED: Use native_project_template_id instead. "
-             "This field linked to the old custom project.template model."
     )

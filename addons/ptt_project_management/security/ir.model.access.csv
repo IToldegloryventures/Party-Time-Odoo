@@ -1,9 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_project_template_user,project.template user,model_project_template,base.group_user,1,0,0,0
-access_project_template_manager,project.template manager,model_project_template,project.group_project_manager,1,1,1,1
-access_project_task_template_user,project.task.template user,model_project_task_template,base.group_user,1,0,0,0
-access_project_task_template_manager,project.task.template manager,model_project_task_template,project.group_project_manager,1,1,1,1
-access_project_stakeholder_template_user,project.stakeholder.template user,model_project_stakeholder_template,base.group_user,1,0,0,0
-access_project_stakeholder_template_manager,project.stakeholder.template manager,model_project_stakeholder_template,project.group_project_manager,1,1,1,1
 access_project_stakeholder_user,project.stakeholder user,model_project_stakeholder,base.group_user,1,1,1,0
 access_project_stakeholder_manager,project.stakeholder manager,model_project_stakeholder,project.group_project_manager,1,1,1,1
