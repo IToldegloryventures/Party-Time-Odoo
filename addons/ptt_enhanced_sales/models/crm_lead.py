@@ -84,13 +84,28 @@ class CrmLeadEnhanced(models.Model):
         if quotation_action.get('res_id'):
             quotation = self.env['sale.order'].browse(quotation_action['res_id'])
             
-            # Populate event type and basic details from lead
-            # Services will be added as product variants, not from checkboxes
+            # Populate ALL event details from lead to SO
+            # This creates a complete event record on the quotation/contract
             quotation_vals = {
+                # Event Type & Identity
                 'event_type_id': self.ptt_event_type_id.id if self.ptt_event_type_id else False,
                 'event_name': self.ptt_event_name or self.name,
+                
+                # Guest & Attire
                 'event_guest_count': self.ptt_guest_count or 0,
+                'event_attire': self.ptt_attire or False,
+                
+                # Venue Details
                 'event_venue': self.ptt_venue_name or '',
+                'event_venue_address': self.ptt_venue_address or '',
+                'event_venue_type': self.ptt_location_type or False,
+                'event_venue_booked': self.ptt_venue_booked or False,
+                
+                # Event Times (Float hours)
+                'setup_time_float': self.ptt_setup_time or 0.0,
+                'event_start_time': self.ptt_start_time or 0.0,
+                'event_end_time': self.ptt_end_time or 0.0,
+                'event_duration': self.ptt_event_duration or 0.0,
             }
             
             # Only set event_date if we have one (Date→Datetime conversion)

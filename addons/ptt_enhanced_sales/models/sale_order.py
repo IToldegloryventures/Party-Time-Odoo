@@ -61,16 +61,113 @@ class SaleOrder(models.Model):
         string="Venue Type"
     )
     
+    event_venue_address = fields.Text(
+        string="Venue Address",
+        help="Full address of the venue"
+    )
+    
+    event_venue_booked = fields.Boolean(
+        string="Venue Booked?",
+        help="Is the venue already booked/confirmed?"
+    )
+    
+    event_attire = fields.Selection(
+        selection=[
+            ('casual', 'Casual'),
+            ('business_casual', 'Business Casual'),
+            ('semi_formal', 'Semi-Formal'),
+            ('formal', 'Formal'),
+            ('black_tie', 'Black Tie'),
+            ('costume', 'Costume/Theme'),
+            ('other', 'Other'),
+        ],
+        string="Attire/Dress Code",
+        help="Dress code for the event"
+    )
+    
+    # Event Times (Float hours like 18.0 = 6:00 PM)
+    event_start_time = fields.Float(
+        string="Event Start Time",
+        help="Event start time (e.g., 18.0 = 6:00 PM)"
+    )
+    
+    event_end_time = fields.Float(
+        string="Event End Time",
+        help="Event end time (e.g., 22.0 = 10:00 PM)"
+    )
+    
     # Setup and Breakdown
     setup_time = fields.Datetime(
         string="Setup Start Time",
         help="When setup should begin"
     )
     
+    setup_time_float = fields.Float(
+        string="Setup Time (Hours)",
+        help="Setup start time (e.g., 14.0 = 2:00 PM)"
+    )
+    
     breakdown_time = fields.Datetime(
         string="Breakdown Time",
         help="When breakdown should be completed"
     )
+    
+    # =========================================================================
+    # EVENT DETAILS SUMMARY (For Customer-Facing Documents)
+    # =========================================================================
+    event_details_summary = fields.Text(
+        string="Event Details Summary",
+        compute="_compute_event_details_summary",
+        store=False,
+        help="Formatted summary of event details for quotes and contracts"
+    )
+    
+    @api.depends('event_name', 'event_type_id', 'event_date', 'event_guest_count',
+                 'event_venue', 'event_venue_address', 'event_attire',
+                 'event_start_time', 'event_end_time', 'setup_time_float')
+    def _compute_event_details_summary(self):
+        """Generate a formatted summary of event details for customer documents."""
+        for order in self:
+            lines = []
+            
+            if order.event_name:
+                lines.append(f"Event: {order.event_name}")
+            if order.event_type_id:
+                lines.append(f"Type: {order.event_type_id.name}")
+            if order.event_date:
+                lines.append(f"Date: {order.event_date.strftime('%B %d, %Y')}")
+            if order.event_start_time:
+                start = order._float_to_time_str(order.event_start_time)
+                end = order._float_to_time_str(order.event_end_time) if order.event_end_time else ''
+                if end:
+                    lines.append(f"Time: {start} - {end}")
+                else:
+                    lines.append(f"Start Time: {start}")
+            if order.setup_time_float:
+                lines.append(f"Setup: {order._float_to_time_str(order.setup_time_float)}")
+            if order.event_guest_count:
+                lines.append(f"Guests: {order.event_guest_count}")
+            if order.event_attire:
+                attire_display = dict(order._fields['event_attire'].selection).get(order.event_attire, '')
+                lines.append(f"Attire: {attire_display}")
+            if order.event_venue:
+                lines.append(f"Venue: {order.event_venue}")
+            if order.event_venue_address:
+                lines.append(f"Address: {order.event_venue_address}")
+            
+            order.event_details_summary = '\n'.join(lines) if lines else ''
+    
+    def _float_to_time_str(self, float_time):
+        """Convert float time (e.g., 18.5) to string (e.g., '6:30 PM')."""
+        if not float_time:
+            return ''
+        hours = int(float_time)
+        minutes = int((float_time - hours) * 60)
+        period = 'AM' if hours < 12 else 'PM'
+        display_hours = hours if hours <= 12 else hours - 12
+        if display_hours == 0:
+            display_hours = 12
+        return f"{display_hours}:{minutes:02d} {period}"
 
     # =========================================================================
     # CRM SERVICE LINES (Read-Only Reference)

@@ -32,6 +32,7 @@ Designed specifically for Party Time Texas event management workflow.
         "views/sale_order_type_views.xml",
         "views/sale_order_views.xml",
         "views/crm_lead_views.xml",
+        "report/sale_order_report_templates.xml",
     ],
     "installable": True,
     "application": True,

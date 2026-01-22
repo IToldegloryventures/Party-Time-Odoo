@@ -20,17 +20,32 @@
                         <group>
                             <group string="Event Details">
                                 <field name="event_name"/>
+                                <field name="event_type_id" readonly="1"/>
                                 <field name="event_date"/>
-                                <field name="event_duration"/>
                                 <field name="event_guest_count"/>
+                                <field name="event_attire"/>
+                            </group>
+                            <group string="Event Timing">
+                                <field name="event_start_time" widget="float_time"/>
+                                <field name="event_end_time" widget="float_time"/>
+                                <field name="event_duration"/>
+                                <field name="setup_time_float" widget="float_time"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Venue">
                                 <field name="event_venue"/>
                                 <field name="event_venue_type"/>
+                                <field name="event_venue_booked"/>
+                                <field name="event_venue_address"/>
                             </group>
-                            <group string="Timing">
+                            <group string="Setup/Breakdown (Datetime)">
                                 <field name="setup_time"/>
                                 <field name="breakdown_time"/>
                             </group>
                         </group>
+                        <separator string="Event Details Summary (for Customer Documents)"/>
+                        <field name="event_details_summary" readonly="1" nolabel="1"/>
                     </page>
 
                     <!-- Service Lines (from CRM Opportunity) -->
