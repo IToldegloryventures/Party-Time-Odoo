@@ -24,13 +24,15 @@
             - Event Kickoff - Social → project_template_social
             
             This eliminates the need for complex template-swapping code.
+            
+            NOTE: Category is not set - will use system default.
+            Set category manually in Odoo if needed.
         -->
 
         <!-- CORPORATE EVENT KICKOFF -->
         <record id="product_event_kickoff_corporate" model="product.template">
             <field name="name">Event Kickoff - Corporate</field>
             <field name="default_code">EVENT-KICKOFF-CORP</field>
-            <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
@@ -45,7 +47,6 @@
         <record id="product_event_kickoff_wedding" model="product.template">
             <field name="name">Event Kickoff - Wedding</field>
             <field name="default_code">EVENT-KICKOFF-WEDD</field>
-            <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
@@ -60,7 +61,6 @@
         <record id="product_event_kickoff_social" model="product.template">
             <field name="name">Event Kickoff - Social</field>
             <field name="default_code">EVENT-KICKOFF-SOCL</field>
-            <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">service</field>
             <field name="list_price">0.0</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>
