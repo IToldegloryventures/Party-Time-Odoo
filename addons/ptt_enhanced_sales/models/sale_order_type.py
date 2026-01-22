@@ -43,9 +43,6 @@ class SaleOrderType(models.Model):
     # itself serves as the category. This simplifies the model to match
     # the 3 event types defined in product_attributes.xml
     
-    # NOTE: native_project_template_id field is added by ptt_project_management module
-    # to link event types to their native Odoo project templates
-    
     # Workflow Settings
     requires_approval = fields.Boolean(
         string="Requires Approval",

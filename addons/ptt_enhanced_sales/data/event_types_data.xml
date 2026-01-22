@@ -9,8 +9,11 @@
         - Social  
         - Wedding
         
-        These map to the Event Type product attribute values in product_attributes.xml
-        The native_project_template_id is set in ptt_project_management/data/link_event_types_data.xml
+        These map to the Event Type product attribute values.
+        Each event type has its own Event Kickoff product with a direct template link:
+        - Event Kickoff - Corporate → Corporate Event Project Template
+        - Event Kickoff - Wedding → Wedding Event Project Template
+        - Event Kickoff - Social → Social Event Project Template
         -->
 
         <!-- Corporate Event Type -->
