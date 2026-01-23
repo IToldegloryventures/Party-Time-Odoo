@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!--
+        PTT Project Dashboard Template
+
+        Based on:
+        - Cybrosys project_dashboard_odoo/static/src/xml/dashboard_templates.xml
+        - DevIntelle dev_project_task_dashboard layout (user's screenshot)
+
+        Layout:
+        - Header with greeting and filters
+        - 6 KPI tiles in 2 rows
+        - All Task table + Task Deadline pie chart
+        - Task By Stages doughnut + Task By Project bar
+        - Activities table + Priority bar chart
+    -->
+    <t t-name="ptt_project_management.Dashboard">
+        <div class="ptt-dashboard container-fluid p-0">
+            <!-- Loading Spinner -->
+            <div t-if="state.loading" class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div t-else="">
+                <!-- Header Section -->
+                <div class="ptt-dashboard-header bg-primary text-white p-3 mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h4 class="mb-1">
+                                <t t-esc="getGreeting()"/>, <t t-esc="state.userName"/>
+                            </h4>
+                            <p class="mb-0 opacity-75">Welcome to your Project Dashboard</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row g-2 align-items-end">
+                                <div class="col">
+                                    <label class="form-label small text-white-50 mb-1">Managers</label>
+                                    <select class="form-select form-select-sm" t-ref="managerSelect" t-on-change="applyFilters">
+                                        <option value="">All Managers</option>
+                                        <t t-foreach="state.managers" t-as="manager" t-key="manager.id">
+                                            <option t-att-value="manager.id"><t t-esc="manager.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small text-white-50 mb-1">Customers</label>
+                                    <select class="form-select form-select-sm" t-ref="customerSelect" t-on-change="applyFilters">
+                                        <option value="">All Customers</option>
+                                        <t t-foreach="state.customers" t-as="customer" t-key="customer.id">
+                                            <option t-att-value="customer.id"><t t-esc="customer.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small text-white-50 mb-1">Projects</label>
+                                    <select class="form-select form-select-sm" t-ref="projectSelect" t-on-change="applyFilters">
+                                        <option value="">All Projects</option>
+                                        <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                                            <option t-att-value="project.id"><t t-esc="project.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small text-white-50 mb-1">Date Range</label>
+                                    <div class="d-flex gap-1">
+                                        <input type="date" class="form-control form-control-sm" t-ref="startDate" t-on-change="applyFilters"/>
+                                        <input type="date" class="form-control form-control-sm" t-ref="endDate" t-on-change="applyFilters"/>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-outline-light btn-sm" t-on-click="resetFilters">
+                                        <i class="fa fa-undo me-1"/>Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Tiles Row 1 -->
+                <div class="row g-3 mb-3 px-3">
+                    <div class="col-md-4">
+                        <div class="card ptt-kpi-card h-100 shadow-sm" t-on-click="openMyTasks" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <h2 class="mb-1 fw-bold text-primary"><t t-esc="state.myTasks"/></h2>
+                                <p class="mb-0 text-muted">My Task</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card ptt-kpi-card h-100 shadow-sm" t-on-click="openTotalProjects" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <h2 class="mb-1 fw-bold text-success"><t t-esc="state.totalProjects"/></h2>
+                                <p class="mb-0 text-muted">Total Projects</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card ptt-kpi-card h-100 shadow-sm" t-on-click="openActiveTasks" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <h2 class="mb-1 fw-bold text-info"><t t-esc="state.activeTasks"/></h2>
+                                <p class="mb-0 text-muted">Active Task</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Tiles Row 2 -->
+                <div class="row g-3 mb-4 px-3">
+                    <div class="col-md-4">
+                        <div class="card ptt-kpi-card h-100 shadow-sm" t-on-click="openMyOverdueTasks" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <h2 class="mb-1 fw-bold text-warning"><t t-esc="state.myOverdueTasks"/></h2>
+                                <p class="mb-0 text-muted">MyOverdue Task</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card ptt-kpi-card h-100 shadow-sm" t-on-click="openOverdueTasks" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <h2 class="mb-1 fw-bold text-danger"><t t-esc="state.overdueTasks"/></h2>
+                                <p class="mb-0 text-muted">Overdue Task</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card ptt-kpi-card h-100 shadow-sm" t-on-click="openTodayTasks" style="cursor: pointer;">
+                            <div class="card-body text-center">
+                                <h2 class="mb-1 fw-bold text-secondary"><t t-esc="state.todayTasks"/></h2>
+                                <p class="mb-0 text-muted">Today Task</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Task Table + Task Deadline Chart -->
+                <div class="row g-3 mb-4 px-3">
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fa fa-list me-2"/>All Task</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Project</th>
+                                                <th>Deadline-Date</th>
+                                                <th>Priority</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="state.tasks" t-as="task" t-key="task.id">
+                                                <tr>
+                                                    <td><t t-esc="task.name"/></td>
+                                                    <td><t t-esc="task.project_name"/></td>
+                                                    <td>
+                                                        <span t-att-class="'badge ' + (task.deadline_class === 'overdue' ? 'bg-danger' : task.deadline_class === 'today' ? 'bg-warning text-dark' : 'bg-secondary')">
+                                                            <t t-esc="task.deadline_display"/>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <i t-att-class="'fa fa-flag ' + (task.priority === '1' ? 'text-danger' : 'text-muted')"/>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary" t-on-click="() => this.viewTask(task.id)">View</button>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <tr t-if="state.tasks.length === 0">
+                                                <td colspan="5" class="text-center text-muted py-4">No tasks found</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white d-flex justify-content-center align-items-center gap-3">
+                                <button class="btn btn-sm btn-outline-secondary" t-on-click="prevTaskPage" t-att-disabled="state.taskPage &lt;= 1">
+                                    <i class="fa fa-chevron-left"/>
+                                </button>
+                                <span class="small">Page <t t-esc="state.taskPage"/> of <t t-esc="state.taskPages"/></span>
+                                <button class="btn btn-sm btn-outline-secondary" t-on-click="nextTaskPage" t-att-disabled="state.taskPage >= state.taskPages">
+                                    <i class="fa fa-chevron-right"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fa fa-pie-chart me-2"/>Task Deadline</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas t-ref="taskDeadlineChart" style="height: 200px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task By Stages + Task By Project -->
+                <div class="row g-3 mb-4 px-3">
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fa fa-tasks me-2"/>Task By Stages</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas t-ref="taskStagesChart" style="height: 200px;"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fa fa-bar-chart me-2"/>Task By Project</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas t-ref="taskProjectChart" style="height: 200px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activities Table + Priority Chart -->
+                <div class="row g-3 mb-4 px-3">
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fa fa-calendar-check-o me-2"/>Activities</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Task</th>
+                                                <th>Activity</th>
+                                                <th>Summary</th>
+                                                <th>Date</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="state.activities" t-as="activity" t-key="activity.id">
+                                                <tr>
+                                                    <td><t t-esc="activity.task_name"/></td>
+                                                    <td><t t-esc="activity.activity_type"/></td>
+                                                    <td><t t-esc="activity.summary"/></td>
+                                                    <td><t t-esc="activity.date"/></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary" t-on-click="() => this.viewActivity(activity.res_model, activity.res_id)">View</button>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <tr t-if="state.activities.length === 0">
+                                                <td colspan="5" class="text-center text-muted py-4">No activities found</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white d-flex justify-content-center align-items-center gap-3">
+                                <button class="btn btn-sm btn-outline-secondary" t-on-click="prevActivityPage" t-att-disabled="state.activityPage &lt;= 1">
+                                    <i class="fa fa-chevron-left"/>
+                                </button>
+                                <span class="small">Page <t t-esc="state.activityPage"/> of <t t-esc="state.activityPages"/></span>
+                                <button class="btn btn-sm btn-outline-secondary" t-on-click="nextActivityPage" t-att-disabled="state.activityPage >= state.activityPages">
+                                    <i class="fa fa-chevron-right"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0"><i class="fa fa-signal me-2"/>Priority Wise Chart</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas t-ref="priorityChart" style="height: 200px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

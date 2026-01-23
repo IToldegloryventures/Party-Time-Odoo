@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================================================ -->
+        <!-- CLIENT ACTION FOR DASHBOARD                                      -->
+        <!-- Based on: Odoo 19 ir.actions.client pattern                      -->
+        <!-- ================================================================ -->
+
+        <record id="ptt_project_dashboard_action" model="ir.actions.client">
+            <field name="name">Dashboard</field>
+            <field name="tag">ptt_project_dashboard</field>
+            <field name="context">{}</field>
+        </record>
+
+        <!-- ================================================================ -->
+        <!-- MENU ITEM FOR DASHBOARD (First item in Projects app)             -->
+        <!-- ================================================================ -->
+
+        <menuitem id="ptt_menu_project_dashboard"
+                  name="Dashboard"
+                  parent="project.menu_main_pm"
+                  action="ptt_project_dashboard_action"
+                  sequence="1"/>
+
+    </data>
+</odoo>

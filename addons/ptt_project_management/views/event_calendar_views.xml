@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================================================ -->
+        <!-- EVENT CALENDAR VIEW                                              -->
+        <!-- Based on: odoo/addons/project/views/project_project_views.xml    -->
+        <!--           view_project_calendar (lines 523-547)                  -->
+        <!-- Uses ptt_event_date field from ptt_business_core                 -->
+        <!-- ================================================================ -->
+
+        <record id="ptt_event_calendar_view" model="ir.ui.view">
+            <field name="name">project.project.event.calendar</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <calendar
+                    date_start="ptt_event_date"
+                    string="Events"
+                    mode="month"
+                    scales="day,week,month,year"
+                    event_open_popup="true"
+                    quick_create="0"
+                    color="ptt_event_type">
+
+                    <!-- Event details shown in calendar cards and popup -->
+                    <field name="ptt_event_name"/>
+                    <field name="ptt_venue_name" invisible="not ptt_venue_name"/>
+                    <field name="ptt_guest_count" invisible="not ptt_guest_count"/>
+                    <field name="partner_id" string="Client"/>
+                    <field name="user_id" widget="many2one_avatar_user" string="Event Coordinator"/>
+                    <field name="ptt_event_type"/>
+
+                </calendar>
+            </field>
+        </record>
+
+        <!-- ================================================================ -->
+        <!-- EVENT CALENDAR SEARCH VIEW                                       -->
+        <!-- ================================================================ -->
+
+        <record id="ptt_event_calendar_search" model="ir.ui.view">
+            <field name="name">project.project.event.calendar.search</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <search string="Events">
+                    <field name="name" string="Event"/>
+                    <field name="ptt_event_name"/>
+                    <field name="ptt_venue_name"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+
+                    <!-- Quick filters -->
+                    <filter name="upcoming" string="Upcoming Events"
+                            domain="[('ptt_event_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter name="this_week" string="This Week"
+                            domain="[
+                                ('ptt_event_date', '&gt;=', (context_today() - relativedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),
+                                ('ptt_event_date', '&lt;=', (context_today() + relativedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))
+                            ]"/>
+                    <filter name="this_month" string="This Month"
+                            domain="[
+                                ('ptt_event_date', '&gt;=', context_today().strftime('%Y-%m-01')),
+                                ('ptt_event_date', '&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))
+                            ]"/>
+
+                    <separator/>
+
+                    <!-- Event type filters -->
+                    <filter name="corporate" string="Corporate"
+                            domain="[('ptt_event_type', '=', 'corporate')]"/>
+                    <filter name="wedding" string="Wedding"
+                            domain="[('ptt_event_type', '=', 'wedding')]"/>
+                    <filter name="social" string="Social"
+                            domain="[('ptt_event_type', '=', 'social')]"/>
+
+                    <separator/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Event Type" name="group_by_type"
+                                context="{'group_by': 'ptt_event_type'}"/>
+                        <filter string="Coordinator" name="group_by_coordinator"
+                                context="{'group_by': 'user_id'}"/>
+                        <filter string="Event Month" name="group_by_month"
+                                context="{'group_by': 'ptt_event_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ================================================================ -->
+        <!-- EVENT CALENDAR ACTION                                            -->
+        <!-- ================================================================ -->
+
+        <record id="ptt_event_calendar_action" model="ir.actions.act_window">
+            <field name="name">Event Calendar</field>
+            <field name="res_model">project.project</field>
+            <field name="view_mode">calendar,kanban,list,form</field>
+            <field name="view_id" ref="ptt_event_calendar_view"/>
+            <field name="search_view_id" ref="ptt_event_calendar_search"/>
+            <field name="domain">[('ptt_event_date', '!=', False)]</field>
+            <field name="context">{'search_default_upcoming': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No events scheduled!
+                </p>
+                <p>
+                    Events appear here when they have a scheduled date.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================================================ -->
+        <!-- MENU ITEM FOR EVENT CALENDAR                                     -->
+        <!-- ================================================================ -->
+
+        <menuitem id="ptt_menu_event_calendar"
+                  name="Event Calendar"
+                  parent="project.menu_main_pm"
+                  action="ptt_event_calendar_action"
+                  sequence="3"/>
+
+    </data>
+</odoo>

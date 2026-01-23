@@ -1,0 +1,198 @@
+/**
+ * PTT Project Dashboard Styles
+ *
+ * Clean, professional styling matching the dev_project_task_dashboard aesthetic.
+ */
+
+/* Dashboard Container */
+.ptt-dashboard {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header Styling */
+.ptt-dashboard-header {
+    background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%) !important;
+    border-radius: 0 0 16px 16px;
+}
+
+.ptt-dashboard-header .form-select,
+.ptt-dashboard-header .form-control {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    font-size: 0.85rem;
+}
+
+.ptt-dashboard-header .form-select:focus,
+.ptt-dashboard-header .form-control:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* KPI Cards */
+.ptt-kpi-card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ptt-kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.ptt-kpi-card .card-body {
+    padding: 1.5rem;
+}
+
+.ptt-kpi-card h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Card styling */
+.ptt-dashboard .card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ptt-dashboard .card-header {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 1.25rem;
+}
+
+.ptt-dashboard .card-header h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.ptt-dashboard .card-header i {
+    color: #7c3aed;
+}
+
+/* Table styling */
+.ptt-dashboard .table {
+    margin-bottom: 0;
+}
+
+.ptt-dashboard .table thead th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #666;
+    border-bottom: 2px solid #eee;
+    padding: 0.75rem 1rem;
+}
+
+.ptt-dashboard .table tbody td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.ptt-dashboard .table-hover tbody tr:hover {
+    background-color: #f8f4ff;
+}
+
+/* Badge styling */
+.ptt-dashboard .badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    font-size: 0.75rem;
+}
+
+/* Pagination */
+.ptt-dashboard .card-footer {
+    border-top: 1px solid #eee;
+    padding: 0.75rem;
+}
+
+/* Chart containers */
+.ptt-dashboard canvas {
+    max-width: 100%;
+}
+
+/* Button styling */
+.ptt-dashboard .btn-primary {
+    background-color: #7c3aed;
+    border-color: #7c3aed;
+}
+
+.ptt-dashboard .btn-primary:hover {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+}
+
+.ptt-dashboard .btn-outline-secondary {
+    border-color: #ddd;
+}
+
+.ptt-dashboard .btn-outline-secondary:hover {
+    background-color: #7c3aed;
+    border-color: #7c3aed;
+    color: #fff;
+}
+
+/* Text colors for KPIs */
+.ptt-dashboard .text-primary {
+    color: #7c3aed !important;
+}
+
+.ptt-dashboard .text-success {
+    color: #10b981 !important;
+}
+
+.ptt-dashboard .text-info {
+    color: #3b82f6 !important;
+}
+
+.ptt-dashboard .text-warning {
+    color: #f59e0b !important;
+}
+
+.ptt-dashboard .text-danger {
+    color: #ef4444 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ptt-dashboard-header .row {
+        flex-direction: column;
+    }
+
+    .ptt-dashboard-header .col-md-4,
+    .ptt-dashboard-header .col-md-8 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .ptt-kpi-card h2 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading spinner */
+.ptt-dashboard .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Overdue badge emphasis */
+.ptt-dashboard .bg-danger {
+    background-color: #ef4444 !important;
+}
+
+/* Today badge */
+.ptt-dashboard .bg-warning {
+    background-color: #f59e0b !important;
+}
+
+/* Flag icon for priority */
+.ptt-dashboard .fa-flag.text-danger {
+    color: #ef4444 !important;
+}
+
+.ptt-dashboard .fa-flag.text-muted {
+    color: #d1d5db !important;
+}

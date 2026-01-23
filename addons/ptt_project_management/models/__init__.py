@@ -6,4 +6,7 @@
 
 from . import project_stakeholder
 from . import project_project
+from . import project_task
 from . import project_vendor_assignment
+from . import sale_order
+from . import ir_attachment
