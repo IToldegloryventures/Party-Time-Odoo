@@ -61,12 +61,12 @@ class PttVendorServicePricing(models.Model):
     )
     
     # =========================================================================
-    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax)
+    # SQL CONSTRAINTS
     # =========================================================================
-    _unique_vendor_service_product = models.Constraint(
-        'UNIQUE(vendor_id, service_product_id)',
-        'Each vendor can only have one pricing entry per service.',
-    )
+    _sql_constraints = [
+        ('unique_vendor_service_product', 'UNIQUE(vendor_id, service_product_id)',
+         'Each vendor can only have one pricing entry per service.'),
+    ]
 
     @api.depends("vendor_id.name", "service_product_id.name")
     def _compute_name(self):

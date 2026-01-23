@@ -13,7 +13,6 @@ captures the initial service requirements during discovery/proposal phases.
 """
 
 from odoo import models, fields, api, _
-# SQL constraints handle validation at DB level - no ValidationError needed
 
 from odoo.addons.ptt_business_core.constants import SERVICE_TYPES, SERVICE_TIERS
 
@@ -25,16 +24,14 @@ class PttCrmServiceLine(models.Model):
     _order = "sequence, id"
 
     # =========================================================================
-    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax)
+    # SQL CONSTRAINTS
     # =========================================================================
-    _positive_hours = models.Constraint(
-        'CHECK(hours >= 0)',
-        'Hours cannot be negative.',
-    )
-    _positive_quantity = models.Constraint(
-        'CHECK(quantity >= 0)',
-        'Quantity cannot be negative.',
-    )
+    _sql_constraints = [
+        ('positive_hours', 'CHECK(hours >= 0)',
+         'Hours cannot be negative.'),
+        ('positive_quantity', 'CHECK(quantity >= 0)',
+         'Quantity cannot be negative.'),
+    ]
 
     # =========================================================================
     # RELATIONSHIPS

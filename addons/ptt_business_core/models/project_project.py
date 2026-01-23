@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 from odoo import models, fields, api, _
-# SQL constraints handle validation at DB level - no ValidationError needed
+from odoo.exceptions import ValidationError
 
 from odoo.addons.ptt_business_core.constants import LOCATION_TYPES, TIME_SELECTIONS
 
@@ -11,13 +11,12 @@ class ProjectProject(models.Model):
     _inherit = "project.project"
 
     # =========================================================================
-    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax per ORM API docs)
-    # SQL constraints are more efficient than Python constraints
+    # SQL CONSTRAINTS
     # =========================================================================
-    _unique_ptt_event_id = models.Constraint(
-        'UNIQUE (ptt_event_id)',
-        'Event ID must be unique! Another project already has this Event ID.',
-    )
+    _sql_constraints = [
+        ('unique_ptt_event_id', 'UNIQUE (ptt_event_id)',
+         'Event ID must be unique! Another project already has this Event ID.'),
+    ]
     # NOTE: ptt_guest_count is a RELATED field from CRM Lead.
     # The positive value check is enforced on crm.lead, not here.
 

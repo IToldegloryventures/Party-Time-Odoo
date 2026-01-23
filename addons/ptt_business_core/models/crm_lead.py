@@ -16,17 +16,14 @@ class CrmLead(models.Model):
     _inherit = "crm.lead"
 
     # =========================================================================
-    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax per ORM API docs)
-    # SQL constraints are more efficient than Python constraints
+    # SQL CONSTRAINTS
     # =========================================================================
-    _positive_ptt_guest_count = models.Constraint(
-        'CHECK (ptt_guest_count >= 0)',
-        'Guest count cannot be negative.',
-    )
-    _positive_ptt_event_duration = models.Constraint(
-        'CHECK (ptt_event_duration >= 0)',
-        'Event duration cannot be negative.',
-    )
+    _sql_constraints = [
+        ('positive_ptt_guest_count', 'CHECK (ptt_guest_count >= 0)',
+         'Guest count cannot be negative.'),
+        ('positive_ptt_event_duration', 'CHECK (ptt_event_duration >= 0)',
+         'Event duration cannot be negative.'),
+    ]
 
     # =========================================================================
     # CONTACT INFORMATION
