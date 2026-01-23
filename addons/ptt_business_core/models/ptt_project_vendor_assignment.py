@@ -11,6 +11,9 @@ class PttProjectVendorAssignment(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "service_type, id"
 
+    # =========================================================================
+    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax)
+    # =========================================================================
     _positive_estimated_cost = models.Constraint(
         'CHECK (estimated_cost >= 0)',
         'Estimated cost cannot be negative.',

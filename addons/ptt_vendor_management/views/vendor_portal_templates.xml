@@ -633,10 +633,10 @@
                                     <div class="mb-3">
                                         <i class="fa fa-clock-o text-primary me-2"></i>
                                         <strong>Time:</strong>
-                                        <t t-if="event.project_id.event_start_time">
-                                            <t t-esc="event.project_id.event_start_time" t-options="{'widget': 'float_time'}"/>
-                                            <t t-if="event.project_id.event_end_time">
-                                                - <t t-esc="event.project_id.event_end_time" t-options="{'widget': 'float_time'}"/>
+                                        <t t-if="event.project_id.ptt_event_start_time_float">
+                                            <t t-esc="dict(event.project_id._fields['ptt_event_start_time_float'].selection).get(event.project_id.ptt_event_start_time_float, '')"/>
+                                            <t t-if="event.project_id.ptt_event_end_time_float">
+                                                - <t t-esc="dict(event.project_id._fields['ptt_event_end_time_float'].selection).get(event.project_id.ptt_event_end_time_float, '')"/>
                                             </t>
                                         </t>
                                         <t t-else="">

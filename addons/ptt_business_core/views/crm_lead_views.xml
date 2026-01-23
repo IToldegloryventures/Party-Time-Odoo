@@ -54,30 +54,27 @@
                         <!-- Event Information Section -->
                         <separator string="Event Information"/>
                         <group>
-                            <group>
-                                <field name="ptt_event_name"/>
-                                <field name="ptt_event_type"/>
-                                <field name="ptt_attire"/>
-                                <field name="ptt_guest_count"/>
+                            <!-- LEFT COLUMN: Event Details -->
+                            <group string="Event Details">
+                                <!-- NOTE: ptt_event_type is added by ptt_enhanced_sales view before ptt_event_name -->
+                                <field name="ptt_event_name" string="Event Name"/>
+                                <field name="ptt_guest_count" string="Guest Count"/>
+                                <field name="ptt_attire" string="Attire"/>
+                                <field name="ptt_venue_address" string="Address"/>
+                                <!-- Venue Details (conditional on Venue Booked) -->
+                                <field name="ptt_venue_booked" string="Venue Booked?" widget="boolean_toggle"/>
+                                <field name="ptt_venue_name" string="Venue Name" 
+                                       invisible="not ptt_venue_booked"/>
+                                <field name="ptt_location_type" string="Venue Type"
+                                       invisible="not ptt_venue_booked"/>
                             </group>
-                            <group>
-                                <field name="ptt_event_date"/>
-                                <field name="ptt_setup_time" widget="float_time"/>
-                                <field name="ptt_start_time" widget="float_time"/>
-                                <field name="ptt_end_time" widget="float_time"/>
-                            </group>
-                        </group>
-                        
-                        <!-- Venue Section -->
-                        <separator string="Venue"/>
-                        <group>
-                            <group>
-                                <field name="ptt_venue_booked"/>
-                                <field name="ptt_venue_name"/>
-                                <field name="ptt_location_type"/>
-                            </group>
-                            <group>
-                                <field name="ptt_venue_address"/>
+                            <!-- RIGHT COLUMN: Event Schedule -->
+                            <group string="Event Schedule">
+                                <field name="ptt_event_date" string="Event Date"/>
+                                <field name="ptt_start_time" string="Start Time"/>
+                                <field name="ptt_end_time" string="End Time"/>
+                                <field name="ptt_setup_time" string="Setup Time"/>
+                                <field name="ptt_teardown_time" string="Teardown Time"/>
                             </group>
                         </group>
                         

@@ -376,9 +376,11 @@ class VendorPortal(CustomerPortal):
         if request.httprequest.method == 'POST':
             return self._handle_vendor_application_submit(values, **kw)
         
-        # Get services for the form
-        services = request.env['ptt.vendor.service.type'].sudo().search([
-            ('active', '=', True)
+        # Get services for the form (actual service products from Sales)
+        services = request.env['product.template'].sudo().search([
+            ('type', '=', 'service'),
+            ('sale_ok', '=', True),
+            ('active', '=', True),
         ], order='name')
         
         # Get document types
@@ -453,7 +455,7 @@ class VendorPortal(CustomerPortal):
                 'ptt_vendor_zip_radius': float(kw.get('zip_radius', 0)) if kw.get('zip_radius') else 50.0,
                 'ptt_vendor_notes': kw.get('vendor_notes', '').strip() or False,
                 'ptt_portal_user_id': request.env.user.id,
-                'ptt_vendor_service_types': [(6, 0, service_ids)],
+                'ptt_vendor_service_ids': [(6, 0, service_ids)],
             }
             
             # Check if we should update the current partner or create a new one
@@ -496,8 +498,10 @@ class VendorPortal(CustomerPortal):
     
     def _render_application_form_with_error(self, values):
         """Re-render application form with error and preserved data."""
-        services = request.env['ptt.vendor.service.type'].sudo().search([
-            ('active', '=', True)
+        services = request.env['product.template'].sudo().search([
+            ('type', '=', 'service'),
+            ('sale_ok', '=', True),
+            ('active', '=', True),
         ], order='name')
         
         document_types = request.env['ptt.document.type'].sudo().search([

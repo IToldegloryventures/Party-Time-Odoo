@@ -10,11 +10,12 @@
             <field name="priority">25</field>
             <field name="arch" type="xml">
                 
-                <!-- Add Event Type Template inside Event Information -->
+                <!-- Add Event Type Selection inside Event Information (REQUIRED) -->
                 <xpath expr="//page[@name='ptt_lead_intake']//field[@name='ptt_event_name']" position="before">
-                    <field name="ptt_event_type_id" 
-                           options="{'no_create': True}"
-                           placeholder="Select event template..."/>
+                    <field name="ptt_event_type" 
+                           widget="radio"
+                           options="{'horizontal': true}"
+                           required="1"/>
                 </xpath>
 
             </field>
@@ -28,7 +29,7 @@
             <field name="priority">25</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='ptt_event_date']" position="after">
-                    <field name="ptt_event_type_id" optional="hide"/>
+                    <field name="ptt_event_type" optional="show"/>
                 </xpath>
             </field>
         </record>

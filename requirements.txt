@@ -1,0 +1,5 @@
+# PTT Custom Addon Dependencies
+# Odoo.sh reads this file from the repo root to install Python packages
+
+# Excel export for PTT Dashboard
+xlsxwriter==3.2.0

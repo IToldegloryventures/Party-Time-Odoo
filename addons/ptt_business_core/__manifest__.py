@@ -40,6 +40,7 @@ Other PTT modules depend on this one.
         "uom",
         "mail",
     ],
+    "post_init_hook": "post_init_hook",
     "data": [
         # Security - Groups first (referenced by other security files)
         "security/ptt_business_core_groups.xml",

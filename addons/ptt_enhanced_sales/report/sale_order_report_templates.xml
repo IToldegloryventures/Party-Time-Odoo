@@ -12,7 +12,7 @@
     <template id="report_saleorder_event_details" inherit_id="sale.report_saleorder_document">
         <!-- Add Event Details before the order lines table -->
         <xpath expr="//div[@id='informations']" position="after">
-            <t t-if="doc.event_name or doc.event_type_id">
+            <t t-if="doc.event_name or doc.event_type">
                 <div class="row mt-4 mb-4" style="border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; background-color: #f8f9fa;">
                     <div class="col-12">
                         <h4 style="color: #495057; margin-bottom: 15px;">
@@ -20,6 +20,7 @@
                         </h4>
                     </div>
                     
+                    <!-- LEFT COLUMN: Event Details -->
                     <div class="col-6">
                         <table class="table table-sm table-borderless" style="margin-bottom: 0;">
                             <tbody>
@@ -29,28 +30,10 @@
                                         <td><t t-esc="doc.event_name"/></td>
                                     </tr>
                                 </t>
-                                <t t-if="doc.event_type_id">
+                                <t t-if="doc.event_type">
                                     <tr>
                                         <td style="font-weight: bold;">Event Type:</td>
-                                        <td><t t-esc="doc.event_type_id.name"/></td>
-                                    </tr>
-                                </t>
-                                <t t-if="doc.event_date">
-                                    <tr>
-                                        <td style="font-weight: bold;">Event Start:</td>
-                                        <td><t t-esc="doc.event_date" t-options='{"widget": "datetime", "format": "MMMM d, yyyy h:mm a"}'/></td>
-                                    </tr>
-                                </t>
-                                <t t-if="doc.event_end_datetime">
-                                    <tr>
-                                        <td style="font-weight: bold;">Event End:</td>
-                                        <td><t t-esc="doc.event_end_datetime" t-options='{"widget": "datetime", "format": "h:mm a"}'/></td>
-                                    </tr>
-                                </t>
-                                <t t-if="doc.setup_time">
-                                    <tr>
-                                        <td style="font-weight: bold;">Setup Starts:</td>
-                                        <td><t t-esc="doc.setup_time" t-options='{"widget": "datetime", "format": "h:mm a"}'/></td>
+                                        <td><t t-esc="dict(doc._fields['event_type'].selection).get(doc.event_type, '').title()"/></td>
                                     </tr>
                                 </t>
                                 <t t-if="doc.event_guest_count">
@@ -65,47 +48,61 @@
                                         <td><t t-esc="dict(doc._fields['event_attire'].selection).get(doc.event_attire, '')"/></td>
                                     </tr>
                                 </t>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="col-6">
-                        <table class="table table-sm table-borderless" style="margin-bottom: 0;">
-                            <tbody>
-                                <t t-if="doc.event_venue">
-                                    <tr>
-                                        <td style="width: 40%; font-weight: bold;">Venue:</td>
-                                        <td><t t-esc="doc.event_venue"/></td>
-                                    </tr>
-                                </t>
-                                <t t-if="doc.event_venue_type">
-                                    <tr>
-                                        <td style="font-weight: bold;">Venue Type:</td>
-                                        <td><t t-esc="dict(doc._fields['event_venue_type'].selection).get(doc.event_venue_type, '')"/></td>
-                                    </tr>
-                                </t>
-                                <t t-if="doc.event_venue_booked">
-                                    <tr>
-                                        <td style="font-weight: bold;">Venue Booked:</td>
-                                        <td>Yes</td>
-                                    </tr>
-                                </t>
                                 <t t-if="doc.event_venue_address">
                                     <tr>
                                         <td style="font-weight: bold;">Address:</td>
                                         <td><t t-esc="doc.event_venue_address"/></td>
                                     </tr>
                                 </t>
-                                <t t-if="doc.event_duration">
+                                <!-- Venue Details (only if venue is booked) -->
+                                <t t-if="doc.event_venue_booked and doc.event_venue">
                                     <tr>
-                                        <td style="font-weight: bold;">Duration:</td>
-                                        <td><t t-esc="doc.event_duration"/> hours</td>
+                                        <td style="font-weight: bold;">Venue Name:</td>
+                                        <td><t t-esc="doc.event_venue"/></td>
                                     </tr>
                                 </t>
-                                <t t-if="doc.breakdown_time">
+                                <t t-if="doc.event_venue_booked and doc.event_venue_type">
                                     <tr>
-                                        <td style="font-weight: bold;">Breakdown:</td>
-                                        <td><t t-esc="doc.breakdown_time" t-options='{"widget": "datetime", "format": "h:mm a"}'/></td>
+                                        <td style="font-weight: bold;">Venue Type:</td>
+                                        <td><t t-esc="dict(doc._fields['event_venue_type'].selection).get(doc.event_venue_type, '')"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- RIGHT COLUMN: Event Schedule (Date & Times) -->
+                    <div class="col-6">
+                        <table class="table table-sm table-borderless" style="margin-bottom: 0;">
+                            <tbody>
+                                <t t-if="doc.event_date_only">
+                                    <tr>
+                                        <td style="width: 40%; font-weight: bold;">Event Date:</td>
+                                        <td><t t-esc="doc.event_date_only" t-options='{"widget": "date", "format": "MMMM d, yyyy"}'/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.event_start_time">
+                                    <tr>
+                                        <td style="font-weight: bold;">Start Time:</td>
+                                        <td><t t-esc="dict(doc._fields['event_start_time'].selection).get(doc.event_start_time, '')"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.event_end_time">
+                                    <tr>
+                                        <td style="font-weight: bold;">End Time:</td>
+                                        <td><t t-esc="dict(doc._fields['event_end_time'].selection).get(doc.event_end_time, '')"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.setup_time_float">
+                                    <tr>
+                                        <td style="font-weight: bold;">Setup Time:</td>
+                                        <td><t t-esc="dict(doc._fields['setup_time_float'].selection).get(doc.setup_time_float, '')"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.teardown_time_float">
+                                    <tr>
+                                        <td style="font-weight: bold;">Teardown Time:</td>
+                                        <td><t t-esc="dict(doc._fields['teardown_time_float'].selection).get(doc.teardown_time_float, '')"/></td>
                                     </tr>
                                 </t>
                             </tbody>

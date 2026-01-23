@@ -33,29 +33,30 @@
                     <!-- 1. PTT Event Details (FIRST) -->
                     <page string="Event Details" name="ptt_event_details">
                         <group>
-                            <group string="Event Identity" name="event_identity">
-                                <field name="ptt_event_id" readonly="1"/>
-                                <field name="ptt_crm_lead_id"/>
-                                <field name="ptt_event_name"/>
-                                <field name="ptt_event_type"/>
+                            <group string="Event Details" name="event_identity">
+                                <field name="ptt_event_id" readonly="1" string="Event ID"/>
+                                <field name="ptt_crm_lead_id" string="CRM Lead"/>
+                                <field name="ptt_event_name" string="Event Name"/>
+                                <field name="ptt_event_type" string="Event Type"/>
+                                <field name="ptt_guest_count" string="Guest Count"/>
+                                <field name="ptt_venue_address" string="Address"/>
+                                <!-- Venue Details (conditional on Venue Booked) -->
+                                <field name="ptt_venue_booked" string="Venue Booked?" widget="boolean_toggle"/>
+                                <field name="ptt_venue_name" string="Venue Name" 
+                                       invisible="not ptt_venue_booked"/>
+                                <field name="ptt_location_type" string="Venue Type"
+                                       invisible="not ptt_venue_booked"/>
                             </group>
                             <group string="Event Schedule" name="event_schedule">
-                                <field name="ptt_event_date"/>
-                                <field name="ptt_setup_time" widget="float_time"/>
-                                <field name="ptt_event_start_time_float" widget="float_time"/>
-                                <field name="ptt_event_end_time_float" widget="float_time"/>
-                                <field name="ptt_teardown_deadline"/>
-                                <field name="ptt_total_hours" widget="float_time"/>
-                                <field name="ptt_guest_count"/>
+                                <field name="ptt_event_date" string="Event Date"/>
+                                <field name="ptt_event_start_time_float" string="Start Time"/>
+                                <field name="ptt_event_end_time_float" string="End Time"/>
+                                <field name="ptt_setup_time" string="Setup Time"/>
+                                <field name="ptt_teardown_time" string="Teardown Time"/>
                             </group>
                         </group>
                         <group>
-                            <group string="Venue">
-                                <field name="ptt_venue_name"/>
-                                <field name="ptt_location_type"/>
-                                <field name="ptt_venue_address"/>
-                            </group>
-                            <group string="Vendor Notes">
+                            <group string="Vendor Notes" colspan="2">
                                 <field name="ptt_vendor_notes" nolabel="1" 
                                        placeholder="Notes for all vendors (parking, load-in, building access, etc.)..."/>
                             </group>

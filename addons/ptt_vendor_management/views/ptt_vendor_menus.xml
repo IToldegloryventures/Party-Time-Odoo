@@ -75,10 +75,7 @@
         action="action_ptt_document_type"
         sequence="10"/>
 
-    <menuitem id="menu_ptt_vendor_service_tag_config"
-        name="Service Types"
-        parent="menu_ptt_vendor_config_root"
-        action="ptt_business_core.action_vendor_service_type"
-        sequence="20"/>
+    <!-- Service Types: Vendors now link directly to Sales > Products > Services -->
+    <!-- No separate configuration needed - services auto-sync from product catalog -->
 
 </odoo>

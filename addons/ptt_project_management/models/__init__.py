@@ -10,3 +10,4 @@ from . import project_task
 from . import project_vendor_assignment
 from . import sale_order
 from . import ir_attachment
+from . import dashboard_filter_preset

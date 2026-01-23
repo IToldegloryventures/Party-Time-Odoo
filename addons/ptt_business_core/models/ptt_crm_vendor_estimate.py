@@ -10,6 +10,9 @@ class PttCrmVendorEstimate(models.Model):
     _description = "CRM Lead Vendor Cost Estimate"
     _order = "service_type, id"
 
+    # =========================================================================
+    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax)
+    # =========================================================================
     _positive_estimated_cost = models.Constraint(
         'CHECK (estimated_cost >= 0)',
         'Estimated cost cannot be negative.',

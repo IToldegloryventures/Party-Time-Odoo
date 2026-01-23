@@ -112,7 +112,7 @@ class PTTVendorTask(models.Model):
         })
         # Notify on the assignment
         self.assignment_id.message_post(
-            body=_("✅ Task completed: %s") % self.name,
+            body=_("Task completed: %s") % self.name,
             message_type='notification',
         )
         return True

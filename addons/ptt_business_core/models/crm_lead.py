@@ -7,6 +7,7 @@ from odoo.addons.ptt_business_core.constants import (
     LEAD_TYPES,
     LOCATION_TYPES,
     PAYMENT_STATUS,
+    TIME_SELECTIONS,
 )
 
 
@@ -14,6 +15,10 @@ class CrmLead(models.Model):
     """CRM Lead extensions for Party Time Texas event management."""
     _inherit = "crm.lead"
 
+    # =========================================================================
+    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax per ORM API docs)
+    # SQL constraints are more efficient than Python constraints
+    # =========================================================================
     _positive_ptt_guest_count = models.Constraint(
         'CHECK (ptt_guest_count >= 0)',
         'Guest count cannot be negative.',
@@ -33,6 +38,7 @@ class CrmLead(models.Model):
     ptt_preferred_contact = fields.Selection(
         selection=CONTACT_METHODS,
         string="Preferred Contact Method",
+        help="Client's preferred contact method. Syncs with Contact card when linked.",
     )
     ptt_lead_type = fields.Selection(
         selection=LEAD_TYPES,
@@ -59,8 +65,9 @@ class CrmLead(models.Model):
     # =========================================================================
     # EVENT OVERVIEW
     # =========================================================================
-    # NOTE: Event type is managed via ptt_event_type_id (Many2one to sale.order.type)
-    # in ptt_enhanced_sales. Do not add a second event type field here.
+    # NOTE: Event type (ptt_event_type) is a REQUIRED Selection field defined 
+    # in ptt_enhanced_sales module. Values: corporate, social, wedding.
+    # Sale Order and Project get this value via related fields.
     ptt_event_name = fields.Char(
         string="Event Name",
         help="Name/title of the event (e.g., 'Smith Wedding Reception')",
@@ -69,46 +76,42 @@ class CrmLead(models.Model):
         string="Event Date",
         help="Date of the event",
     )
-    ptt_event_type = fields.Selection(
-        selection=[
-            ('social', 'Social'),
-            ('corporate', 'Corporate'),
-            ('wedding', 'Wedding'),
-        ],
-        string="Event Type",
-        help="Primary classification of the event",
-    )
     ptt_event_goal = fields.Char(string="Event Goal")
     ptt_event_time = fields.Char(
         string="Event Time",
         help="Approximate event start time (e.g., '6:00 PM'). Used for initial planning."
     )
-    ptt_setup_time = fields.Float(
+    ptt_setup_time = fields.Selection(
+        selection=TIME_SELECTIONS,
         string="Setup Time",
-        help="Time when setup begins (decimal hours, e.g., 14.5 = 2:30 PM)",
+        help="Time when setup begins",
     )
-    ptt_start_time = fields.Float(
+    ptt_start_time = fields.Selection(
+        selection=TIME_SELECTIONS,
         string="Start Time",
-        help="Event start time (decimal hours, e.g., 18.0 = 6:00 PM)",
+        help="Event start time",
     )
-    ptt_end_time = fields.Float(
+    ptt_end_time = fields.Selection(
+        selection=TIME_SELECTIONS,
         string="End Time",
-        help="Event end time (decimal hours, e.g., 22.0 = 10:00 PM)",
+        help="Event end time",
+    )
+    ptt_teardown_time = fields.Selection(
+        selection=TIME_SELECTIONS,
+        string="Teardown Time",
+        help="Time when teardown/breakdown should be complete",
     )
     ptt_event_duration = fields.Float(
         string="Duration (Hours)",
         help="Estimated event duration. Maps to ptt_total_hours on project."
     )
-    ptt_guest_count = fields.Integer(string="Estimated Guest Count")
+    ptt_guest_count = fields.Integer(string="Guest Count")
     ptt_attire = fields.Selection(
         selection=[
             ('casual', 'Casual'),
             ('business_casual', 'Business Casual'),
-            ('semi_formal', 'Semi-Formal'),
             ('formal', 'Formal'),
-            ('black_tie', 'Black Tie'),
-            ('costume', 'Costume/Theme'),
-            ('other', 'Other'),
+            ('themed', 'Themed'),
         ],
         string="Attire",
         help="Dress code for the event",
@@ -120,7 +123,7 @@ class CrmLead(models.Model):
         help="Name of the event venue",
     )
     ptt_venue_address = fields.Text(
-        string="Venue Address",
+        string="Address",
         help="Full address of the venue",
     )
     ptt_venue_booked = fields.Boolean(string="Venue Booked?")
@@ -358,6 +361,96 @@ class CrmLead(models.Model):
                     and inv.amount_residual > 0
                 )
                 lead.ptt_payment_status = "overdue" if overdue else "not_paid"
+
+    # =========================================================================
+    # NATIVE ODOO EXTENSION - Copy custom fields to Contact on conversion
+    # =========================================================================
+    def _prepare_customer_values(self, partner_name, is_company=False, parent_id=False):
+        """Extend native method to copy ptt_preferred_contact to new Contact.
+        
+        This is called by Odoo when converting a lead to opportunity and
+        creating a new contact. We add our custom field to the values.
+        """
+        res = super()._prepare_customer_values(partner_name, is_company=is_company, parent_id=parent_id)
+        # Add our custom field to be copied to the new Contact
+        if self.ptt_preferred_contact:
+            res['ptt_preferred_contact'] = self.ptt_preferred_contact
+        return res
+
+    def _ptt_find_matching_partner(self):
+        """Extended partner matching - searches by email, phone, or company name.
+        
+        Extends Odoo's native _find_matching_partner() to check multiple fields:
+        1. Email (normalized)
+        2. Phone (sanitized)
+        3. Company/Partner name
+        
+        Returns first match found, prioritizing email > phone > name.
+        """
+        self.ensure_one()
+        Partner = self.env['res.partner']
+        
+        # Already has partner
+        if self.partner_id:
+            return self.partner_id
+        
+        # 1. Try email match first (most reliable)
+        if self.email_from:
+            partner = self._find_matching_partner()  # Use Odoo's native email search
+            if partner:
+                return partner
+        
+        # 2. Try phone match
+        if self.phone:
+            # Use sanitized phone for better matching
+            phone_sanitized = self.phone_sanitized
+            if phone_sanitized:
+                partner = Partner.search([
+                    '|',
+                    ('phone_sanitized', '=', phone_sanitized),
+                    ('mobile', 'ilike', self.phone[-7:]),  # Last 7 digits
+                ], limit=1)
+                if partner:
+                    return partner
+        
+        # 3. Try company name match (exact)
+        if self.partner_name:
+            partner = Partner.search([
+                ('is_company', '=', True),
+                ('name', '=ilike', self.partner_name),
+            ], limit=1)
+            if partner:
+                return partner
+        
+        # 4. Try contact name match (less reliable, only if email domain matches)
+        if self.contact_name and self.email_from:
+            email_domain = self.email_from.split('@')[-1] if '@' in self.email_from else False
+            if email_domain and email_domain not in ('gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'):
+                partner = Partner.search([
+                    ('name', '=ilike', self.contact_name),
+                    ('email', 'ilike', f'@{email_domain}'),
+                ], limit=1)
+                if partner:
+                    return partner
+        
+        return Partner  # Empty recordset
+
+    @api.onchange('email_from', 'phone', 'partner_name', 'contact_name')
+    def _onchange_find_matching_partner(self):
+        """Auto-link existing contact when key fields are entered.
+        
+        Searches by: email, phone, company name, contact name.
+        """
+        if not self.partner_id:
+            matching_partner = self._ptt_find_matching_partner()
+            if matching_partner:
+                self.partner_id = matching_partner
+
+    @api.onchange('partner_id')
+    def _onchange_partner_preferred_contact(self):
+        """When partner is linked (manually or auto), pull their preferred contact."""
+        if self.partner_id and self.partner_id.ptt_preferred_contact and not self.ptt_preferred_contact:
+            self.ptt_preferred_contact = self.partner_id.ptt_preferred_contact
 
     # =========================================================================
     # ACTION METHODS

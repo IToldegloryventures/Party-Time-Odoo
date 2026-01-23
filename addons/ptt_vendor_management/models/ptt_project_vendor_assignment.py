@@ -87,23 +87,36 @@ class ProjectVendorAssignment(models.Model):
 
     @api.depends("vendor_id", "service_type")
     def _compute_vendor_pricing_hint(self):
+        """Compute pricing hint from vendor's service pricing records.
+        
+        Looks up the vendor's pricing for the service type by matching
+        the service_type selection code to product names/codes.
+        """
         Pricing = self.env["ptt.vendor.service.pricing"]
-        ServiceType = self.env["ptt.vendor.service.type"]
+        Product = self.env["product.template"]
         for record in self:
             record.vendor_pricing_hint = False
             if not record.vendor_id or not record.service_type:
                 continue
-            service_type = ServiceType.search([("code", "=", record.service_type)], limit=1)
-            if not service_type:
-                label = dict(record._fields["service_type"].selection).get(
-                    record.service_type, record.service_type
-                )
-                service_type = ServiceType.search([("name", "ilike", label)], limit=1)
-            if not service_type:
+            
+            # Get the display label for this service type
+            label = dict(record._fields["service_type"].selection).get(
+                record.service_type, record.service_type
+            )
+            
+            # Find matching product by name (case-insensitive)
+            product = Product.search([
+                ("type", "=", "service"),
+                ("name", "ilike", label),
+            ], limit=1)
+            
+            if not product:
                 continue
+            
+            # Find pricing for this vendor + product
             pricing = Pricing.search([
                 ("vendor_id", "=", record.vendor_id.id),
-                ("service_type_id", "=", service_type.id),
+                ("service_product_id", "=", product.id),
             ], limit=1)
             record.vendor_pricing_hint = pricing.price_detail if pricing else False
     
@@ -183,7 +196,7 @@ class ProjectVendorAssignment(models.Model):
         
         # Notify project manager
         self.project_id.message_post(
-            body=_("✅ %s accepted %s assignment for %s") % (
+            body=_("%s accepted %s assignment for %s") % (
                 self.vendor_id.name,
                 service_type_label,
                 self.project_id.ptt_event_date or 'TBD'
@@ -214,7 +227,7 @@ class ProjectVendorAssignment(models.Model):
         
         # URGENT notification to project manager
         self.project_id.message_post(
-            body=_("❌ URGENT: %s declined %s assignment!<br/>Reason: %s") % (
+            body=_("URGENT: %s declined %s assignment!<br/>Reason: %s") % (
                 self.vendor_id.name,
                 service_type_label,
                 reason or _("Not specified")

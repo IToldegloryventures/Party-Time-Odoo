@@ -50,8 +50,9 @@ class ProjectProject(models.Model):
         default='planning'
     )
     
-    # NOTE: Event type is defined as ptt_event_type_id in ptt_enhanced_sales
-    # Do not add a duplicate field here
+    # NOTE: Event type is defined in ptt_enhanced_sales/models/project_project.py:
+    # - ptt_event_type (Selection): Related to CRM Lead ptt_event_type field.
+    # Values: corporate, social, wedding. Do not add duplicate definitions here.
     
     @api.depends('stakeholder_ids.is_vendor', 'stakeholder_ids.is_client')
     def _compute_stakeholder_counts(self):

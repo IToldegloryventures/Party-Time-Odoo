@@ -9,7 +9,7 @@
             Reference: https://www.odoo.com/documentation/19.0/developer/reference/backend/actions.html#scheduled-actions
         -->
         
-        <!-- Check for documents expiring in 30 days (runs daily at 6 AM) -->
+        <!-- DISABLED - Check for documents expiring in 30 days -->
         <record id="cron_check_document_expiry_30day" model="ir.cron">
             <field name="name">Vendor Documents: 30-Day Expiry Check</field>
             <field name="model_id" ref="model_ptt_vendor_document"/>
@@ -17,10 +17,10 @@
             <field name="code">model._cron_check_document_expiry_30day()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="active">True</field>
+            <field name="active">False</field>
         </record>
         
-        <!-- Check for documents expiring in 7 days - URGENT (runs daily at 7 AM) -->
+        <!-- DISABLED - Check for documents expiring in 7 days -->
         <record id="cron_check_document_expiry_7day" model="ir.cron">
             <field name="name">Vendor Documents: 7-Day URGENT Expiry Check</field>
             <field name="model_id" ref="model_ptt_vendor_document"/>
@@ -28,10 +28,10 @@
             <field name="code">model._cron_check_document_expiry_7day()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="active">True</field>
+            <field name="active">False</field>
         </record>
         
-        <!-- Check for expired documents and update status (runs daily at 1 AM) -->
+        <!-- DISABLED - Check for expired documents -->
         <record id="cron_check_document_expired" model="ir.cron">
             <field name="name">Vendor Documents: Expired Document Check</field>
             <field name="model_id" ref="model_ptt_vendor_document"/>
@@ -39,10 +39,10 @@
             <field name="code">model._cron_check_document_expired()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="active">True</field>
+            <field name="active">False</field>
         </record>
 
-        <!-- Remind vendors about pending work orders (runs daily) -->
+        <!-- DISABLED - Remind vendors about pending work orders -->
         <record id="cron_remind_pending_work_orders" model="ir.cron">
             <field name="name">Vendor Work Orders: Pending Response Reminder</field>
             <field name="model_id" ref="ptt_business_core.model_ptt_project_vendor_assignment"/>
@@ -50,7 +50,7 @@
             <field name="code">model._cron_remind_pending_work_orders()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="active">True</field>
+            <field name="active">False</field>
         </record>
         
     </data>

@@ -141,11 +141,11 @@
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Start Time:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.ptt_event_start_time or 'CHECK IMMEDIATELY'"/></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="dict(object._fields['ptt_event_start_time_float'].selection).get(object.ptt_event_start_time_float, 'CHECK IMMEDIATELY')"/></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Setup Time:</strong></td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="object.ptt_setup_start_time or 'CHECK IMMEDIATELY'"/></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><t t-esc="dict(object._fields['ptt_setup_time'].selection).get(object.ptt_setup_time, 'CHECK IMMEDIATELY')"/></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Venue:</strong></td>

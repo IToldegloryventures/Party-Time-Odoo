@@ -26,7 +26,7 @@
                 <field name="ptt_vendor_principal_name" string="Principal"/>
                 <field name="email"/>
                 <field name="phone"/>
-                <field name="ptt_vendor_service_types" widget="many2many_tags"
+                <field name="ptt_vendor_service_ids" widget="many2many_tags"
                        string="Services"/>
                 <field name="ptt_vendor_status" widget="badge"
                        decoration-info="ptt_vendor_status == 'new'"
@@ -136,7 +136,7 @@
                             </field>
                             <group class="mt-3">
                                 <group string="All Services">
-                                    <field name="ptt_vendor_service_types" widget="many2many_tags" nolabel="1"/>
+                                    <field name="ptt_vendor_service_ids" widget="many2many_tags" nolabel="1"/>
                                 </group>
                             </group>
                         </page>
@@ -204,7 +204,7 @@
             <kanban class="o_kanban_mobile" default_group_by="ptt_vendor_status">
                 <field name="name"/>
                 <field name="ptt_vendor_status"/>
-                <field name="ptt_vendor_service_types"/>
+                <field name="ptt_vendor_service_ids"/>
                 <field name="ptt_vendor_compliance_status"/>
                 <field name="email"/>
                 <field name="phone"/>
@@ -218,7 +218,7 @@
                             <div class="d-flex align-items-center gap-1">
                                 <field name="name" class="fw-bold fs-5 text-truncate"/>
                             </div>
-                            <field name="ptt_vendor_service_types" widget="many2many_tags"/>
+                            <field name="ptt_vendor_service_ids" widget="many2many_tags"/>
                             <div class="d-flex gap-2 mt-1">
                                 <field name="ptt_vendor_compliance_status" widget="badge"
                                        decoration-success="ptt_vendor_compliance_status == 'compliant'"
@@ -245,7 +245,7 @@
             <search>
                 <field name="name" string="Company" 
                        filter_domain="['|', '|', ('name', 'ilike', self), ('email', 'ilike', self), ('phone', 'ilike', self)]"/>
-                <field name="ptt_vendor_service_types" string="Service"/>
+                <field name="ptt_vendor_service_ids" string="Service"/>
                 <separator/>
                 <filter string="New" name="status_new" domain="[('ptt_vendor_status', '=', 'new')]"/>
                 <filter string="Pending Review" name="status_pending" domain="[('ptt_vendor_status', '=', 'pending_review')]"/>

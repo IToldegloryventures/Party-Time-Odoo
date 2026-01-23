@@ -30,35 +30,31 @@ class SaleOrderLine(models.Model):
         
         This is the proper Odoo 19 hook point for including custom fields when
         creating a project from a sale order line.
+        
+        Project naming convention: "Client Name - Event Name - SO Number"
+        Example: "Johnson Family - Smith Wedding Reception - S00042"
         """
         values = super()._timesheet_create_project_prepare_values()
         
         order = self.order_id
-        if order.event_type_id or order.event_name:
-            # Add Party Time Texas event fields
-            event_vals = {
-                'ptt_event_name': order.event_name,
-                'ptt_guest_count': order.event_guest_count,
-                'ptt_venue_name': order.event_venue,
-                'ptt_setup_start_time': order.setup_time,
-                'ptt_teardown_deadline': order.breakdown_time,
-                'ptt_total_hours': order.event_duration,
-            }
-            
-            if order.event_type_id:
-                event_vals['ptt_event_type_id'] = order.event_type_id.id
-            
-            # Handle event_date (Datetime) -> project date fields
-            if order.event_date:
-                event_vals['ptt_event_date'] = order.event_date.date() if hasattr(order.event_date, 'date') else order.event_date
-                event_vals['ptt_event_start_time'] = order.event_date
-                if order.event_duration:
-                    event_vals['ptt_event_end_time'] = fields.Datetime.add(order.event_date, hours=order.event_duration)
-            
-            # Link to CRM opportunity if available
-            if order.opportunity_id:
-                event_vals['ptt_crm_lead_id'] = order.opportunity_id.id
-            
-            values.update(event_vals)
+        
+        # =======================================================================
+        # PROJECT NAME: "Client Name - Event Name - SO Number"
+        # =======================================================================
+        # Use partner name (client) + event name + sale order number for clear identification
+        client_name = order.partner_id.name if order.partner_id else 'Unknown Client'
+        event_name = order.event_name or ''
+        so_number = order.name or 'Draft'
+        
+        if event_name:
+            values['name'] = f"{client_name} - {event_name} - {so_number}"
+        else:
+            values['name'] = f"{client_name} - {so_number}"
+        
+        # Link to CRM opportunity - all event fields are related/computed from CRM
+        # Setting ptt_crm_lead_id auto-populates: event name, date, times, venue, etc.
+        if order.opportunity_id:
+            values['ptt_crm_lead_id'] = order.opportunity_id.id
+            values['ptt_event_id'] = order.opportunity_id.ptt_event_id
         
         return values

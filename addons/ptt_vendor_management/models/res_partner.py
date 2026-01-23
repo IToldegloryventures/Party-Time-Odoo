@@ -91,8 +91,8 @@ class ResPartner(models.Model):
         help="Average cost per completed assignment",
     )
 
-    # === VENDOR SERVICE TYPES & TIER ===
-    # Uses ptt_vendor_service_types from ptt_business_core
+    # === VENDOR SERVICES ===
+    # Uses ptt_vendor_service_ids from ptt_business_core (links directly to products)
     
     # === SERVICE PRICING ===
     ptt_vendor_service_pricing_ids = fields.One2many(
@@ -592,7 +592,7 @@ class ResPartner(models.Model):
             raise UserError(_("Email is required."))
         
         # Check for at least one service
-        if not self.ptt_vendor_service_types and not self.ptt_vendor_service_pricing_ids:
+        if not self.ptt_vendor_service_ids and not self.ptt_vendor_service_pricing_ids:
             raise UserError(_("At least one service must be selected."))
         
         return True

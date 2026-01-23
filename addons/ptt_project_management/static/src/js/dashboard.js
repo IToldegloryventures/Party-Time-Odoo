@@ -2,22 +2,34 @@
 /**
  * PTT Project Dashboard - Owl Component
  *
- * Based on:
- * - Odoo 19 Official Tutorial: https://www.odoo.com/documentation/19.0/developer/tutorials/discover_js_framework/02_build_a_dashboard.html
- * - Cybrosys project_dashboard_odoo/static/src/js/dashboard.js
+ * Matches the screenshot layout:
+ * - Header with greeting, avatar, filters, and Print button
+ * - 6 KPI tiles in 2 rows
+ * - All Task table + Task Deadline pie chart
+ * - Task By Stages doughnut + Task By Project bar
+ * - Activities table + Priority bar chart
  *
- * Key patterns:
- * - All hooks (useState, useRef, onWillStart, onMounted) called in setup()
- * - useService("action") for drill-down navigation
- * - rpc() for JSON-RPC calls to controllers
- * - Chart.js for visualizations
+ * NO Timesheet Hours (enterprise feature not included)
+ *
+ * Chart.js is loaded via loadBundle("web.chartjs_lib") - Odoo 19 best practice
+ * This uses Odoo's bundled Chart.js instead of a CDN for Odoo.sh compatibility
+ *
+ * Enhanced Features (v2.1.0):
+ * - Refresh button for manual data reload
+ * - Auto-polling every 2 minutes
+ * - Custom date range picker
+ * - Fiscal quarter filters (Q1-Q4)
+ * - Saved filter presets
+ * - Quick task assignment from table
+ * - Excel export functionality
  */
 
 import { registry } from '@web/core/registry';
 import { useService } from "@web/core/utils/hooks";
-import { Component, onWillStart, onMounted, useState, useRef } from "@odoo/owl";
+import { Component, onWillStart, onMounted, onWillUnmount, useState, useRef } from "@odoo/owl";
 import { rpc } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
+import { loadBundle } from "@web/core/assets";
 
 export class PTTProjectDashboard extends Component {
     /**
@@ -26,6 +38,8 @@ export class PTTProjectDashboard extends Component {
     setup() {
         // Services
         this.action = useService("action");
+        this.dialog = useService("dialog");
+        this.notification = useService("notification");
 
         // Refs for chart canvases
         this.taskDeadlineChart = useRef("taskDeadlineChart");
@@ -34,11 +48,17 @@ export class PTTProjectDashboard extends Component {
         this.priorityChart = useRef("priorityChart");
 
         // Refs for filter inputs
-        this.startDateRef = useRef("startDate");
-        this.endDateRef = useRef("endDate");
         this.managerRef = useRef("managerSelect");
         this.customerRef = useRef("customerSelect");
         this.projectRef = useRef("projectSelect");
+        this.datePresetRef = useRef("datePreset");
+        
+        // Refs for custom date range inputs
+        this.startDateRef = useRef("startDate");
+        this.endDateRef = useRef("endDate");
+        
+        // Refs for saved presets
+        this.presetSelectRef = useRef("presetSelect");
 
         // Reactive state
         this.state = useState({
@@ -57,6 +77,7 @@ export class PTTProjectDashboard extends Component {
             todayTasksIds: [],
             isManager: false,
             userName: '',
+            userAvatar: '',
 
             // Task table
             tasks: [],
@@ -72,21 +93,65 @@ export class PTTProjectDashboard extends Component {
             managers: [],
             customers: [],
             projects: [],
+            
+            // Saved filter presets
+            presets: [],
+            currentPresetId: null,
 
             // Loading state
             loading: true,
+            refreshing: false,
+            
+            // Error state (for initialization failures)
+            error: null,
+            
+            // Available users for task assignment
+            availableUsers: [],
         });
+
+        // Current filter state (used by all data fetches)
+        this.currentFilters = {
+            manager: null,
+            customer: null,
+            project: null,
+            start_date: null,
+            end_date: null,
+        };
 
         // Chart instances (need to destroy before re-render)
         this.charts = {};
+        
+        // Auto-polling interval (2 minutes = 120000ms)
+        this.pollInterval = null;
+        this.POLL_INTERVAL_MS = 120000;
 
         // Lifecycle hooks
         onWillStart(async () => {
-            await this.loadInitialData();
+            try {
+                // Load Chart.js from Odoo's bundled library (Odoo.sh best practice)
+                await loadBundle("web.chartjs_lib");
+                await this.loadInitialData();
+            } catch (error) {
+                console.error("PTT Dashboard: Failed to initialize", error);
+                this.state.error = "Failed to load dashboard. Please refresh the page.";
+            }
         });
 
         onMounted(() => {
             this.renderAllCharts();
+            
+            // Start auto-polling every 2 minutes
+            this.pollInterval = setInterval(() => {
+                this.refreshDashboard(true); // silent refresh
+            }, this.POLL_INTERVAL_MS);
+        });
+        
+        onWillUnmount(() => {
+            // Clean up polling interval to prevent memory leaks
+            if (this.pollInterval) {
+                clearInterval(this.pollInterval);
+                this.pollInterval = null;
+            }
         });
     }
 
@@ -96,11 +161,12 @@ export class PTTProjectDashboard extends Component {
     async loadInitialData() {
         try {
             // Fetch all data in parallel
-            const [tiles, tasks, activities, filters] = await Promise.all([
+            const [tiles, tasks, activities, filters, presets] = await Promise.all([
                 rpc('/ptt/dashboard/tiles'),
                 rpc('/ptt/dashboard/tasks', { page: 1, limit: 5 }),
                 rpc('/ptt/dashboard/activities', { page: 1, limit: 5 }),
                 rpc('/ptt/dashboard/filter'),
+                rpc('/ptt/dashboard/presets'),
             ]);
 
             // Update state with tiles data
@@ -118,6 +184,7 @@ export class PTTProjectDashboard extends Component {
             this.state.todayTasksIds = tiles.today_tasks_ids;
             this.state.isManager = tiles.is_manager;
             this.state.userName = tiles.user_name;
+            this.state.userAvatar = tiles.user_avatar || '';
 
             // Update state with tasks
             this.state.tasks = tasks.tasks;
@@ -133,6 +200,10 @@ export class PTTProjectDashboard extends Component {
             this.state.managers = filters.managers;
             this.state.customers = filters.customers;
             this.state.projects = filters.projects;
+            
+            // Update saved presets and available users for assignment
+            this.state.presets = presets.presets || [];
+            this.state.availableUsers = filters.managers || []; // Use managers as assignable users
 
             this.state.loading = false;
         } catch (error) {
@@ -142,7 +213,20 @@ export class PTTProjectDashboard extends Component {
     }
 
     /**
-     * Render all Chart.js charts.
+     * Get current filter parameters for RPC calls.
+     */
+    getFilterParams() {
+        return {
+            manager: this.currentFilters.manager || 'null',
+            customer: this.currentFilters.customer || 'null',
+            project: this.currentFilters.project || 'null',
+            start_date: this.currentFilters.start_date || 'null',
+            end_date: this.currentFilters.end_date || 'null',
+        };
+    }
+
+    /**
+     * Render all Chart.js charts with colors matching screenshot.
      */
     async renderAllCharts() {
         // Destroy existing charts first
@@ -150,15 +234,16 @@ export class PTTProjectDashboard extends Component {
             if (chart) chart.destroy();
         });
 
-        // Fetch chart data
+        // Fetch chart data with current filters
+        const filterParams = this.getFilterParams();
         const [deadlineData, stagesData, projectData, priorityData] = await Promise.all([
-            rpc('/ptt/dashboard/task-deadline-chart'),
-            rpc('/ptt/dashboard/task-stages-chart'),
-            rpc('/ptt/dashboard/task-project-chart'),
-            rpc('/ptt/dashboard/priority-chart'),
+            rpc('/ptt/dashboard/task-deadline-chart', { filters: filterParams }),
+            rpc('/ptt/dashboard/task-stages-chart', { filters: filterParams }),
+            rpc('/ptt/dashboard/task-project-chart', { filters: filterParams }),
+            rpc('/ptt/dashboard/priority-chart', { filters: filterParams }),
         ]);
 
-        // Render Task Deadline Pie Chart
+        // Render Task Deadline Pie Chart (Overdue=gray, Today=yellow, Upcoming=purple)
         if (this.taskDeadlineChart.el) {
             this.charts.deadline = new Chart(this.taskDeadlineChart.el, {
                 type: 'pie',
@@ -166,14 +251,22 @@ export class PTTProjectDashboard extends Component {
                     labels: deadlineData.labels,
                     datasets: [{
                         data: deadlineData.data,
-                        backgroundColor: deadlineData.colors,
+                        backgroundColor: ['#9ca3af', '#fbbf24', '#c4b5fd'],  // Gray, Yellow, Light Purple
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right' }
+                        legend: { 
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rect',
+                                padding: 15,
+                                font: { size: 12 }
+                            }
+                        }
                     }
                 }
             });
@@ -187,45 +280,70 @@ export class PTTProjectDashboard extends Component {
                     labels: stagesData.labels,
                     datasets: [{
                         data: stagesData.data,
-                        backgroundColor: stagesData.colors,
+                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '50%',
                     plugins: {
-                        legend: { position: 'bottom' }
+                        legend: { 
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rect',
+                                padding: 10,
+                                font: { size: 11 }
+                            }
+                        }
                     }
                 }
             });
         }
 
-        // Render Task By Project Bar Chart
+        // Render Task By Project Bar Chart (green bars like screenshot)
         if (this.taskProjectChart.el) {
             this.charts.project = new Chart(this.taskProjectChart.el, {
                 type: 'bar',
                 data: {
                     labels: projectData.labels,
                     datasets: [{
-                        label: 'Total Tasks',
+                        label: 'Total Projects',
                         data: projectData.data,
-                        backgroundColor: projectData.colors,
+                        backgroundColor: '#86efac',  // Light green like screenshot
+                        borderColor: '#22c55e',
+                        borderWidth: 1,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { 
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rect',
+                                font: { size: 11 }
+                            }
+                        }
                     },
                     scales: {
-                        y: { beginAtZero: true }
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: '#f0f0f0' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
                     }
                 }
             });
         }
 
-        // Render Priority Wise Bar Chart
+        // Render Priority Wise Bar Chart (4 levels: Low, Medium, High, Urgent)
         if (this.priorityChart.el) {
             this.charts.priority = new Chart(this.priorityChart.el, {
                 type: 'bar',
@@ -234,21 +352,143 @@ export class PTTProjectDashboard extends Component {
                     datasets: [{
                         label: 'Priority',
                         data: priorityData.data,
-                        backgroundColor: priorityData.colors,
+                        // Use colors from backend response, fallback to defaults
+                        backgroundColor: priorityData.colors || ['#93c5fd', '#fcd34d', '#f97316', '#ef4444'],
+                        borderColor: ['#3b82f6', '#f59e0b', '#ea580c', '#dc2626'],
+                        borderWidth: 1,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { 
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rect',
+                                font: { size: 11 }
+                            }
+                        }
                     },
                     scales: {
-                        y: { beginAtZero: true }
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: '#f0f0f0' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
                     }
                 }
             });
         }
+    }
+
+    // =========================================================================
+    // REFRESH FUNCTIONALITY
+    // =========================================================================
+
+    /**
+     * Refresh all dashboard data without full page reload.
+     * @param {boolean} silent - If true, don't show loading indicator (for auto-polling)
+     */
+    async refreshDashboard(silent = false) {
+        if (!silent) {
+            this.state.refreshing = true;
+        }
+        
+        try {
+            await this.loadInitialData();
+            await this.renderAllCharts();
+            
+            if (!silent) {
+                this.notification.add(_t("Dashboard refreshed"), {
+                    type: "success",
+                    sticky: false,
+                });
+            }
+        } catch (error) {
+            console.error('Error refreshing dashboard:', error);
+            if (!silent) {
+                this.notification.add(_t("Failed to refresh dashboard"), {
+                    type: "danger",
+                    sticky: false,
+                });
+            }
+        } finally {
+            this.state.refreshing = false;
+        }
+    }
+
+    // =========================================================================
+    // PRINT FUNCTIONALITY
+    // =========================================================================
+
+    printDashboard() {
+        window.print();
+    }
+    
+    // =========================================================================
+    // EXPORT FUNCTIONALITY
+    // =========================================================================
+
+    /**
+     * Export dashboard data to Excel file.
+     */
+    async exportToExcel() {
+        try {
+            this.notification.add(_t("Preparing Excel export..."), {
+                type: "info",
+                sticky: false,
+            });
+            
+            // Navigate to export URL which returns the file
+            window.location.href = '/ptt/dashboard/export?' + new URLSearchParams({
+                manager: this.currentFilters.manager || '',
+                customer: this.currentFilters.customer || '',
+                project: this.currentFilters.project || '',
+                start_date: this.currentFilters.start_date || '',
+                end_date: this.currentFilters.end_date || '',
+            }).toString();
+        } catch (error) {
+            console.error('Error exporting dashboard:', error);
+            this.notification.add(_t("Export failed"), {
+                type: "danger",
+                sticky: false,
+            });
+        }
+    }
+
+    // =========================================================================
+    // CHART DOWNLOAD FUNCTIONALITY
+    // =========================================================================
+
+    /**
+     * Download a chart as PNG image.
+     * @param {string} chartKey - Key in this.charts object (deadline, stages, project, priority)
+     * @param {string} filename - Base filename for download
+     */
+    downloadChart(chartKey, filename) {
+        const chart = this.charts[chartKey];
+        if (!chart) {
+            console.warn(`Chart '${chartKey}' not found`);
+            return;
+        }
+
+        // Get chart as base64 image
+        const imageUrl = chart.toBase64Image('image/png', 1);
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `${filename}_${new Date().toISOString().split('T')[0]}.png`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     // =========================================================================
@@ -369,7 +609,8 @@ export class PTTProjectDashboard extends Component {
         if (this.state.taskPage > 1) {
             const data = await rpc('/ptt/dashboard/tasks', {
                 page: this.state.taskPage - 1,
-                limit: 5
+                limit: 5,
+                filters: this.getFilterParams()
             });
             this.state.tasks = data.tasks;
             this.state.taskPage = data.page;
@@ -381,7 +622,8 @@ export class PTTProjectDashboard extends Component {
         if (this.state.taskPage < this.state.taskPages) {
             const data = await rpc('/ptt/dashboard/tasks', {
                 page: this.state.taskPage + 1,
-                limit: 5
+                limit: 5,
+                filters: this.getFilterParams()
             });
             this.state.tasks = data.tasks;
             this.state.taskPage = data.page;
@@ -393,7 +635,8 @@ export class PTTProjectDashboard extends Component {
         if (this.state.activityPage > 1) {
             const data = await rpc('/ptt/dashboard/activities', {
                 page: this.state.activityPage - 1,
-                limit: 5
+                limit: 5,
+                filters: this.getFilterParams()
             });
             this.state.activities = data.activities;
             this.state.activityPage = data.page;
@@ -405,7 +648,8 @@ export class PTTProjectDashboard extends Component {
         if (this.state.activityPage < this.state.activityPages) {
             const data = await rpc('/ptt/dashboard/activities', {
                 page: this.state.activityPage + 1,
-                limit: 5
+                limit: 5,
+                filters: this.getFilterParams()
             });
             this.state.activities = data.activities;
             this.state.activityPage = data.page;
@@ -417,52 +661,415 @@ export class PTTProjectDashboard extends Component {
     // FILTERS
     // =========================================================================
 
+    /**
+     * Get date range based on preset selection.
+     * Supports: today, week, month, year, quarters (q1-q4), last periods, and fiscal year.
+     */
+    getDateRangeFromPreset(preset) {
+        const today = new Date();
+        const year = today.getFullYear();
+        let startDate = null;
+        let endDate = null;
+
+        switch (preset) {
+            case 'today':
+                startDate = today.toISOString().split('T')[0];
+                endDate = startDate;
+                break;
+                
+            case 'week': {
+                const dayOfWeek = today.getDay();
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - dayOfWeek);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+                startDate = weekStart.toISOString().split('T')[0];
+                endDate = weekEnd.toISOString().split('T')[0];
+                break;
+            }
+            
+            case 'month':
+                startDate = new Date(year, today.getMonth(), 1).toISOString().split('T')[0];
+                endDate = new Date(year, today.getMonth() + 1, 0).toISOString().split('T')[0];
+                break;
+                
+            case 'year':
+                startDate = new Date(year, 0, 1).toISOString().split('T')[0];
+                endDate = new Date(year, 11, 31).toISOString().split('T')[0];
+                break;
+                
+            // Fiscal Quarters (Calendar Year: Q1=Jan-Mar, Q2=Apr-Jun, Q3=Jul-Sep, Q4=Oct-Dec)
+            case 'q1':
+                startDate = new Date(year, 0, 1).toISOString().split('T')[0];
+                endDate = new Date(year, 2, 31).toISOString().split('T')[0];
+                break;
+                
+            case 'q2':
+                startDate = new Date(year, 3, 1).toISOString().split('T')[0];
+                endDate = new Date(year, 5, 30).toISOString().split('T')[0];
+                break;
+                
+            case 'q3':
+                startDate = new Date(year, 6, 1).toISOString().split('T')[0];
+                endDate = new Date(year, 8, 30).toISOString().split('T')[0];
+                break;
+                
+            case 'q4':
+                startDate = new Date(year, 9, 1).toISOString().split('T')[0];
+                endDate = new Date(year, 11, 31).toISOString().split('T')[0];
+                break;
+                
+            // Last periods
+            case 'last_week': {
+                const lastWeekEnd = new Date(today);
+                lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+                const lastWeekStart = new Date(lastWeekEnd);
+                lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+                startDate = lastWeekStart.toISOString().split('T')[0];
+                endDate = lastWeekEnd.toISOString().split('T')[0];
+                break;
+            }
+            
+            case 'last_month':
+                startDate = new Date(year, today.getMonth() - 1, 1).toISOString().split('T')[0];
+                endDate = new Date(year, today.getMonth(), 0).toISOString().split('T')[0];
+                break;
+                
+            case 'last_quarter': {
+                const currentQuarter = Math.floor(today.getMonth() / 3);
+                const lastQuarterStart = currentQuarter === 0 ? 9 : (currentQuarter - 1) * 3;
+                const lastQuarterYear = currentQuarter === 0 ? year - 1 : year;
+                startDate = new Date(lastQuarterYear, lastQuarterStart, 1).toISOString().split('T')[0];
+                endDate = new Date(lastQuarterYear, lastQuarterStart + 3, 0).toISOString().split('T')[0];
+                break;
+            }
+            
+            case 'last_year':
+                startDate = new Date(year - 1, 0, 1).toISOString().split('T')[0];
+                endDate = new Date(year - 1, 11, 31).toISOString().split('T')[0];
+                break;
+                
+            // Custom - handled separately via date inputs
+            case 'custom':
+                // Return nulls; custom dates are read from input fields
+                break;
+                
+            default:
+                // Lifetime - no date filter
+                break;
+        }
+
+        return { startDate, endDate };
+    }
+
+    async applyDatePreset() {
+        // Clear custom date inputs when preset is selected
+        const datePreset = this.datePresetRef.el ? this.datePresetRef.el.value : null;
+        if (datePreset && datePreset !== 'custom') {
+            if (this.startDateRef.el) this.startDateRef.el.value = '';
+            if (this.endDateRef.el) this.endDateRef.el.value = '';
+        }
+        await this.applyFilters();
+    }
+    
+    /**
+     * Apply custom date range from date inputs.
+     */
+    async applyCustomDateRange() {
+        // When custom dates are entered, clear the preset dropdown
+        if (this.datePresetRef.el) {
+            this.datePresetRef.el.value = 'custom';
+        }
+        await this.applyFilters();
+    }
+
     async applyFilters() {
-        const startDate = this.startDateRef.el ? this.startDateRef.el.value : null;
-        const endDate = this.endDateRef.el ? this.endDateRef.el.value : null;
         const managerId = this.managerRef.el ? this.managerRef.el.value : null;
         const customerId = this.customerRef.el ? this.customerRef.el.value : null;
         const projectId = this.projectRef.el ? this.projectRef.el.value : null;
+        const datePreset = this.datePresetRef.el ? this.datePresetRef.el.value : null;
+        
+        let startDate, endDate;
+        
+        // Check for custom date inputs first
+        const customStart = this.startDateRef.el ? this.startDateRef.el.value : null;
+        const customEnd = this.endDateRef.el ? this.endDateRef.el.value : null;
+        
+        if (customStart || customEnd) {
+            // Use custom date range
+            startDate = customStart || null;
+            endDate = customEnd || null;
+        } else {
+            // Use preset
+            const presetRange = this.getDateRangeFromPreset(datePreset);
+            startDate = presetRange.startDate;
+            endDate = presetRange.endDate;
+        }
 
-        const data = await rpc('/ptt/dashboard/filter-apply', {
-            data: {
-                start_date: startDate || 'null',
-                end_date: endDate || 'null',
-                manager: managerId || 'null',
-                customer: customerId || 'null',
-                project: projectId || 'null',
-            }
-        });
+        // Store current filters for use by other methods
+        this.currentFilters = {
+            manager: managerId || null,
+            customer: customerId || null,
+            project: projectId || null,
+            start_date: startDate || null,
+            end_date: endDate || null,
+        };
+
+        const filterParams = this.getFilterParams();
+
+        // Fetch all filtered data in parallel
+        const [tilesData, tasksData, activitiesData] = await Promise.all([
+            rpc('/ptt/dashboard/filter-apply', { data: filterParams }),
+            rpc('/ptt/dashboard/tasks', { page: 1, limit: 5, filters: filterParams }),
+            rpc('/ptt/dashboard/activities', { page: 1, limit: 5, filters: filterParams }),
+        ]);
 
         // Update KPI tiles
-        this.state.myTasks = data.my_tasks;
-        this.state.myTasksIds = data.my_tasks_ids;
-        this.state.totalProjects = data.total_projects;
-        this.state.totalProjectsIds = data.total_projects_ids;
-        this.state.activeTasks = data.active_tasks;
-        this.state.activeTasksIds = data.active_tasks_ids;
-        this.state.myOverdueTasks = data.my_overdue_tasks;
-        this.state.myOverdueTasksIds = data.my_overdue_tasks_ids;
-        this.state.overdueTasks = data.overdue_tasks;
-        this.state.overdueTasksIds = data.overdue_tasks_ids;
-        this.state.todayTasks = data.today_tasks;
-        this.state.todayTasksIds = data.today_tasks_ids;
+        this.state.myTasks = tilesData.my_tasks;
+        this.state.myTasksIds = tilesData.my_tasks_ids;
+        this.state.totalProjects = tilesData.total_projects;
+        this.state.totalProjectsIds = tilesData.total_projects_ids;
+        this.state.activeTasks = tilesData.active_tasks;
+        this.state.activeTasksIds = tilesData.active_tasks_ids;
+        this.state.myOverdueTasks = tilesData.my_overdue_tasks;
+        this.state.myOverdueTasksIds = tilesData.my_overdue_tasks_ids;
+        this.state.overdueTasks = tilesData.overdue_tasks;
+        this.state.overdueTasksIds = tilesData.overdue_tasks_ids;
+        this.state.todayTasks = tilesData.today_tasks;
+        this.state.todayTasksIds = tilesData.today_tasks_ids;
 
-        // Re-render charts
+        // Update task table
+        this.state.tasks = tasksData.tasks;
+        this.state.taskPage = tasksData.page;
+        this.state.taskPages = tasksData.pages;
+
+        // Update activities table
+        this.state.activities = activitiesData.activities;
+        this.state.activityPage = activitiesData.page;
+        this.state.activityPages = activitiesData.pages;
+
+        // Re-render charts with filters
         await this.renderAllCharts();
     }
 
     async resetFilters() {
         // Reset filter inputs
-        if (this.startDateRef.el) this.startDateRef.el.value = '';
-        if (this.endDateRef.el) this.endDateRef.el.value = '';
         if (this.managerRef.el) this.managerRef.el.value = '';
         if (this.customerRef.el) this.customerRef.el.value = '';
         if (this.projectRef.el) this.projectRef.el.value = '';
+        if (this.datePresetRef.el) this.datePresetRef.el.value = '';
+        if (this.startDateRef.el) this.startDateRef.el.value = '';
+        if (this.endDateRef.el) this.endDateRef.el.value = '';
+        if (this.presetSelectRef.el) this.presetSelectRef.el.value = '';
 
-        // Reload all data
+        // Clear stored filter state
+        this.currentFilters = {
+            manager: null,
+            customer: null,
+            project: null,
+            start_date: null,
+            end_date: null,
+        };
+        
+        this.state.currentPresetId = null;
+
+        // Reload all data (unfiltered)
         await this.loadInitialData();
         await this.renderAllCharts();
+    }
+
+    // =========================================================================
+    // SAVED FILTER PRESETS
+    // =========================================================================
+
+    /**
+     * Save current filter combination as a preset.
+     */
+    async saveFilterPreset() {
+        const name = prompt(_t("Enter a name for this filter preset:"));
+        if (!name || !name.trim()) {
+            return;
+        }
+        
+        try {
+            const result = await rpc('/ptt/dashboard/save-preset', {
+                name: name.trim(),
+                filters: this.currentFilters,
+            });
+            
+            if (result.success) {
+                this.notification.add(_t("Filter preset saved: ") + name, {
+                    type: "success",
+                    sticky: false,
+                });
+                // Reload presets
+                const presetsData = await rpc('/ptt/dashboard/presets');
+                this.state.presets = presetsData.presets || [];
+            } else {
+                this.notification.add(result.error || _t("Failed to save preset"), {
+                    type: "danger",
+                    sticky: false,
+                });
+            }
+        } catch (error) {
+            console.error('Error saving preset:', error);
+            this.notification.add(_t("Failed to save preset"), {
+                type: "danger",
+                sticky: false,
+            });
+        }
+    }
+
+    /**
+     * Load a saved filter preset.
+     */
+    async loadFilterPreset(ev) {
+        const presetId = ev.target.value;
+        if (!presetId) {
+            return;
+        }
+        
+        try {
+            const result = await rpc('/ptt/dashboard/load-preset', {
+                preset_id: parseInt(presetId),
+            });
+            
+            if (result.success) {
+                const filters = result.filters;
+                
+                // Apply filters to UI
+                if (this.managerRef.el) this.managerRef.el.value = filters.manager || '';
+                if (this.customerRef.el) this.customerRef.el.value = filters.customer || '';
+                if (this.projectRef.el) this.projectRef.el.value = filters.project || '';
+                if (this.startDateRef.el) this.startDateRef.el.value = filters.start_date || '';
+                if (this.endDateRef.el) this.endDateRef.el.value = filters.end_date || '';
+                if (this.datePresetRef.el) this.datePresetRef.el.value = filters.start_date ? 'custom' : '';
+                
+                // Update stored filters and apply
+                this.currentFilters = {
+                    manager: filters.manager || null,
+                    customer: filters.customer || null,
+                    project: filters.project || null,
+                    start_date: filters.start_date || null,
+                    end_date: filters.end_date || null,
+                };
+                
+                this.state.currentPresetId = presetId;
+                await this.applyFilters();
+                
+                this.notification.add(_t("Preset loaded: ") + result.name, {
+                    type: "success",
+                    sticky: false,
+                });
+            }
+        } catch (error) {
+            console.error('Error loading preset:', error);
+            this.notification.add(_t("Failed to load preset"), {
+                type: "danger",
+                sticky: false,
+            });
+        }
+    }
+
+    /**
+     * Delete a saved filter preset.
+     */
+    async deleteFilterPreset(presetId) {
+        if (!confirm(_t("Delete this filter preset?"))) {
+            return;
+        }
+        
+        try {
+            const result = await rpc('/ptt/dashboard/delete-preset', {
+                preset_id: presetId,
+            });
+            
+            if (result.success) {
+                this.notification.add(_t("Preset deleted"), {
+                    type: "success",
+                    sticky: false,
+                });
+                // Reload presets
+                const presetsData = await rpc('/ptt/dashboard/presets');
+                this.state.presets = presetsData.presets || [];
+                
+                if (this.state.currentPresetId === presetId) {
+                    this.state.currentPresetId = null;
+                    if (this.presetSelectRef.el) this.presetSelectRef.el.value = '';
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting preset:', error);
+            this.notification.add(_t("Failed to delete preset"), {
+                type: "danger",
+                sticky: false,
+            });
+        }
+    }
+
+    // =========================================================================
+    // QUICK TASK ASSIGNMENT
+    // =========================================================================
+
+    /**
+     * Quick-assign a task to a user directly from the dashboard.
+     */
+    async assignTask(taskId) {
+        // Get available users for assignment
+        const users = this.state.availableUsers;
+        if (!users || users.length === 0) {
+            this.notification.add(_t("No users available for assignment"), {
+                type: "warning",
+                sticky: false,
+            });
+            return;
+        }
+        
+        // Build simple prompt with user options
+        let userOptions = users.map(u => `${u.id}: ${u.name}`).join('\n');
+        const userIdStr = prompt(
+            _t("Enter user ID to assign task to:\n\n") + userOptions
+        );
+        
+        if (!userIdStr || !userIdStr.trim()) {
+            return;
+        }
+        
+        const userId = parseInt(userIdStr.trim());
+        if (isNaN(userId)) {
+            this.notification.add(_t("Invalid user ID"), {
+                type: "danger",
+                sticky: false,
+            });
+            return;
+        }
+        
+        try {
+            const result = await rpc('/ptt/dashboard/assign-task', {
+                task_id: taskId,
+                user_id: userId,
+            });
+            
+            if (result.success) {
+                this.notification.add(_t("Task assigned successfully"), {
+                    type: "success",
+                    sticky: false,
+                });
+                // Refresh task list
+                await this.refreshDashboard(true);
+            } else {
+                this.notification.add(result.error || _t("Failed to assign task"), {
+                    type: "danger",
+                    sticky: false,
+                });
+            }
+        } catch (error) {
+            console.error('Error assigning task:', error);
+            this.notification.add(_t("Failed to assign task"), {
+                type: "danger",
+                sticky: false,
+            });
+        }
     }
 
     /**

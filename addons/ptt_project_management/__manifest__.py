@@ -1,6 +1,6 @@
 {
     "name": "PTT Project Management",
-    "version": "19.0.2.0.0",
+    "version": "19.0.2.1.0",
     "summary": "Enhanced project management for Party Time Texas event execution",
     "description": """
 Event Project Management Enhancement
@@ -18,11 +18,19 @@ This module provides:
 * Configurable offsets from SO confirmation or event date
 * Parent task blocking until subtasks complete
 
-**Project Dashboard**
+**Project Dashboard (v2.1.0 Enhanced)**
 * KPI tiles: My Tasks, Projects, Active/Overdue/Today Tasks
 * Interactive charts: Deadline pie, Stage doughnut, Project bar
 * Paginated task and activity tables
 * Drill-down to actual records
+* NEW: Refresh button for manual data reload
+* NEW: Auto-polling every 2 minutes
+* NEW: Custom date range picker
+* NEW: Fiscal quarter filters (Q1-Q4, Last Month/Quarter/Year)
+* NEW: Saved filter presets per user
+* NEW: Quick task assignment from table
+* NEW: Export to Excel functionality
+* NEW: Dashboard is now the default view when opening Projects app
 
 **Event Calendar**
 * Calendar view by event date
@@ -46,6 +54,7 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
         "sale_project",
         "calendar",
         "mail",
+        "hr",  # For employee/manager data in dashboard filters
         "ptt_business_core",
         "ptt_enhanced_sales",
     ],
@@ -60,8 +69,8 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
     ],
     "assets": {
         "web.assets_backend": [
-            # Chart.js for dashboard charts
-            "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js",
+            # Chart.js is loaded via loadBundle("web.chartjs_lib") in the component
+            # This uses Odoo's bundled Chart.js - no CDN dependency
             # Dashboard styles
             "ptt_project_management/static/src/css/dashboard.css",
             # Dashboard Owl component

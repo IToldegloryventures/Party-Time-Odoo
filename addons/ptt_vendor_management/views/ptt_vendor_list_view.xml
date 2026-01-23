@@ -21,7 +21,7 @@
                        decoration-success="ptt_vendor_tier == 'premier'"
                        decoration-info="ptt_vendor_tier == 'classic'"
                        decoration-muted="ptt_vendor_tier == 'essentials'"/>
-                <field name="ptt_vendor_service_types" string="Services" widget="many2many_tags"/>
+                <field name="ptt_vendor_service_ids" string="Services" widget="many2many_tags"/>
                 <field name="ptt_vendor_compliance_status" string="Compliance" widget="badge"
                        decoration-success="ptt_vendor_compliance_status == 'compliant'"
                        decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
@@ -52,7 +52,7 @@
             <kanban class="o_kanban_mobile">
                 <field name="name"/>
                 <field name="ptt_vendor_tier"/>
-                <field name="ptt_vendor_service_types"/>
+                <field name="ptt_vendor_service_ids"/>
                 <field name="ptt_vendor_compliance_status"/>
                 <field name="city"/>
                 <field name="state_id"/>
@@ -72,7 +72,7 @@
                                        decoration-info="ptt_vendor_tier == 'classic'"
                                        decoration-muted="ptt_vendor_tier == 'essentials'"/>
                             </div>
-                            <field name="ptt_vendor_service_types" widget="many2many_tags"/>
+                            <field name="ptt_vendor_service_ids" widget="many2many_tags"/>
                             <field name="ptt_vendor_compliance_status" widget="badge"
                                    decoration-success="ptt_vendor_compliance_status == 'compliant'"
                                    decoration-warning="ptt_vendor_compliance_status == 'expiring_soon'"
@@ -106,7 +106,7 @@
             <search>
                 <field name="name" string="Vendor" 
                        filter_domain="['|', '|', ('name', 'ilike', self), ('email', 'ilike', self), ('phone', 'ilike', self)]"/>
-                <field name="ptt_vendor_service_types" string="Service"/>
+                <field name="ptt_vendor_service_ids" string="Service"/>
                 <field name="phone"/>
                 <field name="email"/>
                 <field name="city" string="City" optional="hide"/>

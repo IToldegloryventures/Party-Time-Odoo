@@ -3,14 +3,14 @@
 
 from odoo import models, fields, api, _
 
-from odoo.addons.ptt_business_core.constants import LOCATION_TYPES
+from odoo.addons.ptt_business_core.constants import LOCATION_TYPES, TIME_SELECTIONS
 
-# Map event type codes to Event Kickoff product internal references
+# Map event type Selection values to Event Kickoff product internal references
 # These products are defined in ptt_business_core/data/products_administrative.xml
 EVENT_KICKOFF_PRODUCTS = {
-    'CORP': 'EVENT-KICKOFF-CORP',      # Corporate → Event Kickoff - Corporate
-    'WEDDING': 'EVENT-KICKOFF-WEDD',   # Wedding → Event Kickoff - Wedding
-    'SOCIAL': 'EVENT-KICKOFF-SOCL',    # Social → Event Kickoff - Social
+    'corporate': 'EVENT-KICKOFF-CORP',  # Corporate → Event Kickoff - Corporate
+    'wedding': 'EVENT-KICKOFF-WEDD',    # Wedding → Event Kickoff - Wedding
+    'social': 'EVENT-KICKOFF-SOCL',     # Social → Event Kickoff - Social
 }
 
 # All Event Kickoff product codes (for detection/replacement)
@@ -21,84 +21,161 @@ class SaleOrder(models.Model):
     """Enhanced Sale Order for Event Management"""
     _inherit = 'sale.order'
 
-    # Event Type Classification
-    event_type_id = fields.Many2one(
-        'sale.order.type',
+    # ==========================================================================
+    # EVENT DETAILS - Related fields from CRM Lead (single source of truth)
+    # ==========================================================================
+    # All event fields are RELATED to opportunity_id (CRM Lead).
+    # EDITABLE in Draft/Sent states - changes sync back to CRM.
+    # READ-ONLY once order is Confirmed (sale/done) - locked for event execution.
+    # View applies readonly="state in ('sale', 'done')" condition.
+    
+    # Event Type Classification - related to CRM (auto-populates from CRM Lead)
+    event_type = fields.Selection(
+        related='opportunity_id.ptt_event_type',
         string="Event Type",
-        help="Type of event for this order (Corporate/Social/Wedding)"
+        store=True,
+        readonly=False,
+        help="Type of event (Corporate/Social/Wedding) - auto-populates from CRM Lead"
     )
     
-    # NOTE: Category field removed - event type name (Corporate/Social/Wedding) is the category
-    
-    # Event Details
+    # Core Event Details - related to CRM
     event_name = fields.Char(
+        related='opportunity_id.ptt_event_name',
         string="Event Name",
-        help="Name of the specific event"
-    )
-    
-    event_date = fields.Datetime(
-        string="Event Date & Time",
-        help="Scheduled date and time of the event"
+        store=True,
+        readonly=False,
+        help="Name of the event"
     )
     
     event_duration = fields.Float(
+        related='opportunity_id.ptt_event_duration',
         string="Event Duration (Hours)",
-        help="Duration of the event in hours"
+        store=True,
+        readonly=False,
+        help="Duration in hours"
     )
     
     event_guest_count = fields.Integer(
-        string="Expected Guest Count",
-        help="Number of expected guests"
+        related='opportunity_id.ptt_guest_count',
+        string="Guest Count",
+        store=True,
+        readonly=False,
+        help="Number of guests"
     )
     
+    # Venue Details - related to CRM
     event_venue = fields.Char(
-        string="Event Venue",
-        help="Location where the event will take place"
+        related='opportunity_id.ptt_venue_name',
+        string="Venue Name",
+        store=True,
+        readonly=False,
+        help="Venue name"
     )
     
     event_venue_type = fields.Selection(
-        selection=LOCATION_TYPES,
-        string="Venue Type"
+        related='opportunity_id.ptt_location_type',
+        string="Venue Type",
+        store=True,
+        readonly=False,
     )
     
     event_venue_address = fields.Text(
-        string="Venue Address",
-        help="Full address of the venue"
+        related='opportunity_id.ptt_venue_address',
+        string="Address",
+        store=True,
+        readonly=False,
+        help="Venue address"
     )
     
     event_venue_booked = fields.Boolean(
+        related='opportunity_id.ptt_venue_booked',
         string="Venue Booked?",
-        help="Is the venue already booked/confirmed?"
+        store=True,
+        readonly=False,
     )
     
     event_attire = fields.Selection(
-        selection=[
-            ('casual', 'Casual'),
-            ('business_casual', 'Business Casual'),
-            ('semi_formal', 'Semi-Formal'),
-            ('formal', 'Formal'),
-            ('black_tie', 'Black Tie'),
-            ('costume', 'Costume/Theme'),
-            ('other', 'Other'),
-        ],
-        string="Attire/Dress Code",
-        help="Dress code for the event"
+        related='opportunity_id.ptt_attire',
+        string="Attire",
+        store=True,
+        readonly=False,
+        help="Dress code"
     )
     
-    # =========================================================================
-    # EVENT TIMES - Using Datetime fields with proper date/time pickers
-    # =========================================================================
-    # NOTE: event_date (Datetime) is the EVENT START date+time
-    # These are proper Datetime fields with date/time pickers (no confusing floats!)
+    # Event Date (Date only from CRM)
+    event_date_only = fields.Date(
+        related='opportunity_id.ptt_event_date',
+        string="Event Date",
+        store=True,
+        readonly=False,
+    )
+    
+    # ==========================================================================
+    # EVENT TIMES - Float fields related to CRM
+    # ==========================================================================
+    # CRM stores times as Float hours. Editable until order confirmed.
+    # The Datetime fields below are COMPUTED from Date + Float for display.
+    
+    event_start_time = fields.Selection(
+        selection=TIME_SELECTIONS,
+        related='opportunity_id.ptt_start_time',
+        string="Start Time",
+        store=True,
+        readonly=False,
+        help="Event start time"
+    )
+    
+    event_end_time = fields.Selection(
+        selection=TIME_SELECTIONS,
+        related='opportunity_id.ptt_end_time',
+        string="End Time", 
+        store=True,
+        readonly=False,
+        help="Event end time"
+    )
+    
+    setup_time_float = fields.Selection(
+        selection=TIME_SELECTIONS,
+        related='opportunity_id.ptt_setup_time',
+        string="Setup Time",
+        store=True,
+        readonly=False,
+        help="Setup start time"
+    )
+    
+    teardown_time_float = fields.Selection(
+        selection=TIME_SELECTIONS,
+        related='opportunity_id.ptt_teardown_time',
+        string="Teardown Time",
+        store=True,
+        readonly=False,
+        help="Teardown/breakdown time"
+    )
+    
+    # Computed Datetime fields - combine Date + Float for display
+    # Editable until order confirmed - changes sync back to CRM via inverse methods
+    event_date = fields.Datetime(
+        string="Event Start",
+        compute='_compute_event_datetimes',
+        inverse='_inverse_event_date',
+        store=True,
+        help="Event start date/time"
+    )
     
     event_end_datetime = fields.Datetime(
-        string="Event End Time",
-        help="When the event ends"
+        string="Event End",
+        compute='_compute_event_datetimes',
+        inverse='_inverse_event_end_datetime',
+        store=True,
+        help="Event end date/time"
     )
     
     setup_time = fields.Datetime(
-        string="Setup Start Time",
-        help="When setup should begin"
+        string="Setup Start",
+        compute='_compute_event_datetimes',
+        inverse='_inverse_setup_time',
+        store=True,
+        help="Setup start date/time"
     )
     
     breakdown_time = fields.Datetime(
@@ -106,22 +183,76 @@ class SaleOrder(models.Model):
         help="When breakdown should be completed"
     )
     
-    # Legacy Float fields (kept for backward compatibility with CRM sync)
-    # These are NOT shown on the form - only Datetime fields are shown
-    event_start_time = fields.Float(
-        string="Start Time (Float)",
-        help="Legacy: Event start time as float hours"
-    )
+    @api.depends('event_date_only', 'event_start_time', 'event_end_time', 'setup_time_float')
+    def _compute_event_datetimes(self):
+        """Compute Datetime fields from Date + Selection time fields (from CRM).
+        
+        Selection values are strings like "14.5" representing float hours.
+        """
+        def selection_to_datetime(date_val, time_selection):
+            """Convert Selection string to Datetime."""
+            if not time_selection:
+                return False
+            float_time = float(time_selection)
+            hours = int(float_time)
+            minutes = int((float_time - hours) * 60)
+            return fields.Datetime.to_datetime(date_val).replace(
+                hour=hours, minute=minutes, second=0
+            )
+        
+        for order in self:
+            if order.event_date_only:
+                event_date = order.event_date_only
+                
+                # Event Start: Date + Start Time
+                if order.event_start_time:
+                    order.event_date = selection_to_datetime(event_date, order.event_start_time)
+                else:
+                    order.event_date = fields.Datetime.to_datetime(event_date)
+                
+                # Event End: Date + End Time
+                order.event_end_datetime = selection_to_datetime(event_date, order.event_end_time)
+                
+                # Setup: Date + Setup Time
+                order.setup_time = selection_to_datetime(event_date, order.setup_time_float)
+            else:
+                order.event_date = False
+                order.event_end_datetime = False
+                order.setup_time = False
     
-    event_end_time = fields.Float(
-        string="End Time (Float)", 
-        help="Legacy: Event end time as float hours"
-    )
+    def _datetime_to_selection(self, dt):
+        """Convert Datetime to Selection string value (e.g., "14.5").
+        
+        Rounds to nearest 30 minutes to match TIME_SELECTIONS options.
+        """
+        if not dt:
+            return False
+        # Round minutes to 0 or 30
+        minutes = 0 if dt.minute < 15 else (30 if dt.minute < 45 else 0)
+        hour = dt.hour if dt.minute < 45 else dt.hour + 1
+        if hour >= 24:
+            hour = 23
+            minutes = 30
+        return str(hour + minutes / 60.0)
     
-    setup_time_float = fields.Float(
-        string="Setup Time (Float)",
-        help="Legacy: Setup time as float hours"
-    )
+    def _inverse_event_date(self):
+        """When event_date Datetime is changed, update the CRM Date and Selection time."""
+        for order in self:
+            if order.event_date and order.opportunity_id:
+                order.opportunity_id.ptt_event_date = order.event_date.date()
+                order.opportunity_id.ptt_start_time = self._datetime_to_selection(order.event_date)
+    
+    def _inverse_event_end_datetime(self):
+        """When event_end_datetime is changed, update the CRM Selection time."""
+        for order in self:
+            if order.event_end_datetime and order.opportunity_id:
+                order.opportunity_id.ptt_end_time = self._datetime_to_selection(order.event_end_datetime)
+    
+    def _inverse_setup_time(self):
+        """When setup_time Datetime is changed, update the CRM Selection time."""
+        for order in self:
+            if order.setup_time and order.opportunity_id:
+                order.opportunity_id.ptt_setup_time = self._datetime_to_selection(order.setup_time)
     
     # =========================================================================
     # EVENT DETAILS SUMMARY (For Customer-Facing Documents)
@@ -133,7 +264,7 @@ class SaleOrder(models.Model):
         help="Formatted summary of event details for quotes and contracts"
     )
     
-    @api.depends('event_name', 'event_type_id', 'event_date', 'event_end_datetime',
+    @api.depends('event_name', 'event_type', 'event_date', 'event_end_datetime',
                  'event_guest_count', 'event_venue', 'event_venue_address', 
                  'event_attire', 'setup_time', 'event_duration')
     def _compute_event_details_summary(self):
@@ -143,8 +274,10 @@ class SaleOrder(models.Model):
             
             if order.event_name:
                 lines.append(f"Event: {order.event_name}")
-            if order.event_type_id:
-                lines.append(f"Type: {order.event_type_id.name}")
+            if order.event_type:
+                # Get display label from selection
+                type_label = dict(order._fields['event_type'].selection).get(order.event_type, order.event_type)
+                lines.append(f"Type: {type_label.title()}")
             if order.event_date:
                 # Format: "February 6, 2026 at 5:00 PM"
                 lines.append(f"Event Start: {order.event_date.strftime('%B %d, %Y at %I:%M %p')}")
@@ -378,31 +511,13 @@ class SaleOrder(models.Model):
         return bool(invoices) and all(inv.payment_state == 'paid' for inv in invoices)
     
     def _sync_crm_lead_from_order(self):
-        """Sync event details from sale order back to CRM lead.
+        """DEPRECATED: Sync is now automatic via related fields.
         
-        Useful when order details are updated after initial creation.
-        Updates the linked opportunity with current event information.
+        Event fields on sale.order are RELATED to opportunity_id (CRM Lead).
+        Changes in SO automatically update CRM and vice versa.
+        This method is kept for backward compatibility but does nothing.
         """
-        for order in self:
-            lead = order.opportunity_id
-            if not lead:
-                continue
-            
-            sync_vals = {}
-            
-            if order.event_name and lead.ptt_event_name != order.event_name:
-                sync_vals['ptt_event_name'] = order.event_name
-            if order.event_date:
-                order_event_date = order.event_date.date() if hasattr(order.event_date, 'date') else order.event_date
-                if lead.ptt_event_date != order_event_date:
-                    sync_vals['ptt_event_date'] = order_event_date
-            if order.event_guest_count and lead.ptt_guest_count != order.event_guest_count:
-                sync_vals['ptt_guest_count'] = order.event_guest_count
-            if order.event_venue and lead.ptt_venue_name != order.event_venue:
-                sync_vals['ptt_venue_name'] = order.event_venue
-            
-            if sync_vals:
-                lead.write(sync_vals)
+        pass  # Related fields handle sync automatically
     
     # Quote Management
     revision_count = fields.Integer(
@@ -443,13 +558,9 @@ class SaleOrder(models.Model):
         for order in self:
             order.revision_count = len(order.revision_ids)
     
-    @api.onchange('event_type_id')
-    def _onchange_event_type_id(self):
-        """Auto-populate event fields and add correct Event Kickoff product.
-        
-        When event type is selected:
-        1. Set default duration from event type
-        2. Auto-add the correct Event Kickoff product as first line item
+    @api.onchange('event_type')
+    def _onchange_event_type(self):
+        """Auto-add correct Event Kickoff product when event type is selected.
         
         Odoo 19 Reference:
         https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#odoo.api.onchange
@@ -457,12 +568,8 @@ class SaleOrder(models.Model):
         Uses Command class for One2many manipulation (Odoo 19 standard):
         https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#odoo.fields.Command
         """
-        if not self.event_type_id:
+        if not self.event_type:
             return
-        
-        # Set default duration from event type
-        if self.event_type_id.default_duration_hours:
-            self.event_duration = self.event_type_id.default_duration_hours
         
         # Auto-add the correct Event Kickoff product
         self._auto_add_event_kickoff_product()
@@ -480,11 +587,11 @@ class SaleOrder(models.Model):
         
         In onchange context, we can directly modify the pseudo-records.
         """
-        if not self.event_type_id or not self.event_type_id.code:
+        if not self.event_type:
             return
         
         # Get the correct Event Kickoff product code for this event type
-        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type_id.code)
+        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type)
         if not kickoff_code:
             return
         
@@ -545,11 +652,11 @@ class SaleOrder(models.Model):
         """
         self.ensure_one()
         
-        if not self.event_type_id or not self.event_type_id.code:
+        if not self.event_type:
             return
         
         # Get the correct Event Kickoff product code for this event type
-        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type_id.code)
+        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type)
         if not kickoff_code:
             return
         
@@ -589,35 +696,6 @@ class SaleOrder(models.Model):
                 'price_unit': 0.0,
                 'sequence': 0,  # First line
             })
-    
-    @api.onchange('event_date', 'event_type_id')
-    def _onchange_event_timing(self):
-        """Auto-calculate setup and breakdown times.
-        
-        Uses event type defaults to calculate:
-        - setup_time: Event date minus setup hours
-        - breakdown_time: Event end plus breakdown hours
-        """
-        if self.event_date and self.event_type_id:
-            # Calculate setup time
-            if self.event_type_id.default_setup_hours:
-                setup_hours = self.event_type_id.default_setup_hours
-                self.setup_time = fields.Datetime.subtract(
-                    self.event_date, 
-                    hours=setup_hours
-                )
-            
-            # Calculate breakdown time
-            if self.event_type_id.default_breakdown_hours and self.event_duration:
-                breakdown_hours = self.event_type_id.default_breakdown_hours
-                event_end = fields.Datetime.add(
-                    self.event_date,
-                    hours=self.event_duration
-                )
-                self.breakdown_time = fields.Datetime.add(
-                    event_end,
-                    hours=breakdown_hours
-                )
     
     def action_create_revision(self):
         """Create a new revision of this quote.
@@ -680,58 +758,47 @@ class SaleOrder(models.Model):
         """Create project from confirmed sale order with event-specific setup.
         
         In Odoo 19, super().action_create_project() opens a wizard dialog.
-        We pass event data via context so it can be used when the project
-        is actually created by the wizard or linked to the sale order.
+        We pass the CRM lead ID via context so the project is linked to the
+        CRM lead, which enables automatic sync of all event details through
+        related fields.
+        
+        NOTE: Event fields (ptt_event_type, ptt_event_name, ptt_event_date,
+        ptt_venue_name, etc.) are RELATED to CRM Lead fields on project.
+        They cannot be written directly - link to CRM lead instead.
         """
         action = super().action_create_project()
         
-        # Pass event details via context for project creation
+        # Pass CRM lead ID via context for project creation
+        # This enables all event fields to sync via related fields
         if isinstance(action, dict) and action.get('context'):
             event_context = {
-                'ptt_event_type_id': self.event_type_id.id if self.event_type_id else False,
-                'ptt_event_name': self.event_name,
-                'ptt_guest_count': self.event_guest_count,
-                'ptt_venue_name': self.event_venue,
-                'ptt_setup_start_time': self.setup_time,
-                'ptt_teardown_deadline': self.breakdown_time,
-                'ptt_total_hours': self.event_duration,
-                'ptt_sale_order_id': self.id,
+                'default_ptt_crm_lead_id': self.opportunity_id.id if self.opportunity_id else False,
             }
-            if self.event_date:
-                event_context['ptt_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
-                event_context['ptt_event_start_time'] = self.event_date
-            
             action['context'] = {**action.get('context', {}), **event_context}
         
         return action
     
     def _apply_event_details_to_project(self, project):
-        """Apply event details from sale order to linked project.
+        """Link project to CRM lead for event detail sync.
         
-        This method is called when a project is linked to the sale order,
-        typically after project creation via wizard or direct linking.
+        Event details (event type, name, date, venue, etc.) are stored on the
+        CRM Lead and displayed as related/readonly fields on the project.
+        
+        This method links the project to the CRM lead (via opportunity_id),
+        which automatically syncs all event details through the related fields.
+        
+        NOTE: Do NOT write directly to project event fields - they are related
+        to ptt_crm_lead_id and are readonly. Update the CRM lead instead.
         """
-        if not project or not self.event_type_id:
+        if not project:
             return
-            
-        project_vals = {
-            'ptt_event_type_id': self.event_type_id.id,
-            'ptt_event_name': self.event_name,
-            'ptt_guest_count': self.event_guest_count,
-            'ptt_venue_name': self.event_venue,
-            'ptt_setup_start_time': self.setup_time,
-            'ptt_teardown_deadline': self.breakdown_time,
-            'ptt_total_hours': self.event_duration,
-        }
         
-        # Handle event_date (Datetime) -> ptt_event_date (Date) conversion
-        if self.event_date:
-            project_vals['ptt_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
-            project_vals['ptt_event_start_time'] = self.event_date
-            if self.event_duration:
-                project_vals['ptt_event_end_time'] = fields.Datetime.add(self.event_date, hours=self.event_duration)
-        
-        project.write(project_vals)
+        # Link project to CRM Lead - this is what enables the related field sync
+        # All event fields (ptt_event_type, ptt_event_name, ptt_event_date,
+        # ptt_venue_name, ptt_guest_count, etc.) are RELATED to CRM Lead fields.
+        # Writing them directly to project won't work - they're readonly.
+        if self.opportunity_id and not project.ptt_crm_lead_id:
+            project.write({'ptt_crm_lead_id': self.opportunity_id.id})
         
         # Note: Task creation is now handled in sale_order_line.py 
         # via _timesheet_create_project() when Event Kickoff product creates the project

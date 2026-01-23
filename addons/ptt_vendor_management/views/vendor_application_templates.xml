@@ -486,8 +486,8 @@
                                         <h5 class="mb-0"><i class="fa fa-tags me-2"/>Services</h5>
                                     </div>
                                     <div class="card-body">
-                                        <t t-if="vendor.ptt_vendor_service_types">
-                                            <t t-foreach="vendor.ptt_vendor_service_types" t-as="service_type">
+                                        <t t-if="vendor.ptt_vendor_service_ids">
+                                            <t t-foreach="vendor.ptt_vendor_service_ids" t-as="service_type">
                                                 <span class="badge bg-primary me-1 mb-1">
                                                     <t t-esc="service_type.name"/>
                                                 </span>

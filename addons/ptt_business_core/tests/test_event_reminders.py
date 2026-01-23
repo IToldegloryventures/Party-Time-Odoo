@@ -101,10 +101,9 @@ class TestEventReminders(TransactionCase):
     def test_get_missing_information_complete(self):
         """Test missing info check with complete project."""
         target_date = fields.Date.today() + timedelta(days=10)
-        project = self._create_project_for_date(
-            target_date,
-            ptt_event_start_time=fields.Datetime.now() + timedelta(days=10),
-        )
+        # Note: ptt_event_start_time is a computed Datetime field (from Date + Selection time)
+        # It cannot be set directly - only through CRM Lead's Selection time fields
+        project = self._create_project_for_date(target_date)
         
         missing = project._get_missing_information()
         

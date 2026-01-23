@@ -63,7 +63,7 @@
                     <group>
                         <group string="Vendor Classification">
                             <field name="ptt_vendor_tier" widget="radio" options="{'horizontal': true}"/>
-                            <field name="ptt_vendor_service_types" widget="many2many_tags"
+                            <field name="ptt_vendor_service_ids" widget="many2many_tags"
                                    options="{'no_create_edit': True}"
                                    placeholder="Select services this vendor provides..."/>
                         </group>

@@ -12,7 +12,8 @@ Unlike sale.order.line which is created after quoting, ptt.crm.service.line
 captures the initial service requirements during discovery/proposal phases.
 """
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+# SQL constraints handle validation at DB level - no ValidationError needed
 
 from odoo.addons.ptt_business_core.constants import SERVICE_TYPES, SERVICE_TIERS
 
@@ -23,6 +24,9 @@ class PttCrmServiceLine(models.Model):
     _description = "CRM Service Line"
     _order = "sequence, id"
 
+    # =========================================================================
+    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax)
+    # =========================================================================
     _positive_hours = models.Constraint(
         'CHECK(hours >= 0)',
         'Hours cannot be negative.',
@@ -85,8 +89,9 @@ class PttCrmServiceLine(models.Model):
     )
     hours = fields.Float(
         string="Hours",
-        default=4.0,
-        help="Estimated service hours",
+        default=1.0,
+        help="Service hours. For hourly services, enter actual hours. "
+             "For fixed-price items, leave at 1.",
     )
     unit_price = fields.Monetary(
         string="Unit Price",
@@ -166,38 +171,25 @@ class PttCrmServiceLine(models.Model):
 
     @api.depends('quantity', 'hours', 'unit_price')
     def _compute_subtotal(self):
-        """Calculate subtotal using quantity and hours when provided."""
+        """Calculate subtotal: always unit_price × hours × quantity.
+        
+        Simple formula for all services:
+        - Hourly services: enter actual hours (e.g., 4 hours)
+        - Fixed-price items: enter 1 for hours
+        - If hours is 0 or empty, defaults to 1
+        
+        Examples:
+        - DJ 4hrs × 1 qty × $150 = $600
+        - 2 DJs 4hrs × 2 qty × $150 = $1,200
+        - Travel fee 1hr × 1 qty × $75 = $75
+        """
         for line in self:
-            if line.hours and line.hours > 0:
-                line.subtotal = line.unit_price * line.hours * line.quantity
-            else:
-                line.subtotal = line.unit_price * line.quantity
+            hours = line.hours if line.hours > 0 else 1.0
+            line.subtotal = line.unit_price * hours * line.quantity
 
     # =========================================================================
     # ONCHANGE METHODS
     # =========================================================================
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        """When product is selected, populate service type and tier from variant."""
-        if self.product_id:
-            # Try to extract tier from variant attributes
-            for attr_val in self.product_id.product_template_attribute_value_ids:
-                attr_name = attr_val.attribute_id.name.lower()
-                val_name = attr_val.product_attribute_value_id.name.lower()
-                
-                # Map attribute values to our tier selections
-                if 'tier' in attr_name:
-                    if 'essential' in val_name:
-                        self.service_tier = 'essential'
-                    elif 'classic' in val_name:
-                        self.service_tier = 'classic'
-                    elif 'premier' in val_name:
-                        self.service_tier = 'premier'
-            
-            # Get min hours from product
-            if self.product_id.ptt_min_hours and self.hours < self.product_id.ptt_min_hours:
-                self.hours = self.product_id.ptt_min_hours
-
     @api.onchange('hours', 'product_id')
     def _onchange_hours_warning(self):
         """Warn if hours are below minimum."""

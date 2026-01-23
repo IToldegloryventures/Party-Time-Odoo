@@ -7,6 +7,7 @@
         Automatically closes RFQs past their closing date and selects
         the lowest-priced vendor.
     -->
+    <!-- DISABLED - Auto-close RFQs past due -->
     <record id="ir_cron_auto_close_rfqs" model="ir.cron">
         <field name="name">Vendor RFQ: Auto-Close Past Due</field>
         <field name="model_id" ref="model_ptt_vendor_rfq"/>
@@ -15,7 +16,7 @@
         <field name="user_id" ref="base.user_root"/>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
-        <field name="active" eval="True"/>
+        <field name="active" eval="False"/>
     </record>
     
 </odoo>

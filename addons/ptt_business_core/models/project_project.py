@@ -1,22 +1,25 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 from odoo import models, fields, api, _
+# SQL constraints handle validation at DB level - no ValidationError needed
 
-from odoo.addons.ptt_business_core.constants import LOCATION_TYPES
+from odoo.addons.ptt_business_core.constants import LOCATION_TYPES, TIME_SELECTIONS
 
 
 class ProjectProject(models.Model):
     """Project extensions for Party Time Texas event management."""
     _inherit = "project.project"
 
+    # =========================================================================
+    # ODOO 19 CONSTRAINTS (new models.Constraint() syntax per ORM API docs)
+    # SQL constraints are more efficient than Python constraints
+    # =========================================================================
     _unique_ptt_event_id = models.Constraint(
         'UNIQUE (ptt_event_id)',
         'Event ID must be unique! Another project already has this Event ID.',
     )
-    _positive_ptt_guest_count = models.Constraint(
-        'CHECK (ptt_guest_count >= 0)',
-        'Guest count cannot be negative.',
-    )
+    # NOTE: ptt_guest_count is a RELATED field from CRM Lead.
+    # The positive value check is enforced on crm.lead, not here.
 
     # =========================================================================
     # LINK TO CRM
@@ -42,93 +45,126 @@ class ProjectProject(models.Model):
     # =========================================================================
     # EVENT DETAILS - Related fields from CRM Lead (single source of truth)
     # =========================================================================
-    ptt_event_type = fields.Selection(
-        related="ptt_crm_lead_id.ptt_event_type",
-        string="Event Type",
-        store=True,
-        readonly=False,
-    )
+    # CRM is the ONLY place to edit event details. Project fields are READ-ONLY.
+    # NOTE: ptt_event_type is a Selection field defined in ptt_enhanced_sales,
+    # related from CRM Lead (corporate/social/wedding).
+    
     ptt_event_name = fields.Char(
         related="ptt_crm_lead_id.ptt_event_name",
         string="Event Name",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
     ptt_event_date = fields.Date(
         related="ptt_crm_lead_id.ptt_event_date",
         string="Event Date",
         store=True,
-        readonly=False,
+        readonly=True,
         index=True,
+        help="Edit in CRM Lead"
     )
     ptt_venue_name = fields.Char(
         related="ptt_crm_lead_id.ptt_venue_name",
         string="Venue Name",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
     ptt_venue_address = fields.Text(
         related="ptt_crm_lead_id.ptt_venue_address",
-        string="Venue Address",
+        string="Address",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
+    )
+    ptt_venue_booked = fields.Boolean(
+        related="ptt_crm_lead_id.ptt_venue_booked",
+        string="Venue Booked?",
+        store=True,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
     ptt_guest_count = fields.Integer(
         related="ptt_crm_lead_id.ptt_guest_count",
         string="Guest Count",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
     ptt_location_type = fields.Selection(
         related="ptt_crm_lead_id.ptt_location_type",
         string="Location Type",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
     
-    # Timing fields - CRM has Float times, we convert to display
-    # These pull the Float times from CRM and combine with event_date
-    ptt_setup_time = fields.Float(
+    # Timing fields - READ-ONLY from CRM (Selection with AM/PM labels)
+    ptt_setup_time = fields.Selection(
+        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_setup_time",
         string="Setup Time",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
-    ptt_event_start_time_float = fields.Float(
+    ptt_event_start_time_float = fields.Selection(
+        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_start_time",
         string="Start Time",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
-    ptt_event_end_time_float = fields.Float(
+    ptt_event_end_time_float = fields.Selection(
+        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_end_time",
         string="End Time",
         store=True,
-        readonly=False,
+        readonly=True,
+        help="Edit in CRM Lead"
+    )
+    ptt_teardown_time = fields.Selection(
+        selection=TIME_SELECTIONS,
+        related="ptt_crm_lead_id.ptt_teardown_time",
+        string="Teardown Time",
+        store=True,
+        readonly=True,
+        help="Edit in CRM Lead"
     )
     ptt_total_hours = fields.Float(
         related="ptt_crm_lead_id.ptt_event_duration",
         string="Total Event Hours",
         store=True,
         readonly=True,
+        help="Edit in CRM Lead"
     )
     
-    # Project-only fields (not from CRM)
+    # Computed Datetime fields - combine Date + Float time for full datetime
     ptt_setup_start_time = fields.Datetime(
         string="Setup Start (Datetime)",
-        help="Computed setup start - combines event date with setup time"
+        compute="_compute_event_datetimes",
+        store=True,
+        help="Computed: event date + setup time"
     )
     ptt_event_start_time = fields.Datetime(
         string="Event Start (Datetime)",
-        help="Computed event start - combines event date with start time"
+        compute="_compute_event_datetimes",
+        store=True,
+        help="Computed: event date + start time"
     )
     ptt_event_end_time = fields.Datetime(
         string="Event End (Datetime)",
-        help="Computed event end - combines event date with end time"
+        compute="_compute_event_datetimes",
+        store=True,
+        help="Computed: event date + end time"
     )
     ptt_teardown_deadline = fields.Datetime(
         string="Teardown Deadline",
-        help="When teardown must be completed - set manually on project"
+        compute="_compute_event_datetimes",
+        store=True,
+        help="Computed: event date + teardown time"
     )
     
     # Vendor Notes - Project-only field (shows on work orders)
@@ -201,14 +237,52 @@ class ProjectProject(models.Model):
     ptt_event_notes = fields.Text(string="Event Notes")
     ptt_special_requirements = fields.Text(string="Special Requirements")
     ptt_client_preferences = fields.Text(string="Client Preferences")
-    ptt_vendor_notes = fields.Text(
-        string="Vendor Notes",
-        help="Notes that will appear on all vendor work orders for this event"
-    )
+    # NOTE: ptt_vendor_notes is defined above in the vendor section (line ~133)
 
     # =========================================================================
     # COMPUTED METHODS
     # =========================================================================
+    @api.depends(
+        "ptt_event_date",
+        "ptt_setup_time",
+        "ptt_event_start_time_float",
+        "ptt_event_end_time_float",
+        "ptt_teardown_time"
+    )
+    def _compute_event_datetimes(self):
+        """Compute full Datetime fields from Date + Selection time fields.
+        
+        Combines ptt_event_date (Date) with the Selection time fields to create
+        proper Datetime values for calendar views and scheduling.
+        
+        Selection values are strings like "14.5" representing float hours.
+        """
+        for project in self:
+            event_date = project.ptt_event_date
+            if not event_date:
+                project.ptt_setup_start_time = False
+                project.ptt_event_start_time = False
+                project.ptt_event_end_time = False
+                project.ptt_teardown_deadline = False
+                continue
+            
+            # Helper to convert Selection string to datetime
+            def selection_to_datetime(date_val, time_selection):
+                if not time_selection:
+                    return False
+                # Selection stores string like "14.5", convert to float
+                float_time = float(time_selection)
+                hours = int(float_time)
+                minutes = int((float_time - hours) * 60)
+                return fields.Datetime.to_datetime(date_val).replace(
+                    hour=hours, minute=minutes, second=0
+                )
+            
+            project.ptt_setup_start_time = selection_to_datetime(event_date, project.ptt_setup_time)
+            project.ptt_event_start_time = selection_to_datetime(event_date, project.ptt_event_start_time_float)
+            project.ptt_event_end_time = selection_to_datetime(event_date, project.ptt_event_end_time_float)
+            project.ptt_teardown_deadline = selection_to_datetime(event_date, project.ptt_teardown_time)
+
     @api.depends("sale_order_id", "sale_order_id.amount_total")
     def _compute_client_total(self):
         """Compute client revenue from linked Sale Order.

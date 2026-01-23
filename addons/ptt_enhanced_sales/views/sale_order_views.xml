@@ -9,39 +9,53 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 
-                <!-- Add Event Type after partner -->
+                <!-- Add Event Type after partner (readonly when confirmed) -->
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="event_type_id"/>
+                    <field name="event_type" readonly="state in ('sale', 'done')"/>
                 </xpath>
 
                 <!-- Add Event Information Page -->
+                <!-- All event fields are EDITABLE until order confirmed, then READ-ONLY -->
+                <!-- Layout: Left = Event Details, Right = Date/Times -->
                 <xpath expr="//notebook" position="inside">
                     <page string="Event Information" name="event_info">
                         <group>
+                            <!-- LEFT COLUMN: Event Details -->
                             <group string="Event Details">
-                                <field name="event_name" placeholder="e.g., Smith Wedding Reception"/>
-                                <field name="event_type_id" readonly="1"/>
-                                <field name="event_guest_count" placeholder="Expected number of guests"/>
-                                <field name="event_attire"/>
+                                <field name="event_name" string="Event Name" placeholder="e.g., Smith Wedding Reception"
+                                       readonly="state in ('sale', 'done')"/>
+                                <field name="event_type" string="Event Type" readonly="state in ('sale', 'done')"/>
+                                <field name="event_guest_count" string="Guest Count" placeholder="Expected number of guests"
+                                       readonly="state in ('sale', 'done')"/>
+                                <field name="event_attire" string="Attire" readonly="state in ('sale', 'done')"/>
+                                <field name="event_venue_address" string="Address" placeholder="Full venue address"
+                                       readonly="state in ('sale', 'done')"/>
+                                <!-- Venue Details (conditional on Venue Booked) -->
+                                <field name="event_venue_booked" string="Venue Booked?" widget="boolean_toggle"
+                                       readonly="state in ('sale', 'done')"/>
+                                <field name="event_venue" string="Venue Name" 
+                                       readonly="state in ('sale', 'done')"
+                                       invisible="not event_venue_booked"/>
+                                <field name="event_venue_type" string="Venue Type"
+                                       readonly="state in ('sale', 'done')"
+                                       invisible="not event_venue_booked"/>
                             </group>
-                            <group string="Event Date &amp; Time">
-                                <field name="event_date" string="Event Start"/>
-                                <field name="event_end_datetime" string="Event End"/>
-                                <field name="event_duration" string="Duration (Hours)"/>
+                            <!-- RIGHT COLUMN: Event Schedule (Date & Times) -->
+                            <group string="Event Schedule">
+                                <field name="event_date_only" string="Event Date"
+                                       readonly="state in ('sale', 'done')"
+                                       help="This date is used for project task deadlines"/>
+                                <field name="event_start_time" string="Start Time"
+                                       readonly="state in ('sale', 'done')"/>
+                                <field name="event_end_time" string="End Time"
+                                       readonly="state in ('sale', 'done')"/>
+                                <field name="setup_time_float" string="Setup Time"
+                                       readonly="state in ('sale', 'done')"/>
+                                <field name="teardown_time_float" string="Teardown Time"
+                                       readonly="state in ('sale', 'done')"/>
                             </group>
                         </group>
-                        <group>
-                            <group string="Venue Information">
-                                <field name="event_venue" placeholder="Venue name"/>
-                                <field name="event_venue_type"/>
-                                <field name="event_venue_booked"/>
-                                <field name="event_venue_address" placeholder="Full venue address"/>
-                            </group>
-                            <group string="Setup &amp; Breakdown">
-                                <field name="setup_time" string="Setup Starts"/>
-                                <field name="breakdown_time" string="Breakdown/Strike"/>
-                            </group>
-                        </group>
+                        
                         <separator string="Event Summary (shown on customer quotes)"/>
                         <field name="event_details_summary" readonly="1" nolabel="1" widget="text"/>
                     </page>
@@ -92,7 +106,7 @@
             <field name="inherit_id" ref="sale.view_quotation_tree"/>
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="event_type_id" optional="show"/>
+                    <field name="event_type" optional="show"/>
                     <field name="event_date" optional="show"/>
                 </field>
             </field>

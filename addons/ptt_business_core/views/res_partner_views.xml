@@ -34,34 +34,15 @@
                         <field name="ptt_preferred_contact"/>
                     </group>
                     <group string="Vendor Details" invisible="supplier_rank == 0">
-                        <field name="ptt_vendor_service_types" widget="many2many_tags"/>
+                        <field name="ptt_vendor_service_ids" widget="many2many_tags"
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               context="{'default_type': 'service', 'default_sale_ok': True}"/>
                         <field name="ptt_vendor_rating" widget="priority"/>
                         <field name="ptt_vendor_notes" nolabel="1"
                                placeholder="Internal notes about this vendor..."/>
                     </group>
                 </xpath>
             </field>
-        </record>
-
-        <!-- Vendor Service Type Tree -->
-        <record id="view_vendor_service_type_tree" model="ir.ui.view">
-            <field name="name">ptt.vendor.service.type.tree</field>
-            <field name="model">ptt.vendor.service.type</field>
-            <field name="arch" type="xml">
-                <list editable="bottom">
-                    <field name="sequence" widget="handle"/>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="active"/>
-                </list>
-            </field>
-        </record>
-
-        <!-- Vendor Service Type Action -->
-        <record id="action_vendor_service_type" model="ir.actions.act_window">
-            <field name="name">Vendor Service Types</field>
-            <field name="res_model">ptt.vendor.service.type</field>
-            <field name="view_mode">list</field>
         </record>
 
     </data>

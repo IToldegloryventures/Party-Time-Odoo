@@ -54,9 +54,10 @@ class PTTVendorInviteWizard(models.TransientModel):
     
     # === SERVICE SUGGESTION ===
     suggested_service_ids = fields.Many2many(
-        "ptt.vendor.service.type",
+        "product.template",
         string="Suggested Services",
-        help="Service types you want this vendor to consider applying for",
+        domain="[('type', '=', 'service'), ('sale_ok', '=', True)]",
+        help="Service products you want this vendor to consider applying for",
     )
     
     # === PERSONAL MESSAGE ===
