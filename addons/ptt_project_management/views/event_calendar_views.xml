@@ -75,7 +75,7 @@
 
                     <separator/>
 
-                    <group expand="0" string="Group By">
+                    <group string="Group By">
                         <filter string="Event Type" name="group_by_type"
                                 context="{'group_by': 'ptt_event_type'}"/>
                         <filter string="Coordinator" name="group_by_coordinator"
