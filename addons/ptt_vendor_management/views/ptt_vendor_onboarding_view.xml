@@ -129,7 +129,7 @@
                         <page string="Services &amp; Pricing" name="services">
                             <field name="ptt_vendor_service_pricing_ids" nolabel="1">
                                 <list editable="bottom">
-                                    <field name="service_type_id" required="1"/>
+                                    <field name="service_product_id" required="1"/>
                                     <field name="price_detail" placeholder="e.g., $150/hr, $500 flat"/>
                                     <field name="notes" optional="show"/>
                                 </list>

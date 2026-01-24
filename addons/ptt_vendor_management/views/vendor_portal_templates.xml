@@ -608,7 +608,7 @@
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">
-                                        <t t-esc="event.service_type_id.name"/>
+                                        <t t-esc="event.service_type"/>
                                     </h5>
                                     
                                     <!-- Venue Info -->
