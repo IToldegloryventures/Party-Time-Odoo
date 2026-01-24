@@ -75,14 +75,13 @@
 
                     <separator/>
 
-                    <group string="Group By">
-                        <filter string="Event Type" name="group_by_type"
-                                context="{'group_by': 'ptt_event_type'}"/>
-                        <filter string="Coordinator" name="group_by_coordinator"
-                                context="{'group_by': 'user_id'}"/>
-                        <filter string="Event Month" name="group_by_month"
-                                context="{'group_by': 'ptt_event_date:month'}"/>
-                    </group>
+                    <!-- Group By filters -->
+                    <filter string="Event Type" name="group_by_type"
+                            context="{'group_by': 'ptt_event_type'}"/>
+                    <filter string="Coordinator" name="group_by_coordinator"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter string="Event Month" name="group_by_month"
+                            context="{'group_by': 'ptt_event_date:month'}"/>
                 </search>
             </field>
         </record>

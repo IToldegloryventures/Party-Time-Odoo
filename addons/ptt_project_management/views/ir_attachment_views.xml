@@ -71,12 +71,11 @@
                     <field name="project_id"/>
                     <field name="task_id"/>
 
-                    <group string="Group By">
-                        <filter name="group_by_project" string="Project"
-                                context="{'group_by': 'project_id'}"/>
-                        <filter name="group_by_task" string="Task"
-                                context="{'group_by': 'task_id'}"/>
-                    </group>
+                    <!-- Group By filters -->
+                    <filter name="group_by_project" string="Project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter name="group_by_task" string="Task"
+                            context="{'group_by': 'task_id'}"/>
                 </search>
             </field>
         </record>
