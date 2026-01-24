@@ -25,6 +25,30 @@ class ProjectTask(models.Model):
         help="Event ID from the linked project.",
     )
 
+    # =========================================================================
+    # DEADLINE CONFIGURATION FIELDS
+    # Required by project_template.xml data file
+    # =========================================================================
+    ptt_deadline_reference = fields.Selection(
+        selection=[
+            ('confirmation', 'From SO Confirmation'),
+            ('event', 'From Event Date'),
+        ],
+        string="Deadline Reference",
+        default='event',
+        help="Which date to calculate the deadline from:\n"
+             "- SO Confirmation: Uses sale_order.date_order\n"
+             "- Event Date: Uses sale_order.event_date"
+    )
+
+    ptt_deadline_offset_days = fields.Integer(
+        string="Deadline Offset (Days)",
+        default=0,
+        help="Number of days from the reference date:\n"
+             "- Positive: days AFTER the reference (e.g., +7 = 1 week after)\n"
+             "- Negative: days BEFORE the reference (e.g., -14 = 2 weeks before)"
+    )
+
     # === ACTION METHODS ===
     
     def action_view_project(self):
