@@ -15,24 +15,8 @@ class CrmLeadEnhanced(models.Model):
     _inherit = 'crm.lead'
 
     # ==========================================================================
-    # EVENT TYPE - Simple Selection Field (REQUIRED)
+    # NOTE: ptt_event_type field is now defined in ptt_business_core
     # ==========================================================================
-    # ptt_event_type is the source of truth for event type classification.
-    # Sale Order and Project get this value via related fields.
-    # Auto-populates the correct Event Kickoff product on quotations.
-    
-    ptt_event_type = fields.Selection(
-        selection=[
-            ('corporate', 'Corporate'),
-            ('social', 'Social'),
-            ('wedding', 'Wedding'),
-        ],
-        string="Event Type",
-        required=True,
-        tracking=True,
-        help="Type of event - determines Event Kickoff product on quotations. "
-             "Corporate, Social, or Wedding.",
-    )
 
     def action_create_quotation(self):
         """Override to auto-add Event Kickoff product and copy service lines.

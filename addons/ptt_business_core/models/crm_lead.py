@@ -62,9 +62,18 @@ class CrmLead(models.Model):
     # =========================================================================
     # EVENT OVERVIEW
     # =========================================================================
-    # NOTE: Event type (ptt_event_type) is a REQUIRED Selection field defined 
-    # in ptt_enhanced_sales module. Values: corporate, social, wedding.
-    # Sale Order and Project get this value via related fields.
+    ptt_event_type = fields.Selection(
+        selection=[
+            ('corporate', 'Corporate'),
+            ('social', 'Social'),
+            ('wedding', 'Wedding'),
+        ],
+        string="Event Type",
+        required=True,
+        tracking=True,
+        help="Type of event - determines Event Kickoff product on quotations. "
+             "Corporate, Social, or Wedding.",
+    )
     ptt_event_name = fields.Char(
         string="Event Name",
         help="Name/title of the event (e.g., 'Smith Wedding Reception')",
