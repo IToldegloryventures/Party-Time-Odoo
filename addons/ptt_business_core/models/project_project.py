@@ -45,9 +45,15 @@ class ProjectProject(models.Model):
     # EVENT DETAILS - Related fields from CRM Lead (single source of truth)
     # =========================================================================
     # CRM is the ONLY place to edit event details. Project fields are READ-ONLY.
-    # NOTE: ptt_event_type is a Selection field defined in ptt_enhanced_sales,
-    # related from CRM Lead (corporate/social/wedding).
     
+    ptt_event_type = fields.Selection(
+        related='ptt_crm_lead_id.ptt_event_type',
+        string="Event Type",
+        store=True,
+        readonly=True,
+        help="Event type (Corporate/Social/Wedding) - edit in CRM Lead. "
+             "Used for filtering, grouping, and calendar coloring.",
+    )
     ptt_event_name = fields.Char(
         related="ptt_crm_lead_id.ptt_event_name",
         string="Event Name",
