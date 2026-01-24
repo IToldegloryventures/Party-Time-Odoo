@@ -64,7 +64,8 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
         "views/project_vendor_assignment_views.xml",
         "views/project_project_views.xml",
         "views/event_calendar_views.xml",
-        "views/ir_attachment_views.xml",
+        # TODO: Re-enable after initial upgrade completes
+        # "views/ir_attachment_views.xml",  # Temporarily disabled - model extension disabled
         "views/dashboard_views.xml",
     ],
     "assets": {
