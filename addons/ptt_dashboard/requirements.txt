@@ -1,2 +1,5 @@
-imgkit==1.2.3
+# imgkit is optional - handled in code with try/except
+# Requires wkhtmltoimage system binary, may not be available on Odoo.sh
+# imgkit==1.2.3
+
 xlsxwriter==3.2.0
