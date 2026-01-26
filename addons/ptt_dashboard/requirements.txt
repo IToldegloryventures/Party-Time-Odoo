@@ -2,4 +2,5 @@
 # Requires wkhtmltoimage system binary, may not be available on Odoo.sh
 # imgkit==1.2.3
 
-xlsxwriter==3.2.0
+# Align with base Odoo version to avoid pip conflicts
+xlsxwriter==3.1.9

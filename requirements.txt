@@ -1,8 +1,8 @@
 # PTT Custom Addon Dependencies
 # Odoo.sh reads this file from the repo root to install Python packages
 
-# Excel export for PTT Dashboard
-xlsxwriter==3.2.0
+# Excel export for PTT Dashboard (align with base Odoo version to avoid conflicts)
+xlsxwriter==3.1.9
 
 # Image/PDF export for PTT Dashboard
 imgkit==1.2.3
