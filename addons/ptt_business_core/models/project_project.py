@@ -11,16 +11,6 @@ class ProjectProject(models.Model):
     _inherit = "project.project"
 
     # =========================================================================
-    # SQL CONSTRAINTS
-    # =========================================================================
-    _sql_constraints = [
-        ('unique_ptt_event_id', 'UNIQUE (ptt_event_id)',
-         'Event ID must be unique! Another project already has this Event ID.'),
-    ]
-    # NOTE: ptt_guest_count is a RELATED field from CRM Lead.
-    # The positive value check is enforced on crm.lead, not here.
-
-    # =========================================================================
     # LINK TO CRM
     # =========================================================================
     ptt_crm_lead_id = fields.Many2one(
@@ -33,14 +23,8 @@ class ProjectProject(models.Model):
     # =========================================================================
     # EVENT IDENTITY
     # =========================================================================
-    ptt_event_id = fields.Char(
-        string="PTT Event ID",
-        readonly=True,
-        copy=False,
-        index=True,
-        help="Unique event identifier (e.g., EVT-2026-0001). Links to CRM Lead, Sale Orders, Tasks.",
-    )
-    
+    # NOTE: Event name/date/venue and other context come from ptt_crm_lead_id.
+
     # =========================================================================
     # EVENT DETAILS - Related fields from CRM Lead (single source of truth)
     # =========================================================================
@@ -105,9 +89,8 @@ class ProjectProject(models.Model):
         help="Edit in CRM Lead"
     )
     
-    # Timing fields - READ-ONLY from CRM (Selection with AM/PM labels)
+    # Timing fields - READ-ONLY from CRM (selection comes from source field)
     ptt_setup_time = fields.Selection(
-        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_setup_time",
         string="Setup Time",
         store=True,
@@ -115,7 +98,6 @@ class ProjectProject(models.Model):
         help="Edit in CRM Lead"
     )
     ptt_event_start_time_float = fields.Selection(
-        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_start_time",
         string="Start Time",
         store=True,
@@ -123,7 +105,6 @@ class ProjectProject(models.Model):
         help="Edit in CRM Lead"
     )
     ptt_event_end_time_float = fields.Selection(
-        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_end_time",
         string="End Time",
         store=True,
@@ -131,7 +112,6 @@ class ProjectProject(models.Model):
         help="Edit in CRM Lead"
     )
     ptt_teardown_time = fields.Selection(
-        selection=TIME_SELECTIONS,
         related="ptt_crm_lead_id.ptt_teardown_time",
         string="Teardown Time",
         store=True,

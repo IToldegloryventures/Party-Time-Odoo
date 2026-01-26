@@ -15,6 +15,9 @@ Enhanced Features (v2.1.0):
 import io
 import json
 import random
+from datetime import datetime, time
+
+import pytz
 from odoo import http, fields
 from odoo.http import request
 
@@ -22,17 +25,51 @@ from odoo.http import request
 class PTTDashboardController(http.Controller):
     """HTTP Controller for Project Dashboard data."""
 
+    @staticmethod
+    def _as_date(value, env=None):
+        """Normalize date/datetime values to a user-context date.
+
+        In Odoo 19, `project.task.date_deadline` is a Datetime (UTC). For dashboard
+        logic like "overdue today", we must compare dates, not datetimes, and we
+        should respect the user's timezone.
+        """
+        if not value:
+            return False
+        # Convert to datetime first (handles strings, date, datetime)
+        dt_utc = fields.Datetime.to_datetime(value)
+        if not dt_utc:
+            return False
+
+        # If env is provided, convert UTC -> user's timezone before taking date
+        if env:
+            dt_local = fields.Datetime.context_timestamp(env, dt_utc)
+            return dt_local.date()
+
+        # Fallback: best-effort without user context
+        return dt_utc.date()
+
+    @staticmethod
+    def _day_bounds_utc(env, day):
+        """Return (start_utc, end_utc) for a given date in the user's timezone."""
+        tz = pytz.timezone(env.user.tz or "UTC")
+        start_local = tz.localize(datetime.combine(day, time.min))
+        end_local = tz.localize(datetime.combine(day, time.max))
+        start_utc = start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        end_utc = end_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        return start_utc, end_utc
+
     def _get_random_color(self):
         """Generate a random hex color for charts."""
         return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
-    def _get_filter_domain(self, filters, model='task', include_dates=True):
+    def _get_filter_domain(self, filters, model='task', include_dates=True, env=None):
         """Build domain from filter parameters.
         
         Args:
             filters: dict with manager, customer, project, start_date, end_date
             model: 'task' or 'project' to determine field names
             include_dates: whether to include date filters (default True)
+            env: Odoo environment to use for timezone-aware datetime bounds
             
         Returns:
             list: Odoo domain
@@ -44,6 +81,8 @@ class PTTDashboardController(http.Controller):
         domain = []
         if not filters:
             return domain
+
+        env = env or request.env
             
         manager_id = filters.get('manager')
         customer_id = filters.get('customer')
@@ -72,11 +111,15 @@ class PTTDashboardController(http.Controller):
         # Date filters - use appropriate field based on model
         if include_dates:
             if model == 'task':
-                # Tasks use date_deadline
+                # Tasks use date_deadline (Datetime in Odoo 19) - apply TZ-safe bounds
                 if start_date and start_date != 'null':
-                    domain.append(('date_deadline', '>=', start_date))
+                    start_day = fields.Date.to_date(start_date)
+                    start_utc, _ = self._day_bounds_utc(env, start_day)
+                    domain.append(('date_deadline', '>=', start_utc))
                 if end_date and end_date != 'null':
-                    domain.append(('date_deadline', '<=', end_date))
+                    end_day = fields.Date.to_date(end_date)
+                    _, end_utc = self._day_bounds_utc(env, end_day)
+                    domain.append(('date_deadline', '<=', end_utc))
             else:
                 # Projects use ptt_event_date (event date from CRM)
                 if start_date and start_date != 'null':
@@ -86,14 +129,14 @@ class PTTDashboardController(http.Controller):
             
         return domain
 
-    @http.route('/ptt/dashboard/tiles', auth='user', type='json')
+    @http.route('/ptt/dashboard/tiles', auth='user', type='jsonrpc')
     def get_tiles_data(self):
         """Get main tile/KPI data for dashboard.
 
         Returns tile counts like: My Tasks, Total Projects, Active Tasks,
         My Overdue Tasks, Overdue Tasks, Today Tasks
         """
-        today = fields.Date.today()
+        today = fields.Date.context_today(request.env.user)
         uid = request.env.uid
         Project = request.env['project.project']
         Task = request.env['project.task']
@@ -121,19 +164,19 @@ class PTTDashboardController(http.Controller):
 
         # My overdue tasks
         my_overdue = my_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline < today
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) < today
             and not t.stage_id.fold
         )
 
         # All overdue tasks (visible to user)
         all_overdue = all_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline < today
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) < today
             and not t.stage_id.fold
         )
 
         # Today's tasks
         today_tasks = all_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline == today
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) == today
             and not t.stage_id.fold
         )
 
@@ -160,13 +203,13 @@ class PTTDashboardController(http.Controller):
             'user_avatar': user_avatar,
         }
 
-    @http.route('/ptt/dashboard/tasks', auth='user', type='json')
+    @http.route('/ptt/dashboard/tasks', auth='user', type='jsonrpc')
     def get_all_tasks(self, page=1, limit=5, filters=None):
         """Get paginated task list for the All Tasks table.
 
         Returns tasks with: name, project, deadline, priority, stage, id
         """
-        today = fields.Date.today()
+        today = fields.Date.context_today(request.env.user)
         uid = request.env.uid
         Task = request.env['project.task']
 
@@ -182,7 +225,7 @@ class PTTDashboardController(http.Controller):
         domain.append(('stage_id.fold', '=', False))
         
         # Apply filters
-        domain.extend(self._get_filter_domain(filters, model='task'))
+        domain.extend(self._get_filter_domain(filters, model='task', env=request.env))
 
         total_count = Task.search_count(domain)
         offset = (page - 1) * limit
@@ -193,7 +236,8 @@ class PTTDashboardController(http.Controller):
         for task in tasks:
             # Calculate days ago/until
             if task.date_deadline:
-                delta = (today - task.date_deadline).days
+                deadline_date = self._as_date(task.date_deadline, request.env)
+                delta = (today - deadline_date).days
                 if delta > 0:
                     deadline_display = f"{delta} days ago"
                     deadline_class = "overdue"
@@ -227,10 +271,10 @@ class PTTDashboardController(http.Controller):
             'pages': max(1, (total_count + limit - 1) // limit),
         }
 
-    @http.route('/ptt/dashboard/task-deadline-chart', auth='user', type='json')
+    @http.route('/ptt/dashboard/task-deadline-chart', auth='user', type='jsonrpc')
     def get_task_deadline_chart(self, filters=None):
         """Get data for Task Deadline pie chart (Overdue/Today/Upcoming)."""
-        today = fields.Date.today()
+        today = fields.Date.context_today(request.env.user)
         uid = request.env.uid
         Task = request.env['project.task']
 
@@ -242,14 +286,19 @@ class PTTDashboardController(http.Controller):
             base_domain = [('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]
 
         # Apply filters (excluding date filters for this chart - it groups by deadline)
-        filter_domain = self._get_filter_domain(filters, model='task')
+        filter_domain = self._get_filter_domain(filters, model='task', env=request.env)
         # Remove date filters as they conflict with this chart's purpose
         filter_domain = [d for d in filter_domain if d[0] != 'date_deadline']
         base_domain.extend(filter_domain)
 
-        overdue = Task.search_count(base_domain + [('date_deadline', '<', today)])
-        today_count = Task.search_count(base_domain + [('date_deadline', '=', today)])
-        upcoming = Task.search_count(base_domain + [('date_deadline', '>', today)])
+        # date_deadline is Datetime (UTC): count using TZ-safe day bounds
+        base_domain = base_domain + [('date_deadline', '!=', False)]
+        start_utc, end_utc = self._day_bounds_utc(request.env, today)
+        overdue = Task.search_count(base_domain + [('date_deadline', '<', start_utc)])
+        today_count = Task.search_count(
+            base_domain + [('date_deadline', '>=', start_utc), ('date_deadline', '<=', end_utc)]
+        )
+        upcoming = Task.search_count(base_domain + [('date_deadline', '>', end_utc)])
 
         return {
             'labels': ['Overdue', 'Today', 'Upcoming'],
@@ -257,7 +306,7 @@ class PTTDashboardController(http.Controller):
             'colors': ['#95a5a6', '#f1c40f', '#9b59b6'],  # Gray, Yellow, Purple
         }
 
-    @http.route('/ptt/dashboard/task-stages-chart', auth='user', type='json')
+    @http.route('/ptt/dashboard/task-stages-chart', auth='user', type='jsonrpc')
     def get_task_stages_chart(self, filters=None):
         """Get data for Task By Stages doughnut chart."""
         uid = request.env.uid
@@ -272,7 +321,7 @@ class PTTDashboardController(http.Controller):
             base_domain = [('user_ids', 'in', [uid])]
 
         # Apply filters
-        base_domain.extend(self._get_filter_domain(filters, model='task'))
+        base_domain.extend(self._get_filter_domain(filters, model='task', env=request.env))
 
         stages = Stage.search([])
 
@@ -292,7 +341,7 @@ class PTTDashboardController(http.Controller):
             'colors': colors[:len(labels)],
         }
 
-    @http.route('/ptt/dashboard/task-project-chart', auth='user', type='json')
+    @http.route('/ptt/dashboard/task-project-chart', auth='user', type='jsonrpc')
     def get_task_project_chart(self, filters=None):
         """Get data for Task By Project bar chart.
         
@@ -306,7 +355,7 @@ class PTTDashboardController(http.Controller):
         is_manager = request.env.user.has_group('project.group_project_manager')
 
         # Build project domain - exclude dates (dates filter tasks, not projects)
-        project_domain = self._get_filter_domain(filters, model='project', include_dates=False)
+        project_domain = self._get_filter_domain(filters, model='project', include_dates=False, env=request.env)
         
         if is_manager:
             projects = Project.search(project_domain, limit=10, order='create_date desc')
@@ -319,7 +368,7 @@ class PTTDashboardController(http.Controller):
             projects = Project.search(base_domain + project_domain, limit=10, order='create_date desc')
 
         # Build task domain from filters
-        task_filter_domain = self._get_filter_domain(filters, model='task')
+        task_filter_domain = self._get_filter_domain(filters, model='task', env=request.env)
 
         labels = []
         data = []
@@ -338,7 +387,7 @@ class PTTDashboardController(http.Controller):
             'colors': colors[:len(labels)],
         }
 
-    @http.route('/ptt/dashboard/priority-chart', auth='user', type='json')
+    @http.route('/ptt/dashboard/priority-chart', auth='user', type='jsonrpc')
     def get_priority_chart(self, filters=None):
         """Get data for Priority Wise bar chart.
         
@@ -359,7 +408,7 @@ class PTTDashboardController(http.Controller):
             base_domain = [('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)]
 
         # Apply filters
-        base_domain.extend(self._get_filter_domain(filters, model='task'))
+        base_domain.extend(self._get_filter_domain(filters, model='task', env=request.env))
 
         # Odoo 19 has 4 priority levels
         low = Task.search_count(base_domain + [('priority', '=', '0')])
@@ -373,7 +422,7 @@ class PTTDashboardController(http.Controller):
             'colors': ['#93c5fd', '#fcd34d', '#f97316', '#ef4444'],  # Blue, Yellow, Orange, Red
         }
 
-    @http.route('/ptt/dashboard/activities', auth='user', type='json')
+    @http.route('/ptt/dashboard/activities', auth='user', type='jsonrpc')
     def get_activities(self, page=1, limit=5, filters=None):
         """Get paginated activities list.
         
@@ -395,7 +444,7 @@ class PTTDashboardController(http.Controller):
         # If filters are applied, get filtered task AND project IDs
         if filters:
             task_filter_domain = self._get_filter_domain(filters, model='task')
-            project_filter_domain = self._get_filter_domain(filters, model='project')
+            project_filter_domain = self._get_filter_domain(filters, model='project', env=request.env)
             
             # Only apply filtering if we have actual filter criteria
             if task_filter_domain or project_filter_domain:
@@ -461,7 +510,7 @@ class PTTDashboardController(http.Controller):
             'pages': max(1, (total_count + limit - 1) // limit),
         }
 
-    @http.route('/ptt/dashboard/filter', auth='user', type='json')
+    @http.route('/ptt/dashboard/filter', auth='user', type='jsonrpc')
     def get_filter_options(self):
         """Get filter dropdown options (managers, customers, projects)."""
         User = request.env['res.users']
@@ -491,7 +540,7 @@ class PTTDashboardController(http.Controller):
             'projects': project_list,
         }
 
-    @http.route('/ptt/dashboard/filter-apply', auth='user', type='json')
+    @http.route('/ptt/dashboard/filter-apply', auth='user', type='jsonrpc')
     def apply_filter(self, **kw):
         """Apply filters and return filtered data.
         
@@ -499,18 +548,18 @@ class PTTDashboardController(http.Controller):
         """
         data = kw.get('data', {})
         
-        today = fields.Date.today()
+        today = fields.Date.context_today(request.env.user)
         uid = request.env.uid
         Task = request.env['project.task']
         Project = request.env['project.project']
 
         # Build domains using shared helper method (DRY)
         # Projects: filter by manager, customer, project - no date filter on projects here
-        project_domain = self._get_filter_domain(data, model='project', include_dates=False)
+        project_domain = self._get_filter_domain(data, model='project', include_dates=False, env=request.env)
         filtered_projects = Project.search(project_domain) if project_domain else Project.search([])
 
         # Tasks: filter by date, and limit to filtered projects
-        task_domain = self._get_filter_domain(data, model='task', include_dates=True)
+        task_domain = self._get_filter_domain(data, model='task', include_dates=True, env=request.env)
         if filtered_projects:
             task_domain.append(('project_id', 'in', filtered_projects.ids))
 
@@ -519,15 +568,15 @@ class PTTDashboardController(http.Controller):
         active_tasks = all_tasks.filtered(lambda t: not t.stage_id.fold)
         my_tasks = all_tasks.filtered(lambda t: uid in t.user_ids.ids)
         my_overdue = my_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline < today
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) < today
             and not t.stage_id.fold
         )
         all_overdue = all_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline < today
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) < today
             and not t.stage_id.fold
         )
         today_tasks = all_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline == today
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) == today
             and not t.stage_id.fold
         )
 
@@ -550,7 +599,7 @@ class PTTDashboardController(http.Controller):
     # SAVED FILTER PRESETS
     # =========================================================================
 
-    @http.route('/ptt/dashboard/presets', auth='user', type='json')
+    @http.route('/ptt/dashboard/presets', auth='user', type='jsonrpc')
     def get_presets(self):
         """Get all saved filter presets for the current user."""
         Preset = request.env['ptt.dashboard.filter.preset']
@@ -563,7 +612,7 @@ class PTTDashboardController(http.Controller):
             ]
         }
 
-    @http.route('/ptt/dashboard/save-preset', auth='user', type='json')
+    @http.route('/ptt/dashboard/save-preset', auth='user', type='jsonrpc')
     def save_preset(self, name, filters):
         """Save current filter combination as a new preset."""
         try:
@@ -577,7 +626,7 @@ class PTTDashboardController(http.Controller):
         except Exception as e:
             return {'success': False, 'error': str(e)}
 
-    @http.route('/ptt/dashboard/load-preset', auth='user', type='json')
+    @http.route('/ptt/dashboard/load-preset', auth='user', type='jsonrpc')
     def load_preset(self, preset_id):
         """Load a saved filter preset."""
         try:
@@ -595,7 +644,7 @@ class PTTDashboardController(http.Controller):
         except Exception as e:
             return {'success': False, 'error': str(e)}
 
-    @http.route('/ptt/dashboard/delete-preset', auth='user', type='json')
+    @http.route('/ptt/dashboard/delete-preset', auth='user', type='jsonrpc')
     def delete_preset(self, preset_id):
         """Delete a saved filter preset."""
         try:
@@ -614,7 +663,7 @@ class PTTDashboardController(http.Controller):
     # QUICK TASK ASSIGNMENT
     # =========================================================================
 
-    @http.route('/ptt/dashboard/assign-task', auth='user', type='json')
+    @http.route('/ptt/dashboard/assign-task', auth='user', type='jsonrpc')
     def assign_task(self, task_id, user_id):
         """Assign a task to a user directly from the dashboard."""
         try:
@@ -681,13 +730,13 @@ class PTTDashboardController(http.Controller):
         ws_kpi.set_column('B:B', 15)
         
         # Get KPI data
-        today = fields.Date.today()
+        today = fields.Date.context_today(request.env.user)
         uid = request.env.uid
         Task = request.env['project.task']
         Project = request.env['project.project']
         
-        task_domain = self._get_filter_domain(filters, model='task')
-        project_domain = self._get_filter_domain(filters, model='project', include_dates=False)
+        task_domain = self._get_filter_domain(filters, model='task', env=request.env)
+        project_domain = self._get_filter_domain(filters, model='project', include_dates=False, env=request.env)
         
         all_tasks = Task.search(task_domain) if task_domain else Task.search([])
         all_projects = Project.search(project_domain) if project_domain else Project.search([])
@@ -695,10 +744,10 @@ class PTTDashboardController(http.Controller):
         my_tasks = all_tasks.filtered(lambda t: uid in t.user_ids.ids)
         active_tasks = all_tasks.filtered(lambda t: not t.stage_id.fold)
         overdue_tasks = all_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline < today and not t.stage_id.fold
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) < today and not t.stage_id.fold
         )
         today_tasks = all_tasks.filtered(
-            lambda t: t.date_deadline and t.date_deadline == today and not t.stage_id.fold
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env) == today and not t.stage_id.fold
         )
         
         kpi_data = [

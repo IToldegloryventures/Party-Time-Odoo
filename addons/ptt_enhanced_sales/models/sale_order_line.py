@@ -55,6 +55,5 @@ class SaleOrderLine(models.Model):
         # Setting ptt_crm_lead_id auto-populates: event name, date, times, venue, etc.
         if order.opportunity_id:
             values['ptt_crm_lead_id'] = order.opportunity_id.id
-            values['ptt_event_id'] = order.opportunity_id.ptt_event_id
         
         return values

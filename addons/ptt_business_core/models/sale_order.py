@@ -19,14 +19,6 @@ class SaleOrder(models.Model):
     # =========================================================================
     # EVENT TRACKING FIELDS
     # =========================================================================
-    ptt_event_id = fields.Char(
-        string="Event ID",
-        related='opportunity_id.ptt_event_id',
-        store=True,
-        readonly=True,
-        help="Event ID from the linked CRM opportunity.",
-    )
-
     # =========================================================================
     # OVERRIDE: QUOTATION SENT
     # =========================================================================
@@ -73,11 +65,6 @@ class SaleOrder(models.Model):
         Standard Odoo behavior: Confirms order, creates projects from service products
         PTT addition: CRM stage progression + project linking
         """
-        # Generate event ID on CRM before confirmation if not set
-        for order in self:
-            if order.opportunity_id and not order.opportunity_id.ptt_event_id:
-                order.opportunity_id._ensure_event_id()
-        
         # Standard confirmation (this creates projects from service products)
         result = super().action_confirm()
         
@@ -128,7 +115,6 @@ class SaleOrder(models.Model):
                     # Link project to CRM (event details are related fields - auto-populated)
                     project.write({
                         'ptt_crm_lead_id': order.opportunity_id.id,
-                        'ptt_event_id': order.opportunity_id.ptt_event_id,
                     })
                     
                     # Update CRM with project link (if not already set)

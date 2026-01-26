@@ -58,6 +58,7 @@ Integrates with PTT Enhanced Sales for complete event lifecycle management.
         "ptt_business_core",
         "ptt_enhanced_sales",
     ],
+    "external_dependencies": {"python": ["xlsxwriter"]},
     "data": [
         "security/ir.model.access.csv",
         "views/project_stakeholder_views.xml",

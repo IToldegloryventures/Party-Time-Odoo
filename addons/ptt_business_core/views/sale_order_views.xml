@@ -35,13 +35,6 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <!-- Add Event ID near partner -->
-            <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="ptt_event_id" readonly="1" 
-                       invisible="not ptt_event_id"
-                       class="oe_inline"/>
-            </xpath>
-            
             <!-- Add Guest Count and Price Per Person in a new group before tabs -->
             <xpath expr="//notebook" position="before">
                 <group name="ptt_event_summary" invisible="not ptt_guest_count">

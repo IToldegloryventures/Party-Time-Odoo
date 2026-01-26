@@ -10,7 +10,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="ptt_project_id"/>
-                    <field name="ptt_event_id" readonly="1" invisible="not ptt_event_id"/>
                 </xpath>
             </field>
         </record>
@@ -23,7 +22,6 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="ptt_project_id" optional="show"/>
-                    <field name="ptt_event_id" optional="show"/>
                 </field>
             </field>
         </record>
@@ -36,7 +34,6 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="ptt_project_id"/>
-                    <field name="ptt_event_id"/>
                 </field>
             </field>
         </record>

@@ -9,14 +9,6 @@
             <field name="inherit_id" ref="crm.crm_lead_view_form"/>
             <field name="arch" type="xml">
                 
-                <!-- Add Generate Event ID button -->
-                <xpath expr="//header" position="inside">
-                    <button name="action_generate_event_id" type="object"
-                        string="Generate Event ID" class="btn-secondary"
-                        invisible="ptt_event_id or type == 'lead'"
-                        help="Generate a unique event ID for tracking across all modules"/>
-                </xpath>
-                
                 <!-- Add stat buttons -->
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button name="action_view_sale_orders" type="object"
@@ -97,7 +89,6 @@
                         <separator string="Follow-up"/>
                         <group>
                             <group>
-                                <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_followup_email_sent"/>
                                 <field name="ptt_proposal_sent"/>
                                 <field name="ptt_next_contact_date"/>
@@ -192,7 +183,6 @@
             <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="ptt_event_id" optional="show"/>
                     <field name="ptt_event_date" optional="show"/>
                     <field name="ptt_guest_count" optional="hide"/>
                     <field name="ptt_payment_status" optional="show"/>
@@ -207,7 +197,6 @@
             <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="ptt_event_id"/>
                     <field name="ptt_event_name"/>
                     <field name="ptt_venue_name"/>
                 </field>

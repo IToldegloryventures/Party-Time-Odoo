@@ -12,10 +12,3 @@ class PurchaseOrder(models.Model):
         string="Event Project",
         help="Project linked to this purchase order.",
     )
-    ptt_event_id = fields.Char(
-        string="Event ID",
-        related="ptt_project_id.ptt_event_id",
-        store=True,
-        readonly=True,
-        help="Event ID from the linked project.",
-    )

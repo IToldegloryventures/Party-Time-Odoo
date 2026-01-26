@@ -11,12 +11,12 @@ class PttCrmVendorEstimate(models.Model):
     _order = "service_type, id"
 
     # =========================================================================
-    # SQL CONSTRAINTS
+    # CONSTRAINTS (Odoo 19)
     # =========================================================================
-    _sql_constraints = [
-        ('positive_estimated_cost', 'CHECK (estimated_cost >= 0)',
-         'Estimated cost cannot be negative.'),
-    ]
+    _positive_estimated_cost = models.Constraint(
+        'CHECK (estimated_cost >= 0)',
+        'Estimated cost cannot be negative.',
+    )
 
     crm_lead_id = fields.Many2one(
         "crm.lead",

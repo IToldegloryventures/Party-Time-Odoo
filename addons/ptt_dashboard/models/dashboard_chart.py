@@ -1468,7 +1468,7 @@ class DashboardChart(models.Model):
             raise ValidationError(_(
                 "PDF/Image export requires the 'imgkit' Python library. "
                 "Please install it with: pip install imgkit\n"
-                "Also requires wkhtmltopdf to be installed on the server."
+                "Also requires wkhtmltoimage to be installed on the server."
             ))
         chart_data = self.get_chart_data(self.chart_type, self.name)
         recordsets = {

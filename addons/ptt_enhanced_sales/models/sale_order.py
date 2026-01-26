@@ -117,7 +117,6 @@ class SaleOrder(models.Model):
     # The Datetime fields below are COMPUTED from Date + Float for display.
     
     event_start_time = fields.Selection(
-        selection=TIME_SELECTIONS,
         related='opportunity_id.ptt_start_time',
         string="Start Time",
         store=True,
@@ -126,7 +125,6 @@ class SaleOrder(models.Model):
     )
     
     event_end_time = fields.Selection(
-        selection=TIME_SELECTIONS,
         related='opportunity_id.ptt_end_time',
         string="End Time", 
         store=True,
@@ -135,7 +133,6 @@ class SaleOrder(models.Model):
     )
     
     setup_time_float = fields.Selection(
-        selection=TIME_SELECTIONS,
         related='opportunity_id.ptt_setup_time',
         string="Setup Time",
         store=True,
@@ -144,7 +141,6 @@ class SaleOrder(models.Model):
     )
     
     teardown_time_float = fields.Selection(
-        selection=TIME_SELECTIONS,
         related='opportunity_id.ptt_teardown_time',
         string="Teardown Time",
         store=True,

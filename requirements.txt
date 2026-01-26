@@ -3,3 +3,6 @@
 
 # Excel export for PTT Dashboard
 xlsxwriter==3.2.0
+
+# Image/PDF export for PTT Dashboard
+imgkit==1.2.3

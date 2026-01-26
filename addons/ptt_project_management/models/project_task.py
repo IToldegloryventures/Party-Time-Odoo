@@ -152,13 +152,20 @@ class ProjectTask(models.Model):
 
     def _search_is_overdue(self, operator, value):
         """Search for overdue tasks using Odoo 19 state field."""
-        today = fields.Date.today()
-        if operator == '=' and value:
-            return [
-                ('date_deadline', '<', today),
-                ('state', 'not in', ['1_done', '1_canceled']),
-            ]
-        return [('id', '=', False)]  # No results for other cases
+        today = fields.Date.context_today(self)
+        base = [('state', 'not in', ['1_done', '1_canceled'])]
+        if operator in ('=', '=='):
+            if value:
+                return base + [('date_deadline', '<', today)]
+            return ['|', ('date_deadline', '=', False), ('date_deadline', '>=', today)]
+        if operator in ('!=', '<>'):
+            # Not value flips the meaning
+            flipped = not bool(value)
+            if flipped:
+                return base + [('date_deadline', '<', today)]
+            return ['|', ('date_deadline', '=', False), ('date_deadline', '>=', today)]
+        # Fallback to default behavior for other operators
+        return super()._search_is_overdue(operator, value)
 
     @api.depends('date_deadline')
     def _compute_days_until_deadline(self):

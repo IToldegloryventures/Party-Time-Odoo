@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
 
 from odoo.addons.ptt_business_core.constants import (
     CONTACT_METHODS,
@@ -16,14 +15,16 @@ class CrmLead(models.Model):
     _inherit = "crm.lead"
 
     # =========================================================================
-    # SQL CONSTRAINTS
+    # CONSTRAINTS (Odoo 19)
     # =========================================================================
-    _sql_constraints = [
-        ('positive_ptt_guest_count', 'CHECK (ptt_guest_count >= 0)',
-         'Guest count cannot be negative.'),
-        ('positive_ptt_event_duration', 'CHECK (ptt_event_duration >= 0)',
-         'Event duration cannot be negative.'),
-    ]
+    _positive_ptt_guest_count = models.Constraint(
+        'CHECK (ptt_guest_count >= 0)',
+        'Guest count cannot be negative.',
+    )
+    _positive_ptt_event_duration = models.Constraint(
+        'CHECK (ptt_event_duration >= 0)',
+        'Event duration cannot be negative.',
+    )
 
     # =========================================================================
     # CONTACT INFORMATION
@@ -51,14 +52,6 @@ class CrmLead(models.Model):
     # =========================================================================
     # EVENT IDENTITY
     # =========================================================================
-    ptt_event_id = fields.Char(
-        string="Event ID",
-        readonly=True,
-        copy=False,
-        index=True,
-        help="Unique event identifier (e.g., EVT-2026-0001). Generated when the sale order is confirmed. Used to track event across CRM, Sales, Projects, and Tasks.",
-    )
-
     # =========================================================================
     # EVENT OVERVIEW
     # =========================================================================
@@ -509,21 +502,6 @@ class CrmLead(models.Model):
             "domain": [("id", "in", orders.ids)],
             "target": "current",
         }
-
-    def _ensure_event_id(self):
-        """Ensure the event ID exists, generating it when missing."""
-        self.ensure_one()
-        if not self.ptt_event_id:
-            event_id = self.env["ir.sequence"].next_by_code("ptt.event.id")
-            if not event_id:
-                raise UserError(_("Missing sequence for Event ID (code: ptt.event.id)."))
-            self.ptt_event_id = event_id
-        return self.ptt_event_id
-
-    def action_generate_event_id(self):
-        """Generate event ID for this opportunity if not already set."""
-        self._ensure_event_id()
-        return {"type": "ir.actions.client", "tag": "reload"}
 
     # NOTE: Projects are created automatically when a Sale Order with 
     # "Event Kickoff" product is confirmed. See sale_order.py for logic.

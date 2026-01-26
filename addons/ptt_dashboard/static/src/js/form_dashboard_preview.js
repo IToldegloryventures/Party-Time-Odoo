@@ -53,6 +53,7 @@ export class FormDashboardPreviewComponent extends Component {
         this.state.name = this.props.record.data.name;
         this.state.theme = this.props.record.data.theme;
         this.isRecordDirty();
+        const getId = (value) => (value && value.id ? value.id : false);
         let prepared_data = {
           name: this.props.record.data.name,
           layout_type: this.props.record.data.layout_type,
@@ -60,47 +61,49 @@ export class FormDashboardPreviewComponent extends Component {
           text_align: this.props.record.data.text_align,
           background_color: this.props.record.data.background_color,
           font_color: this.props.record.data.font_color,
-          group_by_id: this.props.record.data.group_by_id.id,
+          group_by_id: getId(this.props.record.data.group_by_id),
           time_range: this.props.record.data.time_range,
-          map_group_by_id: this.props.record.data.map_group_by_id.id,
-          measurement_field_id: this.props.record.data.measurement_field_id.id,
+          map_group_by_id: getId(this.props.record.data.map_group_by_id),
+          measurement_field_id: getId(this.props.record.data.measurement_field_id),
           measurement_field_ids: Array.prototype.slice.call(
             this.props.record.data.measurement_field_ids._currentIds,
           ),
-          model_id: this.props.record.data.model_id.id,
+          model_id: getId(this.props.record.data.model_id),
           hide_false_value: this.props.record.data.hide_false_value,
-          kpi_model_id: this.props.record.data.kpi_model_id.id,
+          kpi_model_id: getId(this.props.record.data.kpi_model_id),
           kpi_data_type: this.props.record.data.kpi_data_type,
-          kpi_measurement_field_id:
-            this.props.record.data.kpi_measurement_field_id.id,
+          kpi_measurement_field_id: getId(
+            this.props.record.data.kpi_measurement_field_id,
+          ),
           kpi_limit_record: this.props.record.data.kpi_limit_record,
           limit_record: this.props.record.data.limit_record,
           kpi_domain: this.props.record.data.kpi_domain,
-          kpi_date_filter_field_id:
-            this.props.record.data.kpi_date_filter_field_id.id,
+          kpi_date_filter_field_id: getId(
+            this.props.record.data.kpi_date_filter_field_id,
+          ),
           kpi_date_filter_option: this.props.record.data.kpi_date_filter_option,
           kpi_include_periods: this.props.record.data.kpi_include_periods,
-          kpi_same_period_period_previous_years:
-            this.props.record.data.kpi_same_period_period_previous_years,
-          previous_period_comparison:
-            this.props.record.data.previous_period_comparison,
+          kpi_same_period_previous_years:
+            this.props.record.data.kpi_same_period_previous_years,
+          previous_period_comparision:
+            this.props.record.data.previous_period_comparision,
           previous_period_duration:
             this.props.record.data.previous_period_duration,
           previous_period_type: this.props.record.data.previous_period_type,
           domain: this.props.record.data.domain,
           meter_target: this.props.record.data.meter_target,
-          sort_field_id: this.props.record.data.sort_field_id.id,
+          sort_field_id: getId(this.props.record.data.sort_field_id),
           sort_order: this.props.record.data.sort_order,
-          sub_group_by_id: this.props.record.data.sub_group_by_id.id,
+          sub_group_by_id: getId(this.props.record.data.sub_group_by_id),
           sub_time_range: this.props.record.data.sub_time_range,
           data_type: this.props.record.data.data_type,
           font_size: this.props.record.data.font_size,
           font_weight: this.props.record.data.font_weight,
           previous_period_comparision:
             this.props.record.data.previous_period_comparision,
-          date_filter_field_id: this.props.record.data.date_filter_field_id.id,
+          date_filter_field_id: getId(this.props.record.data.date_filter_field_id),
           date_filter_option: this.props.record.data.date_filter_option,
-          company_id: this.props.record.data.company_id.id,
+          company_id: getId(this.props.record.data.company_id),
           is_kpi_border: this.props.record.data.is_kpi_border,
           kpi_border_type: this.props.record.data.kpi_border_type,
           kpi_border_color: this.props.record.data.kpi_border_color,

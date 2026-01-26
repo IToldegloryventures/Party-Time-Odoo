@@ -34,7 +34,6 @@
                     <page string="Event Details" name="ptt_event_details">
                         <group>
                             <group string="Event Details" name="event_identity">
-                                <field name="ptt_event_id" readonly="1" string="Event ID"/>
                                 <field name="ptt_crm_lead_id" string="CRM Lead"/>
                                 <field name="ptt_event_name" string="Event Name"/>
                                 <field name="ptt_event_type" string="Event Type"/>

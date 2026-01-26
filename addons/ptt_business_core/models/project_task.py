@@ -17,14 +17,6 @@ class ProjectTask(models.Model):
     """
     _inherit = "project.task"
 
-    ptt_event_id = fields.Char(
-        string="Event ID",
-        related="project_id.ptt_event_id",
-        store=True,
-        readonly=True,
-        help="Event ID from the linked project.",
-    )
-
     # =========================================================================
     # DEADLINE CONFIGURATION FIELDS
     # Required by project_template.xml data file
