@@ -1,7 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
 from markupsafe import Markup
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, AccessError, MissingError
 
 
 class Dashboard(models.Model):
@@ -608,12 +608,12 @@ class Dashboard(models.Model):
                 if rec.created_menu_id:
                     try:
                         rec.created_menu_id.unlink()
-                    except Exception:
+                    except (MissingError, AccessError):
                         pass  # Menu may already be deleted
                 if rec.created_action_id:
                     try:
                         rec.created_action_id.unlink()
-                    except Exception:
+                    except (MissingError, AccessError):
                         pass  # Action may already be deleted
             return super(Dashboard, self).unlink()
         
@@ -672,7 +672,7 @@ class Dashboard(models.Model):
         """
         try:
             self.check_access("read")
-        except Exception:
+        except AccessError:
             return [1, []]
         chart_data_list = []
         grid_stack = self.grid_stack_dimensions or []

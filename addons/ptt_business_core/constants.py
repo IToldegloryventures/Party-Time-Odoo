@@ -23,6 +23,7 @@ SERVICE_TYPES = [
     ("photography", "Photography Services"),
     ("videography", "Videography Services"),
     ("photobooth", "Photo Booths Rentals"),
+    ("lighting", "Lighting Services"),
 
     # Artists
     ("caricature_traditional", "Traditional Caricature Artist"),

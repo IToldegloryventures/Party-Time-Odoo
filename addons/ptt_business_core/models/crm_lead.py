@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 from odoo.addons.ptt_business_core.constants import (
     CONTACT_METHODS,
@@ -63,6 +64,7 @@ class CrmLead(models.Model):
         ],
         string="Event Type",
         required=True,
+        default='corporate',
         tracking=True,
         help="Type of event - determines Event Kickoff product on quotations. "
              "Corporate, Social, or Wedding.",
@@ -454,6 +456,42 @@ class CrmLead(models.Model):
     # =========================================================================
     # ACTION METHODS
     # =========================================================================
+    def action_create_project(self):
+        """Create a project from this lead and link it.
+
+        - Requires a partner.
+        - Prevents duplicate project creation.
+        - Copies key event details to the project.
+        """
+        for lead in self:
+            if lead.ptt_project_id:
+                raise UserError(_("A project is already linked to this lead."))
+            if not lead.partner_id:
+                raise UserError(_("Please set a customer before creating a project."))
+
+            project_vals = {
+                "name": lead.name or lead.ptt_event_name or _("Event Project"),
+                "partner_id": lead.partner_id.id,
+                "user_id": lead.user_id.id,
+                "ptt_crm_lead_id": lead.id,
+                # Event details
+                "ptt_event_name": lead.ptt_event_name,
+                "ptt_event_date": fields.Date.to_date(lead.ptt_event_date) if lead.ptt_event_date else False,
+                "ptt_event_type": lead.ptt_event_type or "corporate",
+                "ptt_guest_count": lead.ptt_guest_count,
+                "ptt_venue_name": lead.ptt_venue_name,
+                "ptt_venue_address": lead.ptt_venue_address,
+                "ptt_venue_booked": lead.ptt_venue_booked,
+                # Times (float/selection proxies)
+                "ptt_event_start_time_float": lead.ptt_start_time,
+                "ptt_event_end_time_float": lead.ptt_end_time,
+                "ptt_setup_time": lead.ptt_setup_time,
+                "ptt_teardown_time": lead.ptt_teardown_time,
+            }
+            project = self.env["project.project"].create(project_vals)
+            lead.ptt_project_id = project.id
+        return True
+
     def action_view_project(self):
         """View linked project."""
         self.ensure_one()

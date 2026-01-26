@@ -836,21 +836,18 @@ class DashboardChart(models.Model):
 
         for field in all_fields:
             if field not in allowed_fields:
-                try:
-                    if field in [
-                        "measurement_field_ids",
-                        "todo_action_ids",
-                        "list_field_ids",
-                    ]:
-                        setattr(self, field, [(5,)])
-                    elif field in ["domain", "kpi_domain"]:
-                        setattr(self, field, "[]")
-                    elif field in ["kpi_date_filter_option", "date_filter_option"]:
-                        setattr(self, field, "none")
-                    else:
-                        setattr(self, field, False)
-                except Exception:
-                    _logger.info("pass")
+                # Only attempt to reset actual model fields; avoid broad exception
+                # handling which can hide real bugs.
+                if field not in self._fields:
+                    continue
+                if field in ["measurement_field_ids", "todo_action_ids", "list_field_ids"]:
+                    setattr(self, field, [(5,)])
+                elif field in ["domain", "kpi_domain"]:
+                    setattr(self, field, "[]")
+                elif field in ["kpi_date_filter_option", "date_filter_option"]:
+                    setattr(self, field, "none")
+                else:
+                    setattr(self, field, False)
         if self.chart_type == "to_do":
             self.todo_layout = "default"
         elif self.chart_type == "list":
@@ -1292,8 +1289,10 @@ class DashboardChart(models.Model):
 
         try:
             return safe_eval(domain_string, eval_context)
-        except Exception as e:
-            _logger.warning(f"Failed to evaluate domain: {domain_string}, Error: {e}")
+        except (ValueError, SyntaxError, NameError, TypeError, AttributeError) as e:
+            _logger.warning(
+                "Failed to evaluate domain: %s, Error: %s", domain_string, e
+            )
             return []
 
     def get_chart_data(

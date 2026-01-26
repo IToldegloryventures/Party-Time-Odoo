@@ -271,14 +271,16 @@ class ProjectProject(models.Model):
     @api.depends("sale_order_id", "sale_order_id.amount_total")
     def _compute_client_total(self):
         """Compute client revenue from linked Sale Order.
-        
+
         Automatically pulls the total from the Sale Order attached to this project.
         """
         for project in self:
             if project.sale_order_id:
                 project.ptt_client_total = project.sale_order_id.amount_total
             else:
-                project.ptt_client_total = 0.0
+                # Preserve manually set value; default to 0 only if unset
+                if project.ptt_client_total is False:
+                    project.ptt_client_total = 0.0
 
     @api.depends(
         "ptt_vendor_assignment_ids",

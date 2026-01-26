@@ -4,7 +4,7 @@
 from . import models
 
 
-def _register_field_xmlids(cr, registry):
+def _register_field_xmlids(env):
     """
     Register XML IDs for custom fields so they can be referenced by other modules.
     
@@ -14,9 +14,6 @@ def _register_field_xmlids(cr, registry):
     This function creates ir.model.data entries that link our custom field
     names to their ir.model.fields records.
     """
-    from odoo import api, SUPERUSER_ID
-    
-    env = api.Environment(cr, SUPERUSER_ID, {})
     IrModelData = env['ir.model.data']
     IrModelFields = env['ir.model.fields']
     
@@ -51,6 +48,6 @@ def _register_field_xmlids(cr, registry):
                 })
 
 
-def post_init_hook(cr, registry):
+def post_init_hook(env):
     """Post-installation hook to set up field XML IDs."""
-    _register_field_xmlids(cr, registry)
+    _register_field_xmlids(env)

@@ -81,15 +81,22 @@ class SaleOrder(models.Model):
         booked_stage = self.env.ref(
             'crm.stage_lead4',  # Booked stage (was Won, renamed in crm_stages.xml)
             raise_if_not_found=False
-        )
-        
+        ) or self.env['crm.stage'].search([('is_won', '=', True)], limit=1)
+        if not booked_stage:
+            booked_stage = self.env['crm.stage'].create({
+                'name': 'Booked',
+                'sequence': 70,
+                'is_won': True,
+            })
+
         if not booked_stage:
             return
-        
+
         for order in self:
             if order.opportunity_id and order.opportunity_id.stage_id != booked_stage:
                 # Move to Booked stage (this is a "won" stage)
                 order.opportunity_id.stage_id = booked_stage
+                order.opportunity_id.ptt_booked = True
 
     def _ptt_link_crm_to_projects(self):
         """
@@ -134,7 +141,7 @@ class SaleOrder(models.Model):
     # COMPUTED FIELDS
     # =========================================================================
     ptt_guest_count = fields.Integer(
-        string="Guest Count",
+        string="PTT Guest Count",
         related='opportunity_id.ptt_guest_count',
         store=True,
         readonly=True,

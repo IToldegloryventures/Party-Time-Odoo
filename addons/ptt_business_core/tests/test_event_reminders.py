@@ -43,19 +43,24 @@ class TestEventReminders(TransactionCase):
         })
     
     def _create_project_for_date(self, event_date, **kwargs):
-        """Helper to create a project with specific event date."""
-        defaults = {
-            'name': 'Test Event Project',
+        """Helper to create a project with specific event date via CRM lead."""
+        lead_vals = {
+            'name': 'Test Event Lead',
             'partner_id': self.partner.id,
             'user_id': self.pm_user.id,
             'ptt_event_name': 'Test Event',
             'ptt_event_date': event_date,
+            'ptt_event_type': 'corporate',
             'ptt_venue_name': 'Test Venue',
             'ptt_venue_address': '123 Test St',
             'ptt_guest_count': 100,
+            'ptt_start_time': '8.0',
+            'ptt_setup_time': '7.0',
         }
-        defaults.update(kwargs)
-        return self.env['project.project'].create(defaults)
+        lead_vals.update(kwargs)
+        lead = self.env['crm.lead'].create(lead_vals)
+        lead.action_create_project()
+        return lead.ptt_project_id
     
     def test_find_projects_10_days_out(self):
         """Test finding projects with events 10 days from now."""
@@ -178,19 +183,21 @@ class TestEventReminders(TransactionCase):
         # Mock the template lookup to return a mock template
         mock_send_mail.return_value = True
         
-        # Create the email template (simulating data file load)
-        template = self.env['mail.template'].create({
+        # Use existing template if present; otherwise create a test-only one with a unique XMLID
+        template = self.env.ref(
+            'ptt_business_core.email_template_event_reminder_10_day',
+            raise_if_not_found=False,
+        ) or self.env['mail.template'].create({
             'name': 'Test 10-Day Reminder',
             'model_id': self.env.ref('project.model_project_project').id,
         })
-        
-        # Manually set the external ID for template lookup
-        self.env['ir.model.data'].create({
-            'name': 'email_template_event_reminder_10_day',
-            'module': 'ptt_business_core',
-            'model': 'mail.template',
-            'res_id': template.id,
-        })
+        self.env['ir.model.data']._update(
+            'ptt_business_core', 'email_template_event_reminder_10_day_test', {
+                'model': 'mail.template',
+                'res_id': template.id,
+                'noupdate': True,
+            }, noupdate=True, mode='init'
+        )
         
         # Call the cron method
         self.env['project.project']._cron_send_event_reminders_10_day()

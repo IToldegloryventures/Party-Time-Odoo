@@ -77,6 +77,9 @@ Based on Synconics BI Dashboard technology.
             "ptt_dashboard/static/src/components/ListView/ListView.scss",
             "ptt_dashboard/static/src/components/TodoView/TodoView.scss",
         ]
+        , "web.assets_tests": [
+            "ptt_dashboard/static/tests/**/*.test.js",
+        ]
     },
     "cloc_exclude": [
         "static/src/lib/**/*",
