@@ -33,5 +33,29 @@
             </field>
         </record>
 
+        <!-- CRM Lead Search Extension - Event Type Filters -->
+        <record id="view_crm_lead_search_enhanced_sales" model="ir.ui.view">
+            <field name="name">crm.lead.search.enhanced.sales</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="ptt_business_core.view_crm_lead_search_ptt"/>
+            <field name="priority">25</field>
+            <field name="arch" type="xml">
+                <!-- Add event type filters after future/past event filters -->
+                <xpath expr="//filter[@name='filter_future_events']" position="before">
+                    <filter name="filter_corporate" string="Corporate Events" 
+                            domain="[('ptt_event_type_id', '=', %(ptt_enhanced_sales.event_type_corporate)d)]"/>
+                    <filter name="filter_social" string="Social Events" 
+                            domain="[('ptt_event_type_id', '=', %(ptt_enhanced_sales.event_type_social)d)]"/>
+                    <filter name="filter_wedding" string="Wedding Events" 
+                            domain="[('ptt_event_type_id', '=', %(ptt_enhanced_sales.event_type_wedding)d)]"/>
+                    <separator/>
+                </xpath>
+                <!-- Add event type group-by -->
+                <xpath expr="//filter[@name='group_event_date']" position="before">
+                    <filter string="Event Type" name="group_event_type" context="{'group_by': 'ptt_event_type_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

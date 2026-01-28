@@ -37,7 +37,7 @@
                                 <field name="ptt_event_id" readonly="1"/>
                                 <field name="ptt_crm_lead_id"/>
                                 <field name="ptt_event_name"/>
-                                <field name="ptt_event_type_id"/>
+                                <!-- ptt_event_type_id added by ptt_enhanced_sales -->
                             </group>
                             <group string="Event Schedule" name="event_schedule">
                                 <field name="ptt_event_date"/>

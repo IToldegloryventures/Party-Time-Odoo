@@ -23,14 +23,8 @@ class ProjectProject(models.Model):
     # EVENT IDENTITY
     # =========================================================================
     # All related fields use explicit depends for precise recomputation control
-    ptt_event_type_id = fields.Many2one(
-        "sale.order.type",
-        related="ptt_crm_lead_id.ptt_event_type_id",
-        string="Event Type",
-        store=True,
-        readonly=False,
-        depends=['ptt_crm_lead_id'],
-    )
+    # NOTE: ptt_event_type_id is defined in ptt_enhanced_sales which extends crm.lead
+    # The related field for project is added there to avoid dependency issues
     ptt_event_name = fields.Char(
         related="ptt_crm_lead_id.ptt_event_name",
         string="Event Name",
