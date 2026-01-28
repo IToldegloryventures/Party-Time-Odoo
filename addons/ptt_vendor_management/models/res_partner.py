@@ -26,11 +26,26 @@ class ResPartner(models.Model):
     """
     _inherit = "res.partner"
 
-    # === VENDOR ONBOARDING STATUS (minimal, only pending_review) ===
+    # === VENDOR ONBOARDING STATUS ===
+    ptt_vendor_status = fields.Selection(
+        [
+            ("new", "New"),
+            ("pending_review", "Pending Review"),
+            ("active", "Active"),
+            ("inactive", "Inactive"),
+        ],
+        string="Vendor Status",
+        default="new",
+        tracking=True,
+        help="Vendor onboarding workflow status: new → pending_review → active",
+    )
+    
+    # Legacy field - kept for backward compatibility
     ptt_pending_review = fields.Boolean(
         string="Pending Review",
-        default=False,
-        help="Vendor is awaiting review before activation."
+        compute="_compute_ptt_pending_review",
+        inverse="_inverse_ptt_pending_review",
+        help="Vendor is awaiting review before activation (legacy field).",
     )
     
     ptt_portal_user_id = fields.Many2one(
@@ -198,6 +213,19 @@ class ResPartner(models.Model):
         string="Primary Contact Phone",
         compute="_compute_primary_vendor_contact",
     )
+
+    # === LEGACY FIELD COMPATIBILITY ===
+    @api.depends("ptt_vendor_status")
+    def _compute_ptt_pending_review(self):
+        """Compute legacy pending_review from ptt_vendor_status."""
+        for partner in self:
+            partner.ptt_pending_review = partner.ptt_vendor_status == "pending_review"
+
+    def _inverse_ptt_pending_review(self):
+        """Allow setting legacy pending_review field."""
+        for partner in self:
+            if partner.ptt_pending_review:
+                partner.ptt_vendor_status = "pending_review"
 
     @api.depends("ptt_vendor_assignment_ids", "ptt_vendor_assignment_ids.status", 
                  "ptt_vendor_assignment_ids.actual_cost")
@@ -397,13 +425,12 @@ class ResPartner(models.Model):
     # === VENDOR STATUS WORKFLOW ACTIONS ===
     
     def action_submit_for_review(self):
-        """Vendor submits their application for review (sets pending_review)."""
+        """Vendor submits their application for review."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
             vendor._validate_vendor_required_fields()
-            vendor.ptt_pending_review = True
-            vendor.active = False
+            vendor.ptt_vendor_status = "pending_review"
             vendor.message_post(
                 body=_("Vendor application submitted for review."),
                 message_type="notification",
@@ -411,12 +438,12 @@ class ResPartner(models.Model):
         return True
     
     def action_approve_vendor(self):
-        """Approve vendor and activate (clears pending_review, sets active)."""
+        """Approve vendor and set status to active."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
-            vendor.ptt_pending_review = False
-            vendor.active = True
+            vendor.ptt_vendor_status = "active"
+            vendor.active = True  # Ensure partner is active
             vendor.message_post(
                 body=_("Vendor approved and activated."),
                 message_type="notification",
@@ -424,12 +451,11 @@ class ResPartner(models.Model):
         return True
     
     def action_request_info(self):
-        """Request additional information from vendor (reset pending_review)."""
+        """Request additional information from vendor (reset to new status)."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
-            vendor.ptt_pending_review = False
-            vendor.active = False
+            vendor.ptt_vendor_status = "new"
             vendor.message_post(
                 body=_("Additional information requested. Please update your vendor profile."),
                 message_type="notification",
@@ -444,10 +470,9 @@ class ResPartner(models.Model):
         return True
     
     def action_deactivate_vendor(self):
-        """Deactivate vendor (set active to False)."""
+        """Deactivate vendor (set status to inactive)."""
         for vendor in self:
-            vendor.active = False
-            vendor.ptt_pending_review = False
+            vendor.ptt_vendor_status = "inactive"
             vendor.message_post(
                 body=_("Vendor deactivated."),
                 message_type="notification",
@@ -455,13 +480,13 @@ class ResPartner(models.Model):
         return True
     
     def action_reactivate_vendor(self):
-        """Reactivate vendor after validating documents (set active to True)."""
+        """Reactivate vendor after validating documents."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
             vendor._validate_document_validity()
-            vendor.active = True
-            vendor.ptt_pending_review = False
+            vendor.ptt_vendor_status = "active"
+            vendor.active = True  # Ensure partner is active
             vendor.message_post(
                 body=_("Vendor reactivated."),
                 message_type="notification",

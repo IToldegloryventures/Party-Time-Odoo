@@ -1,6 +1,6 @@
 {
     "name": "PTT Vendor Management",
-    "version": "19.0.4.0.0",
+    "version": "19.0.4.1.0",
     "summary": "Vendor Management + Portal for Work Order Accept/Decline + Vendor Applications + RFQ",
     "description": """
         Vendor Management Application
