@@ -5,21 +5,17 @@ from odoo import models, fields, api, _
 
 from odoo.addons.ptt_business_core.constants import LOCATION_TYPES
 
-# Map event type codes to Event Kickoff product internal references
-# These products are defined in ptt_business_core/data/products_administrative.xml
-EVENT_KICKOFF_PRODUCTS = {
-    'CORP': 'EVENT-KICKOFF-CORP',      # Corporate → Event Kickoff - Corporate
-    'WEDDING': 'EVENT-KICKOFF-WEDD',   # Wedding → Event Kickoff - Wedding
-    'SOCIAL': 'EVENT-KICKOFF-SOCL',    # Social → Event Kickoff - Social
-}
-
-# All Event Kickoff product codes (for detection/replacement)
-ALL_EVENT_KICKOFF_CODES = list(EVENT_KICKOFF_PRODUCTS.values())
 
 
 class SaleOrder(models.Model):
     """Enhanced Sale Order for Event Management"""
     _inherit = 'sale.order'
+
+    # Client Initials for Terms Acceptance (Portal)
+    ptt_client_initials = fields.Char(
+        string="Client Initials (Terms Acceptance)",
+        help="Customer must enter initials to acknowledge Terms and Conditions before confirming the order via portal."
+    )
 
     # Event Type Classification
     event_type_id = fields.Many2one(
@@ -445,150 +441,13 @@ class SaleOrder(models.Model):
     
     @api.onchange('event_type_id')
     def _onchange_event_type_id(self):
-        """Auto-populate event fields and add correct Event Kickoff product.
-        
-        When event type is selected:
-        1. Set default duration from event type
-        2. Auto-add the correct Event Kickoff product as first line item
-        
-        Odoo 19 Reference:
-        https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#odoo.api.onchange
-        
-        Uses Command class for One2many manipulation (Odoo 19 standard):
-        https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#odoo.fields.Command
-        """
+        """Auto-populate event fields when event type changes."""
         if not self.event_type_id:
             return
         
         # Set default duration from event type
         if self.event_type_id.default_duration_hours:
             self.event_duration = self.event_type_id.default_duration_hours
-        
-        # Auto-add the correct Event Kickoff product
-        self._auto_add_event_kickoff_product()
-    
-    def _auto_add_event_kickoff_product(self):
-        """Add or replace Event Kickoff product based on selected event type.
-        
-        This ensures:
-        - The correct Event Kickoff product is always on the SO
-        - It's always the first line item (sequence=0)
-        - Only ONE Event Kickoff product exists at a time
-        
-        Odoo 19 Reference for onchange One2many manipulation:
-        https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#odoo.api.onchange
-        
-        In onchange context, we can directly modify the pseudo-records.
-        """
-        if not self.event_type_id or not self.event_type_id.code:
-            return
-        
-        # Get the correct Event Kickoff product code for this event type
-        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type_id.code)
-        if not kickoff_code:
-            return
-        
-        # Find the Event Kickoff product (use product.product for variants)
-        kickoff_product = self.env['product.product'].search([
-            ('default_code', '=', kickoff_code),
-            ('active', '=', True),
-        ], limit=1)
-        
-        if not kickoff_product:
-            # Product not found - may not be installed yet, skip silently
-            return
-        
-        # Check existing lines for any Event Kickoff products
-        existing_kickoff_line = None
-        for line in self.order_line:
-            if line.product_id and line.product_id.default_code in ALL_EVENT_KICKOFF_CODES:
-                existing_kickoff_line = line
-                break
-        
-        if existing_kickoff_line:
-            # Already has an Event Kickoff - check if it's the correct one
-            if existing_kickoff_line.product_id.default_code == kickoff_code:
-                # Already correct, nothing to do
-                return
-            # Wrong Event Kickoff - update it to the correct one
-            existing_kickoff_line.update({
-                'product_id': kickoff_product.id,
-                'name': kickoff_product.get_product_multiline_description_sale(),
-                'product_uom_qty': 1.0,
-                'sequence': 0,  # Keep as first line
-            })
-        else:
-            # No Event Kickoff yet - add one as first line using new()
-            # This is the Odoo 19 standard way to add lines in onchange
-            new_line = self.env['sale.order.line'].new({
-                'order_id': self.id,
-                'product_id': kickoff_product.id,
-                'name': kickoff_product.get_product_multiline_description_sale(),
-                'product_uom_qty': 1.0,
-                'price_unit': 0.0,  # Event Kickoff is $0
-                'sequence': 0,  # First line
-            })
-            # Prepend to existing lines
-            self.order_line = new_line | self.order_line
-
-    def _add_event_kickoff_from_crm(self):
-        """Add the correct Event Kickoff product when creating a quote from CRM.
-        
-        This is called programmatically (not via onchange) when a quotation
-        is created from a CRM Lead that has an event type set.
-        
-        Unlike _auto_add_event_kickoff_product() which works with pseudo-records
-        in onchange context, this method creates real sale.order.line records.
-        
-        Odoo 19 Reference:
-        https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#create
-        """
-        self.ensure_one()
-        
-        if not self.event_type_id or not self.event_type_id.code:
-            return
-        
-        # Get the correct Event Kickoff product code for this event type
-        kickoff_code = EVENT_KICKOFF_PRODUCTS.get(self.event_type_id.code)
-        if not kickoff_code:
-            return
-        
-        # Find the Event Kickoff product
-        kickoff_product = self.env['product.product'].search([
-            ('default_code', '=', kickoff_code),
-            ('active', '=', True),
-        ], limit=1)
-        
-        if not kickoff_product:
-            # Product not found - may not be installed yet, skip silently
-            return
-        
-        # Check if an Event Kickoff already exists
-        existing_kickoff = self.order_line.filtered(
-            lambda l: l.product_id and l.product_id.default_code in ALL_EVENT_KICKOFF_CODES
-        )
-        
-        if existing_kickoff:
-            # Already has an Event Kickoff - check if it's the correct one
-            if existing_kickoff[0].product_id.default_code == kickoff_code:
-                return  # Already correct
-            # Wrong Event Kickoff - update it
-            existing_kickoff[0].write({
-                'product_id': kickoff_product.id,
-                'name': kickoff_product.get_product_multiline_description_sale(),
-                'product_uom_qty': 1.0,
-                'sequence': 0,
-            })
-        else:
-            # Create a new line for the Event Kickoff product
-            self.env['sale.order.line'].create({
-                'order_id': self.id,
-                'product_id': kickoff_product.id,
-                'name': kickoff_product.get_product_multiline_description_sale(),
-                'product_uom_qty': 1.0,
-                'price_unit': 0.0,
-                'sequence': 0,  # First line
-            })
     
     @api.onchange('event_date', 'event_type_id')
     def _onchange_event_timing(self):
@@ -676,35 +535,6 @@ class SaleOrder(models.Model):
             'target': 'current',
         }
     
-    def action_create_project(self):
-        """Create project from confirmed sale order with event-specific setup.
-        
-        In Odoo 19, super().action_create_project() opens a wizard dialog.
-        We pass event data via context so it can be used when the project
-        is actually created by the wizard or linked to the sale order.
-        """
-        action = super().action_create_project()
-        
-        # Pass event details via context for project creation
-        if isinstance(action, dict) and action.get('context'):
-            event_context = {
-                'ptt_event_type_id': self.event_type_id.id if self.event_type_id else False,
-                'ptt_event_name': self.event_name,
-                'ptt_guest_count': self.event_guest_count,
-                'ptt_venue_name': self.event_venue,
-                'ptt_setup_start_time': self.setup_time,
-                'ptt_teardown_deadline': self.breakdown_time,
-                'ptt_total_hours': self.event_duration,
-                'ptt_sale_order_id': self.id,
-            }
-            if self.event_date:
-                event_context['ptt_event_date'] = self.event_date.date() if hasattr(self.event_date, 'date') else self.event_date
-                event_context['ptt_event_start_time'] = self.event_date
-            
-            action['context'] = {**action.get('context', {}), **event_context}
-        
-        return action
-    
     def _apply_event_details_to_project(self, project):
         """Apply event details from sale order to linked project.
         
@@ -733,8 +563,7 @@ class SaleOrder(models.Model):
         
         project.write(project_vals)
         
-        # Note: Task creation is now handled in sale_order_line.py 
-        # via _timesheet_create_project() when Event Kickoff product creates the project
+        # Note: Task/project creation now relies on native Odoo flows.
 
 
 class SaleOrderRevision(models.Model):

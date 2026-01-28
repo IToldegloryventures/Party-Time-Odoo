@@ -71,12 +71,7 @@ class CrmLeadEnhanced(models.Model):
         Flow:
         1. Create the quotation (super())
         2. Copy event details from CRM Lead to Sale Order
-        3. Auto-add the correct Event Kickoff product based on event type
-        4. Copy any CRM service lines to the quotation
-        
-        This ensures the Event Kickoff product is added automatically when
-        creating a quote from CRM, matching the behavior when the user
-        selects an event type directly on the Sale Order form.
+        3. Copy any CRM service lines to the quotation
         """
         quotation_action = super().action_create_quotation()
         
@@ -141,11 +136,6 @@ class CrmLeadEnhanced(models.Model):
                     )
             
             quotation.write(quotation_vals)
-            
-            # Auto-add the correct Event Kickoff product based on event type
-            # This matches the behavior of the onchange in sale_order.py
-            if self.ptt_event_type_id:
-                quotation._add_event_kickoff_from_crm()
             
             # Copy any CRM service lines to the quotation
             self._ptt_copy_service_lines_to_order(quotation)

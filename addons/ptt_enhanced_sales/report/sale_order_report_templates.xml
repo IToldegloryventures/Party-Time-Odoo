@@ -114,6 +114,20 @@
                 </div>
             </t>
         </xpath>
+        <!-- Add Terms and Conditions acknowledgment block at the end of the document, after signature -->
+        <xpath expr="//div[contains(@class, 'o_report_signature') or contains(@class, 'o_report_signatures')][last()]" position="after">
+            <div class="mt-4" style="border-top:1px solid #ccc; padding-top:16px; background-color:#f8f9fa; border-radius:5px;">
+                <p style="font-size: 15px; color: #495057; margin-bottom: 8px;">
+                    By signing this sales order, you acknowledge receipt and acceptance of our
+                    <a href="https://partytimetexas.com/terms-and-conditions/" target="_blank" style="color: #007bff; text-decoration: underline;">Terms and Conditions</a>.
+                </p>
+                <p style="font-size: 14px; color: #495057; margin-top: 12px;">
+                    <span style="display:inline-block; border-bottom:1px solid #495057; min-width:60px; height:18px; vertical-align:middle;"></span>
+                    &nbsp;I acknowledge receipt and acceptance of the
+                    <a href="https://partytimetexas.com/terms-and-conditions/" target="_blank" style="color: #007bff; text-decoration: underline;">Terms and Conditions</a>.
+                </p>
+            </div>
+        </xpath>
     </template>
 
 </odoo>

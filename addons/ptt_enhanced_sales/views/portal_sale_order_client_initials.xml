@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal Sale Order: Add Client Initials for Terms Acceptance -->
+    <template id="portal_sale_order_client_initials" inherit_id="sale.portal_my_orders" name="Portal Sale Order: Client Initials">
+        <!-- Add initials field before the signature/payment/confirm button -->
+        <xpath expr="//section[@id='signature']" position="before">
+            <div class="alert alert-info" id="ptt_terms_initials_block" style="margin-bottom: 24px;">
+                <form id="ptt_initials_form" t-att-action="sale_order.get_portal_url()" method="post" style="margin-bottom:0;">
+                    <label for="ptt_client_initials" style="font-weight:600;">
+                        <span style="display:inline-block; border-bottom:1px solid #495057; min-width:60px; height:18px; vertical-align:middle; margin-right:8px;"></span>
+                        I acknowledge receipt and acceptance of the
+                        <a href="https://partytimetexas.com/terms-and-conditions/" target="_blank" style="color: #007bff; text-decoration: underline;">Terms and Conditions</a>.
+                    </label>
+                    <input type="text" name="ptt_client_initials" id="ptt_client_initials" class="form-control mt-2" placeholder="Enter your initials here" required="required" t-att-value="sale_order.ptt_client_initials" style="max-width:180px; display:inline-block; margin-left:8px;"/>
+                </form>
+            </div>
+        </xpath>
+    </template>
+</odoo>
