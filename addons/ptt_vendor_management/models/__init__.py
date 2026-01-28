@@ -5,3 +5,5 @@ from . import ptt_vendor_task
 from . import project_project
 from . import ptt_project_vendor_assignment
 from . import res_partner
+from . import ptt_vendor_rfq
+from . import ptt_vendor_quote_history

@@ -66,6 +66,13 @@ class ProjectProject(models.Model):
         store=True,
         readonly=False,
     )
+    ptt_event_id = fields.Char(
+        related="ptt_crm_lead_id.ptt_event_id",
+        string="Event ID",
+        store=True,
+        readonly=True,
+        help="Event ID from the linked CRM opportunity. Used to track event across CRM, Sales, Projects, and Tasks.",
+    )
     
     # Timing fields - CRM has Float times, we convert to display
     # These pull the Float times from CRM and combine with event_date

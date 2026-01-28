@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Vendor Portal Controller - Work Order Access + Vendor Application
 

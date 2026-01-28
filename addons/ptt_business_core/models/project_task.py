@@ -22,7 +22,7 @@ class ProjectTask(models.Model):
         related="project_id.ptt_event_id",
         store=True,
         readonly=True,
-        help="Event ID from the linked project.",
+        help="Event ID from the linked project. Used to track event across CRM, Sales, Projects, and Tasks.",
     )
 
     # === ACTION METHODS ===

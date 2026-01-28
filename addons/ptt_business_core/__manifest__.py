@@ -18,9 +18,7 @@ Core module that defines the foundational models for PTT event management:
 NOTE: Products, attributes, categories, and variants are managed NATIVELY
 by the accounting team in Odoo - NOT via this module's code.
 
-IMPORTANT: This module uses existing Studio fields (x_studio_*) directly:
-- x_studio_event_name, x_studio_event_date
-- x_studio_venue_name, x_studio_venue_address
+All custom fields use the ptt_* prefix. No Studio (x_studio_*) fields are used or required. Legacy Studio fields have been fully migrated and removed.
 
 This module has NO dependencies on other PTT modules.
 Other PTT modules depend on this one.

@@ -39,6 +39,7 @@
         "contacts",
         "mail",
         "portal",
+        "website",  # Required for vendor intake portal templates (website=True routes)
         "purchase",
         "project",  # Required for project view references
         "ptt_business_core",  # Has ptt.project.vendor.assignment model
@@ -75,6 +76,8 @@
         "views/portal_rfq_templates.xml",
         # Portal view extensions (extends ptt_business_core project form)
         "views/ptt_project_vendor_portal_view.xml",
+        # Vendor intake portal templates
+        "templates/vendor_intake_templates.xml",
     ],
     "installable": True,
     "application": True,

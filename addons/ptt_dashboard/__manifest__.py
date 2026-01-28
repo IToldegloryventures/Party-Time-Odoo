@@ -96,7 +96,7 @@ Based on Synconics BI Dashboard technology.
         "views/res_users_view.xml",
     ],
     "images": ["static/description/main_screen.gif"],
-    "license": "OPL-1",
+    "license": "LGPL-3",
     "uninstall_hook": "uninstall_hook",
     "installable": True,
     "application": True,

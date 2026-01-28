@@ -1,4 +1,4 @@
-This file is being deleted as it is no longer needed.
+# -*- coding: utf-8 -*-
 """
 PTT Vendor RFQ (Request for Quote) System
 

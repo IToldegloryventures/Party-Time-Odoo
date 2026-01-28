@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="vendor_intake_form" name="Vendor Intake Multi-Step Form">
+        <t t-call="website.layout">
+            <div class="container mt32 mb32">
+                <h2>Vendor Application</h2>
+                <form id="vendor-intake-form" action="/vendor/intake/submit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    <!-- Step indicators -->
+                    <ul class="nav nav-pills mb-4" id="formSteps">
+                        <li class="nav-item"><a class="nav-link active" data-step="1">1. Company</a></li>
+                        <li class="nav-item"><a class="nav-link" data-step="2">2. Contacts</a></li>
+                        <li class="nav-item"><a class="nav-link" data-step="3">3. Services</a></li>
+                        <li class="nav-item"><a class="nav-link" data-step="4">4. Documents</a></li>
+                        <li class="nav-item"><a class="nav-link" data-step="5">5. Review</a></li>
+                    </ul>
+                    <!-- Step 1: Company Info -->
+                    <div class="form-step" data-step="1">
+                        <div class="form-group">
+                            <label for="company_name">Company Name</label>
+                            <input type="text" name="company_name" class="form-control" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" class="form-control" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="text" name="phone" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" name="address" class="form-control"/>
+                        </div>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
+                    </div>
+                    <!-- Step 2: Contacts -->
+                    <div class="form-step d-none" data-step="2">
+                        <div id="contacts-list">
+                            <!-- JS will allow adding multiple contacts -->
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Back</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
+                    </div>
+                    <!-- Step 3: Services -->
+                    <div class="form-step d-none" data-step="3">
+                        <div class="form-group">
+                            <label for="services">Services Offered</label>
+                            <input type="text" name="services" class="form-control"/>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Back</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
+                    </div>
+                    <!-- Step 4: Documents -->
+                    <div class="form-step d-none" data-step="4">
+                        <div class="form-group">
+                            <label for="documents">Upload Documents</label>
+                            <input type="file" name="documents" class="form-control" multiple/>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Back</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
+                    </div>
+                    <!-- Step 5: Review -->
+                    <div class="form-step d-none" data-step="5">
+                        <div id="review-section">
+                            <!-- JS will populate review summary -->
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Back</button>
+                        <button type="submit" class="btn btn-success">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+            <script type="text/javascript" src="/ptt_vendor_management/static/src/js/vendor_intake_spa.js"></script>
+        </t>
+    </template>
+
+    <template id="vendor_intake_thankyou" name="Vendor Intake Thank You">
+        <t t-call="website.layout">
+            <div class="container mt32 mb32">
+                <h2>Thank You!</h2>
+                <p>Your vendor application has been received.</p>
+            </div>
+        </t>
+    </template>
+</odoo>

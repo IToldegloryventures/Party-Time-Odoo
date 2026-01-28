@@ -65,28 +65,18 @@ class SaleOrder(models.Model):
     # =========================================================================
     def action_confirm(self):
         """
-        Override to automatically:
-        1. Advance CRM to 'Booked' stage
-        2. Generate Event ID if not set
-        3. Link CRM to any project created by service products
-        
-        Standard Odoo behavior: Confirms order, creates projects from service products
-        PTT addition: CRM stage progression + project linking
+        Keep CRM stage progression and linking, but do not drive project creation.
+        Projects/tasks must be created by your native configuration (quotation-level
+        project template + service line task creation).
         """
-        # Generate event ID on CRM before confirmation if not set
-        for order in self:
-            if order.opportunity_id and not order.opportunity_id.ptt_event_id:
-                order.opportunity_id._ensure_event_id()
-        
-        # Standard confirmation (this creates projects from service products)
         result = super().action_confirm()
-        
+
         # Move linked CRM opportunities to "Booked" stage
         self._ptt_advance_crm_to_booked()
-        
-        # Link CRM to any created projects
+
+        # Link CRM to any projects that were created by native flows
         self._ptt_link_crm_to_projects()
-        
+
         return result
 
     def _ptt_advance_crm_to_booked(self):
@@ -106,43 +96,28 @@ class SaleOrder(models.Model):
 
     def _ptt_link_crm_to_projects(self):
         """
-        Link CRM opportunity to any projects created by this sale order.
-        
-        When a service product with "Create on Order" is confirmed, Odoo creates
-        a project. This method links that project back to the CRM opportunity
-        and transfers vendor estimates to project vendor assignments.
+        Link CRM opportunity to any projects created by native flows.
+
+        Note: This does NOT create projects or vendor assignments. It only links
+        if projects already exist (created by your quotation-level setup).
         """
         for order in self:
             if not order.opportunity_id:
                 continue
-            
-            # Find projects created by this order's lines
-            projects = order.order_line.mapped('project_id')
-            
-            # Also check tasks created (they link to projects)
-            task_projects = order.order_line.mapped('task_id.project_id')
-            projects |= task_projects
-            
+
+            projects = order.order_line.mapped("project_id") | order.order_line.mapped("task_id.project_id")
+
             for project in projects:
                 if project and not project.ptt_crm_lead_id:
-                    # Link project to CRM (event details are related fields - auto-populated)
-                    project.write({
-                        'ptt_crm_lead_id': order.opportunity_id.id,
-                        'ptt_event_id': order.opportunity_id.ptt_event_id,
-                    })
-                    
-                    # Update CRM with project link (if not already set)
-                    if not order.opportunity_id.ptt_project_id:
-                        order.opportunity_id.ptt_project_id = project.id
-                    
-                    # Transfer vendor estimates to project vendor assignments
-                    for estimate in order.opportunity_id.ptt_vendor_estimate_ids:
-                        self.env["ptt.project.vendor.assignment"].create({
-                            "project_id": project.id,
-                            "service_type": estimate.service_type,
-                            "estimated_cost": estimate.estimated_cost,
-                            "notes": f"From CRM estimate: {estimate.vendor_name or ''}",
-                        })
+                    project.write(
+                        {
+                            "ptt_crm_lead_id": order.opportunity_id.id,
+                            "ptt_event_id": order.opportunity_id.ptt_event_id,
+                        }
+                    )
+
+                if project and not order.opportunity_id.ptt_project_id:
+                    order.opportunity_id.ptt_project_id = project.id
 
     # =========================================================================
     # COMPUTED FIELDS

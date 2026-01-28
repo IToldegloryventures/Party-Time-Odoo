@@ -10,7 +10,7 @@ class PTTSalePortal(CustomerPortal):
         # The template override will handle the initials field display
         return response
 
-    @http.route(['/my/orders/<int:order_id>/sign'], type='json', auth='public', website=True)
+    @http.route(['/my/orders/<int:order_id>/sign'], type='jsonrpc', auth='public', website=True)
     def portal_order_sign(self, order_id, access_token=None, signature=None, name=None, **post):
         order = request.env['sale.order'].sudo().browse(order_id)
         initials = post.get('ptt_client_initials') or request.params.get('ptt_client_initials')

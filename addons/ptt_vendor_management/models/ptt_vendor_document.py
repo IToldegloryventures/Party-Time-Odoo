@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import timedelta
 
 from odoo import models, fields, api, _
@@ -53,15 +54,25 @@ class PttVendorDocument(models.Model):
         tracking=True,
     )
 
-    # Document Storage (simple binary + filename; can be extended to ir.attachment later)
+    # Document Storage - Odoo 19 native ir.attachment system
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'ptt_vendor_document_attachment_rel',
+        'document_id',
+        'attachment_id',
+        string="Attachments",
+        help="Document files attached to this record",
+    )
+    
+    # Legacy Binary field (kept for backward compatibility, but attachment_ids is preferred)
     attached_document = fields.Binary(
-        string="Document File",
+        string="Document File (Legacy)",
         attachment=True,
-        help="Upload the document file",
+        help="Legacy single file upload. Use Attachments field for multiple files.",
     )
     document_filename = fields.Char(
-        string="Filename",
-        help="Name of the uploaded file",
+        string="Filename (Legacy)",
+        help="Name of the uploaded file (legacy field)",
     )
 
     # Dates / Status
@@ -132,11 +143,14 @@ class PttVendorDocument(models.Model):
         if self.contact_id and self.contact_id.parent_id:
             self.vendor_id = self.contact_id.parent_id
 
-    @api.depends("validity", "document_type_id.expiry_warning_days", "document_type_id.has_expiry", "attached_document")
+    @api.depends("validity", "document_type_id.expiry_warning_days", "document_type_id.has_expiry", "attachment_ids", "attached_document")
     def _compute_status(self):
         """Compute document status based on expiry date and requirements."""
         today = fields.Date.today()
         for doc in self:
+            # Check if document has any attachments (prefer attachment_ids, fallback to attached_document)
+            has_attachment = bool(doc.attachment_ids) or bool(doc.attached_document)
+            
             if doc.document_type_id.has_expiry:
                 if not doc.validity:
                     doc.status = "non_compliant"
@@ -145,9 +159,9 @@ class PttVendorDocument(models.Model):
                 elif doc.validity <= today + timedelta(days=doc.document_type_id.expiry_warning_days or 30):
                     doc.status = "expiring_soon"
                 else:
-                    doc.status = "compliant"
+                    doc.status = "compliant" if has_attachment else "non_compliant"
             else:
-                doc.status = "compliant" if doc.attached_document else "non_compliant"
+                doc.status = "compliant" if has_attachment else "non_compliant"
 
     @api.constrains("vendor_id", "document_type_id", "contact_id")
     def _check_unique_vendor_doctype(self):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Extend ptt.project.vendor.assignment for vendor portal functionality.
 
