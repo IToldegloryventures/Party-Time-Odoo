@@ -1,0 +1,6615 @@
+{
+  "ptt_modules": [
+    "ptt_business_core",
+    "ptt_dashboard",
+    "ptt_enhanced_sales",
+    "ptt_project_management",
+    "ptt_vendor_management"
+  ],
+  "ptt_models": [
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_stage.py",
+      "class": "CrmStage",
+      "model": null,
+      "inherit": "crm.stage"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\mail_mail.py",
+      "class": "MailMail",
+      "model": null,
+      "inherit": "mail.mail"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\native_data_registry.py",
+      "class": "NativeDataRegistry",
+      "model": "ptt.native.data.registry",
+      "inherit": null
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_task.py",
+      "class": "ProjectTask",
+      "model": null,
+      "inherit": "project.task"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\purchase_order.py",
+      "class": "PurchaseOrder",
+      "model": null,
+      "inherit": "purchase.order"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "PttVendorServiceType",
+      "model": "ptt.vendor.service.type",
+      "inherit": null
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoAction",
+      "model": "todo.action",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoActionsLine",
+      "model": "todo.action.line",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ChartMultiplier",
+      "model": "chart.multiplier",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\ir_model.py",
+      "class": "IrModel",
+      "model": null,
+      "inherit": "ir.model"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\ir_ui_menu.py",
+      "class": "IrUiMenu",
+      "model": null,
+      "inherit": "ir.ui.menu"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\res_users.py",
+      "class": "Users",
+      "model": null,
+      "inherit": "res.users"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\dashboard_access.py",
+      "class": "DashboardAccess",
+      "model": "dashboard.access",
+      "inherit": null
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\mail_compose_message.py",
+      "class": "MailComposeMessage",
+      "model": null,
+      "inherit": "mail.compose.message"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\account_move.py",
+      "class": "AccountMove",
+      "model": null,
+      "inherit": "account.move"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\crm_lead.py",
+      "class": "CrmLeadEnhanced",
+      "model": null,
+      "inherit": "crm.lead"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "ProjectTask",
+      "model": null,
+      "inherit": "project.task"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_service_pricing.py",
+      "class": "PttVendorServicePricing",
+      "model": "ptt.vendor.service.pricing",
+      "inherit": null
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ]
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_done_wizard.py",
+      "class": "PTTRFQDoneWizard",
+      "model": "ptt.rfq.done.wizard",
+      "inherit": null
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_send_wizard.py",
+      "class": "PttRfqSendWizard",
+      "model": "ptt.rfq.send.wizard",
+      "inherit": null
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null
+    }
+  ],
+  "ptt_fields": [
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_date_of_call",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_preferred_contact",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_lead_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_secondary_contact_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_secondary_contact_phone",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_secondary_contact_email",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_id",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_goal",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_time",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_setup_time",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_start_time",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_end_time",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_duration",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_guest_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_attire",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_venue_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_venue_address",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_venue_booked",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_location_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_dj_music_styles",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_dj_mc_needed",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_dj_karaoke",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_photobooth_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_photobooth_branding",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_casino_games",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_casino_player_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_service_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_budget_range",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_services_already_booked",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_service_line_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_service_lines_total",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_vendor_estimate_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_estimated_vendor_total",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_estimated_client_total",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_estimated_margin",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_margin_percent",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_project_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_project_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_sale_order_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_total",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_paid",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_remaining",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_payment_status",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_followup_email_sent",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_proposal_sent",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_contract_sent",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_booked",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_next_contact_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_min_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_guest_count_min",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_guest_count_max",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_price_per_hour_min",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_price_per_hour_max",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_cost_per_hour_min",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_cost_per_hour_max",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_package_includes",
+      "type": "Html"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_transition_price",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_transition_price_valid_until",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\product_product.py",
+      "class": "ProductProduct",
+      "model": null,
+      "inherit": "product.product",
+      "field": "ptt_addon_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_crm_lead_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_id",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_venue_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_venue_address",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_guest_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_location_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_setup_time",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_start_time_float",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_end_time_float",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_total_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_setup_start_time",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_start_time",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_end_time",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_teardown_deadline",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_vendor_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_vendor_assignment_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_vendor_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_total_estimated_cost",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_total_actual_cost",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_cost_variance",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_client_total",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_actual_margin",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_margin_percent",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "currency_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_special_requirements",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_client_preferences",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_vendor_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_task.py",
+      "class": "ProjectTask",
+      "model": null,
+      "inherit": "project.task",
+      "field": "ptt_event_id",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "crm_lead_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "product_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "service_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "service_tier",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "quantity",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "unit_price",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "subtotal",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "currency_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "product_min_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "product_includes",
+      "type": "Html"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null,
+      "field": "crm_lead_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null,
+      "field": "service_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null,
+      "field": "vendor_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null,
+      "field": "estimated_cost",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null,
+      "field": "currency_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_vendor_estimate.py",
+      "class": "PttCrmVendorEstimate",
+      "model": "ptt.crm.vendor.estimate",
+      "inherit": null,
+      "field": "notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "project_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "service_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_contact",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_phone",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_email",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "estimated_cost",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "actual_cost",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "cost_variance",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "currency_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "status",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "contract_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "service_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "description",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignment",
+      "model": "ptt.project.vendor.assignment",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\purchase_order.py",
+      "class": "PurchaseOrder",
+      "model": null,
+      "inherit": "purchase.order",
+      "field": "ptt_project_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\purchase_order.py",
+      "class": "PurchaseOrder",
+      "model": null,
+      "inherit": "purchase.order",
+      "field": "ptt_event_id",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_is_vendor",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_service_types",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_rating",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_client_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_opportunity_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_preferred_contact",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "PttVendorServiceType",
+      "model": "ptt.vendor.service.type",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "PttVendorServiceType",
+      "model": "ptt.vendor.service.type",
+      "inherit": null,
+      "field": "code",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "PttVendorServiceType",
+      "model": "ptt.vendor.service.type",
+      "inherit": null,
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "PttVendorServiceType",
+      "model": "ptt.vendor.service.type",
+      "inherit": null,
+      "field": "active",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\res_partner.py",
+      "class": "PttVendorServiceType",
+      "model": "ptt.vendor.service.type",
+      "inherit": null,
+      "field": "color",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "ptt_event_id",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "ptt_guest_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "ptt_price_per_person",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_min_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_price_per_hour_min",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_price_per_hour_max",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_cost_per_hour_min",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_cost_per_hour_max",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_guest_count_min",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_guest_count_max",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_package_includes",
+      "type": "Html"
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\sale_order_line.py",
+      "class": "SaleOrderLine",
+      "model": null,
+      "inherit": "sale.order.line",
+      "field": "ptt_min_hours_warning",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "chart_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "chart_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "parent_menu_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "created_menu_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "created_action_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "menu_sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "menu_active",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "grid_stack_dimensions",
+      "type": "Json"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "auto_reload_duration",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "mail_cron_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "dashboard_mail_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "company_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "access_by",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "group_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "user_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null,
+      "field": "dashboard_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null,
+      "field": "mail_template_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null,
+      "field": "chart_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null,
+      "field": "recipient_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "DashboardMail",
+      "model": "dashboard.mail",
+      "inherit": null,
+      "field": "is_automated",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoAction",
+      "model": "todo.action",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoAction",
+      "model": "todo.action",
+      "inherit": null,
+      "field": "action_line_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoAction",
+      "model": "todo.action",
+      "inherit": null,
+      "field": "layout_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoAction",
+      "model": "todo.action",
+      "inherit": null,
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoActionsLine",
+      "model": "todo.action.line",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoActionsLine",
+      "model": "todo.action.line",
+      "inherit": null,
+      "field": "active_record",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoActionsLine",
+      "model": "todo.action.line",
+      "inherit": null,
+      "field": "action_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoActionsLine",
+      "model": "todo.action.line",
+      "inherit": null,
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "active",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "dashboard_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "chart_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_model_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_model",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_data_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_measurement_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_limit_record",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_domain",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_date_filter_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "meter_target",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_date_filter_option",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_include_periods",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_same_period_previous_years",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_comparison_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_enable_target",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_target_value",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_view_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "model_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "model",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "measurement_field_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "list_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "list_field_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "used_list_field_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "list_measure_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "todo_layout",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "todo_action_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "image",
+      "type": "Binary"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "group_by_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "group_by_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "time_range",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "map_group_by_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "measurement_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sub_group_by_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sub_group_by_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sub_time_range",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sort_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "limit_record",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "domain",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sort_order",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "data_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "background_color",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "is_kpi_border",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_border_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_border_color",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "kpi_border_width",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "font_color",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "layout_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "tile_layout_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "text_align",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "theme",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "company_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "item_view_action_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "item_action_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "date_filter_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "date_filter_option",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "is_apply_multiplier",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "chart_multiplier_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "include_periods",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "same_period_previous_years",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "icon_option",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "default_icon",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "icon",
+      "type": "Binary"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "previous_period_comparision",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "previous_period_duration",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "previous_period_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "show_unit",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "unit_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "custom_unit",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "group_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "button_color",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "font_size",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "font_weight",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "DashboardChart",
+      "model": "dashboard.chart",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "hide_false_value",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "chart_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "model_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "group_by_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "sort_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "sort_order",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "limit_record",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "chart_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ChartMultiplier",
+      "model": "chart.multiplier",
+      "inherit": null,
+      "field": "chart_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ChartMultiplier",
+      "model": "chart.multiplier",
+      "inherit": null,
+      "field": "field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ChartMultiplier",
+      "model": "chart.multiplier",
+      "inherit": null,
+      "field": "multiplier",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\ir_ui_menu.py",
+      "class": "IrUiMenu",
+      "model": null,
+      "inherit": "ir.ui.menu",
+      "field": "is_dashboard",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\ir_ui_menu.py",
+      "class": "IrUiMenu",
+      "model": null,
+      "inherit": "ir.ui.menu",
+      "field": "user_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "list_field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "list_measure_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "model_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "field_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "measure_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\list_field.py",
+      "class": "ListFields",
+      "model": "list.fields",
+      "inherit": null,
+      "field": "value_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\res_users.py",
+      "class": "Users",
+      "model": null,
+      "inherit": "res.users",
+      "field": "model_access",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\dashboard_access.py",
+      "class": "DashboardAccess",
+      "model": "dashboard.access",
+      "inherit": null,
+      "field": "access_by",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\dashboard_access.py",
+      "class": "DashboardAccess",
+      "model": "dashboard.access",
+      "inherit": null,
+      "field": "is_remove",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\dashboard_access.py",
+      "class": "DashboardAccess",
+      "model": "dashboard.access",
+      "inherit": null,
+      "field": "group_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\dashboard_access.py",
+      "class": "DashboardAccess",
+      "model": "dashboard.access",
+      "inherit": null,
+      "field": "user_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\dashboard_access.py",
+      "class": "DashboardAccess",
+      "model": "dashboard.access",
+      "inherit": null,
+      "field": "dashboard_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\mail_compose_message.py",
+      "class": "MailComposeMessage",
+      "model": null,
+      "inherit": "mail.compose.message",
+      "field": "dashboard_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\mail_compose_message.py",
+      "class": "MailComposeMessage",
+      "model": null,
+      "inherit": "mail.compose.message",
+      "field": "dashboard_mail_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\wizard\\mail_compose_message.py",
+      "class": "MailComposeMessage",
+      "model": null,
+      "inherit": "mail.compose.message",
+      "field": "chart_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\crm_lead.py",
+      "class": "CrmLeadEnhanced",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_type_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_event_type_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_type_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_duration",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_guest_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_venue",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_venue_type",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_venue_address",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_venue_booked",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_attire",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_end_datetime",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "setup_time",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "breakdown_time",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_start_time",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_end_time",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "setup_time_float",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_details_summary",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "ptt_service_line_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "ptt_service_lines_total",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "revision_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "revision_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "is_revision",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "original_order_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "current_revision_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "original_order_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "revised_order_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "revision_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "revision_reason",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "user_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "code",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "active",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "description",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "requires_approval",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "approval_amount",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "default_duration_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "default_setup_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "default_breakdown_hours",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order_type.py",
+      "class": "SaleOrderType",
+      "model": "sale.order.type",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "color",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "stakeholder_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "vendor_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "client_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "event_status",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "project_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "partner_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "role",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "is_client",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "is_vendor",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "vendor_category",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "email",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_stakeholder.py",
+      "class": "ProjectStakeholder",
+      "model": "project.stakeholder",
+      "inherit": null,
+      "field": "phone",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "task_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "task_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "scheduled_start",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "scheduled_end",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "performance_rating",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "PttProjectVendorAssignmentExtended",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "performance_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "ProjectTask",
+      "model": null,
+      "inherit": "project.task",
+      "field": "ptt_vendor_assignment_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "vendor_work_order_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "vendor_pending_response_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "rfq_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "rfq_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "rfq_pending_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "code",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "description",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "required",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "has_expiry",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "expiry_warning_days",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_document_type.py",
+      "class": "PttDocumentType",
+      "model": "ptt.document.type",
+      "inherit": null,
+      "field": "active",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_signature",
+      "type": "Binary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_signature_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_decline_reason",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "access_token",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "ptt_arrival_time",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_task_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_task_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_pricing_hint",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "last_reminder_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "event_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "contact_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "document_owner",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "contact_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "document_type_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "attached_document",
+      "type": "Binary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "document_filename",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "validity",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "upload_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "uploaded_by",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "status",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "vendor_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "quoted_price",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "currency_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "estimate_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "rfq_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "note",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "submit_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "is_selected",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "project_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "event_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "customer_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "product_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "description",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "quantity",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "uom_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "estimated_quote",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "currency_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "quote_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "closing_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "estimated_delivery_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "quote_history_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "approved_vendor_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "order_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "notes",
+      "type": "Html"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "user_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "company_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "state",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "quote_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_rfq.py",
+      "class": "PTTVendorRFQ",
+      "model": "ptt.vendor.rfq",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "lowest_quote",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_service_pricing.py",
+      "class": "PttVendorServicePricing",
+      "model": "ptt.vendor.service.pricing",
+      "inherit": null,
+      "field": "vendor_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_service_pricing.py",
+      "class": "PttVendorServicePricing",
+      "model": "ptt.vendor.service.pricing",
+      "inherit": null,
+      "field": "service_type_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_service_pricing.py",
+      "class": "PttVendorServicePricing",
+      "model": "ptt.vendor.service.pricing",
+      "inherit": null,
+      "field": "price_detail",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_service_pricing.py",
+      "class": "PttVendorServicePricing",
+      "model": "ptt.vendor.service.pricing",
+      "inherit": null,
+      "field": "notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_service_pricing.py",
+      "class": "PttVendorServicePricing",
+      "model": "ptt.vendor.service.pricing",
+      "inherit": null,
+      "field": "display_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "description",
+      "type": "Html"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "assignment_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "project_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "sequence",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "due_date",
+      "type": "Date"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "state",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "priority",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "completed_date",
+      "type": "Datetime"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "vendor_notes",
+      "type": "Text"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_status",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_portal_user_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_assignment_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_assignment_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_completed_assignment_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_active_assignment_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_portal_access",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_total_paid",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_average_cost",
+      "type": "Monetary"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_service_pricing_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_tier",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_contact_role",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_is_vendor_contact",
+      "type": "Boolean"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_principal_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_additional_phone",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_fax",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_zip_radius",
+      "type": "Float"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_document_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_all_document_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_document_count",
+      "type": "Integer"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_contact_ids",
+      "type": "One2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_compliance_status",
+      "type": "Selection"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_primary_vendor_contact_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_primary_vendor_contact_email",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_primary_vendor_contact_phone",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_done_wizard.py",
+      "class": "PTTRFQDoneWizard",
+      "model": "ptt.rfq.done.wizard",
+      "inherit": null,
+      "field": "rfq_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_done_wizard.py",
+      "class": "PTTRFQDoneWizard",
+      "model": "ptt.rfq.done.wizard",
+      "inherit": null,
+      "field": "quote_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_done_wizard.py",
+      "class": "PTTRFQDoneWizard",
+      "model": "ptt.rfq.done.wizard",
+      "inherit": null,
+      "field": "selected_quote_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_send_wizard.py",
+      "class": "PttRfqSendWizard",
+      "model": "ptt.rfq.send.wizard",
+      "inherit": null,
+      "field": "rfq_id",
+      "type": "Many2one"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_send_wizard.py",
+      "class": "PttRfqSendWizard",
+      "model": "ptt.rfq.send.wizard",
+      "inherit": null,
+      "field": "vendor_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "recipient_name",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "recipient_email",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "recipient_phone",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "website_url",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "application_url",
+      "type": "Char"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "suggested_service_ids",
+      "type": "Many2many"
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "personal_message",
+      "type": "Text"
+    }
+  ],
+  "duplicate_fields": {
+    "('project.project', 'ptt_vendor_notes')": [
+      {
+        "module": "ptt_business_core",
+        "file": "addons\\ptt_business_core\\models\\project_project.py",
+        "class": "ProjectProject",
+        "model": null,
+        "inherit": "project.project",
+        "field": "ptt_vendor_notes",
+        "type": "Text"
+      },
+      {
+        "module": "ptt_business_core",
+        "file": "addons\\ptt_business_core\\models\\project_project.py",
+        "class": "ProjectProject",
+        "model": null,
+        "inherit": "project.project",
+        "field": "ptt_vendor_notes",
+        "type": "Text"
+      }
+    ]
+  },
+  "conflicts": [],
+  "potential_unused_fields": [
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_goal",
+      "type": "Char",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_event_time",
+      "type": "Char",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_dj_music_styles",
+      "type": "Text",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_dj_mc_needed",
+      "type": "Boolean",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_dj_karaoke",
+      "type": "Boolean",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_photobooth_type",
+      "type": "Selection",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_photobooth_branding",
+      "type": "Boolean",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_casino_games",
+      "type": "Text",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_casino_player_count",
+      "type": "Integer",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_total",
+      "type": "Monetary",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_paid",
+      "type": "Monetary",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\crm_lead.py",
+      "class": "CrmLead",
+      "model": null,
+      "inherit": "crm.lead",
+      "field": "ptt_invoice_remaining",
+      "type": "Monetary",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "ptt_setup_start_time",
+      "type": "Datetime",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "product_min_hours",
+      "type": "Float",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_business_core",
+      "file": "addons\\ptt_business_core\\models\\ptt_crm_service_line.py",
+      "class": "PttCrmServiceLine",
+      "model": "ptt.crm.service.line",
+      "inherit": null,
+      "field": "product_includes",
+      "type": "Html",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard.py",
+      "class": "Dashboard",
+      "model": "dashboard.dashboard",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "grid_stack_dimensions",
+      "type": "Json",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoAction",
+      "model": "todo.action",
+      "inherit": null,
+      "field": "layout_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "class": "ToDoActionsLine",
+      "model": "todo.action.line",
+      "inherit": null,
+      "field": "action_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ItemViewAction",
+      "model": "item.view.action",
+      "inherit": null,
+      "field": "chart_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_dashboard",
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "class": "ChartMultiplier",
+      "model": "chart.multiplier",
+      "inherit": null,
+      "field": "chart_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_start_time",
+      "type": "Float",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "event_end_time",
+      "type": "Float",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "setup_time_float",
+      "type": "Float",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "original_order_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrder",
+      "model": null,
+      "inherit": "sale.order",
+      "field": "current_revision_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "original_order_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_enhanced_sales",
+      "file": "addons\\ptt_enhanced_sales\\models\\sale_order.py",
+      "class": "SaleOrderRevision",
+      "model": "sale.order.revision",
+      "inherit": null,
+      "field": "revised_order_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "vendor_count",
+      "type": "Integer",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "client_count",
+      "type": "Integer",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_project_management",
+      "file": "addons\\ptt_project_management\\models\\project_vendor_assignment.py",
+      "class": "ProjectTask",
+      "model": null,
+      "inherit": "project.task",
+      "field": "ptt_vendor_assignment_id",
+      "type": "Many2one",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "rfq_ids",
+      "type": "One2many",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\project_project.py",
+      "class": "ProjectProject",
+      "model": null,
+      "inherit": "project.project",
+      "field": "rfq_pending_count",
+      "type": "Integer",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "vendor_signature",
+      "type": "Binary",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "class": "ProjectVendorAssignment",
+      "model": null,
+      "inherit": "ptt.project.vendor.assignment",
+      "field": "last_reminder_date",
+      "type": "Datetime",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "document_owner",
+      "type": "Selection",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_document.py",
+      "class": "PttVendorDocument",
+      "model": "ptt.vendor.document",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "contact_name",
+      "type": "Char",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_quote_history.py",
+      "class": "PTTVendorQuoteHistory",
+      "model": "ptt.vendor.quote.history",
+      "inherit": null,
+      "field": "submit_date",
+      "type": "Datetime",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "class": "PTTVendorTask",
+      "model": "ptt.vendor.task",
+      "inherit": [
+        "mail.thread",
+        "mail.activity.mixin"
+      ],
+      "field": "completed_date",
+      "type": "Datetime",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_active_assignment_count",
+      "type": "Integer",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_portal_access",
+      "type": "Boolean",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_is_vendor_contact",
+      "type": "Boolean",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_vendor_fax",
+      "type": "Char",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "class": "ResPartner",
+      "model": null,
+      "inherit": "res.partner",
+      "field": "ptt_all_document_ids",
+      "type": "One2many",
+      "xml_refs": [],
+      "py_refs": []
+    },
+    {
+      "module": "ptt_vendor_management",
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "class": "PTTVendorInviteWizard",
+      "model": "ptt.vendor.invite.wizard",
+      "inherit": null,
+      "field": "website_url",
+      "type": "Char",
+      "xml_refs": [],
+      "py_refs": []
+    }
+  ],
+  "model_status": [
+    {
+      "model": "account.move",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "chart.multiplier",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "crm.lead",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\crm_lead_views.xml",
+          "addons\\ptt_enhanced_sales\\views\\crm_lead_views.xml"
+        ],
+        "actions": [
+          "addons\\ptt_business_core\\data\\mail_activity_type.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "crm.stage",
+      "status": "functional",
+      "features": {
+        "views": [],
+        "actions": [],
+        "security": [],
+        "data": [
+          "addons\\ptt_business_core\\data\\crm_stages.xml"
+        ]
+      }
+    },
+    {
+      "model": "dashboard.access",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_dashboard\\wizard\\dashboard_access_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_dashboard\\wizard\\dashboard_access_view.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "dashboard.chart",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_dashboard\\views\\dashboard_chart_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_dashboard\\views\\dashboard_chart_view.xml"
+        ],
+        "security": [],
+        "data": [
+          "addons\\ptt_dashboard\\data\\ptt_dashboard_charts.xml"
+        ]
+      }
+    },
+    {
+      "model": "dashboard.dashboard",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_dashboard\\views\\dashboard_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_dashboard\\views\\dashboard_view.xml"
+        ],
+        "security": [],
+        "data": [
+          "addons\\ptt_dashboard\\data\\dashboard_data.xml",
+          "addons\\ptt_dashboard\\data\\ptt_dashboards.xml"
+        ]
+      }
+    },
+    {
+      "model": "dashboard.mail",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "ir.model",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "ir.ui.menu",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_dashboard\\views\\ir_ui_menu_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "item.view.action",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "list.fields",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "mail.activity.mixin",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "mail.compose.message",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_dashboard\\wizard\\mail_compose_message_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "mail.mail",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "mail.thread",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "product.product",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\product_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "project.project",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\project_project_views.xml",
+          "addons\\ptt_project_management\\views\\project_project_views.xml",
+          "addons\\ptt_vendor_management\\views\\ptt_project_vendor_portal_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_business_core\\data\\mail_activity_type.xml"
+        ],
+        "security": [],
+        "data": [
+          "addons\\ptt_business_core\\data\\project_template.xml"
+        ]
+      }
+    },
+    {
+      "model": "project.stakeholder",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_project_management\\views\\project_stakeholder_views.xml"
+        ],
+        "actions": [
+          "addons\\ptt_project_management\\views\\project_stakeholder_views.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "project.task",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\project_task_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": [
+          "addons\\ptt_business_core\\data\\project_template.xml"
+        ]
+      }
+    },
+    {
+      "model": "ptt.crm.service.line",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "ptt.crm.vendor.estimate",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\crm_vendor_estimate_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.document.type",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\views\\ptt_document_type_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\views\\ptt_document_type_view.xml"
+        ],
+        "security": [],
+        "data": [
+          "addons\\ptt_vendor_management\\data\\ptt_document_type_data.xml"
+        ]
+      }
+    },
+    {
+      "model": "ptt.native.data.registry",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "ptt.project.vendor.assignment",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\project_vendor_assignment_views.xml",
+          "addons\\ptt_project_management\\views\\project_vendor_assignment_views.xml",
+          "addons\\ptt_vendor_management\\views\\ptt_project_vendor_portal_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_business_core\\views\\project_vendor_assignment_views.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.rfq.done.wizard",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_rfq_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.rfq.send.wizard",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\wizard\\ptt_rfq_send_wizard_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\wizard\\ptt_rfq_send_wizard_view.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.vendor.document",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_document_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_document_view.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.vendor.invite.wizard",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.vendor.quote.history",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "ptt.vendor.rfq",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_rfq_views.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_rfq_views.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.vendor.service.pricing",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "ptt.vendor.service.type",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\res_partner_views.xml"
+        ],
+        "actions": [
+          "addons\\ptt_business_core\\views\\res_partner_views.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "ptt.vendor.task",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "purchase.order",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\purchase_order_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "res.partner",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\res_partner_views.xml",
+          "addons\\ptt_vendor_management\\views\\ptt_res_partner_view.xml",
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_list_view.xml",
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml"
+        ],
+        "actions": [
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_list_view.xml",
+          "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml"
+        ],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "res.users",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_dashboard\\views\\res_users_view.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "sale.order",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\sale_order_views.xml",
+          "addons\\ptt_enhanced_sales\\views\\sale_order_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "sale.order.line",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_business_core\\views\\sale_order_views.xml"
+        ],
+        "actions": [],
+        "security": [],
+        "data": []
+      }
+    },
+    {
+      "model": "sale.order.revision",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "sale.order.type",
+      "status": "functional",
+      "features": {
+        "views": [
+          "addons\\ptt_enhanced_sales\\data\\legacy_event_type_aliases.xml",
+          "addons\\ptt_enhanced_sales\\views\\sale_order_type_views.xml"
+        ],
+        "actions": [
+          "addons\\ptt_enhanced_sales\\views\\sale_order_type_views.xml"
+        ],
+        "security": [],
+        "data": [
+          "addons\\ptt_enhanced_sales\\data\\event_types_data.xml"
+        ]
+      }
+    },
+    {
+      "model": "todo.action",
+      "status": "not_functional",
+      "features": {}
+    },
+    {
+      "model": "todo.action.line",
+      "status": "not_functional",
+      "features": {}
+    }
+  ],
+  "placeholder_hits": [
+    {
+      "file": "addons\\ptt_business_core\\data\\email_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_business_core\\data\\email_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\crm_lead_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\views\\res_partner_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\components\\TodoView\\TodoView.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\static\\src\\xml\\fa_icon_widget.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\views\\dashboard_chart_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\views\\dashboard_chart_view.xml",
+      "match": "TODO"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\views\\crm_lead_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\views\\sale_order_type_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\views\\sale_order_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\views\\sale_order_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\views\\sale_order_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\views\\sale_order_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_project_management\\views\\project_project_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_project_management\\views\\project_stakeholder_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_project_management\\views\\project_vendor_assignment_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\data\\mail_template_vendor_invite.xml",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\data\\mail_template_vendor_invite.xml",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\data\\mail_template_work_order.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\data\\mail_template_work_order.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\portal_rfq_templates.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_document_type_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_document_type_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_document_type_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_project_vendor_portal_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_project_vendor_portal_view.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_res_partner_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_res_partner_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_document_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_onboarding_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_rfq_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_rfq_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_rfq_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\ptt_vendor_task_views.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_application_templates.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_application_templates.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_application_templates.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\views\\vendor_portal_templates.xml",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_rfq_send_wizard_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard_view.xml",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_crm_lead.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_crm_lead.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_crm_lead.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_event_reminders.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_event_reminders.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_event_reminders.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_event_reminders.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_event_reminders.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_financial_calculations.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_financial_calculations.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_project_vendor_assignment.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_project_vendor_assignment.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_business_core\\tests\\test_project_vendor_assignment.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_action.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "match": "TODO"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "match": "ToDo"
+    },
+    {
+      "file": "addons\\ptt_dashboard\\models\\dashboard_chart.py",
+      "match": "TODO"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\tests\\test_crm_stage_automation.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\tests\\test_crm_stage_automation.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\tests\\test_crm_stage_automation.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_enhanced_sales\\tests\\test_crm_stage_automation.py",
+      "match": "example"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\controllers\\vendor_portal.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\controllers\\vendor_portal.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\controllers\\vendor_portal.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\controllers\\vendor_portal.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\models\\ptt_project_vendor_assignment.py",
+      "match": "TBD"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\models\\ptt_vendor_task.py",
+      "match": "todo"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\models\\res_partner.py",
+      "match": "placeholder"
+    },
+    {
+      "file": "addons\\ptt_vendor_management\\wizard\\ptt_vendor_invite_wizard.py",
+      "match": "Placeholder"
+    }
+  ]
+}
