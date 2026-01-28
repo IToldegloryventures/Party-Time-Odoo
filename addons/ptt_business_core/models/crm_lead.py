@@ -160,6 +160,7 @@ class CrmLead(models.Model):
         compute="_compute_service_lines_total",
         store=True,
         currency_field="company_currency",
+        aggregator="sum",
         help="Total of all proposed service lines",
     )
 
@@ -176,21 +177,25 @@ class CrmLead(models.Model):
         compute="_compute_financials",
         store=True,
         currency_field="company_currency",
+        aggregator="sum",
     )
     ptt_estimated_client_total = fields.Monetary(
         string="Estimated Client Total",
         currency_field="company_currency",
+        aggregator="sum",
     )
     ptt_estimated_margin = fields.Monetary(
         string="Estimated Margin",
         compute="_compute_financials",
         store=True,
         currency_field="company_currency",
+        aggregator="sum",
     )
     ptt_margin_percent = fields.Float(
         string="Margin %",
         compute="_compute_financials",
         store=True,
+        aggregator="avg",
     )
 
     # =========================================================================

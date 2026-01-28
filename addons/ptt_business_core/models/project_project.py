@@ -22,18 +22,21 @@ class ProjectProject(models.Model):
     # =========================================================================
     # EVENT IDENTITY
     # =========================================================================
+    # All related fields use explicit depends for precise recomputation control
     ptt_event_type_id = fields.Many2one(
         "sale.order.type",
         related="ptt_crm_lead_id.ptt_event_type_id",
         string="Event Type",
         store=True,
         readonly=False,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_event_name = fields.Char(
         related="ptt_crm_lead_id.ptt_event_name",
         string="Event Name",
         store=True,
         readonly=False,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_event_date = fields.Date(
         related="ptt_crm_lead_id.ptt_event_date",
@@ -41,36 +44,42 @@ class ProjectProject(models.Model):
         store=True,
         readonly=False,
         index=True,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_venue_name = fields.Char(
         related="ptt_crm_lead_id.ptt_venue_name",
         string="Venue Name",
         store=True,
         readonly=False,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_venue_address = fields.Text(
         related="ptt_crm_lead_id.ptt_venue_address",
         string="Venue Address",
         store=True,
         readonly=False,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_guest_count = fields.Integer(
         related="ptt_crm_lead_id.ptt_guest_count",
         string="Guest Count",
         store=True,
         readonly=False,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_location_type = fields.Selection(
         related="ptt_crm_lead_id.ptt_location_type",
         string="Location Type",
         store=True,
         readonly=False,
+        depends=['ptt_crm_lead_id'],
     )
     ptt_event_id = fields.Char(
         related="ptt_crm_lead_id.ptt_event_id",
         string="Event ID",
         store=True,
         readonly=True,
+        depends=['ptt_crm_lead_id'],
         help="Event ID from the linked CRM opportunity. Used to track event across CRM, Sales, Projects, and Tasks.",
     )
     
@@ -101,17 +110,23 @@ class ProjectProject(models.Model):
         readonly=True,
     )
     
-    # Project-only fields (not from CRM)
+    # Project-only fields (not from CRM) - computed from Float times + Event Date
     ptt_setup_start_time = fields.Datetime(
         string="Setup Start (Datetime)",
+        compute="_compute_setup_start_time",
+        store=True,
         help="Computed setup start - combines event date with setup time"
     )
     ptt_event_start_time = fields.Datetime(
         string="Event Start (Datetime)",
+        compute="_compute_event_start_time",
+        store=True,
         help="Computed event start - combines event date with start time"
     )
     ptt_event_end_time = fields.Datetime(
         string="Event End (Datetime)",
+        compute="_compute_event_end_time",
+        store=True,
         help="Computed event end - combines event date with end time"
     )
     ptt_teardown_deadline = fields.Datetime(
@@ -143,18 +158,21 @@ class ProjectProject(models.Model):
         compute="_compute_vendor_stats",
         store=True,
         currency_field="currency_id",
+        aggregator="sum",
     )
     ptt_total_actual_cost = fields.Monetary(
         string="Total Actual Costs",
         compute="_compute_vendor_stats",
         store=True,
         currency_field="currency_id",
+        aggregator="sum",
     )
     ptt_cost_variance = fields.Monetary(
         string="Cost Variance",
         compute="_compute_vendor_stats",
         store=True,
         currency_field="currency_id",
+        aggregator="sum",
     )
     
     # Client financials - auto-populated from linked Sale Order
@@ -163,6 +181,7 @@ class ProjectProject(models.Model):
         compute="_compute_client_total",
         store=True,
         currency_field="currency_id",
+        aggregator="sum",
         help="Total revenue from the linked Sale Order (amount_total)",
     )
     ptt_actual_margin = fields.Monetary(
@@ -170,11 +189,13 @@ class ProjectProject(models.Model):
         compute="_compute_vendor_stats",
         store=True,
         currency_field="currency_id",
+        aggregator="sum",
     )
     ptt_margin_percent = fields.Float(
         string="Margin %",
         compute="_compute_vendor_stats",
         store=True,
+        aggregator="avg",
     )
 
     currency_id = fields.Many2one(
@@ -233,6 +254,70 @@ class ProjectProject(models.Model):
                 project.ptt_margin_percent = (project.ptt_actual_margin / project.ptt_client_total) * 100
             else:
                 project.ptt_margin_percent = 0.0
+
+    # =========================================================================
+    # DATETIME CONVERSION METHODS
+    # =========================================================================
+    # These convert Float times from CRM + Event Date into full Datetime fields
+    # for calendar integration and scheduling features.
+    # Pattern follows odoo/addons/event/models/event_slot.py
+    
+    @api.depends("ptt_event_date", "ptt_setup_time")
+    def _compute_setup_start_time(self):
+        """Convert float setup time + event date to datetime.
+        
+        Combines the event date with the setup time (stored as float hours
+        in CRM, e.g., 14.5 = 2:30 PM) to create a proper datetime value.
+        """
+        for project in self:
+            if project.ptt_event_date and project.ptt_setup_time is not None:
+                # Convert date to datetime at midnight
+                base_dt = fields.Datetime.to_datetime(project.ptt_event_date)
+                # Extract hours and minutes from float
+                hours = int(project.ptt_setup_time)
+                minutes = int((project.ptt_setup_time - hours) * 60)
+                # Clamp values to valid range
+                hours = max(0, min(23, hours))
+                minutes = max(0, min(59, minutes))
+                project.ptt_setup_start_time = base_dt.replace(hour=hours, minute=minutes, second=0)
+            else:
+                project.ptt_setup_start_time = False
+
+    @api.depends("ptt_event_date", "ptt_event_start_time_float")
+    def _compute_event_start_time(self):
+        """Convert float start time + event date to datetime.
+        
+        Combines the event date with the event start time (stored as float
+        hours in CRM, e.g., 18.0 = 6:00 PM) to create a proper datetime value.
+        """
+        for project in self:
+            if project.ptt_event_date and project.ptt_event_start_time_float is not None:
+                base_dt = fields.Datetime.to_datetime(project.ptt_event_date)
+                hours = int(project.ptt_event_start_time_float)
+                minutes = int((project.ptt_event_start_time_float - hours) * 60)
+                hours = max(0, min(23, hours))
+                minutes = max(0, min(59, minutes))
+                project.ptt_event_start_time = base_dt.replace(hour=hours, minute=minutes, second=0)
+            else:
+                project.ptt_event_start_time = False
+
+    @api.depends("ptt_event_date", "ptt_event_end_time_float")
+    def _compute_event_end_time(self):
+        """Convert float end time + event date to datetime.
+        
+        Combines the event date with the event end time (stored as float
+        hours in CRM, e.g., 22.0 = 10:00 PM) to create a proper datetime value.
+        """
+        for project in self:
+            if project.ptt_event_date and project.ptt_event_end_time_float is not None:
+                base_dt = fields.Datetime.to_datetime(project.ptt_event_date)
+                hours = int(project.ptt_event_end_time_float)
+                minutes = int((project.ptt_event_end_time_float - hours) * 60)
+                hours = max(0, min(23, hours))
+                minutes = max(0, min(59, minutes))
+                project.ptt_event_end_time = base_dt.replace(hour=hours, minute=minutes, second=0)
+            else:
+                project.ptt_event_end_time = False
 
     # =========================================================================
     # EVENT REMINDER METHODS

@@ -43,8 +43,9 @@ class PttProjectVendorAssignment(models.Model):
     )
     vendor_name = fields.Char(
         string="Vendor Name",
-        compute="_compute_vendor_name",
+        related="vendor_id.name",
         store=True,
+        readonly=True,
     )
     vendor_contact = fields.Char(string="Contact Person")
     vendor_phone = fields.Char(
@@ -96,15 +97,6 @@ class PttProjectVendorAssignment(models.Model):
     # Notes
     description = fields.Text(string="Service Description")
     notes = fields.Text(string="Notes")
-
-    @api.depends("vendor_id", "vendor_id.name")
-    def _compute_vendor_name(self):
-        """Compute stored vendor name for search and display.
-        
-        Denormalizes vendor name for faster list views and searching.
-        """
-        for record in self:
-            record.vendor_name = record.vendor_id.name if record.vendor_id else ""
 
     @api.depends("estimated_cost", "actual_cost")
     def _compute_cost_variance(self):
