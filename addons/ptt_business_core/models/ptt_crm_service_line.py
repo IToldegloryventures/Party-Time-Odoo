@@ -14,7 +14,9 @@ captures the initial service requirements during discovery/proposal phases.
 
 from odoo import models, fields, api
 
-from odoo.addons.ptt_business_core.constants import SERVICE_TYPES, SERVICE_TIERS
+from odoo.addons.ptt_business_core.constants import (
+    SERVICE_TYPES, SERVICE_TIERS
+)
 
 
 class PttCrmServiceLine(models.Model):
@@ -46,7 +48,18 @@ class PttCrmServiceLine(models.Model):
         "product.product",
         string="Service Product",
         domain="[('sale_ok', '=', True)]",
-        help="Link to product catalog for pricing. Leave empty for custom services.",
+        help="Link to product catalog for pricing. "
+             "Leave empty for custom services.",
+    )
+    # Native Many2one to service type - enables relational linking
+    # to vendor pricing
+    service_type_id = fields.Many2one(
+        "ptt.vendor.service.type",
+        string="Service Type",
+        required=True,
+        index=True,
+        ondelete="restrict",
+        help="Service type - links to vendor pricing for cost estimation",
     )
 
     # =========================================================================
@@ -56,23 +69,28 @@ class PttCrmServiceLine(models.Model):
         string="Sequence",
         default=10,
     )
+    # Keep service_type as computed Selection for backward compatibility
+    # Value derived from service_type_id.code - native Odoo pattern
     service_type = fields.Selection(
         selection=SERVICE_TYPES,
-        string="Service Type",
-        required=True,
+        string="Service Code",
+        compute="_compute_service_type",
+        store=True,
+        readonly=True,
+        help="Service type code - computed from Service Type relationship",
     )
     service_tier = fields.Selection(
         selection=SERVICE_TIERS,
         string="Service Tier",
         required=True,
-        help="Essential = Basic package, Classic = Standard, Premier = Premium",
+        help="Essential = Basic, Classic = Standard, Premier = Premium",
     )
     name = fields.Char(
         string="Description",
         compute="_compute_name",
         store=True,
         readonly=False,
-        help="Service description - auto-generated from product or service type",
+        help="Auto-generated from product or service type",
     )
 
     # =========================================================================
@@ -125,6 +143,16 @@ class PttCrmServiceLine(models.Model):
     )
 
     # =========================================================================
+    # VENDOR PRICING (from service_type_id relationship)
+    # =========================================================================
+    # Count of vendors with pricing for this service type - for smart button
+    vendor_count = fields.Integer(
+        string="Available Vendors",
+        compute="_compute_vendor_count",
+        help="Number of vendors with pricing for this service type",
+    )
+
+    # =========================================================================
     # NOTES
     # =========================================================================
     notes = fields.Text(
@@ -135,20 +163,33 @@ class PttCrmServiceLine(models.Model):
     # =========================================================================
     # COMPUTED METHODS
     # =========================================================================
-    @api.depends('product_id', 'service_type', 'service_tier')
+    @api.depends('service_type_id')
+    def _compute_service_type(self):
+        """Compute service_type Selection from service_type_id Many2one.
+
+        This enables backward compatibility - existing code using
+        service_type Selection values will continue to work.
+        """
+        for line in self:
+            if line.service_type_id:
+                line.service_type = line.service_type_id.code
+            else:
+                line.service_type = False
+
+    @api.depends('product_id', 'service_type_id', 'service_tier')
     def _compute_name(self):
         """Generate description from service type + tier, not product name."""
         tier_labels = dict(SERVICE_TIERS)
-        type_labels = dict(SERVICE_TYPES)
         for line in self:
-            # ALWAYS prioritize service_type + tier for display
-            if line.service_type and line.service_tier:
-                type_name = type_labels.get(line.service_type, line.service_type)
-                tier_name = tier_labels.get(line.service_tier, line.service_tier)
+            # ALWAYS prioritize service_type_id + tier for display
+            if line.service_type_id and line.service_tier:
+                type_name = line.service_type_id.name
+                tier_name = tier_labels.get(
+                    line.service_tier, line.service_tier
+                )
                 line.name = f"{type_name} - {tier_name}"
-            elif line.service_type:
-                type_name = type_labels.get(line.service_type, line.service_type)
-                line.name = type_name
+            elif line.service_type_id:
+                line.name = line.service_type_id.name
             elif line.product_id:
                 line.name = line.product_id.display_name
             else:
@@ -173,18 +214,35 @@ class PttCrmServiceLine(models.Model):
             else:
                 line.subtotal = line.unit_price * line.quantity
 
+    @api.depends('service_type_id')
+    def _compute_vendor_count(self):
+        """Count vendors with pricing for this service type.
+        
+        Uses native Odoo search_count for efficiency.
+        Enables smart button display of available vendors.
+        """
+        VendorPricing = self.env['ptt.vendor.service.pricing']
+        for line in self:
+            if line.service_type_id:
+                line.vendor_count = VendorPricing.search_count([
+                    ('service_type_id', '=', line.service_type_id.id)
+                ])
+            else:
+                line.vendor_count = 0
+
     # =========================================================================
     # ONCHANGE METHODS
     # =========================================================================
     @api.onchange('product_id')
     def _onchange_product_id(self):
-        """When product is selected, populate service type and tier from variant."""
+        """Populate service type and tier from variant when selected."""
         if self.product_id:
             # Try to extract tier from variant attributes
-            for attr_val in self.product_id.product_template_attribute_value_ids:
+            attr_vals = self.product_id.product_template_attribute_value_ids
+            for attr_val in attr_vals:
                 attr_name = attr_val.attribute_id.name.lower()
                 val_name = attr_val.product_attribute_value_id.name.lower()
-                
+
                 # Map attribute values to our tier selections
                 if 'tier' in attr_name:
                     if 'essential' in val_name:
@@ -193,10 +251,11 @@ class PttCrmServiceLine(models.Model):
                         self.service_tier = 'classic'
                     elif 'premier' in val_name:
                         self.service_tier = 'premier'
-            
+
             # Get min hours from product
-            if self.product_id.ptt_min_hours and self.hours < self.product_id.ptt_min_hours:
-                self.hours = self.product_id.ptt_min_hours
+            min_hrs = self.product_id.ptt_min_hours
+            if min_hrs and self.hours < min_hrs:
+                self.hours = min_hrs
 
     @api.onchange('hours', 'product_id')
     def _onchange_hours_warning(self):

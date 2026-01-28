@@ -9,6 +9,7 @@ columns that were marked as deprecated and builds on the replacement fields
 metadata clean.
 """
 import logging
+from psycopg2 import sql
 
 _logger = logging.getLogger(__name__)
 DEPRECATED_COLUMNS = ["ptt_event_time", "ptt_event_duration"]
@@ -35,7 +36,10 @@ def migrate(cr, version):
             _logger.info("Column %s already absent, skipping", column_name)
             continue
 
-        cr.execute(f"SELECT COUNT(*) FROM project_project WHERE {column_name} IS NOT NULL")
+        query = sql.SQL("SELECT COUNT(*) FROM project_project WHERE {} IS NOT NULL").format(
+            sql.Identifier(column_name)
+        )
+        cr.execute(query)
         row = cr.fetchone()
         populated = row[0] if row else 0
         if populated:
@@ -45,7 +49,10 @@ def migrate(cr, version):
                 populated,
             )
 
-        cr.execute(f"ALTER TABLE project_project DROP COLUMN IF EXISTS {column_name}")
+        query = sql.SQL("ALTER TABLE project_project DROP COLUMN IF EXISTS {}").format(
+            sql.Identifier(column_name)
+        )
+        cr.execute(query)
         _logger.info("Dropped column %s from project.project", column_name)
 
     columns_tuple = tuple(DEPRECATED_COLUMNS)

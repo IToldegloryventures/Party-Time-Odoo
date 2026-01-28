@@ -7,6 +7,7 @@ This migration:
 2. Renames all x_vendor_* fields to ptt_vendor_* following Odoo best practices
 """
 import logging
+from psycopg2 import sql
 
 _logger = logging.getLogger(__name__)
 
@@ -80,19 +81,27 @@ def migrate(cr, version):
             
             if not cr.fetchone():
                 # Rename the column
-                cr.execute(f"""
-                    ALTER TABLE res_partner 
-                    RENAME COLUMN {old_name} TO {new_name}
-                """)
+                query = sql.SQL("ALTER TABLE res_partner RENAME COLUMN {} TO {}").format(
+                    sql.Identifier(old_name),
+                    sql.Identifier(new_name)
+                )
+                cr.execute(query)
                 _logger.info(f"PTT Vendor Management: Renamed column {old_name} to {new_name}")
             else:
                 # Copy data to new column and drop old
                 _logger.info(f"PTT Vendor Management: {new_name} already exists, copying data")
-                cr.execute(f"""
-                    UPDATE res_partner SET {new_name} = {old_name}
-                    WHERE {old_name} IS NOT NULL AND ({new_name} IS NULL OR {new_name} = '')
-                """)
-                cr.execute(f"ALTER TABLE res_partner DROP COLUMN IF EXISTS {old_name}")
+                query = sql.SQL("UPDATE res_partner SET {} = {} WHERE {} IS NOT NULL AND ({} IS NULL OR {} = '')").format(
+                    sql.Identifier(new_name),
+                    sql.Identifier(old_name),
+                    sql.Identifier(old_name),
+                    sql.Identifier(new_name),
+                    sql.Identifier(new_name)
+                )
+                cr.execute(query)
+                query = sql.SQL("ALTER TABLE res_partner DROP COLUMN IF EXISTS {}").format(
+                    sql.Identifier(old_name)
+                )
+                cr.execute(query)
         
         # Update ir_model_fields
         cr.execute("""

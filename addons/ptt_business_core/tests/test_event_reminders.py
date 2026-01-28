@@ -11,9 +11,10 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from odoo import fields
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase, tagged
 
 
+@tagged('standard', 'at_install')
 class TestEventReminders(TransactionCase):
     """Test event reminder cron job functionality."""
     
@@ -207,6 +208,7 @@ class TestEventReminders(TransactionCase):
         self.env['project.project']._cron_send_event_reminders_3_day()
 
 
+@tagged('standard', 'at_install')
 class TestVendorConfirmation(TransactionCase):
     """Test vendor confirmation checking for reminders."""
     

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Vendor Service Pricing List View -->
+        <record id="view_ptt_vendor_service_pricing_list" model="ir.ui.view">
+            <field name="name">ptt.vendor.service.pricing.list</field>
+            <field name="model">ptt.vendor.service.pricing</field>
+            <field name="arch" type="xml">
+                <list string="Vendor Pricing" editable="bottom" multi_edit="1">
+                    <field name="vendor_id"/>
+                    <field name="service_type_id"/>
+                    <field name="price_detail"/>
+                    <field name="notes" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vendor Service Pricing Search View -->
+        <record id="view_ptt_vendor_service_pricing_search" model="ir.ui.view">
+            <field name="name">ptt.vendor.service.pricing.search</field>
+            <field name="model">ptt.vendor.service.pricing</field>
+            <field name="arch" type="xml">
+                <search string="Vendor Pricing">
+                    <field name="vendor_id"/>
+                    <field name="service_type_id"/>
+                    <field name="price_detail"/>
+                    <separator/>
+                    <filter name="filter_service_type" string="Service Type" 
+                            domain="[('service_type_id', '=', context.get('default_service_type_id'))]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Vendor" name="group_vendor" context="{'group_by': 'vendor_id'}"/>
+                        <filter string="Service Type" name="group_service_type" context="{'group_by': 'service_type_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Vendor Service Pricing Form View -->
+        <record id="view_ptt_vendor_service_pricing_form" model="ir.ui.view">
+            <field name="name">ptt.vendor.service.pricing.form</field>
+            <field name="model">ptt.vendor.service.pricing</field>
+            <field name="arch" type="xml">
+                <form string="Vendor Pricing">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="vendor_id"/>
+                                <field name="service_type_id"/>
+                            </group>
+                            <group>
+                                <field name="price_detail"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Minimums, packages, special rates..."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action: View Vendor Pricing by Service Type -->
+        <!-- Used by smart buttons in CRM Service Lines -->
+        <record id="action_vendor_pricing_by_service" model="ir.actions.act_window">
+            <field name="name">Vendors for this Service</field>
+            <field name="res_model">ptt.vendor.service.pricing</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_ptt_vendor_service_pricing_search"/>
+            <field name="context">{'search_default_filter_service_type': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No vendor pricing found for this service type.
+                </p>
+                <p>
+                    Add vendor service pricing from the Vendor Management module.
+                </p>
+            </field>
+        </record>
+
+        <!-- Action: All Vendor Pricing (for menu) -->
+        <record id="action_vendor_service_pricing_all" model="ir.actions.act_window">
+            <field name="name">Vendor Service Pricing</field>
+            <field name="res_model">ptt.vendor.service.pricing</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_ptt_vendor_service_pricing_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No vendor pricing records yet.
+                </p>
+                <p>
+                    Track what each vendor charges for their services to help
+                    with cost estimation during the sales process.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

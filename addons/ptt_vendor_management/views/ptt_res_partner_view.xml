@@ -80,6 +80,22 @@
                             <!-- ptt_vendor_rating is shown in ptt_business_core Sales & Purchases tab -->
                         </group>
                     </group>
+                    
+                    <!-- Service Pricing Section -->
+                    <separator string="Service Pricing"/>
+                    <div class="text-muted mb-2">
+                        <small>
+                            <i class="fa fa-info-circle me-1"/>
+                            Track this vendor's rates for each service type. Used to provide pricing hints when assigning vendors to events.
+                        </small>
+                    </div>
+                    <field name="ptt_vendor_service_pricing_ids" nolabel="1" context="{'default_vendor_id': id}">
+                        <list editable="bottom">
+                            <field name="service_type_id" options="{'no_create': True}"/>
+                            <field name="price_detail" placeholder="e.g., $150/hr, $500 flat"/>
+                            <field name="notes" optional="show" placeholder="Minimums, packages, etc."/>
+                        </list>
+                    </field>
                 </page>
                 
                 <!-- Vendor Work History Tab -->

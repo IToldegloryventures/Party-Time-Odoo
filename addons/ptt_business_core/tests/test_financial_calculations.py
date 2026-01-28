@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Tests for financial calculations."""
 
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase, tagged
 
 
+@tagged('standard', 'at_install')
 class TestFinancialCalculations(TransactionCase):
     """Test financial calculation accuracy across models."""
     

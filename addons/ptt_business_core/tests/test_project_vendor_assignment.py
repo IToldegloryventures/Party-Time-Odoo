@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Tests for Project Vendor Assignment model."""
 
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase, tagged
 
 
+@tagged('standard', 'at_install')
 class TestProjectVendorAssignment(TransactionCase):
     """Test vendor assignment functionality."""
     

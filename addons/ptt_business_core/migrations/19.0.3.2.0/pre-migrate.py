@@ -5,6 +5,7 @@ Maps legacy service_type/vendor_category values to the new QuickBooks-aligned
 set so existing records stay valid after selection changes.
 """
 import logging
+from psycopg2 import sql
 
 _logger = logging.getLogger(__name__)
 
@@ -71,29 +72,23 @@ def _column_exists(cr, table, column):
 
 
 def _apply_mapping(cr, table, column):
+    table_id = sql.Identifier(table)
+    column_id = sql.Identifier(column)
+    
     for old_value, new_value in SERVICE_TYPE_MAPPING.items():
-        cr.execute(
-            f"""
-            UPDATE {table}
-            SET {column} = %s
-            WHERE {column} = %s
-            """,
-            (new_value, old_value),
+        query = sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").format(
+            table_id, column_id, column_id
         )
+        cr.execute(query, (new_value, old_value))
         updated = cr.rowcount
         if updated:
             _logger.info("%s.%s: %s -> %s (%s rows)", table, column, old_value, new_value, updated)
 
     # Normalize any non-allowed values to "other" to keep records valid
-    cr.execute(
-        f"""
-        UPDATE {table}
-        SET {column} = 'other'
-        WHERE {column} IS NOT NULL
-        AND {column} NOT IN %s
-        """,
-        (tuple(ALLOWED_TYPES),),
+    query = sql.SQL("UPDATE {} SET {} = 'other' WHERE {} IS NOT NULL AND {} NOT IN %s").format(
+        table_id, column_id, column_id, column_id
     )
+    cr.execute(query, (tuple(ALLOWED_TYPES),))
     normalized = cr.rowcount
     if normalized:
         _logger.info("%s.%s: normalized %s rows to 'other'", table, column, normalized)

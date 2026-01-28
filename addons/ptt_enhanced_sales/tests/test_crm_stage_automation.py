@@ -6,9 +6,10 @@ Feature 1: CRM Stage Automation
 - Links CRM ↔ Project properly
 """
 
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase, tagged
 
 
+@tagged('standard', 'at_install')
 class TestCrmStageAutomation(TransactionCase):
     """Test CRM stage automation when quotes are sent/confirmed."""
     
@@ -291,6 +292,7 @@ class TestCrmStageAutomation(TransactionCase):
         self.assertEqual(lead.probability, 100)
 
 
+@tagged('standard', 'at_install')
 class TestCrmProjectLink(TransactionCase):
     """Test CRM ↔ Project linking functionality."""
     

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tests for CRM Lead to Project flow."""
 
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase, tagged
 from odoo.exceptions import UserError
 
 
+@tagged('standard', 'at_install')
 class TestCrmLeadProjectFlow(TransactionCase):
     """Test CRM Lead extensions and project creation flow."""
     

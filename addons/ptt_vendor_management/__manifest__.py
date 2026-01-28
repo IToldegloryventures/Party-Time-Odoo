@@ -70,6 +70,7 @@
         "views/ptt_vendor_onboarding_view.xml",
         "views/ptt_vendor_rfq_views.xml",
         "views/ptt_vendor_task_views.xml",
+        "views/ptt_vendor_service_pricing_views.xml",
         "views/ptt_vendor_menus.xml",
         "views/vendor_portal_templates.xml",
         "views/vendor_application_templates.xml",

@@ -24,6 +24,13 @@ _logger = logging.getLogger(__name__)
 # ============================================================================
 # These are the products created natively by the accounting team
 # DO NOT reference any other product IDs in PTT code
+#
+# USAGE:
+#   from odoo.addons.ptt_business_core.models.native_data_registry import NativeProducts
+#   product = env['product.template'].browse(NativeProducts.DJ_SERVICES)
+#
+#   Or for filtering:
+#   products = env['product.template'].browse(NativeProducts.ALL_SELLABLE_SERVICES)
 
 class NativeProducts:
     """Native product.template IDs from accounting team"""

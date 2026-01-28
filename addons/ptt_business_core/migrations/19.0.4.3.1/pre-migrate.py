@@ -8,6 +8,7 @@ This migration:
 3. Drops duplicate x_studio_* columns to avoid label conflicts
 """
 import logging
+from psycopg2 import sql
 
 _logger = logging.getLogger(__name__)
 
@@ -58,15 +59,20 @@ def migrate(cr, version):
             
             if cr.fetchone():
                 # Both exist - copy data from x_studio to ptt where ptt is NULL
-                cr.execute(f"""
-                    UPDATE crm_lead 
-                    SET {ptt_col} = {x_studio_col}
-                    WHERE {ptt_col} IS NULL AND {x_studio_col} IS NOT NULL
-                """)
+                query = sql.SQL("UPDATE crm_lead SET {} = {} WHERE {} IS NULL AND {} IS NOT NULL").format(
+                    sql.Identifier(ptt_col),
+                    sql.Identifier(x_studio_col),
+                    sql.Identifier(ptt_col),
+                    sql.Identifier(x_studio_col)
+                )
+                cr.execute(query)
                 _logger.info(f"Copied {cr.rowcount} values from {x_studio_col} to {ptt_col}")
             
             # Drop the x_studio column to avoid label conflict
-            cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {x_studio_col}")
+            query = sql.SQL("ALTER TABLE crm_lead DROP COLUMN IF EXISTS {}").format(
+                sql.Identifier(x_studio_col)
+            )
+            cr.execute(query)
             _logger.info(f"Dropped column {x_studio_col}")
     
     # Handle time fields - convert timestamp to float (decimal hours)
@@ -84,15 +90,21 @@ def migrate(cr, version):
             
             if cr.fetchone():
                 # Convert timestamp to decimal hours (e.g., 14:30 -> 14.5)
-                cr.execute(f"""
-                    UPDATE crm_lead 
-                    SET {ptt_col} = EXTRACT(HOUR FROM {x_studio_col}) + EXTRACT(MINUTE FROM {x_studio_col}) / 60.0
-                    WHERE {ptt_col} IS NULL AND {x_studio_col} IS NOT NULL
-                """)
+                query = sql.SQL("UPDATE crm_lead SET {} = EXTRACT(HOUR FROM {}) + EXTRACT(MINUTE FROM {}) / 60.0 WHERE {} IS NULL AND {} IS NOT NULL").format(
+                    sql.Identifier(ptt_col),
+                    sql.Identifier(x_studio_col),
+                    sql.Identifier(x_studio_col),
+                    sql.Identifier(ptt_col),
+                    sql.Identifier(x_studio_col)
+                )
+                cr.execute(query)
                 _logger.info(f"Converted {cr.rowcount} timestamp values from {x_studio_col} to float hours in {ptt_col}")
             
             # Drop the x_studio column
-            cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {x_studio_col}")
+            query = sql.SQL("ALTER TABLE crm_lead DROP COLUMN IF EXISTS {}").format(
+                sql.Identifier(x_studio_col)
+            )
+            cr.execute(query)
             _logger.info(f"Dropped column {x_studio_col}")
     
     # =========================================================================
@@ -105,7 +117,10 @@ def migrate(cr, version):
         'x_studio_boolean_field_1vp_1jckie6sq',  # Duplicate "New CheckBox"
     ]
     for col in orphaned_columns:
-        cr.execute(f"ALTER TABLE crm_lead DROP COLUMN IF EXISTS {col}")
+        query = sql.SQL("ALTER TABLE crm_lead DROP COLUMN IF EXISTS {}").format(
+            sql.Identifier(col)
+        )
+        cr.execute(query)
         _logger.info(f"Dropped orphaned column {col}")
     
     # Also clean up ir.model.fields entries for x_studio_* fields on crm.lead
@@ -145,16 +160,15 @@ def migrate(cr, version):
         'DJ-ADDON-APP',
     ]
 
-    # Build the SQL IN clause
-    codes_str = "', '".join(fake_addon_codes)
-
     # First, find all product.product (variants) for these templates
-    cr.execute(f"""
+    placeholders = ','.join(['%s'] * len(fake_addon_codes))
+    query = f"""
         SELECT pp.id
         FROM product_product pp
         JOIN product_template pt ON pp.product_tmpl_id = pt.id
-        WHERE pt.default_code IN ('{codes_str}')
-    """)
+        WHERE pt.default_code IN ({placeholders})
+    """
+    cr.execute(query, tuple(fake_addon_codes))
     variant_ids = [row[0] for row in cr.fetchall()]
 
     if variant_ids:
@@ -184,10 +198,12 @@ def migrate(cr, version):
         _logger.info(f"Deleted {cr.rowcount} product variants")
 
     # Now delete the product templates
-    cr.execute(f"""
+    placeholders = ','.join(['%s'] * len(fake_addon_codes))
+    query = f"""
         DELETE FROM product_template
-        WHERE default_code IN ('{codes_str}')
-    """)
+        WHERE default_code IN ({placeholders})
+    """
+    cr.execute(query, tuple(fake_addon_codes))
     deleted_templates = cr.rowcount
     _logger.info(f"Deleted {deleted_templates} fake product templates")
 

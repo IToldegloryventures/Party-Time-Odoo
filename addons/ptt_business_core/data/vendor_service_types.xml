@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ================================================================
+             Vendor Service Types - Master Data
+             Maps to SERVICE_TYPES constants in constants.py
+             Used by ptt.vendor.service.pricing and ptt.crm.service.line
+             ================================================================ -->
+
+        <!-- Entertainment - DJ & MC SEPARATED -->
+        <record id="vendor_service_type_dj" model="ptt.vendor.service.type">
+            <field name="name">DJ Services</field>
+            <field name="code">dj</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="vendor_service_type_mc" model="ptt.vendor.service.type">
+            <field name="name">MC Services</field>
+            <field name="code">mc</field>
+            <field name="sequence">11</field>
+        </record>
+        <record id="vendor_service_type_band" model="ptt.vendor.service.type">
+            <field name="name">Band Services</field>
+            <field name="code">band</field>
+            <field name="sequence">12</field>
+        </record>
+        <record id="vendor_service_type_musicians" model="ptt.vendor.service.type">
+            <field name="name">Musician Services</field>
+            <field name="code">musicians</field>
+            <field name="sequence">13</field>
+        </record>
+        <record id="vendor_service_type_dancers" model="ptt.vendor.service.type">
+            <field name="name">Dancers</field>
+            <field name="code">dancers</field>
+            <field name="sequence">14</field>
+        </record>
+        <record id="vendor_service_type_characters" model="ptt.vendor.service.type">
+            <field name="name">Characters</field>
+            <field name="code">characters</field>
+            <field name="sequence">15</field>
+        </record>
+        <record id="vendor_service_type_casino" model="ptt.vendor.service.type">
+            <field name="name">Casino Services</field>
+            <field name="code">casino</field>
+            <field name="sequence">16</field>
+        </record>
+        <record id="vendor_service_type_psychics" model="ptt.vendor.service.type">
+            <field name="name">Psychics</field>
+            <field name="code">psychics</field>
+            <field name="sequence">17</field>
+        </record>
+        <record id="vendor_service_type_magicians" model="ptt.vendor.service.type">
+            <field name="name">Magicians</field>
+            <field name="code">magicians</field>
+            <field name="sequence">18</field>
+        </record>
+        <record id="vendor_service_type_comedian" model="ptt.vendor.service.type">
+            <field name="name">Comedian</field>
+            <field name="code">comedian</field>
+            <field name="sequence">19</field>
+        </record>
+
+        <!-- Photo/Video -->
+        <record id="vendor_service_type_photography" model="ptt.vendor.service.type">
+            <field name="name">Photography Services</field>
+            <field name="code">photography</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="vendor_service_type_videography" model="ptt.vendor.service.type">
+            <field name="name">Videography Services</field>
+            <field name="code">videography</field>
+            <field name="sequence">21</field>
+        </record>
+        <record id="vendor_service_type_photobooth" model="ptt.vendor.service.type">
+            <field name="name">Photo Booths Rentals</field>
+            <field name="code">photobooth</field>
+            <field name="sequence">22</field>
+        </record>
+
+        <!-- Artists -->
+        <record id="vendor_service_type_caricature_traditional" model="ptt.vendor.service.type">
+            <field name="name">Traditional Caricature Artist</field>
+            <field name="code">caricature_traditional</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="vendor_service_type_caricature_digital" model="ptt.vendor.service.type">
+            <field name="name">Digital Caricature Artist</field>
+            <field name="code">caricature_digital</field>
+            <field name="sequence">31</field>
+        </record>
+        <record id="vendor_service_type_balloon_artist" model="ptt.vendor.service.type">
+            <field name="name">Balloon Artist</field>
+            <field name="code">balloon_artist</field>
+            <field name="sequence">32</field>
+        </record>
+        <record id="vendor_service_type_face_painters" model="ptt.vendor.service.type">
+            <field name="name">Face Painters</field>
+            <field name="code">face_painters</field>
+            <field name="sequence">33</field>
+        </record>
+        <record id="vendor_service_type_airbrush_tattoo" model="ptt.vendor.service.type">
+            <field name="name">Airbrush Tattoo</field>
+            <field name="code">airbrush_tattoo</field>
+            <field name="sequence">34</field>
+        </record>
+
+        <!-- Food & Beverage -->
+        <record id="vendor_service_type_catering" model="ptt.vendor.service.type">
+            <field name="name">Catering Services</field>
+            <field name="code">catering</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="vendor_service_type_bartender" model="ptt.vendor.service.type">
+            <field name="name">Bartender Services</field>
+            <field name="code">bartender</field>
+            <field name="sequence">41</field>
+        </record>
+        <record id="vendor_service_type_wait_staff" model="ptt.vendor.service.type">
+            <field name="name">Wait Staff</field>
+            <field name="code">wait_staff</field>
+            <field name="sequence">42</field>
+        </record>
+
+        <!-- A/V & Equipment -->
+        <record id="vendor_service_type_av_projector" model="ptt.vendor.service.type">
+            <field name="name">A/V Rentals - Projector and Screen</field>
+            <field name="code">av_projector</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="vendor_service_type_av_monitor" model="ptt.vendor.service.type">
+            <field name="name">A/V Rentals - Monitor</field>
+            <field name="code">av_monitor</field>
+            <field name="sequence">51</field>
+        </record>
+        <record id="vendor_service_type_av_led_wall" model="ptt.vendor.service.type">
+            <field name="name">A/V Rentals - LED Wall Panel</field>
+            <field name="code">av_led_wall</field>
+            <field name="sequence">52</field>
+        </record>
+        <record id="vendor_service_type_av_audio" model="ptt.vendor.service.type">
+            <field name="name">A/V Rentals - Audio</field>
+            <field name="code">av_audio</field>
+            <field name="sequence">53</field>
+        </record>
+        <record id="vendor_service_type_av_misc" model="ptt.vendor.service.type">
+            <field name="name">A/V Rentals - Misc</field>
+            <field name="code">av_misc</field>
+            <field name="sequence">54</field>
+        </record>
+        <record id="vendor_service_type_av_technician" model="ptt.vendor.service.type">
+            <field name="name">A/V Technician</field>
+            <field name="code">av_technician</field>
+            <field name="sequence">55</field>
+        </record>
+        <record id="vendor_service_type_av_production_mgr" model="ptt.vendor.service.type">
+            <field name="name">A/V Production Manager</field>
+            <field name="code">av_production_mgr</field>
+            <field name="sequence">56</field>
+        </record>
+        <record id="vendor_service_type_av_technical_dir" model="ptt.vendor.service.type">
+            <field name="name">A/V Technical Director</field>
+            <field name="code">av_technical_dir</field>
+            <field name="sequence">57</field>
+        </record>
+
+        <!-- Rentals -->
+        <record id="vendor_service_type_balloon_decor" model="ptt.vendor.service.type">
+            <field name="name">Balloon Decor</field>
+            <field name="code">balloon_decor</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="vendor_service_type_furniture_rentals" model="ptt.vendor.service.type">
+            <field name="name">Furniture Rentals</field>
+            <field name="code">furniture_rentals</field>
+            <field name="sequence">61</field>
+        </record>
+        <record id="vendor_service_type_inflatables" model="ptt.vendor.service.type">
+            <field name="name">Inflatables Rentals</field>
+            <field name="code">inflatables</field>
+            <field name="sequence">62</field>
+        </record>
+        <record id="vendor_service_type_games" model="ptt.vendor.service.type">
+            <field name="name">Games Rentals</field>
+            <field name="code">games</field>
+            <field name="sequence">63</field>
+        </record>
+        <record id="vendor_service_type_equipment_rental" model="ptt.vendor.service.type">
+            <field name="name">Equipment Rental</field>
+            <field name="code">equipment_rental</field>
+            <field name="sequence">64</field>
+        </record>
+        <record id="vendor_service_type_decor" model="ptt.vendor.service.type">
+            <field name="name">Decor &amp; Decorations</field>
+            <field name="code">decor</field>
+            <field name="sequence">65</field>
+        </record>
+
+        <!-- Services -->
+        <record id="vendor_service_type_event_planning" model="ptt.vendor.service.type">
+            <field name="name">Event Planning Services</field>
+            <field name="code">event_planning</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="vendor_service_type_officiant" model="ptt.vendor.service.type">
+            <field name="name">Officiant Services</field>
+            <field name="code">officiant</field>
+            <field name="sequence">71</field>
+        </record>
+        <record id="vendor_service_type_petting_zoo" model="ptt.vendor.service.type">
+            <field name="name">Petting Zoo</field>
+            <field name="code">petting_zoo</field>
+            <field name="sequence">72</field>
+        </record>
+        <record id="vendor_service_type_deliver_setup_strike" model="ptt.vendor.service.type">
+            <field name="name">Deliver, Setup, Strike</field>
+            <field name="code">deliver_setup_strike</field>
+            <field name="sequence">73</field>
+        </record>
+        <record id="vendor_service_type_travel_expenses" model="ptt.vendor.service.type">
+            <field name="name">Travel and Expenses</field>
+            <field name="code">travel_expenses</field>
+            <field name="sequence">74</field>
+        </record>
+
+        <!-- Insurance & Adjustments -->
+        <record id="vendor_service_type_insurance" model="ptt.vendor.service.type">
+            <field name="name">Additional Insured Coverage Extension</field>
+            <field name="code">insurance</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="vendor_service_type_deposit" model="ptt.vendor.service.type">
+            <field name="name">Customer Deposit / Retainer</field>
+            <field name="code">deposit</field>
+            <field name="sequence">81</field>
+        </record>
+        <record id="vendor_service_type_discount" model="ptt.vendor.service.type">
+            <field name="name">Client Discounts</field>
+            <field name="code">discount</field>
+            <field name="sequence">82</field>
+        </record>
+        <record id="vendor_service_type_refund" model="ptt.vendor.service.type">
+            <field name="name">Client Refund</field>
+            <field name="code">refund</field>
+            <field name="sequence">83</field>
+        </record>
+        <record id="vendor_service_type_cancellation" model="ptt.vendor.service.type">
+            <field name="name">Cancellation Event Fees</field>
+            <field name="code">cancellation</field>
+            <field name="sequence">84</field>
+        </record>
+        <record id="vendor_service_type_bad_debt" model="ptt.vendor.service.type">
+            <field name="name">Bad Debt</field>
+            <field name="code">bad_debt</field>
+            <field name="sequence">85</field>
+        </record>
+        <record id="vendor_service_type_late_fee_initial" model="ptt.vendor.service.type">
+            <field name="name">Initial 10% Late Fee</field>
+            <field name="code">late_fee_initial</field>
+            <field name="sequence">86</field>
+        </record>
+        <record id="vendor_service_type_late_fee_monthly" model="ptt.vendor.service.type">
+            <field name="name">Monthly 1.5% Late Fee</field>
+            <field name="code">late_fee_monthly</field>
+            <field name="sequence">87</field>
+        </record>
+        <record id="vendor_service_type_tips" model="ptt.vendor.service.type">
+            <field name="name">Tips Given</field>
+            <field name="code">tips</field>
+            <field name="sequence">88</field>
+        </record>
+        <record id="vendor_service_type_variable_consideration" model="ptt.vendor.service.type">
+            <field name="name">Variable Consideration</field>
+            <field name="code">variable_consideration</field>
+            <field name="sequence">89</field>
+        </record>
+
+        <!-- Misc -->
+        <record id="vendor_service_type_misc_taxed" model="ptt.vendor.service.type">
+            <field name="name">Misc Event Services (Taxed)</field>
+            <field name="code">misc_taxed</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="vendor_service_type_misc_untaxed" model="ptt.vendor.service.type">
+            <field name="name">Misc Event Entertainment Services (Untaxed)</field>
+            <field name="code">misc_untaxed</field>
+            <field name="sequence">91</field>
+        </record>
+        <record id="vendor_service_type_other" model="ptt.vendor.service.type">
+            <field name="name">Other</field>
+            <field name="code">other</field>
+            <field name="sequence">99</field>
+        </record>
+
+    </data>
+</odoo>
