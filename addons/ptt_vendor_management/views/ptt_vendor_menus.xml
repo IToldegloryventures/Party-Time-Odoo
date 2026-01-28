@@ -27,7 +27,7 @@
     <menuitem id="menu_ptt_native_rfq"
         name="Purchase RFQs"
         parent="menu_ptt_vendor_management_root"
-        action="purchase.purchase_rfq_action"
+        action="purchase.purchase_rfq"
         sequence="15"/>
 
     <!-- Vendor Tasks -->
