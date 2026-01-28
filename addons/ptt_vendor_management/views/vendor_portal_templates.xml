@@ -608,7 +608,7 @@
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">
-                                        <t t-esc="event.service_type_id.name"/>
+                                        <t t-esc="dict(event._fields['service_type'].selection).get(event.service_type, event.service_type)"/>
                                     </h5>
                                     
                                     <!-- Venue Info -->
@@ -649,7 +649,7 @@
                                         <i class="fa fa-dollar text-success me-2"></i>
                                         <strong>Payment:</strong>
                                         <span class="text-success fw-bold">
-                                            <t t-esc="event.agreed_rate" t-options="{'widget': 'monetary', 'display_currency': event.currency_id}"/>
+                                            <t t-esc="event.estimated_cost" t-options="{'widget': 'monetary', 'display_currency': event.currency_id}"/>
                                         </span>
                                     </div>
                                     

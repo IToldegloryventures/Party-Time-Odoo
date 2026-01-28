@@ -114,8 +114,8 @@
                 </div>
             </t>
         </xpath>
-        <!-- Add Terms and Conditions acknowledgment block at the end of the document, after signature -->
-        <xpath expr="//div[contains(@class, 'o_report_signature') or contains(@class, 'o_report_signatures')][last()]" position="after">
+        <!-- Add Terms and Conditions acknowledgment block at the end of the document -->
+        <xpath expr="//div[@id='informations']/.." position="inside">
             <div class="mt-4" style="border-top:1px solid #ccc; padding-top:16px; background-color:#f8f9fa; border-radius:5px;">
                 <p style="font-size: 15px; color: #495057; margin-bottom: 8px;">
                     By signing this sales order, you acknowledge receipt and acceptance of our

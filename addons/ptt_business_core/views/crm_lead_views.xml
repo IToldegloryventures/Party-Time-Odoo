@@ -214,7 +214,6 @@
                         <group>
                             <group>
                                 <field name="ptt_budget_range"/>
-                                <field name="ptt_services_already_booked"/>
                             </group>
                         </group>
                         

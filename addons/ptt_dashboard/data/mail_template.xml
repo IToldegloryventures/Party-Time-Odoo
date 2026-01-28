@@ -2,7 +2,7 @@
 <odoo noupdate="0">
     <record id="mail_template_dashboard_chart" model="mail.template">
         <field name="name">Dashboard Layout Email</field>
-        <field name="model_id" ref="model_dashboard_dashboard" />
+        <field name="model_id" ref="ptt_dashboard.model_dashboard_dashboard" />
         <field name="subject">Dashboard: {{ ctx.get('name') }}</field>
         <field name="partner_to">{{ ctx.get('email_to') }}</field>
         <field name="lang">{{ ctx.get('default_lang') }}</field>
