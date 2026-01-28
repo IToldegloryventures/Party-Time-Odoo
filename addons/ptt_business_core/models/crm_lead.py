@@ -137,22 +137,8 @@ class CrmLead(models.Model):
     ptt_dj_mc_needed = fields.Boolean(string="MC Services Needed?")
     ptt_dj_karaoke = fields.Boolean(string="Karaoke Desired?")
     
-    # Photo Booth Details
-    ptt_photobooth_type = fields.Selection(
-        [
-            ("360", "360 Booth"),
-            ("standard", "Standard Booth"),
-            ("ai", "AI Booth"),
-            ("green_screen", "Green Screen"),
-        ],
-        string="Photo Booth Type",
-    )
-    ptt_photobooth_branding = fields.Boolean(string="Custom Branding?")
-    
-    # Casino Details
-    ptt_casino_games = fields.Text(string="Desired Games")
-    ptt_casino_player_count = fields.Integer(string="Expected Players")
-    
+    # Photo Booth Details (REMOVED: ptt_photobooth_branding)
+    # Casino Details (REMOVED: ptt_casino_games, ptt_casino_player_count)
     # General Service Notes
     ptt_service_notes = fields.Text(
         string="Service Notes",
@@ -163,7 +149,6 @@ class CrmLead(models.Model):
     # BUDGET & FINANCIAL
     # =========================================================================
     ptt_budget_range = fields.Char(string="Budget Range")
-    ptt_services_already_booked = fields.Text(string="Services Already Booked")
 
     # =========================================================================
     # SERVICE LINES (Structured service selection before quote)
