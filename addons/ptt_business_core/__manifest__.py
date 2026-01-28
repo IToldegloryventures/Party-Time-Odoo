@@ -1,6 +1,6 @@
 {
     "name": "PTT Business Core",
-    "version": "19.0.4.3.1",
+    "version": "19.0.4.4.4",
     "summary": "Party Time Texas core business models for event management.",
     "description": """
 Party Time Texas Business Core Module
@@ -47,10 +47,6 @@ Other PTT modules depend on this one.
         "security/ptt_project_vendor_assignment_security.xml",
         # Data - Sequences (load first for ID generation)
         "data/sequences.xml",
-        # Data - Task Types (load before project template)
-        "data/task_types.xml",
-        # Data - Project Template (load before products)
-        "data/project_template.xml",
         # Data - Activity Types
         "data/mail_activity_type.xml",
         # Data - CRM Configuration
@@ -61,9 +57,11 @@ Other PTT modules depend on this one.
         "data/email_templates.xml",
         # Data - Scheduled Actions
         "data/cron_jobs.xml",
+        # Data - Project templates (used by product defaults)
+        "data/project_template.xml",
         # Data - Product Configuration
         # NOTE: Product attributes, categories, and products are managed NATIVELY
-        # by the accounting team - NOT via code. Only Event Kickoff product remains.
+        # by the accounting team - NOT via code.
         "data/products_administrative.xml",
         # Views
         "views/res_partner_views.xml",
