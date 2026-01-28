@@ -1,0 +1,236 @@
+name: Test PTT Modules
+
+on:
+  push:
+    branches: [config, main, master]
+    paths:
+      - 'addons/ptt_*/**'
+      - 'odoo/**'
+      - '.github/workflows/test-ptt-modules.yml'
+  pull_request:
+    branches: [config, main, master]
+    paths:
+      - 'addons/ptt_*/**'
+      - 'odoo/**'
+
+env:
+  ODOO_RC: /tmp/odoo.conf
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'odoo/requirements.txt'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libldap2-dev \
+            libsasl2-dev \
+            libssl-dev \
+            libpq-dev \
+            build-essential \
+            wkhtmltopdf
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r odoo/requirements.txt
+          pip install coverage pytest
+
+      - name: Create Odoo config
+        run: |
+          cat > /tmp/odoo.conf << EOF
+          [options]
+          addons_path = ${GITHUB_WORKSPACE}/odoo/odoo/addons,${GITHUB_WORKSPACE}/odoo/addons,${GITHUB_WORKSPACE}/addons
+          db_host = localhost
+          db_port = 5432
+          db_user = odoo
+          db_password = odoo
+          db_name = test_ptt
+          test_enable = True
+          stop_after_init = True
+          log_level = info
+          EOF
+
+      - name: Initialize test database
+        run: |
+          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+            -c /tmp/odoo.conf \
+            -d test_ptt \
+            -i base \
+            --stop-after-init \
+            --without-demo=all
+
+      - name: Test ptt_business_core
+        run: |
+          echo "::group::Testing ptt_business_core"
+          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+            -c /tmp/odoo.conf \
+            -d test_ptt \
+            -i ptt_business_core \
+            --test-enable \
+            --stop-after-init \
+            --log-level=test 2>&1 | tee test_business_core.log
+          
+          # Check for test failures
+          if grep -q "FAIL\|ERROR" test_business_core.log; then
+            echo "::error::ptt_business_core tests failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Test ptt_enhanced_sales
+        run: |
+          echo "::group::Testing ptt_enhanced_sales"
+          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+            -c /tmp/odoo.conf \
+            -d test_ptt \
+            -i ptt_enhanced_sales \
+            --test-enable \
+            --stop-after-init \
+            --log-level=test 2>&1 | tee test_enhanced_sales.log
+          
+          if grep -q "FAIL\|ERROR" test_enhanced_sales.log; then
+            echo "::error::ptt_enhanced_sales tests failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Test ptt_vendor_management
+        run: |
+          echo "::group::Testing ptt_vendor_management"
+          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+            -c /tmp/odoo.conf \
+            -d test_ptt \
+            -i ptt_vendor_management \
+            --test-enable \
+            --stop-after-init \
+            --log-level=test 2>&1 | tee test_vendor_management.log
+          
+          if grep -q "FAIL\|ERROR" test_vendor_management.log; then
+            echo "::error::ptt_vendor_management tests failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Test ptt_project_management
+        run: |
+          echo "::group::Testing ptt_project_management"
+          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+            -c /tmp/odoo.conf \
+            -d test_ptt \
+            -i ptt_project_management \
+            --test-enable \
+            --stop-after-init \
+            --log-level=test 2>&1 | tee test_project_management.log
+          
+          if grep -q "FAIL\|ERROR" test_project_management.log; then
+            echo "::error::ptt_project_management tests failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Test ptt_dashboard
+        run: |
+          echo "::group::Testing ptt_dashboard"
+          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+            -c /tmp/odoo.conf \
+            -d test_ptt \
+            -i ptt_dashboard \
+            --test-enable \
+            --stop-after-init \
+            --log-level=test 2>&1 | tee test_dashboard.log
+          
+          if grep -q "FAIL\|ERROR" test_dashboard.log; then
+            echo "::error::ptt_dashboard tests failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-logs
+          path: |
+            test_*.log
+          retention-days: 7
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pylint
+
+      - name: Run Flake8 on PTT modules
+        run: |
+          flake8 addons/ptt_* \
+            --max-line-length=120 \
+            --ignore=E501,W503,E203 \
+            --exclude=__pycache__,*.pyc,migrations \
+            --count \
+            --statistics || true
+
+      - name: Check Python syntax
+        run: |
+          python tools/check_python_syntax.py addons/ptt_business_core addons/ptt_enhanced_sales addons/ptt_vendor_management addons/ptt_project_management addons/ptt_dashboard || true
+
+  validate-xml:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install lxml
+
+      - name: Validate XML views
+        run: |
+          python tools/check_xml_views.py addons/ptt_business_core addons/ptt_enhanced_sales addons/ptt_vendor_management addons/ptt_project_management addons/ptt_dashboard || true
