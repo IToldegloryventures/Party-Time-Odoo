@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Pre-migration for service type canonicalization (19.0.3.2.0).
 
 Maps legacy service_type/vendor_category values to the new QuickBooks-aligned

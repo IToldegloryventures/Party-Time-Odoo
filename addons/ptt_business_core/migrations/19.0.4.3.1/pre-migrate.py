@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Migration 19.0.4.3.0 - Clean up fake AI-generated products AND migrate x_studio_* fields
 

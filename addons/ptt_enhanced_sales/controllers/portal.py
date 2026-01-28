@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.http import request, route
 from odoo import http, _

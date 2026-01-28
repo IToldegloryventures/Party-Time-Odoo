@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Migration 19.0.4.4.4 - Drop deprecated event timing columns from project.project.
 

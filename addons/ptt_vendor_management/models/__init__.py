@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from . import ptt_document_type
 from . import ptt_vendor_document
 from . import ptt_vendor_service_pricing

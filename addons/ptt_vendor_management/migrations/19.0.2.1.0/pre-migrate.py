@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Pre-migration script for PTT Vendor Management 19.0.2.1.0
 
