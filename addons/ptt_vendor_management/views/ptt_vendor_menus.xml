@@ -22,11 +22,12 @@
         action="action_ptt_vendor_list"
         sequence="10"/>
 
-    <!-- RFQ Menu (Request for Quotes) -->
-    <menuitem id="menu_ptt_vendor_rfq"
-        name="RFQ"
+
+    <!-- Native Odoo RFQ (Purchase Orders) Menu -->
+    <menuitem id="menu_ptt_native_rfq"
+        name="Purchase RFQs"
         parent="menu_ptt_vendor_management_root"
-        action="action_ptt_vendor_rfq"
+        action="purchase.purchase_rfq_action"
         sequence="15"/>
 
     <!-- Vendor Tasks -->

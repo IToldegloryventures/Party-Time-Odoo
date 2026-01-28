@@ -25,18 +25,11 @@ class ResPartner(models.Model):
     """
     _inherit = "res.partner"
 
-    # === VENDOR STATUS WORKFLOW ===
-    ptt_vendor_status = fields.Selection(
-        [
-            ("new", "New"),
-            ("pending_review", "Pending Review"),
-            ("active", "Active"),
-            ("inactive", "Inactive"),
-        ],
-        string="Vendor Status",
-        default="new",
-        tracking=True,
-        help="Vendor onboarding status workflow",
+    # === VENDOR ONBOARDING STATUS (minimal, only pending_review) ===
+    ptt_pending_review = fields.Boolean(
+        string="Pending Review",
+        default=False,
+        help="Vendor is awaiting review before activation."
     )
     
     ptt_portal_user_id = fields.Many2one(
@@ -403,18 +396,13 @@ class ResPartner(models.Model):
     # === VENDOR STATUS WORKFLOW ACTIONS ===
     
     def action_submit_for_review(self):
-        """Vendor submits their application for review.
-        
-        Validates that required fields are filled before submission.
-        """
+        """Vendor submits their application for review (sets pending_review)."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
-            
-            # Validate required fields
             vendor._validate_vendor_required_fields()
-            
-            vendor.ptt_vendor_status = "pending_review"
+            vendor.ptt_pending_review = True
+            vendor.active = False
             vendor.message_post(
                 body=_("Vendor application submitted for review."),
                 message_type="notification",
@@ -422,12 +410,12 @@ class ResPartner(models.Model):
         return True
     
     def action_approve_vendor(self):
-        """Approve vendor and set status to active."""
+        """Approve vendor and activate (clears pending_review, sets active)."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
-            
-            vendor.ptt_vendor_status = "active"
+            vendor.ptt_pending_review = False
+            vendor.active = True
             vendor.message_post(
                 body=_("Vendor approved and activated."),
                 message_type="notification",
@@ -435,18 +423,16 @@ class ResPartner(models.Model):
         return True
     
     def action_request_info(self):
-        """Request additional information from vendor."""
+        """Request additional information from vendor (reset pending_review)."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
-            
-            vendor.ptt_vendor_status = "new"
+            vendor.ptt_pending_review = False
+            vendor.active = False
             vendor.message_post(
                 body=_("Additional information requested. Please update your vendor profile."),
                 message_type="notification",
             )
-            
-            # Send email if vendor has portal user
             if vendor.ptt_portal_user_id and vendor.email:
                 template = self.env.ref(
                     "ptt_vendor_management.email_template_vendor_info_request",
@@ -457,9 +443,10 @@ class ResPartner(models.Model):
         return True
     
     def action_deactivate_vendor(self):
-        """Deactivate vendor."""
+        """Deactivate vendor (set active to False)."""
         for vendor in self:
-            vendor.ptt_vendor_status = "inactive"
+            vendor.active = False
+            vendor.ptt_pending_review = False
             vendor.message_post(
                 body=_("Vendor deactivated."),
                 message_type="notification",
@@ -467,15 +454,13 @@ class ResPartner(models.Model):
         return True
     
     def action_reactivate_vendor(self):
-        """Reactivate vendor after validating documents."""
+        """Reactivate vendor after validating documents (set active to True)."""
         for vendor in self:
             if vendor.supplier_rank <= 0:
                 raise UserError(_("This contact is not marked as a vendor."))
-            
-            # Check document validity
             vendor._validate_document_validity()
-            
-            vendor.ptt_vendor_status = "active"
+            vendor.active = True
+            vendor.ptt_pending_review = False
             vendor.message_post(
                 body=_("Vendor reactivated."),
                 message_type="notification",
@@ -485,56 +470,19 @@ class ResPartner(models.Model):
     # === PORTAL USER MANAGEMENT ===
     
     def action_grant_portal_access(self):
-        """Create or grant portal access to this vendor.
-        
-        Creates a portal user if one doesn't exist, or sends invitation.
-        """
+        """Grant portal access using Odoo's standard portal_wizard/signup_prepare."""
         self.ensure_one()
-        
         if self.supplier_rank <= 0:
             raise UserError(_("This contact is not marked as a vendor."))
-        
         if not self.name or not self.email:
             raise UserError(_("Vendor must have a name and email to create portal access."))
-        
-        # Check if user already exists with this email
-        existing_user = self.env["res.users"].sudo().search([
-            ("login", "=", self.email)
-        ], limit=1)
-        
-        if existing_user:
-            self.ptt_portal_user_id = existing_user.id
-            return {
-                "type": "ir.actions.client",
-                "tag": "display_notification",
-                "params": {
-                    "title": _("Portal User Exists"),
-                    "message": _("User already exists with this email. Linked to vendor."),
-                    "type": "warning",
-                    "sticky": False,
-                }
-            }
-        
-        # Create portal user
-        portal_group = self.env.ref("base.group_portal")
-        user_vals = {
-            "name": self.name,
-            "login": self.email,
-            "email": self.email,
-            "partner_id": self.id,
-            "groups_id": [(6, 0, [portal_group.id])],
-            "active": True,
-            "company_id": self.company_id.id or self.env.company.id,
-        }
-        
-        new_user = self.env["res.users"].sudo().create(user_vals)
-        self.ptt_portal_user_id = new_user.id
-        
-        # Send portal welcome email
-        template = self.env.ref("portal.mail_template_data_portal_welcome", raise_if_not_found=False)
-        if template:
-            template.sudo().send_mail(new_user.id, force_send=True)
-        
+        # Use Odoo's signup_prepare to generate portal token
+        self.signup_prepare()
+        # Use portal.wizard to send invitation
+        portal_wizard = self.env['portal.wizard'].create({
+            'partner_ids': [(4, self.id)],
+        })
+        portal_wizard.user_ids.action_send_portal_wizard()
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",

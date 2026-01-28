@@ -46,6 +46,14 @@ class ProjectVendorAssignment(models.Model):
         string="Arrival Time",
         help="Expected arrival/setup time for vendor",
     )
+
+    # Related Vendor Notes from Project (for portal, work order, email)
+    ptt_vendor_notes = fields.Text(
+        string="Vendor Notes",
+        related="project_id.ptt_vendor_notes",
+        readonly=True,
+        help="Notes for vendors from the event project. Set by internal team."
+    )
     
     # === VENDOR TASKS ===
     vendor_task_ids = fields.One2many(

@@ -93,6 +93,7 @@
                                 </group>
                             </group>
                             <group string="Notes">
+                                <field name="ptt_vendor_notes" nolabel="1" readonly="1" placeholder="Event-specific notes for vendors (set by internal team)..."/>
                                 <field name="notes" nolabel="1"/>
                                 <field name="description" nolabel="1" placeholder="Service description..."/>
                             </group>
