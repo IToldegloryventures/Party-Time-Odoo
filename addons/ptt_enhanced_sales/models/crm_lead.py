@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class CrmLeadEnhanced(models.Model):
@@ -21,6 +22,7 @@ class CrmLeadEnhanced(models.Model):
     ptt_event_type_id = fields.Many2one(
         'sale.order.type',
         string="Event Type Template",
+        required=True,
         help="Predefined event type template (Corporate/Social/Wedding) - used to set defaults on quotation"
     )
     
@@ -185,3 +187,10 @@ class CrmLeadEnhanced(models.Model):
                 ),
                 message_type="notification",
             )
+
+    @api.constrains('stage_id', 'ptt_event_type_id')
+    def _check_event_type_before_advancing(self):
+        """Require Event Type once moving beyond Qualification (sequence > 20)."""
+        for lead in self:
+            if lead.stage_id and lead.stage_id.sequence and lead.stage_id.sequence > 20 and not lead.ptt_event_type_id:
+                raise ValidationError(_("Select an Event Type before advancing this lead past Qualification."))

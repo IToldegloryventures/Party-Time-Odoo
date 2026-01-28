@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Minimal quotation templates mapped to event types -->
+
+        <record id="so_template_event_corporate" model="sale.order.template">
+            <field name="name">Corporate Event Quotation</field>
+            <field name="note">Standard corporate event quotation template.</field>
+        </record>
+
+        <record id="so_template_event_social" model="sale.order.template">
+            <field name="name">Social Event Quotation</field>
+            <field name="note">Standard social event quotation template.</field>
+        </record>
+
+        <record id="so_template_event_wedding" model="sale.order.template">
+            <field name="name">Wedding Event Quotation</field>
+            <field name="note">Standard wedding event quotation template.</field>
+        </record>
+    </data>
+</odoo>

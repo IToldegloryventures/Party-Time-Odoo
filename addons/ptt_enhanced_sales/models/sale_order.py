@@ -23,6 +23,18 @@ class SaleOrder(models.Model):
         string="Event Type",
         help="Type of event for this order (Corporate/Social/Wedding)"
     )
+    sale_order_template_id = fields.Many2one(
+        'sale.order.template',
+        string="Quotation Template",
+        help="Auto-selected from the event type's default quotation template.",
+    )
+    project_template_id = fields.Many2one(
+        "project.project",
+        related="event_type_id.project_template_id",
+        store=True,
+        readonly=True,
+        help="Project template configured on the event type; use this when creating the event project.",
+    )
     
     # NOTE: Category field removed - event type name (Corporate/Social/Wedding) is the category
     
@@ -39,7 +51,10 @@ class SaleOrder(models.Model):
     
     event_duration = fields.Float(
         string="Event Duration (Hours)",
-        help="Duration of the event in hours"
+        related="opportunity_id.ptt_event_duration",
+        store=True,
+        readonly=False,
+        help="Duration of the event in hours (sourced from linked CRM opportunity)."
     )
     
     event_guest_count = fields.Integer(
@@ -199,19 +214,26 @@ class SaleOrder(models.Model):
         return result
     
     def action_confirm(self):
-        """Override to update CRM stage when quote is confirmed.
-        
-        When a quotation is confirmed (becomes a sale order):
-        1. Call super() to perform standard Odoo order confirmation
-        2. Update the linked CRM lead to 'Won' stage
-        3. Set probability to 100% on the lead
-        
-        Odoo 19 Reference:
-        https://www.odoo.com/documentation/19.0/developer/reference/backend/orm.html#inheritance
+        """Ensure one event project from template, then confirm and update CRM.
+
+        Flow:
+        1) Create/assign a single event project using the event type's project template.
+        2) Bind all service lines to that project so tasks land together.
+        3) Call super() for native confirmation.
+        4) Update CRM stage to Won/Booked.
         """
+        for order in self:
+            order._ensure_event_project()
+
         result = super().action_confirm()
         self._update_crm_stage_on_order_confirmed()
         return result
+
+    @api.onchange('event_type_id')
+    def _onchange_event_type_id_templates(self):
+        """Auto-apply quotation template from event type."""
+        if self.event_type_id and self.event_type_id.quotation_template_id:
+            self.sale_order_template_id = self.event_type_id.quotation_template_id
     
     def _get_ptt_stage(self, xmlid, fallback_names=None, team=None):
         """Fetch a PTT CRM stage by XML ID, with optional name fallbacks."""
@@ -564,6 +586,35 @@ class SaleOrder(models.Model):
         project.write(project_vals)
         
         # Note: Task/project creation now relies on native Odoo flows.
+
+    # -------------------------------------------------------------------------
+    # PROJECT/TASK SETUP HELPERS
+    # -------------------------------------------------------------------------
+    def _ensure_event_project(self):
+        """Create/assign one event project from the event type's template and bind all service lines to it."""
+        Project = self.env["project.project"]
+
+        for order in self:
+            # Reuse an existing project if already set on a line
+            existing_project = order.order_line.mapped("project_id")[:1]
+
+            if existing_project:
+                project = existing_project
+            else:
+                template = order.project_template_id
+                project_name = f"{order.name} - Event Project"
+                vals = {
+                    "name": project_name,
+                    "partner_id": order.partner_id.id,
+                }
+                if template:
+                    project = template.copy(vals)
+                else:
+                    project = Project.create(vals)
+
+            # Bind all service lines to this project so tasks are grouped
+            service_lines = order.order_line.filtered(lambda l: l.product_id and l.product_id.type == "service")
+            service_lines.write({"project_id": project.id})
 
 
 class SaleOrderRevision(models.Model):

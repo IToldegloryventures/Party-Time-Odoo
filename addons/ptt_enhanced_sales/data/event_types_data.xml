@@ -26,6 +26,8 @@
             <field name="default_setup_hours">2</field>
             <field name="default_breakdown_hours">1</field>
             <field name="color">1</field>
+            <field name="project_template_id" ref="ptt_business_core.project_template_corporate"/>
+            <field name="quotation_template_id" ref="ptt_enhanced_sales.so_template_event_corporate"/>
         </record>
 
         <!-- Social Event Type -->
@@ -38,6 +40,8 @@
             <field name="default_setup_hours">2</field>
             <field name="default_breakdown_hours">1</field>
             <field name="color">3</field>
+            <field name="project_template_id" ref="ptt_business_core.project_template_social"/>
+            <field name="quotation_template_id" ref="ptt_enhanced_sales.so_template_event_social"/>
         </record>
 
         <!-- Wedding Event Type -->
@@ -50,6 +54,8 @@
             <field name="default_setup_hours">4</field>
             <field name="default_breakdown_hours">2</field>
             <field name="color">6</field>
+            <field name="project_template_id" ref="ptt_business_core.project_template_wedding"/>
+            <field name="quotation_template_id" ref="ptt_enhanced_sales.so_template_event_wedding"/>
         </record>
 
     </data>
