@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Project Form Extension - Add Event Type Field -->
+        <record id="view_project_form_enhanced_sales" model="ir.ui.view">
+            <field name="name">project.project.form.enhanced.sales</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="ptt_business_core.view_project_form_ptt"/>
+            <field name="priority">25</field>
+            <field name="arch" type="xml">
+                <!-- Add Event Type field in Event Identity group -->
+                <xpath expr="//group[@name='event_identity']/field[@name='ptt_event_name']" position="after">
+                    <field name="ptt_event_type_id" 
+                           options="{'no_create': True}"
+                           placeholder="Select event type..."/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
