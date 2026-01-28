@@ -9,7 +9,7 @@ import uuid
 from datetime import timedelta
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessError
 
 
 class ProjectVendorAssignment(models.Model):
@@ -39,6 +39,11 @@ class ProjectVendorAssignment(models.Model):
         string="Access Token",
         copy=False,
         help="Token for portal access",
+    )
+    token_expires = fields.Datetime(
+        string="Token Expires",
+        copy=False,
+        help="Expiration datetime for the portal access token.",
     )
     
     # === PORTAL-SPECIFIC EVENT DETAILS ===
@@ -115,11 +120,20 @@ class ProjectVendorAssignment(models.Model):
             ], limit=1)
             record.vendor_pricing_hint = pricing.price_detail if pricing else False
     
-    def _get_access_token(self):
-        """Generate access token for portal link."""
-        if not self.access_token:
+    def _get_access_token(self, ttl_hours=48):
+        """Generate or refresh access token with expiry."""
+        now = fields.Datetime.now()
+        if not self.access_token or (self.token_expires and self.token_expires <= now):
             self.access_token = str(uuid.uuid4())
+            self.token_expires = now + timedelta(hours=ttl_hours)
         return self.access_token
+
+    def _check_valid_token(self):
+        """Ensure the access token exists and is not expired."""
+        now = fields.Datetime.now()
+        for rec in self:
+            if not rec.access_token or (rec.token_expires and rec.token_expires <= now):
+                raise AccessError(_("This portal link has expired. Please request a new work order link."))
     
     # === ACTIONS ===
     
@@ -177,6 +191,7 @@ class ProjectVendorAssignment(models.Model):
             signature: Optional base64 signature image
         """
         self.ensure_one()
+        self._check_valid_token()
         
         self.write({
             'status': 'confirmed',
@@ -209,6 +224,7 @@ class ProjectVendorAssignment(models.Model):
             reason: Optional text reason for declining
         """
         self.ensure_one()
+        self._check_valid_token()
         
         self.write({
             'status': 'declined',
@@ -239,6 +255,7 @@ class ProjectVendorAssignment(models.Model):
         
         template = self.env.ref('ptt_vendor_management.email_template_vendor_work_order', raise_if_not_found=False)
         if template:
+            self._get_access_token()  # refresh token and expiry
             template.send_mail(self.id, force_send=True)
         
         return True
