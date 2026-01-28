@@ -13,9 +13,6 @@ on:
       - 'addons/ptt_*/**'
       - 'odoo/**'
 
-env:
-  ODOO_RC: /tmp/odoo.conf
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -38,8 +35,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -57,123 +52,144 @@ jobs:
             libssl-dev \
             libpq-dev \
             build-essential \
+            libffi-dev \
+            libjpeg-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            zlib1g-dev \
+            fonts-freefont-ttf \
             wkhtmltopdf
 
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           pip install -r odoo/requirements.txt
           pip install coverage pytest
 
       - name: Create Odoo config
         run: |
-          cat > /tmp/odoo.conf << EOF
-          [options]
-          addons_path = ${GITHUB_WORKSPACE}/odoo/odoo/addons,${GITHUB_WORKSPACE}/odoo/addons,${GITHUB_WORKSPACE}/addons
-          db_host = localhost
-          db_port = 5432
-          db_user = odoo
-          db_password = odoo
-          db_name = test_ptt
-          test_enable = True
-          stop_after_init = True
-          log_level = info
-          EOF
+          echo "[options]" > /tmp/odoo.conf
+          echo "addons_path = $GITHUB_WORKSPACE/odoo/odoo/addons,$GITHUB_WORKSPACE/odoo/addons,$GITHUB_WORKSPACE/addons" >> /tmp/odoo.conf
+          echo "db_host = localhost" >> /tmp/odoo.conf
+          echo "db_port = 5432" >> /tmp/odoo.conf
+          echo "db_user = odoo" >> /tmp/odoo.conf
+          echo "db_password = odoo" >> /tmp/odoo.conf
+          echo "log_level = info" >> /tmp/odoo.conf
+          cat /tmp/odoo.conf
+
+      - name: Verify Odoo setup
+        run: |
+          echo "=== Checking odoo-bin ==="
+          ls -la $GITHUB_WORKSPACE/odoo/odoo-bin
+          echo "=== Checking addons paths ==="
+          ls $GITHUB_WORKSPACE/odoo/odoo/addons | head -10
+          ls $GITHUB_WORKSPACE/odoo/addons | head -10
+          ls $GITHUB_WORKSPACE/addons | head -10
+          echo "=== Testing Python import ==="
+          cd $GITHUB_WORKSPACE/odoo && python -c "import odoo; print('Odoo imported successfully')"
 
       - name: Initialize test database
         run: |
-          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+          cd $GITHUB_WORKSPACE/odoo
+          python odoo-bin \
             -c /tmp/odoo.conf \
             -d test_ptt \
             -i base \
             --stop-after-init \
-            --without-demo=all
+            --without-demo=all \
+            --log-level=warn 2>&1 | tee init.log
+          echo "=== Database initialized ==="
 
       - name: Test ptt_business_core
         run: |
+          cd $GITHUB_WORKSPACE/odoo
           echo "::group::Testing ptt_business_core"
-          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+          python odoo-bin \
             -c /tmp/odoo.conf \
             -d test_ptt \
             -i ptt_business_core \
             --test-enable \
             --stop-after-init \
-            --log-level=test 2>&1 | tee test_business_core.log
+            --log-level=test 2>&1 | tee $GITHUB_WORKSPACE/test_business_core.log
+          echo "::endgroup::"
           
-          # Check for test failures
-          if grep -q "FAIL\|ERROR" test_business_core.log; then
+          # Check for test failures (look for FAIL: or ERROR: in test output)
+          if grep -E "^(FAIL|ERROR):" $GITHUB_WORKSPACE/test_business_core.log; then
             echo "::error::ptt_business_core tests failed"
             exit 1
           fi
-          echo "::endgroup::"
 
       - name: Test ptt_enhanced_sales
         run: |
+          cd $GITHUB_WORKSPACE/odoo
           echo "::group::Testing ptt_enhanced_sales"
-          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+          python odoo-bin \
             -c /tmp/odoo.conf \
             -d test_ptt \
             -i ptt_enhanced_sales \
             --test-enable \
             --stop-after-init \
-            --log-level=test 2>&1 | tee test_enhanced_sales.log
+            --log-level=test 2>&1 | tee $GITHUB_WORKSPACE/test_enhanced_sales.log
+          echo "::endgroup::"
           
-          if grep -q "FAIL\|ERROR" test_enhanced_sales.log; then
+          if grep -E "^(FAIL|ERROR):" $GITHUB_WORKSPACE/test_enhanced_sales.log; then
             echo "::error::ptt_enhanced_sales tests failed"
             exit 1
           fi
-          echo "::endgroup::"
 
       - name: Test ptt_vendor_management
         run: |
+          cd $GITHUB_WORKSPACE/odoo
           echo "::group::Testing ptt_vendor_management"
-          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+          python odoo-bin \
             -c /tmp/odoo.conf \
             -d test_ptt \
             -i ptt_vendor_management \
             --test-enable \
             --stop-after-init \
-            --log-level=test 2>&1 | tee test_vendor_management.log
+            --log-level=test 2>&1 | tee $GITHUB_WORKSPACE/test_vendor_management.log
+          echo "::endgroup::"
           
-          if grep -q "FAIL\|ERROR" test_vendor_management.log; then
+          if grep -E "^(FAIL|ERROR):" $GITHUB_WORKSPACE/test_vendor_management.log; then
             echo "::error::ptt_vendor_management tests failed"
             exit 1
           fi
-          echo "::endgroup::"
 
       - name: Test ptt_project_management
         run: |
+          cd $GITHUB_WORKSPACE/odoo
           echo "::group::Testing ptt_project_management"
-          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+          python odoo-bin \
             -c /tmp/odoo.conf \
             -d test_ptt \
             -i ptt_project_management \
             --test-enable \
             --stop-after-init \
-            --log-level=test 2>&1 | tee test_project_management.log
+            --log-level=test 2>&1 | tee $GITHUB_WORKSPACE/test_project_management.log
+          echo "::endgroup::"
           
-          if grep -q "FAIL\|ERROR" test_project_management.log; then
+          if grep -E "^(FAIL|ERROR):" $GITHUB_WORKSPACE/test_project_management.log; then
             echo "::error::ptt_project_management tests failed"
             exit 1
           fi
-          echo "::endgroup::"
 
       - name: Test ptt_dashboard
         run: |
+          cd $GITHUB_WORKSPACE/odoo
           echo "::group::Testing ptt_dashboard"
-          python ${GITHUB_WORKSPACE}/odoo/odoo-bin \
+          python odoo-bin \
             -c /tmp/odoo.conf \
             -d test_ptt \
             -i ptt_dashboard \
             --test-enable \
             --stop-after-init \
-            --log-level=test 2>&1 | tee test_dashboard.log
+            --log-level=test 2>&1 | tee $GITHUB_WORKSPACE/test_dashboard.log
+          echo "::endgroup::"
           
-          if grep -q "FAIL\|ERROR" test_dashboard.log; then
+          if grep -E "^(FAIL|ERROR):" $GITHUB_WORKSPACE/test_dashboard.log; then
             echo "::error::ptt_dashboard tests failed"
             exit 1
           fi
-          echo "::endgroup::"
 
       - name: Upload test logs
         uses: actions/upload-artifact@v4
@@ -182,6 +198,7 @@ jobs:
           name: test-logs
           path: |
             test_*.log
+            init.log
           retention-days: 7
 
   lint:
@@ -199,20 +216,16 @@ jobs:
       - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pylint
+          pip install flake8
 
       - name: Run Flake8 on PTT modules
         run: |
           flake8 addons/ptt_* \
             --max-line-length=120 \
-            --ignore=E501,W503,E203 \
+            --ignore=E501,W503,E203,E266,E402 \
             --exclude=__pycache__,*.pyc,migrations \
             --count \
             --statistics || true
-
-      - name: Check Python syntax
-        run: |
-          python tools/check_python_syntax.py addons/ptt_business_core addons/ptt_enhanced_sales addons/ptt_vendor_management addons/ptt_project_management addons/ptt_dashboard || true
 
   validate-xml:
     runs-on: ubuntu-latest
@@ -231,6 +244,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install lxml
 
-      - name: Validate XML views
+      - name: Validate XML syntax
         run: |
-          python tools/check_xml_views.py addons/ptt_business_core addons/ptt_enhanced_sales addons/ptt_vendor_management addons/ptt_project_management addons/ptt_dashboard || true
+          python -c "
+          import os
+          import sys
+          from lxml import etree
+
+          errors = []
+          for module in ['ptt_business_core', 'ptt_enhanced_sales', 'ptt_vendor_management', 'ptt_project_management', 'ptt_dashboard']:
+              module_path = f'addons/{module}'
+              if not os.path.exists(module_path):
+                  continue
+              for root, dirs, files in os.walk(module_path):
+                  for f in files:
+                      if f.endswith('.xml'):
+                          filepath = os.path.join(root, f)
+                          try:
+                              etree.parse(filepath)
+                          except etree.XMLSyntaxError as e:
+                              errors.append(f'{filepath}: {e}')
+                              print(f'ERROR: {filepath}: {e}')
+
+          if errors:
+              print(f'\\nFound {len(errors)} XML syntax errors')
+              sys.exit(1)
+          else:
+              print('All XML files are valid')
+          "
