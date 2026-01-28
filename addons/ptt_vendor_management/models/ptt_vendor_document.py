@@ -115,13 +115,10 @@ class PttVendorDocument(models.Model):
         help="Additional notes about this document",
     )
 
-    _sql_constraints = [
-        (
-            'unique_vendor_document',
-            'unique(vendor_id, document_type_id, contact_id)',
-            'Each vendor/contact can only have one document of each type.'
-        ),
-    ]
+    _unique_vendor_document = models.Constraint(
+        'unique(vendor_id, document_type_id, contact_id)',
+        'Each vendor/contact can only have one document of each type.',
+    )
 
     @api.depends("vendor_id", "contact_id")
     def _compute_document_owner(self):
