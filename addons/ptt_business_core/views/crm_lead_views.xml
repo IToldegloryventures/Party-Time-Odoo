@@ -56,7 +56,7 @@
                         <group>
                             <group>
                                 <field name="ptt_event_name"/>
-                                <field name="ptt_event_type"/>
+                                <field name="ptt_event_type_id"/>
                                 <field name="ptt_attire"/>
                                 <field name="ptt_guest_count"/>
                             </group>
@@ -216,9 +216,9 @@
                 </field>
                 <xpath expr="//filter[@name='filter_won_status_won']" position="after">
                     <separator/>
-                    <filter name="filter_corporate" string="Corporate Events" domain="[('ptt_event_type', '=', 'corporate')]"/>
-                    <filter name="filter_social" string="Social Events" domain="[('ptt_event_type', '=', 'social')]"/>
-                    <filter name="filter_wedding" string="Wedding Events" domain="[('ptt_event_type', '=', 'wedding')]"/>
+                    <filter name="filter_corporate" string="Corporate Events" domain="[('ptt_event_type_id', '=', ref('ptt_enhanced_sales.event_type_corporate'))]"/>
+                    <filter name="filter_social" string="Social Events" domain="[('ptt_event_type_id', '=', ref('ptt_enhanced_sales.event_type_social'))]"/>
+                    <filter name="filter_wedding" string="Wedding Events" domain="[('ptt_event_type_id', '=', ref('ptt_enhanced_sales.event_type_wedding'))]"/>
                     <separator/>
                     <filter name="filter_future_events" string="Future Events" 
                             domain="[('ptt_event_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
@@ -226,7 +226,7 @@
                             domain="[('ptt_event_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                 </xpath>
                 <xpath expr="//group[filter[@name='salesperson']]" position="inside">
-                    <filter string="Event Type" name="group_event_type" context="{'group_by': 'ptt_event_type'}"/>
+                    <filter string="Event Type" name="group_event_type" context="{'group_by': 'ptt_event_type_id'}"/>
                     <filter string="Event Date" name="group_event_date" context="{'group_by': 'ptt_event_date'}"/>
                     <filter string="Payment Status" name="group_payment" context="{'group_by': 'ptt_payment_status'}"/>
                 </xpath>

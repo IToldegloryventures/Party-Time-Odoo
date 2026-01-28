@@ -14,14 +14,18 @@ class CrmLead(models.Model):
     """CRM Lead extensions for Party Time Texas event management."""
     _inherit = "crm.lead"
 
-    _positive_ptt_guest_count = models.Constraint(
-        'CHECK (ptt_guest_count >= 0)',
-        'Guest count cannot be negative.',
-    )
-    _positive_ptt_event_duration = models.Constraint(
-        'CHECK (ptt_event_duration >= 0)',
-        'Event duration cannot be negative.',
-    )
+    _sql_constraints = [
+        (
+            "positive_ptt_guest_count",
+            "CHECK (ptt_guest_count >= 0)",
+            "Guest count cannot be negative.",
+        ),
+        (
+            "positive_ptt_event_duration",
+            "CHECK (ptt_event_duration >= 0)",
+            "Event duration cannot be negative.",
+        ),
+    ]
 
     # =========================================================================
     # CONTACT INFORMATION
@@ -59,8 +63,7 @@ class CrmLead(models.Model):
     # =========================================================================
     # EVENT OVERVIEW
     # =========================================================================
-    # NOTE: Event type is managed via ptt_event_type_id (Many2one to sale.order.type)
-    # in ptt_enhanced_sales. Do not add a second event type field here.
+    # Event type is managed via ptt_event_type_id (Many2one to sale.order.type)
     ptt_event_name = fields.Char(
         string="Event Name",
         help="Name/title of the event (e.g., 'Smith Wedding Reception')",
@@ -68,15 +71,6 @@ class CrmLead(models.Model):
     ptt_event_date = fields.Date(
         string="Event Date",
         help="Date of the event",
-    )
-    ptt_event_type = fields.Selection(
-        selection=[
-            ('social', 'Social'),
-            ('corporate', 'Corporate'),
-            ('wedding', 'Wedding'),
-        ],
-        string="Event Type",
-        help="Primary classification of the event",
     )
     ptt_event_goal = fields.Char(string="Event Goal")
     ptt_event_time = fields.Char(
@@ -97,7 +91,9 @@ class CrmLead(models.Model):
     )
     ptt_event_duration = fields.Float(
         string="Duration (Hours)",
-        help="Estimated event duration. Maps to ptt_total_hours on project."
+        compute="_compute_event_duration",
+        store=True,
+        help="Event duration in hours, auto-computed from start/end times. Maps to ptt_total_hours on project and sale orders.",
     )
     ptt_guest_count = fields.Integer(string="Estimated Guest Count")
     ptt_attire = fields.Selection(
@@ -343,6 +339,19 @@ class CrmLead(models.Model):
                     and inv.amount_residual > 0
                 )
                 lead.ptt_payment_status = "overdue" if overdue else "not_paid"
+
+    # =========================================================================
+    # COMPUTE HELPERS
+    # =========================================================================
+    @api.depends("ptt_start_time", "ptt_end_time")
+    def _compute_event_duration(self):
+        """Compute duration in hours from start/end time floats."""
+        for lead in self:
+            if lead.ptt_start_time is not None and lead.ptt_end_time is not None:
+                duration = max(lead.ptt_end_time - lead.ptt_start_time, 0.0)
+                lead.ptt_event_duration = duration
+            else:
+                lead.ptt_event_duration = 0.0
 
     # =========================================================================
     # ACTION METHODS

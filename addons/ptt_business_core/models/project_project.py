@@ -9,15 +9,6 @@ class ProjectProject(models.Model):
     """Project extensions for Party Time Texas event management."""
     _inherit = "project.project"
 
-    _unique_ptt_event_id = models.Constraint(
-        'UNIQUE (ptt_event_id)',
-        'Event ID must be unique! Another project already has this Event ID.',
-    )
-    _positive_ptt_guest_count = models.Constraint(
-        'CHECK (ptt_guest_count >= 0)',
-        'Guest count cannot be negative.',
-    )
-
     # =========================================================================
     # LINK TO CRM
     # =========================================================================
@@ -31,19 +22,9 @@ class ProjectProject(models.Model):
     # =========================================================================
     # EVENT IDENTITY
     # =========================================================================
-    ptt_event_id = fields.Char(
-        string="PTT Event ID",
-        readonly=True,
-        copy=False,
-        index=True,
-        help="Unique event identifier (e.g., EVT-2026-0001). Links to CRM Lead, Sale Orders, Tasks.",
-    )
-    
-    # =========================================================================
-    # EVENT DETAILS - Related fields from CRM Lead (single source of truth)
-    # =========================================================================
-    ptt_event_type = fields.Selection(
-        related="ptt_crm_lead_id.ptt_event_type",
+    ptt_event_type_id = fields.Many2one(
+        "sale.order.type",
+        related="ptt_crm_lead_id.ptt_event_type_id",
         string="Event Type",
         store=True,
         readonly=False,
@@ -201,10 +182,6 @@ class ProjectProject(models.Model):
     ptt_event_notes = fields.Text(string="Event Notes")
     ptt_special_requirements = fields.Text(string="Special Requirements")
     ptt_client_preferences = fields.Text(string="Client Preferences")
-    ptt_vendor_notes = fields.Text(
-        string="Vendor Notes",
-        help="Notes that will appear on all vendor work orders for this event"
-    )
 
     # =========================================================================
     # COMPUTED METHODS
