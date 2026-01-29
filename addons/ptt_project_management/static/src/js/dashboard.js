@@ -123,7 +123,7 @@ export class PTTProjectDashboard extends Component {
                 rpc('/ptt/dashboard/kpis'),
                 rpc('/ptt/dashboard/sales-kpis'),
                 rpc('/ptt/dashboard/my-projects', { page: 1, limit: 5 }),
-                rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 8 }),
+                rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 5 }),
                 rpc('/ptt/dashboard/events'),
                 rpc('/ptt/dashboard/filter'),
             ]);
@@ -402,7 +402,7 @@ export class PTTProjectDashboard extends Component {
         const [kpis, myProjects, myTasks] = await Promise.all([
             rpc('/ptt/dashboard/kpis', { filters: params }),
             rpc('/ptt/dashboard/my-projects', { page: 1, limit: 5, filters: params }),
-            rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 8, filters: params }),
+            rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 5, filters: params }),
         ]);
 
         this.state.myTasks = kpis.my_tasks || 0;
@@ -453,7 +453,7 @@ export class PTTProjectDashboard extends Component {
     async prevTaskPage() {
         if (this.state.taskPage > 1) {
             const data = await rpc('/ptt/dashboard/my-tasks', {
-                page: this.state.taskPage - 1, limit: 8, filters: this.getFilterParams()
+                page: this.state.taskPage - 1, limit: 5, filters: this.getFilterParams()
             });
             this.state.myTasksList = data.tasks || [];
             this.state.taskPage = data.page;
@@ -464,7 +464,7 @@ export class PTTProjectDashboard extends Component {
     async nextTaskPage() {
         if (this.state.taskPage < this.state.taskPages) {
             const data = await rpc('/ptt/dashboard/my-tasks', {
-                page: this.state.taskPage + 1, limit: 8, filters: this.getFilterParams()
+                page: this.state.taskPage + 1, limit: 5, filters: this.getFilterParams()
             });
             this.state.myTasksList = data.tasks || [];
             this.state.taskPage = data.page;

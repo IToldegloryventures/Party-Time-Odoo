@@ -668,7 +668,24 @@ html.o_dark .ptt-row-overdue td {
 
 .ptt-compact-table tbody td {
     font-size: 12px !important;
-    padding: 6px 10px !important;
+    padding: 8px 10px !important;
+}
+
+.ptt-task-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+}
+
+.ptt-stage-badge {
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    background: var(--ptt-accent) !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
 }
 
 /* ============================================

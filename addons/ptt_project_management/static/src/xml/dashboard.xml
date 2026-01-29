@@ -154,8 +154,7 @@
                                         <tr>
                                             <th>Task</th>
                                             <th>Project</th>
-                                            <th>Stage</th>
-                                            <th>Due Date</th>
+                                            <th>Due</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -164,7 +163,6 @@
                                             <tr t-att-class="{'ptt-row-overdue': task.is_overdue}">
                                                 <td class="fw-medium"><t t-esc="task.name"/></td>
                                                 <td class="text-muted"><t t-esc="task.project_name"/></td>
-                                                <td><span class="badge bg-secondary"><t t-esc="task.stage_name || '-'"/></span></td>
                                                 <td>
                                                     <span t-if="task.deadline_display" 
                                                           t-att-class="task.is_overdue ? 'badge bg-danger' : 'badge bg-info'">
@@ -172,13 +170,14 @@
                                                     </span>
                                                     <span t-else="" class="text-muted">-</span>
                                                 </td>
-                                                <td class="text-end">
+                                                <td class="text-end ptt-task-actions">
+                                                    <span class="ptt-stage-badge"><t t-esc="task.stage_name || '-'"/></span>
                                                     <button class="btn btn-sm btn-outline-primary py-0 px-2" t-on-click="() => this.viewTask(task.id)">Open</button>
                                                 </td>
                                             </tr>
                                         </t>
                                         <tr t-if="!state.myTasksList || state.myTasksList.length === 0">
-                                            <td colspan="5" class="text-center text-muted py-3">No tasks assigned to you</td>
+                                            <td colspan="4" class="text-center text-muted py-3">No tasks assigned to you</td>
                                         </tr>
                                     </tbody>
                                 </table>
