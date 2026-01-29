@@ -102,8 +102,12 @@ class PTTDashboardController(http.Controller):
             else:
                 domain.append(('id', '=', int(project_id)))
                 
-        if user_id and user_id != 'null':
-            user_id = int(user_id)
+        if user_id and user_id != 'null' and user_id != '':
+            # Handle "me" special value
+            if user_id == 'me':
+                user_id = request.env.uid
+            else:
+                user_id = int(user_id)
             if model == 'task':
                 # Match tasks the user is assigned to OR manages via project
                 domain.append('|')
@@ -111,12 +115,6 @@ class PTTDashboardController(http.Controller):
                 domain.append(('project_id.user_id', '=', user_id))
             else:
                 domain.append(('user_id', '=', user_id))
-                
-        if customer_id and customer_id != 'null':
-            if model == 'task':
-                domain.append(('project_id.partner_id', '=', int(customer_id)))
-            else:
-                domain.append(('partner_id', '=', int(customer_id)))
         
         # Date filters - use appropriate field based on model
         if include_dates:
@@ -240,26 +238,26 @@ class PTTDashboardController(http.Controller):
 
     @http.route('/ptt/dashboard/events', auth='user', type='jsonrpc')
     def get_events(self):
-        """Get upcoming events from CRM and Projects by event date."""
+        """Get upcoming events from CRM and Projects for next 14 days."""
         today = fields.Date.context_today(request.env.user)
         CrmLead = request.env['crm.lead']
         Project = request.env['project.project']
-        
+
         events = []
-        
+
         # Status mapping for CRM stages
         # Lead stages: New, Qualified = "lead"
         # Quote sent stages = "quote"
         # Won/Booked = "booked"
-        
-        # Get CRM leads with event dates (next 90 days)
+
+        # Get CRM leads with event dates (next 14 days)
         from datetime import timedelta
-        future_date = today + timedelta(days=90)
-        
+        future_date = today + timedelta(days=14)
+
         leads = CrmLead.search([
             ('ptt_event_date', '>=', today),
             ('ptt_event_date', '<=', future_date),
-        ], order='ptt_event_date asc', limit=20)
+        ], order='ptt_event_date asc')
         
         for lead in leads:
             event_date = lead.ptt_event_date
@@ -288,11 +286,11 @@ class PTTDashboardController(http.Controller):
                     'status_label': status_label,
                 })
         
-        # Get Projects with event dates
+        # Get Projects with event dates (next 14 days)
         projects = Project.search([
             ('ptt_event_date', '>=', today),
             ('ptt_event_date', '<=', future_date),
-        ], order='ptt_event_date asc', limit=20)
+        ], order='ptt_event_date asc')
         
         for proj in projects:
             event_date = proj.ptt_event_date
@@ -311,8 +309,8 @@ class PTTDashboardController(http.Controller):
         
         # Sort all events by date
         events.sort(key=lambda x: x['date'])
-        
-        return {'events': events[:15]}  # Return top 15
+
+        return {'events': events}  # Return all events in 14-day window
 
     @http.route('/ptt/dashboard/my-tasks', auth='user', type='jsonrpc')
     def get_my_tasks(self, page=1, limit=5, filters=None):
@@ -808,27 +806,20 @@ class PTTDashboardController(http.Controller):
 
     @http.route('/ptt/dashboard/filter', auth='user', type='jsonrpc')
     def get_filter_options(self):
-        """Get filter dropdown options (users, customers, projects)."""
+        """Get filter dropdown options (users, projects)."""
         User = request.env['res.users']
-        Partner = request.env['res.partner']
         Project = request.env['project.project']
 
         # Get internal active users (exclude portal/share)
         users = User.search([('share', '=', False), ('active', '=', True)])
         user_list = [{'id': u.id, 'name': u.name} for u in users]
 
-        # Get customers (partners with projects)
-        projects = Project.search([])
-        customer_ids = projects.mapped('partner_id').ids
-        customers = Partner.browse(list(set(customer_ids)))
-        customer_list = [{'id': c.id, 'name': c.name} for c in customers if c]
-
         # Get projects
+        projects = Project.search([('active', '=', True)])
         project_list = [{'id': p.id, 'name': p.name} for p in projects]
 
         return {
             'users': user_list,
-            'customers': customer_list,
             'projects': project_list,
         }
 

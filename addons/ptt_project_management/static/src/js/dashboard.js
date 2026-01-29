@@ -26,7 +26,7 @@ export class PTTProjectDashboard extends Component {
         this.projectsChart = useRef("projectsChart");
 
         // Filter refs
-        this.customerRef = useRef("customerSelect");
+        this.userRef = useRef("userSelect");
         this.projectRef = useRef("projectSelect");
 
         // Reactive state
@@ -55,7 +55,7 @@ export class PTTProjectDashboard extends Component {
             upcomingEvents: [],
 
             // Filters
-            customers: [],
+            users: [],
             projects: [],
 
             // UI
@@ -66,7 +66,7 @@ export class PTTProjectDashboard extends Component {
         });
 
         this.currentFilters = {
-            customer: null,
+            user: null,
             project: null,
             start_date: null,
             end_date: null,
@@ -132,7 +132,7 @@ export class PTTProjectDashboard extends Component {
             this.state.upcomingEvents = events.events || [];
 
             // Filters
-            this.state.customers = filters.customers || [];
+            this.state.users = filters.users || [];
             this.state.projects = filters.projects || [];
 
             this.state.loading = false;
@@ -145,7 +145,7 @@ export class PTTProjectDashboard extends Component {
 
     getFilterParams() {
         return {
-            customer: this.currentFilters.customer || '',
+            user: this.currentFilters.user || '',
             project: this.currentFilters.project || '',
             start_date: this.currentFilters.start_date || '',
             end_date: this.currentFilters.end_date || '',
@@ -286,7 +286,7 @@ export class PTTProjectDashboard extends Component {
     // =========================================================================
 
     async applyFilters() {
-        this.currentFilters.customer = this.customerRef.el?.value || null;
+        this.currentFilters.user = this.userRef.el?.value || null;
         this.currentFilters.project = this.projectRef.el?.value || null;
 
         const params = this.getFilterParams();

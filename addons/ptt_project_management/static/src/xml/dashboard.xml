@@ -47,13 +47,14 @@
                             </div>
                         </div>
                         
-                        <!-- Customer Filter -->
+                        <!-- Team Member Filter -->
                         <div class="ptt-filter-group">
-                            <label>Customer</label>
-                            <select class="form-select" t-ref="customerSelect" t-on-change="applyFilters">
-                                <option value="">All Customers</option>
-                                <t t-foreach="state.customers" t-as="customer" t-key="customer.id">
-                                    <option t-att-value="customer.id"><t t-esc="customer.name"/></option>
+                            <label>Team Member</label>
+                            <select class="form-select" t-ref="userSelect" t-on-change="applyFilters">
+                                <option value="">All Members</option>
+                                <option value="me">Just Me</option>
+                                <t t-foreach="state.users" t-as="user" t-key="user.id">
+                                    <option t-att-value="user.id"><t t-esc="user.name"/></option>
                                 </t>
                             </select>
                         </div>
