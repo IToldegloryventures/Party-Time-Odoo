@@ -63,20 +63,21 @@ body.dark,
 }
 
 /* ============================================
-   CRITICAL: Fix Odoo Action Manager Scrolling
+   CRITICAL: Fix Scrolling ONLY for PTT Dashboard
+   Scoped to avoid breaking other Odoo pages
    ============================================ */
-.o_action_manager {
+.o_action_manager:has(.ptt-dashboard) {
     overflow: visible !important;
 }
 
-.o_action_manager > .o_action {
+.o_action_manager:has(.ptt-dashboard) > .o_action {
     display: flex !important;
     flex-direction: column !important;
     height: calc(100vh - 46px) !important;
     overflow: hidden !important;
 }
 
-.o_action_manager .o_action > div:first-child {
+.o_action_manager:has(.ptt-dashboard) .o_action > div:first-child {
     display: flex !important;
     flex-direction: column !important;
     height: 100% !important;
