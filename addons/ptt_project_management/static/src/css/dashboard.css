@@ -350,8 +350,58 @@ html.o_dark .ptt-row-overdue td {
 }
 
 /* ============================================
-   CALENDAR GRID
+   FULL MONTH CALENDAR
    ============================================ */
+.ptt-cal-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.ptt-cal-nav-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--ptt-border-color) !important;
+    background: var(--ptt-bg-secondary) !important;
+    color: var(--ptt-text-primary) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.ptt-cal-nav-btn:hover {
+    background: var(--ptt-accent) !important;
+    color: #fff !important;
+    border-color: var(--ptt-accent) !important;
+}
+
+.ptt-cal-title {
+    margin: 0 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    min-width: 160px !important;
+    text-align: center !important;
+}
+
+.ptt-cal-today-btn {
+    margin-left: 8px !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--ptt-accent) !important;
+    background: transparent !important;
+    color: var(--ptt-accent) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+}
+
+.ptt-cal-today-btn:hover {
+    background: var(--ptt-accent) !important;
+    color: #fff !important;
+}
+
 .ptt-cal-grid {
     display: grid !important;
     grid-template-columns: repeat(7, 1fr) !important;
@@ -373,25 +423,16 @@ html.o_dark .ptt-row-overdue td {
 
 .ptt-cal-day {
     background: var(--ptt-bg-primary) !important;
-    min-height: 80px !important;
+    min-height: 70px !important;
     padding: 4px !important;
     position: relative !important;
 }
 
 .ptt-cal-day-num {
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 600 !important;
     color: var(--ptt-text-primary) !important;
     margin-bottom: 2px !important;
-}
-
-.ptt-cal-day-month {
-    font-size: 9px !important;
-    color: var(--ptt-text-muted) !important;
-    text-transform: uppercase !important;
-    position: absolute !important;
-    top: 4px !important;
-    right: 4px !important;
 }
 
 .ptt-cal-today {
@@ -401,29 +442,34 @@ html.o_dark .ptt-row-overdue td {
 .ptt-cal-today .ptt-cal-day-num {
     background: var(--ptt-accent) !important;
     color: #fff !important;
-    width: 24px !important;
-    height: 24px !important;
+    width: 22px !important;
+    height: 22px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    font-size: 12px !important;
 }
 
-.ptt-cal-past {
-    opacity: 0.5 !important;
+.ptt-cal-other {
+    background: var(--ptt-bg-secondary) !important;
+}
+
+.ptt-cal-other .ptt-cal-day-num {
+    color: var(--ptt-text-muted) !important;
 }
 
 .ptt-cal-events {
     display: flex !important;
     flex-direction: column !important;
-    gap: 2px !important;
+    gap: 1px !important;
     margin-top: 2px !important;
 }
 
 .ptt-cal-event {
-    font-size: 10px !important;
-    padding: 2px 4px !important;
-    border-radius: 3px !important;
+    font-size: 9px !important;
+    padding: 2px 3px !important;
+    border-radius: 2px !important;
     cursor: pointer !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -433,8 +479,7 @@ html.o_dark .ptt-row-overdue td {
 }
 
 .ptt-cal-event:hover {
-    opacity: 0.9 !important;
-    transform: scale(1.02) !important;
+    opacity: 0.85 !important;
 }
 
 .ptt-cal-event-lead {
@@ -447,6 +492,17 @@ html.o_dark .ptt-row-overdue td {
 
 .ptt-cal-event-booked {
     background: #10b981 !important;
+}
+
+.ptt-cal-more {
+    font-size: 9px !important;
+    color: var(--ptt-text-muted) !important;
+    padding: 1px 3px !important;
+    cursor: pointer !important;
+}
+
+.ptt-cal-more:hover {
+    color: var(--ptt-accent) !important;
 }
 
 /* Badge colors for legend */

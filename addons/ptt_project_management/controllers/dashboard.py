@@ -237,11 +237,28 @@ class PTTDashboardController(http.Controller):
         }
 
     @http.route('/ptt/dashboard/events', auth='user', type='jsonrpc')
-    def get_events(self):
-        """Get upcoming events from CRM and Projects for next 14 days."""
+    def get_events(self, start_date=None, end_date=None):
+        """Get events from CRM and Projects for a date range (defaults to current month)."""
+        from datetime import timedelta
+        
         today = fields.Date.context_today(request.env.user)
         CrmLead = request.env['crm.lead']
         Project = request.env['project.project']
+
+        # Parse date range or default to current month
+        if start_date:
+            start = fields.Date.from_string(start_date)
+        else:
+            start = today.replace(day=1)
+        
+        if end_date:
+            end = fields.Date.from_string(end_date)
+        else:
+            # Last day of current month
+            if today.month == 12:
+                end = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+            else:
+                end = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
 
         events = []
 
@@ -250,13 +267,9 @@ class PTTDashboardController(http.Controller):
         # Quote sent stages = "quote"
         # Won/Booked = "booked"
 
-        # Get CRM leads with event dates (next 14 days)
-        from datetime import timedelta
-        future_date = today + timedelta(days=14)
-
         leads = CrmLead.search([
-            ('ptt_event_date', '>=', today),
-            ('ptt_event_date', '<=', future_date),
+            ('ptt_event_date', '>=', start),
+            ('ptt_event_date', '<=', end),
         ], order='ptt_event_date asc')
         
         for lead in leads:
@@ -286,10 +299,10 @@ class PTTDashboardController(http.Controller):
                     'status_label': status_label,
                 })
         
-        # Get Projects with event dates (next 14 days)
+        # Get Projects with event dates in the date range
         projects = Project.search([
-            ('ptt_event_date', '>=', today),
-            ('ptt_event_date', '<=', future_date),
+            ('ptt_event_date', '>=', start),
+            ('ptt_event_date', '<=', end),
         ], order='ptt_event_date asc')
         
         for proj in projects:

@@ -84,10 +84,19 @@
                 <!-- SCROLLABLE BODY -->
                 <div class="ptt-dashboard-body">
                     
-                    <!-- 1. EVENT CALENDAR GRID (AT TOP) -->
+                    <!-- 1. FULL MONTH CALENDAR (AT TOP) -->
                     <div class="card ptt-calendar-card mb-3">
                         <div class="card-header">
-                            <h5><i class="fa fa-calendar me-2"/>Upcoming Events (14 Days)</h5>
+                            <div class="ptt-cal-nav">
+                                <button class="ptt-cal-nav-btn" t-on-click="prevMonth">
+                                    <i class="fa fa-chevron-left"/>
+                                </button>
+                                <h5 class="ptt-cal-title"><t t-esc="state.calendarTitle"/></h5>
+                                <button class="ptt-cal-nav-btn" t-on-click="nextMonth">
+                                    <i class="fa fa-chevron-right"/>
+                                </button>
+                                <button class="ptt-cal-today-btn" t-on-click="goToToday">Today</button>
+                            </div>
                             <div class="ptt-legend">
                                 <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-lead"></span> Lead</span>
                                 <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-quote"></span> Quote Sent</span>
@@ -107,17 +116,19 @@
                                 <div class="ptt-cal-header">Sat</div>
                                 <!-- Calendar Days -->
                                 <t t-foreach="state.calendarDays" t-as="day" t-key="day.date">
-                                    <div t-att-class="'ptt-cal-day' + (day.isToday ? ' ptt-cal-today' : '') + (day.isPast ? ' ptt-cal-past' : '')">
+                                    <div t-att-class="'ptt-cal-day' + (day.isToday ? ' ptt-cal-today' : '') + (day.isOtherMonth ? ' ptt-cal-other' : '')">
                                         <div class="ptt-cal-day-num"><t t-esc="day.dayNum"/></div>
-                                        <div class="ptt-cal-day-month" t-if="day.showMonth"><t t-esc="day.monthName"/></div>
                                         <div class="ptt-cal-events">
-                                            <t t-foreach="day.events" t-as="event" t-key="event.id">
+                                            <t t-foreach="day.events.slice(0, 3)" t-as="event" t-key="event.id">
                                                 <div t-att-class="'ptt-cal-event ptt-cal-event-' + event.status" 
-                                                     t-on-click="() => this.viewEvent(event)"
+                                                     t-on-click.stop="() => this.viewEvent(event)"
                                                      t-att-title="event.name + ' - ' + (event.customer || 'No customer')">
-                                                    <t t-esc="event.name.substring(0, 18)"/><t t-if="event.name.length > 18">...</t>
+                                                    <t t-esc="event.name.substring(0, 12)"/><t t-if="event.name.length > 12">...</t>
                                                 </div>
                                             </t>
+                                            <div t-if="day.events.length > 3" class="ptt-cal-more">
+                                                +<t t-esc="day.events.length - 3"/> more
+                                            </div>
                                         </div>
                                     </div>
                                 </t>

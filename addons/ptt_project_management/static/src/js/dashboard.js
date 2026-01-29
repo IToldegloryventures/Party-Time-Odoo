@@ -54,6 +54,9 @@ export class PTTProjectDashboard extends Component {
             // Upcoming Events (from CRM + Projects)
             upcomingEvents: [],
             calendarDays: [],
+            calendarTitle: '',
+            calendarMonth: new Date().getMonth(),
+            calendarYear: new Date().getFullYear(),
 
             // Filters
             users: [],
@@ -155,38 +158,100 @@ export class PTTProjectDashboard extends Component {
     }
 
     buildCalendarDays() {
-        // Build 14 days starting from today, aligning to show full weeks
+        const year = this.state.calendarYear;
+        const month = this.state.calendarMonth;
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        // Set calendar title
+        this.state.calendarTitle = `${monthNames[month]} ${year}`;
+        
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        // Start from Sunday of the current week
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - today.getDay());
+        // First day of the month
+        const firstDay = new Date(year, month, 1);
+        // Last day of the month
+        const lastDay = new Date(year, month + 1, 0);
         
-        // Build 14 days (2 weeks)
+        // Start from Sunday of the week containing the 1st
+        const startDate = new Date(firstDay);
+        startDate.setDate(firstDay.getDate() - firstDay.getDay());
+        
+        // End on Saturday of the week containing the last day
+        const endDate = new Date(lastDay);
+        endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+        
         const days = [];
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const currentDate = new Date(startDate);
         
-        for (let i = 0; i < 14; i++) {
-            const date = new Date(startDate);
-            date.setDate(startDate.getDate() + i);
-            const dateStr = date.toISOString().split('T')[0];
+        while (currentDate <= endDate) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const isCurrentMonth = currentDate.getMonth() === month;
             
             // Find events for this day
             const dayEvents = this.state.upcomingEvents.filter(e => e.date === dateStr);
             
             days.push({
                 date: dateStr,
-                dayNum: date.getDate(),
-                monthName: monthNames[date.getMonth()],
-                showMonth: date.getDate() === 1 || i === 0,
-                isToday: date.getTime() === today.getTime(),
-                isPast: date < today,
+                dayNum: currentDate.getDate(),
+                isToday: currentDate.getTime() === today.getTime(),
+                isOtherMonth: !isCurrentMonth,
                 events: dayEvents,
             });
+            
+            currentDate.setDate(currentDate.getDate() + 1);
         }
         
         this.state.calendarDays = days;
+    }
+
+    prevMonth() {
+        if (this.state.calendarMonth === 0) {
+            this.state.calendarMonth = 11;
+            this.state.calendarYear--;
+        } else {
+            this.state.calendarMonth--;
+        }
+        this.loadEventsForMonth();
+    }
+
+    nextMonth() {
+        if (this.state.calendarMonth === 11) {
+            this.state.calendarMonth = 0;
+            this.state.calendarYear++;
+        } else {
+            this.state.calendarMonth++;
+        }
+        this.loadEventsForMonth();
+    }
+
+    goToToday() {
+        const today = new Date();
+        this.state.calendarMonth = today.getMonth();
+        this.state.calendarYear = today.getFullYear();
+        this.loadEventsForMonth();
+    }
+
+    async loadEventsForMonth() {
+        const year = this.state.calendarYear;
+        const month = this.state.calendarMonth;
+        
+        // Get first and last day of displayed calendar (including overflow days)
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const startDate = new Date(firstDay);
+        startDate.setDate(firstDay.getDate() - firstDay.getDay());
+        const endDate = new Date(lastDay);
+        endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+        
+        const events = await rpc('/ptt/dashboard/events', {
+            start_date: startDate.toISOString().split('T')[0],
+            end_date: endDate.toISOString().split('T')[0],
+        });
+        
+        this.state.upcomingEvents = events.events || [];
+        this.buildCalendarDays();
     }
 
     // =========================================================================
