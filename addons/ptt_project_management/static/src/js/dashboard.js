@@ -53,6 +53,7 @@ export class PTTProjectDashboard extends Component {
 
             // Upcoming Events (from CRM + Projects)
             upcomingEvents: [],
+            calendarDays: [],
 
             // Filters
             users: [],
@@ -130,6 +131,7 @@ export class PTTProjectDashboard extends Component {
 
             // Events
             this.state.upcomingEvents = events.events || [];
+            this.buildCalendarDays();
 
             // Filters
             this.state.users = filters.users || [];
@@ -150,6 +152,41 @@ export class PTTProjectDashboard extends Component {
             start_date: this.currentFilters.start_date || '',
             end_date: this.currentFilters.end_date || '',
         };
+    }
+
+    buildCalendarDays() {
+        // Build 14 days starting from today, aligning to show full weeks
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Start from Sunday of the current week
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - today.getDay());
+        
+        // Build 14 days (2 weeks)
+        const days = [];
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        for (let i = 0; i < 14; i++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            // Find events for this day
+            const dayEvents = this.state.upcomingEvents.filter(e => e.date === dateStr);
+            
+            days.push({
+                date: dateStr,
+                dayNum: date.getDate(),
+                monthName: monthNames[date.getMonth()],
+                showMonth: date.getDate() === 1 || i === 0,
+                isToday: date.getTime() === today.getTime(),
+                isPast: date < today,
+                events: dayEvents,
+            });
+        }
+        
+        this.state.calendarDays = days;
     }
 
     // =========================================================================

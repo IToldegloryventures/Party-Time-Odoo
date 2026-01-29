@@ -349,45 +349,109 @@ html.o_dark .ptt-row-overdue td {
     flex-shrink: 0 !important;
 }
 
-.ptt-event-month {
+/* ============================================
+   CALENDAR GRID
+   ============================================ */
+.ptt-cal-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 1px !important;
+    background: var(--ptt-border-color) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+.ptt-cal-header {
+    background: var(--ptt-bg-secondary) !important;
+    padding: 8px 4px !important;
+    text-align: center !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     color: var(--ptt-text-muted) !important;
     text-transform: uppercase !important;
 }
 
-.ptt-event-day {
-    font-size: 24px !important;
-    font-weight: 700 !important;
-    color: var(--ptt-text-primary) !important;
-    line-height: 1 !important;
+.ptt-cal-day {
+    background: var(--ptt-bg-primary) !important;
+    min-height: 80px !important;
+    padding: 4px !important;
+    position: relative !important;
 }
 
-.ptt-event-details {
-    flex: 1 !important;
-    min-width: 0 !important;
-}
-
-.ptt-event-title {
+.ptt-cal-day-num {
     font-size: 14px !important;
     font-weight: 600 !important;
     color: var(--ptt-text-primary) !important;
+    margin-bottom: 2px !important;
+}
+
+.ptt-cal-day-month {
+    font-size: 9px !important;
+    color: var(--ptt-text-muted) !important;
+    text-transform: uppercase !important;
+    position: absolute !important;
+    top: 4px !important;
+    right: 4px !important;
+}
+
+.ptt-cal-today {
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.ptt-cal-today .ptt-cal-day-num {
+    background: var(--ptt-accent) !important;
+    color: #fff !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.ptt-cal-past {
+    opacity: 0.5 !important;
+}
+
+.ptt-cal-events {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    margin-top: 2px !important;
+}
+
+.ptt-cal-event {
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    color: #fff !important;
+    font-weight: 500 !important;
 }
 
-.ptt-event-customer {
-    font-size: 13px !important;
-    color: var(--ptt-text-muted) !important;
+.ptt-cal-event:hover {
+    opacity: 0.9 !important;
+    transform: scale(1.02) !important;
 }
 
-.ptt-event-status {
-    flex-shrink: 0 !important;
+.ptt-cal-event-lead {
+    background: #64748b !important;
 }
 
+.ptt-cal-event-quote {
+    background: #f59e0b !important;
+}
+
+.ptt-cal-event-booked {
+    background: #10b981 !important;
+}
+
+/* Badge colors for legend */
 .ptt-badge-lead {
-    background: #94a3b8 !important;
+    background: #64748b !important;
     color: #fff !important;
 }
 
@@ -400,11 +464,6 @@ html.o_dark .ptt-row-overdue td {
     background: #10b981 !important;
     color: #fff !important;
 }
-
-/* Event item border color based on status */
-.ptt-event-lead { border-left: 3px solid #94a3b8 !important; }
-.ptt-event-quote { border-left: 3px solid #f59e0b !important; }
-.ptt-event-booked { border-left: 3px solid #10b981 !important; }
 
 /* ============================================
    PAGINATION

@@ -84,36 +84,43 @@
                 <!-- SCROLLABLE BODY -->
                 <div class="ptt-dashboard-body">
                     
-                    <!-- 1. EVENT CALENDAR (AT TOP) -->
+                    <!-- 1. EVENT CALENDAR GRID (AT TOP) -->
                     <div class="card ptt-calendar-card mb-3">
                         <div class="card-header">
-                            <h5><i class="fa fa-calendar me-2"/>Upcoming Events</h5>
+                            <h5><i class="fa fa-calendar me-2"/>Upcoming Events (14 Days)</h5>
                             <div class="ptt-legend">
                                 <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-lead"></span> Lead</span>
                                 <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-quote"></span> Quote Sent</span>
                                 <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-booked"></span> Booked</span>
                             </div>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="ptt-event-list">
-                                <t t-foreach="state.upcomingEvents" t-as="event" t-key="event.id">
-                                    <div class="ptt-event-item" t-att-class="'ptt-event-' + event.status" t-on-click="() => this.viewEvent(event)">
-                                        <div class="ptt-event-date">
-                                            <div class="ptt-event-month"><t t-esc="event.month"/></div>
-                                            <div class="ptt-event-day"><t t-esc="event.day"/></div>
-                                        </div>
-                                        <div class="ptt-event-details">
-                                            <div class="ptt-event-title"><t t-esc="event.name"/></div>
-                                            <div class="ptt-event-customer"><t t-esc="event.customer or 'No customer'"/></div>
-                                        </div>
-                                        <div class="ptt-event-status">
-                                            <span t-att-class="'badge ptt-badge-' + event.status"><t t-esc="event.status_label"/></span>
+                        <div class="card-body p-2">
+                            <!-- Calendar Grid -->
+                            <div class="ptt-cal-grid">
+                                <!-- Day Headers -->
+                                <div class="ptt-cal-header">Sun</div>
+                                <div class="ptt-cal-header">Mon</div>
+                                <div class="ptt-cal-header">Tue</div>
+                                <div class="ptt-cal-header">Wed</div>
+                                <div class="ptt-cal-header">Thu</div>
+                                <div class="ptt-cal-header">Fri</div>
+                                <div class="ptt-cal-header">Sat</div>
+                                <!-- Calendar Days -->
+                                <t t-foreach="state.calendarDays" t-as="day" t-key="day.date">
+                                    <div t-att-class="'ptt-cal-day' + (day.isToday ? ' ptt-cal-today' : '') + (day.isPast ? ' ptt-cal-past' : '')">
+                                        <div class="ptt-cal-day-num"><t t-esc="day.dayNum"/></div>
+                                        <div class="ptt-cal-day-month" t-if="day.showMonth"><t t-esc="day.monthName"/></div>
+                                        <div class="ptt-cal-events">
+                                            <t t-foreach="day.events" t-as="event" t-key="event.id">
+                                                <div t-att-class="'ptt-cal-event ptt-cal-event-' + event.status" 
+                                                     t-on-click="() => this.viewEvent(event)"
+                                                     t-att-title="event.name + ' - ' + (event.customer || 'No customer')">
+                                                    <t t-esc="event.name.substring(0, 18)"/><t t-if="event.name.length > 18">...</t>
+                                                </div>
+                                            </t>
                                         </div>
                                     </div>
                                 </t>
-                                <div t-if="!state.upcomingEvents || state.upcomingEvents.length === 0" class="text-center text-muted py-4">
-                                    No upcoming events
-                                </div>
                             </div>
                         </div>
                     </div>
