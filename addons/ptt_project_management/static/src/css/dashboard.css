@@ -1,0 +1,382 @@
+/**
+ * PTT Project Dashboard Styles
+ *
+ * Matches the screenshot styling: pink/lavender theme with orange deadline badges
+ */
+
+/* Dashboard Container */
+.ptt-dashboard {
+    background-color: #faf5f7;
+    min-height: 100vh;
+}
+
+/* Header Styling - Pink/Lavender gradient like screenshot */
+.ptt-dashboard-header {
+    background: linear-gradient(135deg, #d4a5c9 0%, #c9a5d4 50%, #a5b8d4 100%) !important;
+    border-radius: 16px;
+    margin: 16px;
+    padding: 20px !important;
+}
+
+.ptt-dashboard-header .form-select,
+.ptt-dashboard-header .form-control {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+.ptt-dashboard-header .form-select:focus,
+.ptt-dashboard-header .form-control:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(212, 165, 201, 0.5);
+    border-color: #d4a5c9;
+}
+
+/* User Avatar Circle */
+.ptt-user-avatar {
+    width: 60px !important;
+    height: 60px !important;
+    background-color: #f0e6f0 !important;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.ptt-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Header text colors */
+.ptt-dashboard-header h4 {
+    color: #2d2d2d;
+    font-weight: 600;
+}
+
+.ptt-dashboard-header p {
+    color: #4a4a4a;
+}
+
+.ptt-dashboard-header .form-label {
+    color: #333 !important;
+    font-weight: 500;
+}
+
+/* Action Buttons - Refresh, Export, Print */
+.ptt-refresh-btn,
+.ptt-export-btn,
+.ptt-print-btn {
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+}
+
+/* Refresh Button - Purple theme */
+.ptt-refresh-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+.ptt-refresh-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    color: #fff;
+}
+
+.ptt-refresh-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Export Button - Green theme */
+.ptt-export-btn {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+}
+
+.ptt-export-btn:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    color: #fff;
+}
+
+/* Print Button - Pink theme */
+.ptt-print-btn {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    box-shadow: 0 2px 6px rgba(236, 72, 153, 0.3);
+}
+
+.ptt-print-btn:hover {
+    background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+    color: #fff;
+}
+
+/* Quick Assign Button in Task Table */
+.ptt-assign-btn {
+    border-color: #8b5cf6 !important;
+    color: #8b5cf6 !important;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.ptt-assign-btn:hover {
+    background-color: #8b5cf6 !important;
+    color: #fff !important;
+}
+
+/* KPI Cards - Purple/Lavender borders like screenshot */
+.ptt-kpi-card {
+    border: 2px solid #c9a5d4 !important;
+    border-radius: 12px;
+    background: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ptt-kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(201, 165, 212, 0.3) !important;
+}
+
+.ptt-kpi-card .card-body {
+    padding: 1.5rem;
+}
+
+.ptt-kpi-card h2 {
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.ptt-kpi-card p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Cards with pink/lavender header - All Task, Activities */
+.ptt-dashboard .card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.ptt-dashboard .card.ptt-list-card .card-header {
+    background: linear-gradient(135deg, #d4a5c9 0%, #c9a5d4 100%);
+    border-bottom: none;
+    padding: 12px 16px;
+}
+
+.ptt-dashboard .card.ptt-list-card .card-header h5 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.ptt-dashboard .card-header {
+    border-bottom: 1px solid #eee;
+    padding: 12px 16px;
+    background: #fff;
+}
+
+.ptt-dashboard .card-header h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.ptt-dashboard .card-header i.fa-download {
+    color: #999;
+    cursor: pointer;
+}
+
+.ptt-dashboard .card-header i.fa-download:hover {
+    color: #666;
+}
+
+/* Table styling */
+.ptt-dashboard .table {
+    margin-bottom: 0;
+}
+
+.ptt-dashboard .table thead th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #666;
+    border-bottom: 2px solid #eee;
+    padding: 12px 16px;
+    background: #fafafa;
+}
+
+.ptt-dashboard .table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.ptt-dashboard .table-hover tbody tr:hover {
+    background-color: #fdf5fa;
+}
+
+/* Deadline Badge - Orange like screenshot */
+.ptt-deadline-badge {
+    display: inline-block;
+    background-color: #f97316;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* View Button - Pink like screenshot */
+.ptt-view-btn {
+    background-color: #ec4899;
+    border: none;
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.ptt-view-btn:hover {
+    background-color: #db2777;
+    color: #fff;
+}
+
+/* Priority Flag Icons */
+.ptt-priority-high {
+    color: #ef4444 !important;
+}
+
+.ptt-priority-low {
+    color: #22c55e !important;
+}
+
+/* Pagination - Purple circles like screenshot */
+.ptt-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+}
+
+.ptt-pagination-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #8b5cf6;
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.ptt-pagination-btn:hover {
+    background: #7c3aed;
+}
+
+.ptt-pagination-btn:disabled {
+    background: #ddd;
+    color: #999;
+}
+
+.ptt-pagination-text {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* Chart Cards */
+.ptt-chart-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.ptt-chart-card .card-header {
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.ptt-chart-card .card-body {
+    padding: 16px;
+}
+
+/* Chart containers */
+.ptt-dashboard canvas {
+    max-width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ptt-dashboard-header {
+        margin: 8px;
+        padding: 16px !important;
+    }
+    
+    .ptt-dashboard-header .row {
+        flex-direction: column;
+    }
+
+    .ptt-dashboard-header .col-md-4,
+    .ptt-dashboard-header .col-md-8 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .ptt-kpi-card h2 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading spinner */
+.ptt-dashboard .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #8b5cf6;
+}
+
+/* Print Styles */
+@media print {
+    .ptt-dashboard {
+        background: #fff !important;
+    }
+    
+    .ptt-dashboard-header {
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .ptt-print-btn,
+    .ptt-pagination-btn,
+    .ptt-view-btn {
+        display: none !important;
+    }
+    
+    .ptt-kpi-card,
+    .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}

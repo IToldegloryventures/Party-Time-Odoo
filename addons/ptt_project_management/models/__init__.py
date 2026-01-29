@@ -7,3 +7,4 @@
 from . import project_stakeholder
 from . import project_project
 from . import project_vendor_assignment
+from . import dashboard_filter_preset  # Dashboard filter presets model

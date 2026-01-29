@@ -5,28 +5,33 @@
     <!-- To Do -->
     <record id="task_type_todo" model="project.task.type">
         <field name="name">To Do</field>
+        <field name="sequence">1</field>
     </record>
     
     <!-- In Progress -->
     <record id="task_type_in_progress" model="project.task.type">
         <field name="name">In Progress</field>
+        <field name="sequence">2</field>
     </record>
     
     <!-- Waiting - Folded (not in active workflow) -->
     <record id="task_type_waiting" model="project.task.type">
         <field name="name">Waiting</field>
         <field name="fold" eval="True"/>
+        <field name="sequence">3</field>
     </record>
     
     <!-- Done -->
     <record id="task_type_done" model="project.task.type">
         <field name="name">Done</field>
+        <field name="sequence">4</field>
     </record>
     
     <!-- Cancelled - Folded (not in active workflow) -->
     <record id="task_type_cancelled" model="project.task.type">
         <field name="name">Cancelled</field>
         <field name="fold" eval="True"/>
+        <field name="sequence">5</field>
     </record>
     
 </odoo>

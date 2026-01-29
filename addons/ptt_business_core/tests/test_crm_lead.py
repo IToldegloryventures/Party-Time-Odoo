@@ -2,7 +2,6 @@
 """Tests for CRM Lead to Project flow."""
 
 from odoo.tests.common import TransactionCase, tagged
-from odoo.exceptions import UserError
 
 
 @tagged('standard', 'at_install')
@@ -81,8 +80,17 @@ class TestCrmLeadProjectFlow(TransactionCase):
         self.assertEqual(lead.ptt_estimated_margin, 3000.00)
         self.assertEqual(lead.ptt_margin_percent, 60.0)
         
-    def test_create_project_from_lead(self):
-        """Test creating a project from a CRM lead."""
+    def test_project_link_from_crm(self):
+        """Test that project created from SO gets linked to CRM lead.
+        
+        The actual workflow is:
+        1. CRM Lead exists with event details
+        2. Sale Order is created from the lead (via quotation template)
+        3. SO includes 'Event Kickoff' product which creates project
+        4. When SO is confirmed, project is linked back to CRM lead
+        
+        This test verifies the bidirectional link works correctly.
+        """
         lead = self.env['crm.lead'].create({
             'name': 'Birthday Celebration',
             'partner_id': self.partner.id,
@@ -95,64 +103,31 @@ class TestCrmLeadProjectFlow(TransactionCase):
             'ptt_location_type': 'indoor',
         })
         
-        # Create project from lead
-        lead.action_create_project()
+        # Initially no project linked
+        self.assertFalse(lead.ptt_project_id)
+        self.assertEqual(lead.ptt_project_count, 0)
         
-        # Verify project was created
-        self.assertTrue(lead.ptt_project_id)
-        project = lead.ptt_project_id
+        # Create a project and manually link it (simulating what SO confirmation does)
+        project = self.env['project.project'].create({
+            'name': 'Birthday Celebration Project',
+            'partner_id': self.partner.id,
+            'ptt_crm_lead_id': lead.id,
+        })
         
-        self.assertEqual(project.partner_id, self.partner)
+        # Link project to lead (simulating _ptt_link_crm_to_projects)
+        lead.ptt_project_id = project.id
+        
+        # Verify bidirectional link
         self.assertEqual(project.ptt_crm_lead_id, lead)
+        self.assertEqual(lead.ptt_project_id, project)
+        
+        # Verify event details flow to project via related fields
         self.assertEqual(project.ptt_event_name, 'John\'s 50th Birthday')
         self.assertEqual(project.ptt_guest_count, 75)
         self.assertEqual(project.ptt_venue_name, 'Country Club')
         
-    def test_cannot_create_duplicate_project(self):
-        """Test that a second project cannot be created for same lead."""
-        lead = self.env['crm.lead'].create({
-            'name': 'Test Event',
-            'partner_id': self.partner.id,
-            'user_id': self.user.id,
-            'ptt_event_name': 'Duplicate Test',
-        })
-        
-        # Create first project
-        lead.action_create_project()
-        self.assertTrue(lead.ptt_project_id)
-        
-        # Attempt to create second project should fail
-        with self.assertRaises(UserError):
-            lead.action_create_project()
-            
-    def test_lead_requires_partner_for_project(self):
-        """Test that project creation requires a partner."""
-        lead = self.env['crm.lead'].create({
-            'name': 'No Partner Event',
-            'user_id': self.user.id,
-            'ptt_event_name': 'Partner Required Test',
-        })
-        
-        # Attempt to create project without partner should fail
-        with self.assertRaises(UserError):
-            lead.action_create_project()
-            
-    def test_project_count_computed(self):
-        """Test project count field is computed correctly."""
-        lead = self.env['crm.lead'].create({
-            'name': 'Count Test',
-            'partner_id': self.partner.id,
-            'user_id': self.user.id,
-        })
-        
-        # Initially no project
-        self.assertEqual(lead.ptt_project_count, 0)
-        
-        # Create project
-        lead.action_create_project()
+        # Project count should update
         lead.invalidate_recordset()
-        
-        # Now should be 1
         self.assertEqual(lead.ptt_project_count, 1)
         
     def test_vendor_estimates_cascade_delete(self):

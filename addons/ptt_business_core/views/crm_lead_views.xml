@@ -61,7 +61,7 @@
                                 <field name="ptt_guest_count"/>
                             </group>
                             <group>
-                                <field name="ptt_event_date"/>
+                                <field name="ptt_event_date" required="1"/>
                                 <field name="ptt_setup_time" widget="float_time"/>
                                 <field name="ptt_start_time" widget="float_time"/>
                                 <field name="ptt_end_time" widget="float_time"/>

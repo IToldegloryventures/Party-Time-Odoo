@@ -36,7 +36,6 @@
                                 <field name="active"/>
                             </group>
                             <group>
-                                <!-- project_template_id field added by ptt_project_management -->
                                 <field name="requires_approval"/>
                                 <field name="approval_amount" invisible="not requires_approval"/>
                             </group>

@@ -4,10 +4,7 @@
 Enhanced Project model for Party Time Texas event management.
 
 NOTE: Project templates are now native Odoo project.project records with is_template=True.
-Templates are defined in ptt_business_core/data/project_template.xml:
-- project_template_corporate
-- project_template_wedding  
-- project_template_social
+Only the Social template remains (see ptt_business_core/data/project_template.xml).
 
 When a Sale Order with Event Kickoff product is confirmed, Odoo's native template
 copying mechanism creates the project with all tasks and subtasks from the template.

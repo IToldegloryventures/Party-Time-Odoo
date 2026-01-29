@@ -77,14 +77,6 @@ class SaleOrderType(models.Model):
         help="Quotation template automatically applied when this event type is selected.",
     )
 
-    # Project template to use when a project is created for this event type
-    project_template_id = fields.Many2one(
-        "project.project",
-        string="Default Project Template",
-        domain=[("is_template", "=", True)],
-        help="When a project is created for this event type, use this template as the base.",
-    )
-
     # Color for visual identification
     color = fields.Integer(
         string="Color Index",
