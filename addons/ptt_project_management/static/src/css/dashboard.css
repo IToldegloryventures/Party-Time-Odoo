@@ -58,34 +58,35 @@ html.o_dark, body.o_dark, .o_dark {
 }
 
 /* ============================================
-   HEADER
+   HEADER - Compact Single Row
    ============================================ */
 .ptt-dashboard-header {
     background: var(--ptt-bg-secondary) !important;
     border-bottom: 1px solid var(--ptt-border-color) !important;
-    padding: 12px 20px !important;
+    padding: 10px 16px !important;
     flex-shrink: 0 !important;
 }
 
 .ptt-filter-row {
     display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 16px !important;
-    align-items: flex-end !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    align-items: center !important;
 }
 
 .ptt-filter-group {
     display: flex !important;
     flex-direction: column !important;
-    gap: 4px !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
 }
 
 .ptt-filter-group label {
     color: var(--ptt-text-muted) !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 600 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
 }
 
 .ptt-filter-group .form-select {
@@ -93,26 +94,28 @@ html.o_dark, body.o_dark, .o_dark {
     border: 1px solid var(--ptt-border-color) !important;
     color: var(--ptt-text-primary) !important;
     font-size: 13px !important;
-    padding: 8px 12px !important;
-    border-radius: 8px !important;
-    min-width: 150px !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    min-width: 130px !important;
+    height: 34px !important;
 }
 
 .ptt-date-pills {
     display: flex !important;
-    gap: 6px !important;
+    gap: 4px !important;
 }
 
 .ptt-date-pill {
-    padding: 8px 16px !important;
-    font-size: 13px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
     font-weight: 500 !important;
-    border-radius: 20px !important;
+    border-radius: 16px !important;
     border: 1px solid var(--ptt-border-color) !important;
     background: var(--ptt-bg-secondary) !important;
     color: var(--ptt-text-secondary) !important;
     cursor: pointer !important;
     transition: all 0.15s !important;
+    white-space: nowrap !important;
 }
 
 .ptt-date-pill:hover {
@@ -128,20 +131,22 @@ html.o_dark, body.o_dark, .o_dark {
 
 .ptt-actions {
     margin-left: auto !important;
+    flex-shrink: 0 !important;
 }
 
 .ptt-refresh-btn {
     background: var(--ptt-accent) !important;
     border: none !important;
     color: #fff !important;
-    padding: 8px 20px !important;
-    border-radius: 8px !important;
-    font-size: 13px !important;
+    padding: 6px 14px !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
     font-weight: 500 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    height: 34px !important;
 }
 
 .ptt-refresh-btn:hover:not(:disabled) {
@@ -158,51 +163,54 @@ html.o_dark, body.o_dark, .o_dark {
 }
 
 /* ============================================
-   KPI CARDS
+   KPI CARDS - Compact 4-column row
    ============================================ */
 .ptt-kpi-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 16px !important;
-    margin-bottom: 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
 }
 
 .ptt-kpi-card {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
     background: var(--ptt-bg-secondary) !important;
     border: 1px solid var(--ptt-border-color) !important;
-    border-radius: 12px !important;
-    padding: 20px !important;
+    border-radius: 10px !important;
+    padding: 16px 12px !important;
     text-align: center !important;
     cursor: pointer !important;
-    transition: all 0.2s !important;
+    transition: all 0.15s !important;
 }
 
 .ptt-kpi-card:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
 }
 
 .ptt-kpi-value {
-    font-size: 2.5rem !important;
+    font-size: 1.75rem !important;
     font-weight: 700 !important;
     color: var(--ptt-text-primary) !important;
     line-height: 1 !important;
 }
 
 .ptt-kpi-label {
-    font-size: 13px !important;
+    font-size: 11px !important;
     color: var(--ptt-text-muted) !important;
-    margin-top: 8px !important;
+    margin-top: 4px !important;
     font-weight: 500 !important;
+    text-transform: uppercase !important;
 }
 
-.ptt-kpi-primary { border-left: 4px solid var(--ptt-accent) !important; }
+.ptt-kpi-primary { border-top: 3px solid var(--ptt-accent) !important; }
 .ptt-kpi-primary .ptt-kpi-value { color: var(--ptt-accent) !important; }
 
-.ptt-kpi-danger { border-left: 4px solid var(--ptt-danger) !important; }
+.ptt-kpi-danger { border-top: 3px solid var(--ptt-danger) !important; }
 .ptt-kpi-danger .ptt-kpi-value { color: var(--ptt-danger) !important; }
 
-.ptt-kpi-warning { border-left: 4px solid var(--ptt-warning) !important; }
+.ptt-kpi-warning { border-top: 3px solid var(--ptt-warning) !important; }
 .ptt-kpi-warning .ptt-kpi-value { color: var(--ptt-warning) !important; }
 
 /* ============================================
@@ -449,26 +457,24 @@ html.o_dark .ptt-row-overdue td {
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE - Only stack on small screens
    ============================================ */
-@media (max-width: 1200px) {
-    .ptt-kpi-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-}
-
 @media (max-width: 768px) {
     .ptt-kpi-grid {
-        grid-template-columns: 1fr !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .ptt-kpi-card {
+        flex: 1 1 45% !important;
     }
     
     .ptt-filter-row {
-        flex-direction: column !important;
-        align-items: stretch !important;
+        flex-wrap: wrap !important;
     }
-    
-    .ptt-actions {
-        margin-left: 0 !important;
-        margin-top: 12px !important;
+}
+
+@media (max-width: 480px) {
+    .ptt-kpi-card {
+        flex: 1 1 100% !important;
     }
 }
