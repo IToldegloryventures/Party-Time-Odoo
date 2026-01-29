@@ -103,7 +103,7 @@
                         </div>
                     </div>
 
-                    <!-- 2. KPI GRID - 4 compact cards -->
+                    <!-- 2. KPI GRID - 6 compact cards (2 rows of 3) -->
                     <div class="ptt-kpi-grid">
                         <div class="ptt-kpi-card ptt-kpi-primary" t-on-click="openMyTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
@@ -120,6 +120,14 @@
                         <div class="ptt-kpi-card ptt-kpi-warning" t-on-click="openDueThisWeek">
                             <div class="ptt-kpi-value"><t t-esc="state.dueThisWeek"/></div>
                             <div class="ptt-kpi-label">Due This Week</div>
+                        </div>
+                        <div class="ptt-kpi-card ptt-kpi-muted" t-on-click="openUnassignedTasks">
+                            <div class="ptt-kpi-value"><t t-esc="state.unassignedTasks"/></div>
+                            <div class="ptt-kpi-label">Unassigned</div>
+                        </div>
+                        <div class="ptt-kpi-card ptt-kpi-muted" t-on-click="openNoDueDateTasks">
+                            <div class="ptt-kpi-value"><t t-esc="state.noDueDateTasks"/></div>
+                            <div class="ptt-kpi-label">No Due Date</div>
                         </div>
                     </div>
 
@@ -144,8 +152,8 @@
                                         <tr>
                                             <th>Task</th>
                                             <th>Project</th>
-                                            <th>Deadline</th>
-                                            <th>Pri</th>
+                                            <th>Stage</th>
+                                            <th>Due Date</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -154,18 +162,13 @@
                                             <tr t-att-class="{'ptt-row-overdue': task.is_overdue}">
                                                 <td class="fw-medium"><t t-esc="task.name"/></td>
                                                 <td class="text-muted"><t t-esc="task.project_name"/></td>
+                                                <td><span class="badge bg-secondary"><t t-esc="task.stage_name || '-'"/></span></td>
                                                 <td>
                                                     <span t-if="task.deadline_display" 
-                                                          t-att-class="task.is_overdue ? 'badge bg-danger' : 'badge bg-secondary'">
+                                                          t-att-class="task.is_overdue ? 'badge bg-danger' : 'badge bg-info'">
                                                         <t t-esc="task.deadline_display"/>
                                                     </span>
                                                     <span t-else="" class="text-muted">-</span>
-                                                </td>
-                                                <td>
-                                                    <i t-if="task.priority === '3'" class="fa fa-flag text-danger" title="Urgent"/>
-                                                    <i t-elif="task.priority === '2'" class="fa fa-flag text-warning" title="High"/>
-                                                    <i t-elif="task.priority === '1'" class="fa fa-flag text-info" title="Medium"/>
-                                                    <i t-else="" class="fa fa-flag-o text-muted" title="Normal"/>
                                                 </td>
                                                 <td class="text-end">
                                                     <button class="btn btn-sm btn-outline-primary py-0 px-2" t-on-click="() => this.viewTask(task.id)">Open</button>
@@ -178,14 +181,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. TASKS BY STAGE CHART -->
-                    <div class="ptt-chart-row mb-3">
-                        <div class="ptt-chart-box">
-                            <div class="ptt-chart-title">Tasks by Stage</div>
-                            <canvas t-ref="taskStagesChart"/>
                         </div>
                     </div>
 

@@ -270,10 +270,22 @@ class PTTDashboardController(http.Controller):
         from datetime import timedelta
         week_end = today + timedelta(days=7)
         due_this_week = my_tasks.filtered(
-            lambda t: t.date_deadline 
+            lambda t: t.date_deadline
             and today <= self._as_date(t.date_deadline, request.env.user) <= week_end
         )
-        
+
+        # Unassigned Tasks (no users assigned, not done)
+        unassigned_tasks = Task.search([
+            ('user_ids', '=', False),
+            ('stage_id.fold', '=', False),
+        ] + filter_domain)
+
+        # Tasks with No Due Date (not done)
+        no_due_date_tasks = Task.search([
+            ('date_deadline', '=', False),
+            ('stage_id.fold', '=', False),
+        ] + filter_domain)
+
         return {
             'my_tasks': len(my_tasks),
             'my_tasks_ids': my_tasks.ids,
@@ -283,6 +295,10 @@ class PTTDashboardController(http.Controller):
             'my_overdue_tasks_ids': my_overdue.ids,
             'due_this_week': len(due_this_week),
             'due_this_week_ids': due_this_week.ids,
+            'unassigned_tasks': len(unassigned_tasks),
+            'unassigned_tasks_ids': unassigned_tasks.ids,
+            'no_due_date_tasks': len(no_due_date_tasks),
+            'no_due_date_tasks_ids': no_due_date_tasks.ids,
         }
 
     @http.route('/ptt/dashboard/my-projects', auth='user', type='jsonrpc')

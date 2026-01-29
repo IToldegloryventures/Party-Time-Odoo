@@ -219,6 +219,9 @@ html.o_dark, body.o_dark, .o_dark {
 .ptt-kpi-warning { border-top: 3px solid var(--ptt-warning) !important; }
 .ptt-kpi-warning .ptt-kpi-value { color: var(--ptt-warning) !important; }
 
+.ptt-kpi-muted { border-top: 3px solid #94a3b8 !important; }
+.ptt-kpi-muted .ptt-kpi-value { color: #94a3b8 !important; }
+
 .ptt-kpi-currency {
     font-size: 1.5rem !important;
 }

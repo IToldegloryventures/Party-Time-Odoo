@@ -22,7 +22,6 @@ export class PTTProjectDashboard extends Component {
         this.notification = useService("notification");
 
         // Chart refs
-        this.taskStagesChart = useRef("taskStagesChart");
         this.salesByRepChart = useRef("salesByRepChart");
 
         // Filter refs
@@ -44,6 +43,10 @@ export class PTTProjectDashboard extends Component {
             myOverdueTasksIds: [],
             dueThisWeek: 0,
             dueThisWeekIds: [],
+            unassignedTasks: 0,
+            unassignedTasksIds: [],
+            noDueDateTasks: 0,
+            noDueDateTasksIds: [],
 
             // My Projects list
             myProjectsList: [],
@@ -70,14 +73,19 @@ export class PTTProjectDashboard extends Component {
             loading: true,
             refreshing: false,
             error: null,
-            activePeriod: '',
+            activePeriod: 'month',
         });
 
+        // Default to current month
+        const today = new Date();
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+        
         this.currentFilters = {
             user: null,
             project: null,
-            start_date: null,
-            end_date: null,
+            start_date: monthStart,
+            end_date: monthEnd,
         };
 
         this.charts = {};
@@ -134,6 +142,10 @@ export class PTTProjectDashboard extends Component {
             this.state.myOverdueTasksIds = kpis.my_overdue_tasks_ids || [];
             this.state.dueThisWeek = kpis.due_this_week || 0;
             this.state.dueThisWeekIds = kpis.due_this_week_ids || [];
+            this.state.unassignedTasks = kpis.unassigned_tasks || 0;
+            this.state.unassignedTasksIds = kpis.unassigned_tasks_ids || [];
+            this.state.noDueDateTasks = kpis.no_due_date_tasks || 0;
+            this.state.noDueDateTasksIds = kpis.no_due_date_tasks_ids || [];
 
             // Lists
             this.state.myProjectsList = myProjects.projects || [];
@@ -275,44 +287,15 @@ export class PTTProjectDashboard extends Component {
     }
 
     async renderCharts() {
-        // Destroy existing charts
-        if (this.charts.stages) this.charts.stages.destroy();
+        // Destroy existing chart
         if (this.charts.salesByRep) this.charts.salesByRep.destroy();
 
         const isDark = this.isDarkMode();
         const textColor = isDark ? '#e5e7eb' : '#374151';
         const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
-        // Fetch data for charts
-        const [stagesData, salesByRepData] = await Promise.all([
-            rpc('/ptt/dashboard/task-stages-chart', { filters: this.getFilterParams() }),
-            rpc('/ptt/dashboard/sales-by-rep', { filters: this.getFilterParams() }),
-        ]);
-
-        // Tasks by Stage donut
-        if (this.taskStagesChart.el && stagesData.data?.length > 0) {
-            this.charts.stages = new Chart(this.taskStagesChart.el, {
-                type: 'doughnut',
-                data: {
-                    labels: stagesData.labels || [],
-                    datasets: [{
-                        data: stagesData.data || [],
-                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '55%',
-                    plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: { color: textColor, padding: 8, font: { size: 10 } }
-                        }
-                    }
-                }
-            });
-        }
+        // Fetch sales by rep data
+        const salesByRepData = await rpc('/ptt/dashboard/sales-by-rep', { filters: this.getFilterParams() });
 
         // Sales by Rep bar chart
         if (this.salesByRepChart.el && salesByRepData.data?.length > 0) {
@@ -550,6 +533,32 @@ export class PTTProjectDashboard extends Component {
             type: 'ir.actions.act_window',
             res_model: 'project.task',
             domain: [['id', 'in', this.state.dueThisWeekIds]],
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            target: 'current',
+        });
+    }
+
+    openUnassignedTasks(ev) {
+        ev?.stopPropagation();
+        this.action.doAction({
+            name: _t("Unassigned Tasks"),
+            type: 'ir.actions.act_window',
+            res_model: 'project.task',
+            domain: [['id', 'in', this.state.unassignedTasksIds]],
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            target: 'current',
+        });
+    }
+
+    openNoDueDateTasks(ev) {
+        ev?.stopPropagation();
+        this.action.doAction({
+            name: _t("Tasks Without Due Date"),
+            type: 'ir.actions.act_window',
+            res_model: 'project.task',
+            domain: [['id', 'in', this.state.noDueDateTasksIds]],
             view_mode: 'list,form',
             views: [[false, 'list'], [false, 'form']],
             target: 'current',
