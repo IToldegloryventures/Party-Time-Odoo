@@ -14,18 +14,14 @@ class CrmLead(models.Model):
     """CRM Lead extensions for Party Time Texas event management."""
     _inherit = "crm.lead"
 
-    _sql_constraints = [
-        (
-            "ptt_guest_count_non_negative",
-            "CHECK (ptt_guest_count >= 0)",
-            "Guest count cannot be negative.",
-        ),
-        (
-            "ptt_event_duration_non_negative",
-            "CHECK (ptt_event_duration >= 0)",
-            "Event duration cannot be negative.",
-        ),
-    ]
+    _ptt_guest_count_non_negative = models.Constraint(
+        "CHECK(ptt_guest_count >= 0)",
+        "Guest count cannot be negative.",
+    )
+    _ptt_event_duration_non_negative = models.Constraint(
+        "CHECK(ptt_event_duration >= 0)",
+        "Event duration cannot be negative.",
+    )
 
     # =========================================================================
     # CONTACT INFORMATION

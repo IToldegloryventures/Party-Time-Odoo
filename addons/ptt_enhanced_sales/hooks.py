@@ -16,6 +16,33 @@ def post_init_hook(cr, registry):
     Task = env['project.task']
     Project = env['project.project']
 
+    # ------------------------------------------------------------------
+    # Ensure every lead has an event type (field is required=True)
+    # ------------------------------------------------------------------
+    try:
+        default_event_type = env.ref(
+            "ptt_enhanced_sales.event_type_social", raise_if_not_found=False
+        ) or env['sale.order.type'].search([], limit=1)
+        if default_event_type:
+            env.cr.execute(
+                """
+                UPDATE crm_lead
+                   SET ptt_event_type_id = %s
+                 WHERE ptt_event_type_id IS NULL
+                """,
+                (default_event_type.id,),
+            )
+            # Enforce NOT NULL if data is now clean
+            env.cr.execute(
+                """
+                ALTER TABLE crm_lead
+                ALTER COLUMN ptt_event_type_id SET NOT NULL
+                """
+            )
+    except Exception:
+        # If any issue occurs, skip constraint hardening; data is still updated
+        pass
+
     # Clean up orphaned XMLID created in earlier versions (no longer shipped)
     try:
         env['ir.model.data'].search([
