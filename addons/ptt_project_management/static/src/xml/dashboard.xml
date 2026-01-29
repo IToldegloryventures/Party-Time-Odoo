@@ -103,23 +103,25 @@
                         </div>
                     </div>
 
-                    <!-- 2. KPI GRID - 6 compact cards (2 rows of 3) -->
-                    <div class="ptt-kpi-grid">
-                        <div class="ptt-kpi-card ptt-kpi-primary" t-on-click="openMyTasks">
-                            <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
-                            <div class="ptt-kpi-label">My Tasks</div>
-                        </div>
+                    <!-- 2. KPI CARDS - 2 rows of 3 -->
+                    <div class="ptt-kpi-row mb-2">
                         <div class="ptt-kpi-card" t-on-click="openMyProjects">
                             <div class="ptt-kpi-value"><t t-esc="state.myProjects"/></div>
                             <div class="ptt-kpi-label">My Projects</div>
                         </div>
+                        <div class="ptt-kpi-card ptt-kpi-primary" t-on-click="openMyTasks">
+                            <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
+                            <div class="ptt-kpi-label">My Tasks</div>
+                        </div>
+                        <div class="ptt-kpi-card ptt-kpi-info" t-on-click="openMyActivities">
+                            <div class="ptt-kpi-value"><t t-esc="state.myActivities"/></div>
+                            <div class="ptt-kpi-label">My Activities</div>
+                        </div>
+                    </div>
+                    <div class="ptt-kpi-row mb-3">
                         <div class="ptt-kpi-card ptt-kpi-danger" t-on-click="openMyOverdueTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myOverdueTasks"/></div>
                             <div class="ptt-kpi-label">Overdue</div>
-                        </div>
-                        <div class="ptt-kpi-card ptt-kpi-warning" t-on-click="openDueThisWeek">
-                            <div class="ptt-kpi-value"><t t-esc="state.dueThisWeek"/></div>
-                            <div class="ptt-kpi-label">Due This Week</div>
                         </div>
                         <div class="ptt-kpi-card ptt-kpi-muted" t-on-click="openUnassignedTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.unassignedTasks"/></div>

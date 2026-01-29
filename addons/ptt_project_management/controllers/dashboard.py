@@ -260,7 +260,11 @@ class PTTDashboardController(http.Controller):
             ('user_id', '=', uid),
             ('message_partner_ids', 'in', [request.env.user.partner_id.id]),
         ])
-        
+
+        # My Activities (pending activities assigned to current user)
+        Activity = request.env['mail.activity']
+        my_activities = Activity.search_count([('user_id', '=', uid)])
+
         # My Overdue Tasks
         my_overdue = my_tasks.filtered(
             lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env.user) < today
@@ -291,10 +295,9 @@ class PTTDashboardController(http.Controller):
             'my_tasks_ids': my_tasks.ids,
             'my_projects': len(my_projects),
             'my_projects_ids': my_projects.ids,
+            'my_activities': my_activities,
             'my_overdue_tasks': len(my_overdue),
             'my_overdue_tasks_ids': my_overdue.ids,
-            'due_this_week': len(due_this_week),
-            'due_this_week_ids': due_this_week.ids,
             'unassigned_tasks': len(unassigned_tasks),
             'unassigned_tasks_ids': unassigned_tasks.ids,
             'no_due_date_tasks': len(no_due_date_tasks),

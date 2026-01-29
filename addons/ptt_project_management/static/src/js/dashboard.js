@@ -39,6 +39,7 @@ export class PTTProjectDashboard extends Component {
             myTasksIds: [],
             myProjects: 0,
             myProjectsIds: [],
+            myActivities: 0,
             myOverdueTasks: 0,
             myOverdueTasksIds: [],
             dueThisWeek: 0,
@@ -138,6 +139,7 @@ export class PTTProjectDashboard extends Component {
             this.state.myTasksIds = kpis.my_tasks_ids || [];
             this.state.myProjects = kpis.my_projects || 0;
             this.state.myProjectsIds = kpis.my_projects_ids || [];
+            this.state.myActivities = kpis.my_activities || 0;
             this.state.myOverdueTasks = kpis.my_overdue_tasks || 0;
             this.state.myOverdueTasksIds = kpis.my_overdue_tasks_ids || [];
             this.state.dueThisWeek = kpis.due_this_week || 0;
@@ -509,6 +511,19 @@ export class PTTProjectDashboard extends Component {
             domain: [['id', 'in', this.state.myProjectsIds]],
             view_mode: 'kanban,list,form',
             views: [[false, 'kanban'], [false, 'list'], [false, 'form']],
+            target: 'current',
+        });
+    }
+
+    openMyActivities(ev) {
+        ev?.stopPropagation();
+        this.action.doAction({
+            name: _t("My Activities"),
+            type: 'ir.actions.act_window',
+            res_model: 'mail.activity',
+            domain: [['user_id', '=', this.state.currentUserId || false]],
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
             target: 'current',
         });
     }
