@@ -23,7 +23,7 @@ export class PTTProjectDashboard extends Component {
 
         // Chart refs
         this.taskStagesChart = useRef("taskStagesChart");
-        this.projectsChart = useRef("projectsChart");
+        this.salesByRepChart = useRef("salesByRepChart");
 
         // Filter refs
         this.userRef = useRef("userSelect");
@@ -32,6 +32,8 @@ export class PTTProjectDashboard extends Component {
         // Reactive state
         this.state = useState({
             // KPIs
+            totalRevenue: '0',
+            confirmedSOIds: [],
             myTasks: 0,
             myTasksIds: [],
             myProjects: 0,
@@ -106,13 +108,18 @@ export class PTTProjectDashboard extends Component {
 
     async loadInitialData() {
         try {
-            const [kpis, myProjects, myTasks, events, filters] = await Promise.all([
+            const [kpis, salesKpis, myProjects, myTasks, events, filters] = await Promise.all([
                 rpc('/ptt/dashboard/kpis'),
+                rpc('/ptt/dashboard/sales-kpis'),
                 rpc('/ptt/dashboard/my-projects', { page: 1, limit: 5 }),
                 rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 8 }),
                 rpc('/ptt/dashboard/events'),
                 rpc('/ptt/dashboard/filter'),
             ]);
+
+            // Sales KPIs
+            this.state.totalRevenue = salesKpis.total_revenue || '0';
+            this.state.confirmedSOIds = salesKpis.confirmed_so_ids || [];
 
             // KPIs
             this.state.myTasks = kpis.my_tasks || 0;
@@ -266,15 +273,16 @@ export class PTTProjectDashboard extends Component {
     async renderCharts() {
         // Destroy existing charts
         if (this.charts.stages) this.charts.stages.destroy();
-        if (this.charts.projects) this.charts.projects.destroy();
+        if (this.charts.salesByRep) this.charts.salesByRep.destroy();
 
         const isDark = this.isDarkMode();
         const textColor = isDark ? '#e5e7eb' : '#374151';
+        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
-        // Fetch data for both charts
-        const [stagesData, projectsData] = await Promise.all([
+        // Fetch data for charts
+        const [stagesData, salesByRepData] = await Promise.all([
             rpc('/ptt/dashboard/task-stages-chart', { filters: this.getFilterParams() }),
-            rpc('/ptt/dashboard/projects-chart', { filters: this.getFilterParams() }),
+            rpc('/ptt/dashboard/sales-by-rep', { filters: this.getFilterParams() }),
         ]);
 
         // Tasks by Stage donut
@@ -295,32 +303,41 @@ export class PTTProjectDashboard extends Component {
                     plugins: {
                         legend: { 
                             position: 'bottom',
-                            labels: { color: textColor, padding: 10, font: { size: 11 } }
+                            labels: { color: textColor, padding: 8, font: { size: 10 } }
                         }
                     }
                 }
             });
         }
 
-        // Projects by Status donut
-        if (this.projectsChart.el && projectsData.data?.length > 0) {
-            this.charts.projects = new Chart(this.projectsChart.el, {
-                type: 'doughnut',
+        // Sales by Rep bar chart
+        if (this.salesByRepChart.el && salesByRepData.data?.length > 0) {
+            this.charts.salesByRep = new Chart(this.salesByRepChart.el, {
+                type: 'bar',
                 data: {
-                    labels: projectsData.labels || [],
+                    labels: salesByRepData.labels || [],
                     datasets: [{
-                        data: projectsData.data || [],
-                        backgroundColor: ['#6366f1', '#22c55e', '#f97316', '#ef4444', '#64748b'],
+                        label: 'Sales ($)',
+                        data: salesByRepData.data || [],
+                        backgroundColor: '#22c55e',
+                        borderRadius: 4,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '55%',
+                    indexAxis: 'y',
                     plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: { color: textColor, padding: 10, font: { size: 11 } }
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textColor, font: { size: 10 } },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            ticks: { color: textColor, font: { size: 10 } },
+                            grid: { display: false }
                         }
                     }
                 }
@@ -469,6 +486,19 @@ export class PTTProjectDashboard extends Component {
     // =========================================================================
     // DRILL-DOWN ACTIONS
     // =========================================================================
+
+    openConfirmedSOs(ev) {
+        ev?.stopPropagation();
+        this.action.doAction({
+            name: _t("Confirmed Sales Orders"),
+            type: 'ir.actions.act_window',
+            res_model: 'sale.order',
+            domain: [['id', 'in', this.state.confirmedSOIds]],
+            view_mode: 'list,form',
+            views: [[false, 'list'], [false, 'form']],
+            target: 'current',
+        });
+    }
 
     openMyTasks(ev) {
         ev?.stopPropagation();

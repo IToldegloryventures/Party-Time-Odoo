@@ -140,6 +140,83 @@ class PTTDashboardController(http.Controller):
     # =========================================================================
     # NEW v2.3.0 ENDPOINTS - Focused Dashboard
     # =========================================================================
+    # SALES KPIs
+    # =========================================================================
+
+    @http.route('/ptt/dashboard/sales-kpis', auth='user', type='jsonrpc')
+    def get_sales_kpis(self, filters=None):
+        """Get sales KPIs: Total confirmed SO revenue."""
+        SaleOrder = request.env['sale.order']
+        
+        # Build domain for confirmed orders
+        domain = [('state', '=', 'sale')]
+        
+        # Apply date filters if provided
+        if filters:
+            start_date = filters.get('start_date')
+            end_date = filters.get('end_date')
+            if start_date:
+                domain.append(('date_order', '>=', start_date))
+            if end_date:
+                domain.append(('date_order', '<=', end_date))
+        
+        orders = SaleOrder.search(domain)
+        total = sum(orders.mapped('amount_total'))
+        
+        # Format as currency string (no decimals for large numbers)
+        if total >= 1000:
+            formatted = f"{total:,.0f}"
+        else:
+            formatted = f"{total:,.2f}"
+        
+        return {
+            'total_revenue': formatted,
+            'confirmed_so_ids': orders.ids,
+        }
+
+    @http.route('/ptt/dashboard/sales-by-rep', auth='user', type='jsonrpc')
+    def get_sales_by_rep(self, filters=None):
+        """Get sales totals grouped by salesperson for bar chart."""
+        SaleOrder = request.env['sale.order']
+        
+        # Build domain for confirmed orders
+        domain = [('state', '=', 'sale')]
+        
+        # Apply date filters if provided
+        if filters:
+            start_date = filters.get('start_date')
+            end_date = filters.get('end_date')
+            if start_date:
+                domain.append(('date_order', '>=', start_date))
+            if end_date:
+                domain.append(('date_order', '<=', end_date))
+        
+        orders = SaleOrder.search(domain)
+        
+        # Group by user
+        sales_by_user = {}
+        for order in orders:
+            user = order.user_id
+            if user:
+                if user.id not in sales_by_user:
+                    sales_by_user[user.id] = {
+                        'name': user.name,
+                        'total': 0,
+                    }
+                sales_by_user[user.id]['total'] += order.amount_total
+        
+        # Sort by total descending
+        sorted_sales = sorted(sales_by_user.values(), key=lambda x: x['total'], reverse=True)
+        
+        labels = [s['name'] for s in sorted_sales]
+        data = [round(s['total'], 2) for s in sorted_sales]
+        
+        return {
+            'labels': labels,
+            'data': data,
+        }
+
+    # =========================================================================
 
     @http.route('/ptt/dashboard/kpis', auth='user', type='jsonrpc')
     def get_kpis(self, filters=None):

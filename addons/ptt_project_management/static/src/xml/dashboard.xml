@@ -84,8 +84,12 @@
                 <!-- SCROLLABLE BODY -->
                 <div class="ptt-dashboard-body">
                     
-                    <!-- 1. KPI GRID - 4 compact cards in a row -->
+                    <!-- 1. KPI GRID - 5 compact cards -->
                     <div class="ptt-kpi-grid">
+                        <div class="ptt-kpi-card ptt-kpi-success" t-on-click="openConfirmedSOs">
+                            <div class="ptt-kpi-value ptt-kpi-currency">$<t t-esc="state.totalRevenue"/></div>
+                            <div class="ptt-kpi-label">Total Sales</div>
+                        </div>
                         <div class="ptt-kpi-card ptt-kpi-primary" t-on-click="openMyTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
                             <div class="ptt-kpi-label">My Tasks</div>
@@ -162,11 +166,11 @@
                         </div>
                     </div>
 
-                    <!-- 3. TWO COMPACT DONUT CHARTS SIDE BY SIDE -->
+                    <!-- 3. THREE COMPACT CHARTS -->
                     <div class="ptt-chart-row mb-3">
-                        <div class="ptt-chart-box">
-                            <div class="ptt-chart-title">Projects by Status</div>
-                            <canvas t-ref="projectsChart"/>
+                        <div class="ptt-chart-box ptt-chart-wide">
+                            <div class="ptt-chart-title">Sales by Rep</div>
+                            <canvas t-ref="salesByRepChart"/>
                         </div>
                         <div class="ptt-chart-box">
                             <div class="ptt-chart-title">Tasks by Stage</div>

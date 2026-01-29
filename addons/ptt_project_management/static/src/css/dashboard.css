@@ -207,6 +207,9 @@ html.o_dark, body.o_dark, .o_dark {
     text-transform: uppercase !important;
 }
 
+.ptt-kpi-success { border-top: 3px solid #22c55e !important; }
+.ptt-kpi-success .ptt-kpi-value { color: #22c55e !important; }
+
 .ptt-kpi-primary { border-top: 3px solid var(--ptt-accent) !important; }
 .ptt-kpi-primary .ptt-kpi-value { color: var(--ptt-accent) !important; }
 
@@ -215,6 +218,10 @@ html.o_dark, body.o_dark, .o_dark {
 
 .ptt-kpi-warning { border-top: 3px solid var(--ptt-warning) !important; }
 .ptt-kpi-warning .ptt-kpi-value { color: var(--ptt-warning) !important; }
+
+.ptt-kpi-currency {
+    font-size: 1.5rem !important;
+}
 
 /* ============================================
    CARDS
@@ -551,6 +558,10 @@ html.o_dark .ptt-row-overdue td {
 
 .ptt-chart-box canvas {
     max-height: 150px !important;
+}
+
+.ptt-chart-wide {
+    flex: 1.5 !important;
 }
 
 /* ============================================
