@@ -414,11 +414,15 @@ body.dark,
 .ptt-deadline-badge {
     display: inline-block !important;
     padding: 4px 10px !important;
-    background: #f97316 !important;
+    background: #22c55e !important;
     color: #fff !important;
     font-size: 0.75rem !important;
     font-weight: 500 !important;
     border-radius: 12px !important;
+}
+
+.ptt-deadline-badge.ptt-overdue {
+    background: #ef4444 !important;
 }
 
 /* View Button */

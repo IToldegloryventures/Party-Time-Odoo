@@ -139,6 +139,165 @@ class PTTDashboardController(http.Controller):
             
         return domain
 
+    # =========================================================================
+    # NEW v2.3.0 ENDPOINTS - Focused Dashboard
+    # =========================================================================
+
+    @http.route('/ptt/dashboard/kpis', auth='user', type='jsonrpc')
+    def get_kpis(self, filters=None):
+        """Get focused KPI data: My Tasks, My Projects, Overdue, Due This Week."""
+        today = fields.Date.context_today(request.env.user)
+        uid = request.env.uid
+        Project = request.env['project.project']
+        Task = request.env['project.task']
+
+        # Apply filters
+        filter_domain = self._get_filter_domain(filters or {}, model='task', env=request.env)
+        
+        # My Tasks (assigned to current user, not done)
+        my_tasks_domain = [('user_ids', 'in', [uid]), ('stage_id.fold', '=', False)] + filter_domain
+        my_tasks = Task.search(my_tasks_domain)
+        
+        # My Projects (user is manager or follower)
+        my_projects = Project.search([
+            '|',
+            ('user_id', '=', uid),
+            ('message_partner_ids', 'in', [request.env.user.partner_id.id]),
+        ])
+        
+        # My Overdue Tasks
+        my_overdue = my_tasks.filtered(
+            lambda t: t.date_deadline and self._as_date(t.date_deadline, request.env.user) < today
+        )
+        
+        # Due This Week (tasks due within 7 days)
+        from datetime import timedelta
+        week_end = today + timedelta(days=7)
+        due_this_week = my_tasks.filtered(
+            lambda t: t.date_deadline 
+            and today <= self._as_date(t.date_deadline, request.env.user) <= week_end
+        )
+        
+        return {
+            'my_tasks': len(my_tasks),
+            'my_tasks_ids': my_tasks.ids,
+            'my_projects': len(my_projects),
+            'my_projects_ids': my_projects.ids,
+            'my_overdue_tasks': len(my_overdue),
+            'my_overdue_tasks_ids': my_overdue.ids,
+            'due_this_week': len(due_this_week),
+            'due_this_week_ids': due_this_week.ids,
+        }
+
+    @http.route('/ptt/dashboard/my-projects', auth='user', type='jsonrpc')
+    def get_my_projects(self, page=1, limit=5, filters=None):
+        """Get paginated list of user's projects with task counts."""
+        uid = request.env.uid
+        Project = request.env['project.project']
+        Task = request.env['project.task']
+        
+        # Projects where user is manager or follower
+        domain = [
+            '|',
+            ('user_id', '=', uid),
+            ('message_partner_ids', 'in', [request.env.user.partner_id.id]),
+        ]
+        
+        # Apply customer/project filters if provided
+        if filters:
+            if filters.get('customer') and filters['customer'] != '':
+                domain.append(('partner_id', '=', int(filters['customer'])))
+            if filters.get('project') and filters['project'] != '':
+                domain.append(('id', '=', int(filters['project'])))
+        
+        total_count = Project.search_count(domain)
+        offset = (page - 1) * limit
+        projects = Project.search(domain, limit=limit, offset=offset, order='is_favorite desc, name asc')
+        
+        project_list = []
+        for proj in projects:
+            # Count active tasks in this project
+            task_count = Task.search_count([
+                ('project_id', '=', proj.id),
+                ('stage_id.fold', '=', False),
+            ])
+            project_list.append({
+                'id': proj.id,
+                'name': proj.name,
+                'partner_name': proj.partner_id.name if proj.partner_id else None,
+                'task_count': task_count,
+                'is_favorite': proj.is_favorite,
+                'user_id': proj.user_id.id if proj.user_id else None,
+                'user_name': proj.user_id.name if proj.user_id else None,
+            })
+        
+        return {
+            'projects': project_list,
+            'total': total_count,
+            'page': page,
+            'pages': max(1, (total_count + limit - 1) // limit),
+        }
+
+    @http.route('/ptt/dashboard/my-tasks', auth='user', type='jsonrpc')
+    def get_my_tasks(self, page=1, limit=5, filters=None):
+        """Get paginated list of tasks assigned to current user."""
+        today = fields.Date.context_today(request.env.user)
+        uid = request.env.uid
+        Task = request.env['project.task']
+        
+        # Tasks assigned to current user, not done
+        domain = [
+            ('user_ids', 'in', [uid]),
+            ('stage_id.fold', '=', False),
+        ]
+        
+        # Apply filters
+        domain.extend(self._get_filter_domain(filters or {}, model='task', env=request.env))
+        
+        total_count = Task.search_count(domain)
+        offset = (page - 1) * limit
+        
+        # Order: overdue first, then by deadline
+        tasks = Task.search(domain, limit=limit, offset=offset, order='date_deadline asc nulls last')
+        
+        task_list = []
+        for task in tasks:
+            deadline_date = self._as_date(task.date_deadline, request.env.user) if task.date_deadline else None
+            is_overdue = deadline_date and deadline_date < today
+            
+            if deadline_date:
+                delta = (today - deadline_date).days
+                if delta > 0:
+                    deadline_display = f"{delta}d overdue"
+                elif delta == 0:
+                    deadline_display = "Today"
+                else:
+                    deadline_display = f"In {abs(delta)}d"
+            else:
+                deadline_display = None
+            
+            task_list.append({
+                'id': task.id,
+                'name': task.name,
+                'project_id': task.project_id.id if task.project_id else None,
+                'project_name': task.project_id.name if task.project_id else '',
+                'deadline_display': deadline_display,
+                'is_overdue': is_overdue,
+                'priority': task.priority,
+                'stage_name': task.stage_id.name if task.stage_id else '',
+            })
+        
+        return {
+            'tasks': task_list,
+            'total': total_count,
+            'page': page,
+            'pages': max(1, (total_count + limit - 1) // limit),
+        }
+
+    # =========================================================================
+    # LEGACY ENDPOINTS (kept for backward compatibility)
+    # =========================================================================
+
     @http.route('/ptt/dashboard/tiles', auth='user', type='jsonrpc')
     def get_tiles_data(self):
         """Get main tile/KPI data for dashboard.

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <!--
-        PTT Project Dashboard Template v2.2.0
+        PTT Project Dashboard Template v2.3.0
         
-        Optimized Layout:
-        - Compact single-row header with filters
-        - Date period quick-select pills
-        - Responsive CSS Grid for KPIs
-        - Scrollable body with charts/tables
+        Focused Layout:
+        - 4 KPI cards (My Tasks, My Projects, Overdue, Due This Week)
+        - My Projects list with status and task counts
+        - My Tasks list with deadlines and priorities
+        - 2 useful charts (Stage + Deadline)
     -->
     <t t-name="ptt_project_management.Dashboard">
         <div class="ptt-dashboard">
@@ -31,15 +31,19 @@
                 <!-- COMPACT HEADER -->
                 <div class="ptt-dashboard-header">
                     <div class="ptt-filter-row">
-                        <!-- User Filter -->
-                        <div class="ptt-filter-group">
-                            <label>User</label>
-                            <select class="form-select" t-ref="userSelect" t-on-change="applyFilters">
-                                <option value="">All Users</option>
-                                <t t-foreach="state.availableUsers" t-as="user" t-key="user.id">
-                                    <option t-att-value="user.id"><t t-esc="user.name"/></option>
-                                </t>
-                            </select>
+                        <!-- Date Period Pills -->
+                        <div class="ptt-filter-group ptt-filter-wide">
+                            <label>Period</label>
+                            <div class="ptt-date-pills">
+                                <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'today'}" 
+                                      t-on-click="() => this.setDatePeriod('today')">Today</span>
+                                <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'week'}" 
+                                      t-on-click="() => this.setDatePeriod('week')">Week</span>
+                                <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'month'}" 
+                                      t-on-click="() => this.setDatePeriod('month')">Month</span>
+                                <span class="ptt-date-pill" t-att-class="{'active': !state.activePeriod || state.activePeriod === ''}" 
+                                      t-on-click="() => this.setDatePeriod('')">All</span>
+                            </div>
                         </div>
                         
                         <!-- Customer Filter -->
@@ -64,38 +68,6 @@
                             </select>
                         </div>
                         
-                        <!-- Date Period Pills -->
-                        <div class="ptt-filter-group ptt-filter-wide">
-                            <label>Period</label>
-                            <div class="ptt-date-pills">
-                                <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'today'}" 
-                                      t-on-click="() => this.setDatePeriod('today')">Today</span>
-                                <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'week'}" 
-                                      t-on-click="() => this.setDatePeriod('week')">Week</span>
-                                <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'month'}" 
-                                      t-on-click="() => this.setDatePeriod('month')">Month</span>
-                                <span class="ptt-date-pill" t-att-class="{'active': !state.activePeriod || state.activePeriod === ''}" 
-                                      t-on-click="() => this.setDatePeriod('')">All</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Custom Date Range (collapsed by default) -->
-                        <div class="ptt-filter-group ptt-filter-auto">
-                            <label>From</label>
-                            <input type="date" class="form-control" t-ref="startDate" t-on-change="applyCustomDateRange" style="width: 120px;"/>
-                        </div>
-                        <div class="ptt-filter-group ptt-filter-auto">
-                            <label>To</label>
-                            <input type="date" class="form-control" t-ref="endDate" t-on-change="applyCustomDateRange" style="width: 120px;"/>
-                        </div>
-                        
-                        <!-- Reset Button -->
-                        <div class="ptt-filter-group ptt-filter-auto" style="justify-content: flex-end;">
-                            <button class="ptt-btn-icon" t-on-click="resetFilters" title="Reset filters">
-                                <i class="fa fa-times"/>
-                            </button>
-                        </div>
-                        
                         <!-- Action Buttons -->
                         <div class="ptt-actions">
                             <button class="ptt-refresh-btn" t-on-click="() => this.refreshDashboard(false)" 
@@ -103,91 +75,142 @@
                                 <i t-att-class="state.refreshing ? 'fa fa-spinner fa-spin' : 'fa fa-refresh'"/>
                                 <span t-if="!state.refreshing">Refresh</span>
                             </button>
-                            <button class="ptt-export-btn" t-on-click="exportToExcel">
-                                <i class="fa fa-download"/>
-                                <span>Export</span>
-                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- SCROLLABLE BODY -->
                 <div class="ptt-dashboard-body">
-                    <!-- KPI GRID -->
+                    <!-- KPI GRID - 4 focused metrics -->
                     <div class="ptt-kpi-grid">
                         <div class="ptt-kpi-card" t-on-click="openMyTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
                             <div class="ptt-kpi-label">My Tasks</div>
                         </div>
-                        <div class="ptt-kpi-card" t-on-click="openTotalProjects">
-                            <div class="ptt-kpi-value"><t t-esc="state.totalProjects"/></div>
-                            <div class="ptt-kpi-label">Total Projects</div>
-                        </div>
-                        <div class="ptt-kpi-card" t-on-click="openActiveTasks">
-                            <div class="ptt-kpi-value"><t t-esc="state.activeTasks"/></div>
-                            <div class="ptt-kpi-label">Active Tasks</div>
+                        <div class="ptt-kpi-card" t-on-click="openMyProjects">
+                            <div class="ptt-kpi-value"><t t-esc="state.myProjects"/></div>
+                            <div class="ptt-kpi-label">My Projects</div>
                         </div>
                         <div class="ptt-kpi-card ptt-kpi-overdue" t-on-click="openMyOverdueTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myOverdueTasks"/></div>
-                            <div class="ptt-kpi-label">My Overdue</div>
+                            <div class="ptt-kpi-label">Overdue</div>
                         </div>
-                        <div class="ptt-kpi-card ptt-kpi-overdue" t-on-click="openOverdueTasks">
-                            <div class="ptt-kpi-value"><t t-esc="state.overdueTasks"/></div>
-                            <div class="ptt-kpi-label">All Overdue</div>
-                        </div>
-                        <div class="ptt-kpi-card" t-on-click="openTodayTasks">
-                            <div class="ptt-kpi-value"><t t-esc="state.todayTasks"/></div>
-                            <div class="ptt-kpi-label">Due Today</div>
+                        <div class="ptt-kpi-card" t-on-click="openDueThisWeek">
+                            <div class="ptt-kpi-value"><t t-esc="state.dueThisWeek"/></div>
+                            <div class="ptt-kpi-label">Due This Week</div>
                         </div>
                     </div>
 
-                    <!-- TASKS TABLE + DEADLINE CHART -->
+                    <!-- MY PROJECTS LIST + STAGE CHART -->
                     <div class="row g-3 mb-3">
                         <div class="col-lg-7">
                             <div class="card ptt-list-card h-100">
                                 <div class="card-header">
-                                    <h5>All Tasks</h5>
+                                    <h5><i class="fa fa-folder-open me-2"/>My Projects</h5>
                                 </div>
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
                                         <table class="table table-hover mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th>Name</th>
                                                     <th>Project</th>
-                                                    <th>Deadline</th>
-                                                    <th>Priority</th>
-                                                    <th class="text-center">Actions</th>
+                                                    <th>Customer</th>
+                                                    <th>Tasks</th>
+                                                    <th>Status</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <t t-foreach="state.tasks" t-as="task" t-key="task.id">
+                                                <t t-foreach="state.myProjectsList" t-as="project" t-key="project.id">
                                                     <tr>
-                                                        <td><t t-esc="task.name"/></td>
+                                                        <td class="fw-medium"><t t-esc="project.name"/></td>
+                                                        <td><t t-esc="project.partner_name or '-'"/></td>
+                                                        <td>
+                                                            <span class="badge bg-secondary"><t t-esc="project.task_count"/> tasks</span>
+                                                        </td>
+                                                        <td>
+                                                            <span t-if="project.is_favorite" class="badge bg-warning text-dark">
+                                                                <i class="fa fa-star"/> Starred
+                                                            </span>
+                                                            <span t-else="" class="badge bg-light text-dark">Active</span>
+                                                        </td>
+                                                        <td>
+                                                            <button class="ptt-view-btn" t-on-click="() => this.viewProject(project.id)">Open</button>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                                <tr t-if="!state.myProjectsList || state.myProjectsList.length === 0">
+                                                    <td colspan="5" class="text-center text-muted py-4">No projects assigned</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer ptt-pagination">
+                                    <button class="ptt-pagination-btn" t-on-click="prevProjectPage" t-att-disabled="state.projectPage &lt;= 1">
+                                        <i class="fa fa-chevron-left"/>
+                                    </button>
+                                    <span class="ptt-pagination-text">Page <t t-esc="state.projectPage"/> of <t t-esc="state.projectPages"/></span>
+                                    <button class="ptt-pagination-btn" t-on-click="nextProjectPage" t-att-disabled="state.projectPage >= state.projectPages">
+                                        <i class="fa fa-chevron-right"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card ptt-chart-card h-100">
+                                <div class="card-header">
+                                    <h5>Tasks by Stage</h5>
+                                </div>
+                                <div class="card-body d-flex align-items-center justify-content-center">
+                                    <canvas t-ref="taskStagesChart" style="max-height: 220px;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MY TASKS LIST + DEADLINE CHART -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-7">
+                            <div class="card ptt-list-card h-100">
+                                <div class="card-header">
+                                    <h5><i class="fa fa-tasks me-2"/>My Tasks</h5>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Task</th>
+                                                    <th>Project</th>
+                                                    <th>Deadline</th>
+                                                    <th>Priority</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="state.myTasksList" t-as="task" t-key="task.id">
+                                                    <tr t-att-class="{'table-danger': task.is_overdue}">
+                                                        <td class="fw-medium"><t t-esc="task.name"/></td>
                                                         <td><t t-esc="task.project_name"/></td>
                                                         <td>
-                                                            <span class="ptt-deadline-badge">
-                                                                <t t-esc="task.deadline_display"/>
+                                                            <span t-att-class="task.is_overdue ? 'ptt-deadline-badge ptt-overdue' : 'ptt-deadline-badge'">
+                                                                <t t-esc="task.deadline_display or 'No deadline'"/>
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <i t-if="task.priority === '3'" class="fa fa-flag text-danger" title="Urgent"/>
                                                             <i t-elif="task.priority === '2'" class="fa fa-flag text-warning" title="High"/>
                                                             <i t-elif="task.priority === '1'" class="fa fa-flag text-info" title="Medium"/>
-                                                            <i t-else="" class="fa fa-flag-o text-muted" title="Low"/>
+                                                            <i t-else="" class="fa fa-flag-o text-muted" title="Normal"/>
                                                         </td>
-                                                        <td class="text-center">
-                                                            <div class="btn-group btn-group-sm">
-                                                                <button class="ptt-assign-btn" t-on-click="() => this.assignTask(task.id)" title="Assign">
-                                                                    <i class="fa fa-user-plus"/>
-                                                                </button>
-                                                                <button class="ptt-view-btn" t-on-click="() => this.viewTask(task.id)">View</button>
-                                                            </div>
+                                                        <td>
+                                                            <button class="ptt-view-btn" t-on-click="() => this.viewTask(task.id)">Open</button>
                                                         </td>
                                                     </tr>
                                                 </t>
-                                                <tr t-if="state.tasks.length === 0">
-                                                    <td colspan="5" class="text-center text-muted py-4">No tasks found</td>
+                                                <tr t-if="!state.myTasksList || state.myTasksList.length === 0">
+                                                    <td colspan="5" class="text-center text-muted py-4">No tasks assigned to you</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -207,99 +230,10 @@
                         <div class="col-lg-5">
                             <div class="card ptt-chart-card h-100">
                                 <div class="card-header">
-                                    <h5>Task Deadline</h5>
-                                    <i class="fa fa-download" title="Download" t-on-click="() => this.downloadChart('deadline', 'Task_Deadline')"/>
+                                    <h5>Task Deadlines</h5>
                                 </div>
                                 <div class="card-body d-flex align-items-center justify-content-center">
-                                    <canvas t-ref="taskDeadlineChart" style="max-height: 200px;"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- STAGES CHART + PROJECT CHART -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-lg-5">
-                            <div class="card ptt-chart-card h-100">
-                                <div class="card-header">
-                                    <h5>Tasks by Stage</h5>
-                                    <i class="fa fa-download" title="Download" t-on-click="() => this.downloadChart('stages', 'Task_Stages')"/>
-                                </div>
-                                <div class="card-body d-flex align-items-center justify-content-center">
-                                    <canvas t-ref="taskStagesChart" style="max-height: 200px;"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-                            <div class="card ptt-chart-card h-100">
-                                <div class="card-header">
-                                    <h5>Tasks by Project</h5>
-                                    <i class="fa fa-download" title="Download" t-on-click="() => this.downloadChart('project', 'Task_Project')"/>
-                                </div>
-                                <div class="card-body">
-                                    <canvas t-ref="taskProjectChart" style="height: 200px;"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ACTIVITIES TABLE + PRIORITY CHART -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-lg-7">
-                            <div class="card ptt-list-card h-100">
-                                <div class="card-header">
-                                    <h5>Activities</h5>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Task</th>
-                                                    <th>Activity</th>
-                                                    <th>Summary</th>
-                                                    <th>Date</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="state.activities" t-as="activity" t-key="activity.id">
-                                                    <tr>
-                                                        <td><t t-esc="activity.task_name"/></td>
-                                                        <td><t t-esc="activity.activity_type"/></td>
-                                                        <td><t t-esc="activity.summary"/></td>
-                                                        <td><t t-esc="activity.date"/></td>
-                                                        <td>
-                                                            <button class="ptt-view-btn" t-on-click="() => this.viewActivity(activity.res_model, activity.res_id)">View</button>
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                                <tr t-if="state.activities.length === 0">
-                                                    <td colspan="5" class="text-center text-muted py-4">No activities found</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="card-footer ptt-pagination">
-                                    <button class="ptt-pagination-btn" t-on-click="prevActivityPage" t-att-disabled="state.activityPage &lt;= 1">
-                                        <i class="fa fa-chevron-left"/>
-                                    </button>
-                                    <span class="ptt-pagination-text">Page <t t-esc="state.activityPage"/> of <t t-esc="state.activityPages"/></span>
-                                    <button class="ptt-pagination-btn" t-on-click="nextActivityPage" t-att-disabled="state.activityPage >= state.activityPages">
-                                        <i class="fa fa-chevron-right"/>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <div class="card ptt-chart-card h-100">
-                                <div class="card-header">
-                                    <h5>Tasks by Priority</h5>
-                                    <i class="fa fa-download" title="Download" t-on-click="() => this.downloadChart('priority', 'Priority_Chart')"/>
-                                </div>
-                                <div class="card-body">
-                                    <canvas t-ref="priorityChart" style="height: 200px;"/>
+                                    <canvas t-ref="taskDeadlineChart" style="max-height: 220px;"/>
                                 </div>
                             </div>
                         </div>
