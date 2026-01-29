@@ -1,12 +1,12 @@
 /** @odoo-module */
 /**
- * PTT Project Dashboard - Owl Component v2.3.0
+ * PTT Project Dashboard - Owl Component v2.4.0
  *
- * Focused Layout:
- * - 4 KPI cards (My Tasks, My Projects, Overdue, Due This Week)
- * - My Projects list with customer, task count, status
- * - My Tasks list with deadline and priority
- * - 2 charts (Tasks by Stage, Task Deadlines)
+ * Layout:
+ * - 4 KPI cards
+ * - My Tasks list (primary)
+ * - Event Calendar (CRM + Projects by event date)
+ * - My Projects list + Stage chart
  */
 
 import { registry } from '@web/core/registry';
@@ -18,12 +18,10 @@ import { loadBundle } from "@web/core/assets";
 
 export class PTTProjectDashboard extends Component {
     setup() {
-        // Services
         this.action = useService("action");
         this.notification = useService("notification");
 
-        // Chart canvas refs (only 2 charts now)
-        this.taskDeadlineChart = useRef("taskDeadlineChart");
+        // Chart ref
         this.taskStagesChart = useRef("taskStagesChart");
 
         // Filter refs
@@ -32,7 +30,7 @@ export class PTTProjectDashboard extends Component {
 
         // Reactive state
         this.state = useState({
-            // KPI counts
+            // KPIs
             myTasks: 0,
             myTasksIds: [],
             myProjects: 0,
@@ -52,18 +50,20 @@ export class PTTProjectDashboard extends Component {
             taskPage: 1,
             taskPages: 1,
 
-            // Filter options
+            // Upcoming Events (from CRM + Projects)
+            upcomingEvents: [],
+
+            // Filters
             customers: [],
             projects: [],
 
-            // UI state
+            // UI
             loading: true,
             refreshing: false,
             error: null,
             activePeriod: '',
         });
 
-        // Current filters
         this.currentFilters = {
             customer: null,
             project: null,
@@ -71,34 +71,27 @@ export class PTTProjectDashboard extends Component {
             end_date: null,
         };
 
-        // Chart instances
         this.charts = {};
-        
-        // Auto-polling (2 min)
         this.pollInterval = null;
         this.POLL_INTERVAL_MS = 120000;
 
-        // Lifecycle
         onWillStart(async () => {
             try {
                 await loadBundle("web.chartjs_lib");
                 await this.loadInitialData();
             } catch (error) {
-                console.error("PTT Dashboard: Failed to initialize", error);
-                this.state.error = "Failed to load dashboard. Please refresh the page.";
+                console.error("Dashboard init error:", error);
+                this.state.error = "Failed to load dashboard.";
             }
         });
 
         onMounted(() => {
-            this.renderCharts();
+            this.renderChart();
             this.pollInterval = setInterval(() => this.refreshDashboard(true), this.POLL_INTERVAL_MS);
         });
         
         onWillUnmount(() => {
-            if (this.pollInterval) {
-                clearInterval(this.pollInterval);
-                this.pollInterval = null;
-            }
+            if (this.pollInterval) clearInterval(this.pollInterval);
         });
     }
 
@@ -108,10 +101,11 @@ export class PTTProjectDashboard extends Component {
 
     async loadInitialData() {
         try {
-            const [kpis, myProjects, myTasks, filters] = await Promise.all([
+            const [kpis, myProjects, myTasks, events, filters] = await Promise.all([
                 rpc('/ptt/dashboard/kpis'),
                 rpc('/ptt/dashboard/my-projects', { page: 1, limit: 5 }),
-                rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 5 }),
+                rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 8 }),
+                rpc('/ptt/dashboard/events'),
                 rpc('/ptt/dashboard/filter'),
             ]);
 
@@ -125,15 +119,16 @@ export class PTTProjectDashboard extends Component {
             this.state.dueThisWeek = kpis.due_this_week || 0;
             this.state.dueThisWeekIds = kpis.due_this_week_ids || [];
 
-            // My Projects list
+            // Lists
             this.state.myProjectsList = myProjects.projects || [];
             this.state.projectPage = myProjects.page || 1;
             this.state.projectPages = myProjects.pages || 1;
-
-            // My Tasks list
             this.state.myTasksList = myTasks.tasks || [];
             this.state.taskPage = myTasks.page || 1;
             this.state.taskPages = myTasks.pages || 1;
+
+            // Events
+            this.state.upcomingEvents = events.events || [];
 
             // Filters
             this.state.customers = filters.customers || [];
@@ -141,8 +136,8 @@ export class PTTProjectDashboard extends Component {
 
             this.state.loading = false;
         } catch (error) {
-            console.error('Error loading dashboard:', error);
-            this.state.error = "Failed to load data. Please refresh.";
+            console.error('Load error:', error);
+            this.state.error = "Failed to load data.";
             this.state.loading = false;
         }
     }
@@ -157,7 +152,7 @@ export class PTTProjectDashboard extends Component {
     }
 
     // =========================================================================
-    // CHARTS (only 2 now)
+    // CHART
     // =========================================================================
 
     isDarkMode() {
@@ -165,63 +160,32 @@ export class PTTProjectDashboard extends Component {
                document.body.classList.contains('o_dark');
     }
 
-    async renderCharts() {
-        // Destroy existing
-        Object.values(this.charts).forEach(c => c && c.destroy());
+    async renderChart() {
+        if (this.charts.stages) this.charts.stages.destroy();
 
         const isDark = this.isDarkMode();
         const textColor = isDark ? '#e5e7eb' : '#374151';
-        const gridColor = isDark ? '#374151' : '#e5e7eb';
 
-        const filterParams = this.getFilterParams();
-        const [stagesData, deadlineData] = await Promise.all([
-            rpc('/ptt/dashboard/task-stages-chart', { filters: filterParams }),
-            rpc('/ptt/dashboard/task-deadline-chart', { filters: filterParams }),
-        ]);
+        const stagesData = await rpc('/ptt/dashboard/task-stages-chart', { filters: this.getFilterParams() });
 
-        // Tasks by Stage (doughnut)
-        if (this.taskStagesChart.el) {
+        if (this.taskStagesChart.el && stagesData.data?.length > 0) {
             this.charts.stages = new Chart(this.taskStagesChart.el, {
                 type: 'doughnut',
                 data: {
                     labels: stagesData.labels || [],
                     datasets: [{
                         data: stagesData.data || [],
-                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '50%',
+                    cutout: '60%',
                     plugins: {
                         legend: { 
-                            position: 'right',
-                            labels: { color: textColor, padding: 12, font: { size: 11 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Task Deadlines (pie)
-        if (this.taskDeadlineChart.el) {
-            this.charts.deadline = new Chart(this.taskDeadlineChart.el, {
-                type: 'pie',
-                data: {
-                    labels: deadlineData.labels || ['Overdue', 'Today', 'Upcoming'],
-                    datasets: [{
-                        data: deadlineData.data || [0, 0, 0],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { 
-                            position: 'right',
-                            labels: { color: textColor, padding: 12, font: { size: 11 } }
+                            position: 'bottom',
+                            labels: { color: textColor, padding: 15, font: { size: 12 } }
                         }
                     }
                 }
@@ -235,18 +199,12 @@ export class PTTProjectDashboard extends Component {
 
     async refreshDashboard(silent = false) {
         if (!silent) this.state.refreshing = true;
-        
         try {
             await this.loadInitialData();
-            await this.renderCharts();
-            if (!silent) {
-                this.notification.add(_t("Dashboard refreshed"), { type: "success" });
-            }
-        } catch (error) {
-            console.error('Refresh error:', error);
-            if (!silent) {
-                this.notification.add(_t("Failed to refresh"), { type: "danger" });
-            }
+            await this.renderChart();
+            if (!silent) this.notification.add(_t("Refreshed"), { type: "success" });
+        } catch (e) {
+            if (!silent) this.notification.add(_t("Refresh failed"), { type: "danger" });
         } finally {
             this.state.refreshing = false;
         }
@@ -266,9 +224,8 @@ export class PTTProjectDashboard extends Component {
                 startDate = endDate = today.toISOString().split('T')[0];
                 break;
             case 'week': {
-                const dayOfWeek = today.getDay();
                 const weekStart = new Date(today);
-                weekStart.setDate(today.getDate() - dayOfWeek);
+                weekStart.setDate(today.getDate() - today.getDay());
                 const weekEnd = new Date(weekStart);
                 weekEnd.setDate(weekStart.getDate() + 6);
                 startDate = weekStart.toISOString().split('T')[0];
@@ -304,10 +261,9 @@ export class PTTProjectDashboard extends Component {
         const [kpis, myProjects, myTasks] = await Promise.all([
             rpc('/ptt/dashboard/kpis', { filters: params }),
             rpc('/ptt/dashboard/my-projects', { page: 1, limit: 5, filters: params }),
-            rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 5, filters: params }),
+            rpc('/ptt/dashboard/my-tasks', { page: 1, limit: 8, filters: params }),
         ]);
 
-        // Update KPIs
         this.state.myTasks = kpis.my_tasks || 0;
         this.state.myTasksIds = kpis.my_tasks_ids || [];
         this.state.myProjects = kpis.my_projects || 0;
@@ -317,27 +273,24 @@ export class PTTProjectDashboard extends Component {
         this.state.dueThisWeek = kpis.due_this_week || 0;
         this.state.dueThisWeekIds = kpis.due_this_week_ids || [];
 
-        // Update lists
         this.state.myProjectsList = myProjects.projects || [];
-        this.state.projectPage = myProjects.page || 1;
+        this.state.projectPage = 1;
         this.state.projectPages = myProjects.pages || 1;
         this.state.myTasksList = myTasks.tasks || [];
-        this.state.taskPage = myTasks.page || 1;
+        this.state.taskPage = 1;
         this.state.taskPages = myTasks.pages || 1;
 
-        await this.renderCharts();
+        await this.renderChart();
     }
 
     // =========================================================================
-    // PAGINATION - Projects
+    // PAGINATION
     // =========================================================================
 
     async prevProjectPage() {
         if (this.state.projectPage > 1) {
             const data = await rpc('/ptt/dashboard/my-projects', {
-                page: this.state.projectPage - 1,
-                limit: 5,
-                filters: this.getFilterParams()
+                page: this.state.projectPage - 1, limit: 5, filters: this.getFilterParams()
             });
             this.state.myProjectsList = data.projects || [];
             this.state.projectPage = data.page;
@@ -348,9 +301,7 @@ export class PTTProjectDashboard extends Component {
     async nextProjectPage() {
         if (this.state.projectPage < this.state.projectPages) {
             const data = await rpc('/ptt/dashboard/my-projects', {
-                page: this.state.projectPage + 1,
-                limit: 5,
-                filters: this.getFilterParams()
+                page: this.state.projectPage + 1, limit: 5, filters: this.getFilterParams()
             });
             this.state.myProjectsList = data.projects || [];
             this.state.projectPage = data.page;
@@ -358,16 +309,10 @@ export class PTTProjectDashboard extends Component {
         }
     }
 
-    // =========================================================================
-    // PAGINATION - Tasks
-    // =========================================================================
-
     async prevTaskPage() {
         if (this.state.taskPage > 1) {
             const data = await rpc('/ptt/dashboard/my-tasks', {
-                page: this.state.taskPage - 1,
-                limit: 5,
-                filters: this.getFilterParams()
+                page: this.state.taskPage - 1, limit: 8, filters: this.getFilterParams()
             });
             this.state.myTasksList = data.tasks || [];
             this.state.taskPage = data.page;
@@ -378,9 +323,7 @@ export class PTTProjectDashboard extends Component {
     async nextTaskPage() {
         if (this.state.taskPage < this.state.taskPages) {
             const data = await rpc('/ptt/dashboard/my-tasks', {
-                page: this.state.taskPage + 1,
-                limit: 5,
-                filters: this.getFilterParams()
+                page: this.state.taskPage + 1, limit: 8, filters: this.getFilterParams()
             });
             this.state.myTasksList = data.tasks || [];
             this.state.taskPage = data.page;
@@ -460,6 +403,17 @@ export class PTTProjectDashboard extends Component {
             type: 'ir.actions.act_window',
             res_model: 'project.task',
             res_id: taskId,
+            view_mode: 'form',
+            views: [[false, 'form']],
+            target: 'current',
+        });
+    }
+
+    viewEvent(event) {
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: event.model,
+            res_id: event.id,
             view_mode: 'form',
             views: [[false, 'form']],
             target: 'current',

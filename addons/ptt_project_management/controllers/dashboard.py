@@ -238,6 +238,82 @@ class PTTDashboardController(http.Controller):
             'pages': max(1, (total_count + limit - 1) // limit),
         }
 
+    @http.route('/ptt/dashboard/events', auth='user', type='jsonrpc')
+    def get_events(self):
+        """Get upcoming events from CRM and Projects by event date."""
+        today = fields.Date.context_today(request.env.user)
+        CrmLead = request.env['crm.lead']
+        Project = request.env['project.project']
+        
+        events = []
+        
+        # Status mapping for CRM stages
+        # Lead stages: New, Qualified = "lead"
+        # Quote sent stages = "quote"
+        # Won/Booked = "booked"
+        
+        # Get CRM leads with event dates (next 90 days)
+        from datetime import timedelta
+        future_date = today + timedelta(days=90)
+        
+        leads = CrmLead.search([
+            ('ptt_event_date', '>=', today),
+            ('ptt_event_date', '<=', future_date),
+        ], order='ptt_event_date asc', limit=20)
+        
+        for lead in leads:
+            event_date = lead.ptt_event_date
+            if event_date:
+                # Determine status based on stage
+                stage_name = (lead.stage_id.name or '').lower()
+                if 'won' in stage_name or 'book' in stage_name:
+                    status = 'booked'
+                    status_label = 'Booked'
+                elif 'quote' in stage_name or 'proposal' in stage_name or 'sent' in stage_name:
+                    status = 'quote'
+                    status_label = 'Quote Sent'
+                else:
+                    status = 'lead'
+                    status_label = 'Lead'
+                
+                events.append({
+                    'id': lead.id,
+                    'model': 'crm.lead',
+                    'name': lead.name or 'Untitled Event',
+                    'customer': lead.partner_id.name if lead.partner_id else None,
+                    'date': str(event_date),
+                    'month': event_date.strftime('%b').upper(),
+                    'day': event_date.strftime('%d'),
+                    'status': status,
+                    'status_label': status_label,
+                })
+        
+        # Get Projects with event dates
+        projects = Project.search([
+            ('ptt_event_date', '>=', today),
+            ('ptt_event_date', '<=', future_date),
+        ], order='ptt_event_date asc', limit=20)
+        
+        for proj in projects:
+            event_date = proj.ptt_event_date
+            if event_date:
+                events.append({
+                    'id': proj.id,
+                    'model': 'project.project',
+                    'name': proj.name or 'Untitled Project',
+                    'customer': proj.partner_id.name if proj.partner_id else None,
+                    'date': str(event_date),
+                    'month': event_date.strftime('%b').upper(),
+                    'day': event_date.strftime('%d'),
+                    'status': 'booked',
+                    'status_label': 'Project',
+                })
+        
+        # Sort all events by date
+        events.sort(key=lambda x: x['date'])
+        
+        return {'events': events[:15]}  # Return top 15
+
     @http.route('/ptt/dashboard/my-tasks', auth='user', type='jsonrpc')
     def get_my_tasks(self, page=1, limit=5, filters=None):
         """Get paginated list of tasks assigned to current user."""
