@@ -107,6 +107,9 @@ export class PTTProjectDashboard extends Component {
             
             // Available users for task assignment
             availableUsers: [],
+            
+            // Active date period pill
+            activePeriod: '',
         });
 
         // Current filter state (used by all data fetches)
@@ -226,13 +229,37 @@ export class PTTProjectDashboard extends Component {
     }
 
     /**
-     * Render all Chart.js charts with colors matching screenshot.
+     * Check if dark mode is active.
+     */
+    isDarkMode() {
+        return document.documentElement.classList.contains('o_dark') || 
+               document.body.classList.contains('o_dark') ||
+               document.documentElement.classList.contains('dark');
+    }
+    
+    /**
+     * Get theme-aware colors for charts.
+     */
+    getChartColors() {
+        const isDark = this.isDarkMode();
+        return {
+            textColor: isDark ? '#e5e7eb' : '#374151',
+            gridColor: isDark ? '#374151' : '#e5e7eb',
+            legendColor: isDark ? '#d1d5db' : '#4b5563',
+        };
+    }
+
+    /**
+     * Render all Chart.js charts with theme-aware colors.
      */
     async renderAllCharts() {
         // Destroy existing charts first
         Object.values(this.charts).forEach(chart => {
             if (chart) chart.destroy();
         });
+
+        // Get theme colors
+        const { textColor, gridColor, legendColor } = this.getChartColors();
 
         // Fetch chart data with current filters
         const filterParams = this.getFilterParams();
@@ -243,7 +270,18 @@ export class PTTProjectDashboard extends Component {
             rpc('/ptt/dashboard/priority-chart', { filters: filterParams }),
         ]);
 
-        // Render Task Deadline Pie Chart (Overdue=gray, Today=yellow, Upcoming=purple)
+        // Common legend config with theme colors
+        const legendConfig = {
+            labels: {
+                color: legendColor,
+                usePointStyle: true,
+                pointStyle: 'rect',
+                padding: 12,
+                font: { size: 11 }
+            }
+        };
+
+        // Render Task Deadline Pie Chart
         if (this.taskDeadlineChart.el) {
             this.charts.deadline = new Chart(this.taskDeadlineChart.el, {
                 type: 'pie',
@@ -251,7 +289,7 @@ export class PTTProjectDashboard extends Component {
                     labels: deadlineData.labels,
                     datasets: [{
                         data: deadlineData.data,
-                        backgroundColor: ['#9ca3af', '#fbbf24', '#c4b5fd'],  // Gray, Yellow, Light Purple
+                        backgroundColor: ['#9ca3af', '#fbbf24', '#c4b5fd'],
                     }]
                 },
                 options: {
@@ -260,12 +298,7 @@ export class PTTProjectDashboard extends Component {
                     plugins: {
                         legend: { 
                             position: 'right',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'rect',
-                                padding: 15,
-                                font: { size: 12 }
-                            }
+                            ...legendConfig
                         }
                     }
                 }
@@ -290,28 +323,23 @@ export class PTTProjectDashboard extends Component {
                     plugins: {
                         legend: { 
                             position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'rect',
-                                padding: 10,
-                                font: { size: 11 }
-                            }
+                            ...legendConfig
                         }
                     }
                 }
             });
         }
 
-        // Render Task By Project Bar Chart (green bars like screenshot)
+        // Render Task By Project Bar Chart
         if (this.taskProjectChart.el) {
             this.charts.project = new Chart(this.taskProjectChart.el, {
                 type: 'bar',
                 data: {
                     labels: projectData.labels,
                     datasets: [{
-                        label: 'Total Projects',
+                        label: 'Tasks',
                         data: projectData.data,
-                        backgroundColor: '#86efac',  // Light green like screenshot
+                        backgroundColor: '#86efac',
                         borderColor: '#22c55e',
                         borderWidth: 1,
                     }]
@@ -323,19 +351,17 @@ export class PTTProjectDashboard extends Component {
                         legend: { 
                             position: 'top',
                             align: 'end',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'rect',
-                                font: { size: 11 }
-                            }
+                            ...legendConfig
                         }
                     },
                     scales: {
                         y: { 
                             beginAtZero: true,
-                            grid: { color: '#f0f0f0' }
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
                         },
                         x: {
+                            ticks: { color: textColor },
                             grid: { display: false }
                         }
                     }
@@ -343,16 +369,15 @@ export class PTTProjectDashboard extends Component {
             });
         }
 
-        // Render Priority Wise Bar Chart (4 levels: Low, Medium, High, Urgent)
+        // Render Priority Bar Chart
         if (this.priorityChart.el) {
             this.charts.priority = new Chart(this.priorityChart.el, {
                 type: 'bar',
                 data: {
                     labels: priorityData.labels,
                     datasets: [{
-                        label: 'Priority',
+                        label: 'Tasks',
                         data: priorityData.data,
-                        // Use colors from backend response, fallback to defaults
                         backgroundColor: priorityData.colors || ['#93c5fd', '#fcd34d', '#f97316', '#ef4444'],
                         borderColor: ['#3b82f6', '#f59e0b', '#ea580c', '#dc2626'],
                         borderWidth: 1,
@@ -365,19 +390,17 @@ export class PTTProjectDashboard extends Component {
                         legend: { 
                             position: 'top',
                             align: 'end',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'rect',
-                                font: { size: 11 }
-                            }
+                            ...legendConfig
                         }
                     },
                     scales: {
                         y: { 
                             beginAtZero: true,
-                            grid: { color: '#f0f0f0' }
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
                         },
                         x: {
+                            ticks: { color: textColor },
                             grid: { display: false }
                         }
                     }
@@ -769,6 +792,28 @@ export class PTTProjectDashboard extends Component {
             if (this.startDateRef.el) this.startDateRef.el.value = '';
             if (this.endDateRef.el) this.endDateRef.el.value = '';
         }
+        await this.applyFilters();
+    }
+    
+    /**
+     * Set date period from pill button click.
+     * @param {string} period - 'today', 'week', 'month', or '' for all
+     */
+    async setDatePeriod(period) {
+        this.state.activePeriod = period;
+        
+        // Clear custom date inputs
+        if (this.startDateRef.el) this.startDateRef.el.value = '';
+        if (this.endDateRef.el) this.endDateRef.el.value = '';
+        
+        // Get date range from preset
+        const { startDate, endDate } = this.getDateRangeFromPreset(period);
+        
+        // Update current filters
+        this.currentFilters.start_date = startDate;
+        this.currentFilters.end_date = endDate;
+        
+        // Apply filters
         await this.applyFilters();
     }
     

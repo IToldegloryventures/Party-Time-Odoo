@@ -1,342 +1,576 @@
 /**
- * PTT Project Dashboard Styles
- *
- * Matches the screenshot styling: pink/lavender theme with orange deadline badges
+ * PTT Project Dashboard Styles v2.2.0
+ * 
+ * Optimized for:
+ * - Scrolling/overflow fixes
+ * - Readable text colors (light & dark mode)
+ * - Compact header layout
+ * - Responsive KPI grid
+ * - Better date range UX
  */
 
-/* Dashboard Container */
+/* ============================================
+   CSS CUSTOM PROPERTIES - Explicit Color Tokens
+   ============================================ */
+:root {
+    /* Light Mode Colors */
+    --ptt-bg-primary: #f8fafc;
+    --ptt-bg-secondary: #ffffff;
+    --ptt-bg-tertiary: #f1f5f9;
+    --ptt-bg-hover: #f1f5f9;
+    --ptt-text-primary: #1e293b;
+    --ptt-text-secondary: #475569;
+    --ptt-text-muted: #64748b;
+    --ptt-text-label: #374151;
+    --ptt-border-color: #e2e8f0;
+    --ptt-border-light: #f1f5f9;
+    --ptt-input-bg: #ffffff;
+    --ptt-input-text: #1e293b;
+    --ptt-input-border: #cbd5e1;
+    --ptt-input-placeholder: #94a3b8;
+    --ptt-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --ptt-accent: #7c3aed;
+    --ptt-accent-light: #8b5cf6;
+    /* Chart colors for light mode */
+    --ptt-chart-text: #374151;
+    --ptt-chart-grid: #e5e7eb;
+}
+
+/* Dark Mode Colors */
+html.o_dark,
+html.dark,
+body.o_dark,
+body.dark,
+.o_dark {
+    --ptt-bg-primary: #0f172a;
+    --ptt-bg-secondary: #1e293b;
+    --ptt-bg-tertiary: #334155;
+    --ptt-bg-hover: #334155;
+    --ptt-text-primary: #f1f5f9;
+    --ptt-text-secondary: #cbd5e1;
+    --ptt-text-muted: #94a3b8;
+    --ptt-text-label: #94a3b8;
+    --ptt-border-color: #334155;
+    --ptt-border-light: #475569;
+    --ptt-input-bg: #1e293b;
+    --ptt-input-text: #f1f5f9;
+    --ptt-input-border: #475569;
+    --ptt-input-placeholder: #64748b;
+    --ptt-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    /* Chart colors for dark mode */
+    --ptt-chart-text: #e5e7eb;
+    --ptt-chart-grid: #374151;
+}
+
+/* ============================================
+   CRITICAL: Fix Odoo Action Manager Scrolling
+   ============================================ */
+.o_action_manager {
+    overflow: visible !important;
+}
+
+.o_action_manager > .o_action {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 46px) !important;
+    overflow: hidden !important;
+}
+
+.o_action_manager .o_action > div:first-child {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+/* ============================================
+   DASHBOARD CONTAINER
+   ============================================ */
 .ptt-dashboard {
-    background-color: #f6f7fb;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background-color: var(--ptt-bg-primary) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    color: var(--ptt-text-primary) !important;
 }
 
+.ptt-dashboard * {
+    color: inherit;
+}
+
+/* ============================================
+   COMPACT HEADER - Single Row Filters
+   ============================================ */
 .ptt-dashboard-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 16px 20px !important;
+    background: var(--ptt-bg-secondary) !important;
+    border-bottom: 1px solid var(--ptt-border-color) !important;
+    padding: 10px 16px !important;
+    flex-shrink: 0 !important;
+    z-index: 10;
 }
 
+/* Filter Grid Layout - All in one row */
+.ptt-filter-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    align-items: flex-end !important;
+}
+
+.ptt-filter-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 120px !important;
+    flex: 1 1 auto !important;
+    max-width: 180px !important;
+}
+
+.ptt-filter-group.ptt-filter-wide {
+    max-width: 220px !important;
+}
+
+.ptt-filter-group.ptt-filter-auto {
+    flex: 0 0 auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+}
+
+/* Form Labels - Compact & Readable */
+.ptt-dashboard-header label,
+.ptt-dashboard-header .form-label {
+    color: var(--ptt-text-label) !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    margin-bottom: 2px !important;
+}
+
+/* Form Inputs - Explicit Colors */
 .ptt-dashboard-header .form-select,
-.ptt-dashboard-header .form-control {
-    background-color: #fff;
-    border: 1px solid #d1d5db;
-    font-size: 0.85rem;
-    border-radius: 6px;
+.ptt-dashboard-header .form-control,
+.ptt-dashboard-header select,
+.ptt-dashboard-header input {
+    background-color: var(--ptt-input-bg) !important;
+    border: 1px solid var(--ptt-input-border) !important;
+    color: var(--ptt-input-text) !important;
+    font-size: 0.8rem !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    height: 32px !important;
+}
+
+.ptt-dashboard-header .form-select option,
+.ptt-dashboard-header select option {
+    background-color: var(--ptt-input-bg) !important;
+    color: var(--ptt-input-text) !important;
 }
 
 .ptt-dashboard-header .form-select:focus,
-.ptt-dashboard-header .form-control:focus {
-    background-color: #fff;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
-    border-color: #6366f1;
+.ptt-dashboard-header .form-control:focus,
+.ptt-dashboard-header select:focus,
+.ptt-dashboard-header input:focus {
+    border-color: var(--ptt-accent) !important;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2) !important;
+    outline: none !important;
 }
 
-.ptt-dashboard-body {
-    padding: 16px;
-    overflow-y: auto;
+/* Date Period Pills */
+.ptt-date-pills {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
 }
 
-/* Action Buttons - Refresh, Export, Print */
-.ptt-refresh-btn,
-.ptt-export-btn,
-.ptt-print-btn {
-    border: none;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    font-size: 0.85rem;
+.ptt-date-pill {
+    padding: 4px 10px !important;
+    font-size: 0.75rem !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--ptt-input-border) !important;
+    background: var(--ptt-bg-secondary) !important;
+    color: var(--ptt-text-secondary) !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    white-space: nowrap !important;
 }
 
-/* Refresh Button - Purple theme */
-.ptt-refresh-btn {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+.ptt-date-pill:hover {
+    background: var(--ptt-bg-tertiary) !important;
+    border-color: var(--ptt-accent) !important;
 }
 
-.ptt-refresh-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-    color: #fff;
-}
-
-.ptt-refresh-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* Export Button - Green theme */
-.ptt-export-btn {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
-}
-
-.ptt-export-btn:hover {
-    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
-    color: #fff;
-}
-
-/* Print Button - Pink theme */
-.ptt-print-btn {
-    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-    box-shadow: 0 2px 6px rgba(236, 72, 153, 0.3);
-}
-
-.ptt-print-btn:hover {
-    background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
-    color: #fff;
-}
-
-/* Quick Assign Button in Task Table */
-.ptt-assign-btn {
-    border-color: #8b5cf6 !important;
-    color: #8b5cf6 !important;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.ptt-assign-btn:hover {
-    background-color: #8b5cf6 !important;
+.ptt-date-pill.active {
+    background: var(--ptt-accent) !important;
+    border-color: var(--ptt-accent) !important;
     color: #fff !important;
 }
 
-/* KPI Cards */
+/* Action Buttons */
+.ptt-actions {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    margin-left: auto !important;
+}
+
+.ptt-refresh-btn,
+.ptt-export-btn {
+    padding: 6px 14px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    border: none !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    height: 32px !important;
+}
+
+.ptt-refresh-btn {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+}
+
+.ptt-refresh-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+}
+
+.ptt-refresh-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+.ptt-export-btn {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+}
+
+.ptt-export-btn:hover {
+    background: linear-gradient(135deg, #16a34a, #15803d) !important;
+}
+
+.ptt-btn-icon {
+    padding: 6px 8px !important;
+    border: 1px solid var(--ptt-input-border) !important;
+    background: var(--ptt-bg-secondary) !important;
+    color: var(--ptt-text-secondary) !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.ptt-btn-icon:hover {
+    background: var(--ptt-bg-tertiary) !important;
+}
+
+/* ============================================
+   DASHBOARD BODY - Scrollable Content
+   ============================================ */
+.ptt-dashboard-body {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 16px !important;
+    min-height: 0 !important;
+}
+
+/* ============================================
+   RESPONSIVE KPI GRID
+   ============================================ */
+.ptt-kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+}
+
 .ptt-kpi-card {
-    border: 1px solid #e5e7eb !important;
-    border-radius: 12px;
-    background: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: var(--ptt-bg-secondary) !important;
+    border: 1px solid var(--ptt-border-color) !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    box-shadow: var(--ptt-card-shadow) !important;
 }
 
 .ptt-kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
 }
 
-.ptt-kpi-card .card-body {
-    padding: 1.5rem;
+.ptt-kpi-value {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: var(--ptt-text-primary) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 4px !important;
 }
 
-.ptt-kpi-card h2 {
-    font-size: 2.75rem;
-    font-weight: 700;
-    color: #333;
+.ptt-kpi-label {
+    font-size: 0.8rem !important;
+    color: var(--ptt-text-secondary) !important;
+    font-weight: 500 !important;
 }
 
-.ptt-kpi-card p {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* Cards */
-.ptt-dashboard .card {
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.ptt-dashboard .card-header {
-    border-bottom: 1px solid #eee;
-    padding: 12px 16px;
-    background: #fff;
-}
-
-.ptt-dashboard .card-header h5 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-}
-
-.ptt-dashboard .card-header i.fa-download {
-    color: #999;
-    cursor: pointer;
-}
-
-.ptt-dashboard .card-header i.fa-download:hover {
-    color: #666;
-}
-
-/* Table styling */
-.ptt-dashboard .table {
-    margin-bottom: 0;
-}
-
-.ptt-dashboard .table thead th {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #666;
-    border-bottom: 2px solid #eee;
-    padding: 12px 16px;
-    background: #fafafa;
-}
-
-.ptt-dashboard .table tbody td {
-    padding: 12px 16px;
-    vertical-align: middle;
-    font-size: 0.9rem;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.ptt-dashboard .table-hover tbody tr:hover {
-    background-color: #fdf5fa;
-}
-
-/* Deadline Badge - Orange like screenshot */
-.ptt-deadline-badge {
-    display: inline-block;
-    background-color: #f97316;
-    color: #fff;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-/* View Button - Pink like screenshot */
-.ptt-view-btn {
-    background-color: #ec4899;
-    border: none;
-    color: #fff;
-    padding: 4px 14px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.ptt-view-btn:hover {
-    background-color: #db2777;
-    color: #fff;
-}
-
-/* Priority Flag Icons */
-.ptt-priority-high {
+/* Overdue KPI - Red accent */
+.ptt-kpi-card.ptt-kpi-overdue .ptt-kpi-value {
     color: #ef4444 !important;
 }
 
-.ptt-priority-low {
-    color: #22c55e !important;
+/* ============================================
+   CARDS - Charts & Tables
+   ============================================ */
+.ptt-dashboard .card,
+.ptt-chart-card,
+.ptt-list-card {
+    background: var(--ptt-bg-secondary) !important;
+    border: 1px solid var(--ptt-border-color) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--ptt-card-shadow) !important;
+    overflow: hidden !important;
 }
 
-/* Pagination - Purple circles like screenshot */
+.ptt-dashboard .card-header {
+    background: var(--ptt-bg-secondary) !important;
+    border-bottom: 1px solid var(--ptt-border-color) !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.ptt-dashboard .card-header h5 {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: var(--ptt-text-primary) !important;
+    margin: 0 !important;
+}
+
+.ptt-dashboard .card-header i {
+    color: var(--ptt-text-muted) !important;
+    cursor: pointer !important;
+}
+
+.ptt-dashboard .card-header i:hover {
+    color: var(--ptt-text-secondary) !important;
+}
+
+.ptt-dashboard .card-body {
+    background: var(--ptt-bg-secondary) !important;
+    padding: 16px !important;
+}
+
+.ptt-dashboard .card-footer {
+    background: var(--ptt-bg-secondary) !important;
+    border-top: 1px solid var(--ptt-border-color) !important;
+    padding: 10px 16px !important;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+.ptt-dashboard .table {
+    margin: 0 !important;
+    background: transparent !important;
+}
+
+.ptt-dashboard .table thead th {
+    background: var(--ptt-bg-tertiary) !important;
+    color: var(--ptt-text-secondary) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    padding: 10px 12px !important;
+    border-bottom: 1px solid var(--ptt-border-color) !important;
+}
+
+.ptt-dashboard .table tbody td {
+    color: var(--ptt-text-primary) !important;
+    font-size: 0.85rem !important;
+    padding: 10px 12px !important;
+    border-bottom: 1px solid var(--ptt-border-light) !important;
+    vertical-align: middle !important;
+    background: var(--ptt-bg-secondary) !important;
+}
+
+.ptt-dashboard .table tbody tr:hover td {
+    background: var(--ptt-bg-hover) !important;
+}
+
+.ptt-dashboard .table .text-muted {
+    color: var(--ptt-text-muted) !important;
+}
+
+/* Deadline Badge */
+.ptt-deadline-badge {
+    display: inline-block !important;
+    padding: 4px 10px !important;
+    background: #f97316 !important;
+    color: #fff !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    border-radius: 12px !important;
+}
+
+/* View Button */
+.ptt-view-btn {
+    padding: 4px 12px !important;
+    background: #ec4899 !important;
+    color: #fff !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+}
+
+.ptt-view-btn:hover {
+    background: #db2777 !important;
+}
+
+/* Assign Button */
+.ptt-assign-btn {
+    padding: 4px 8px !important;
+    border: 1px solid var(--ptt-accent) !important;
+    color: var(--ptt-accent) !important;
+    background: transparent !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+}
+
+.ptt-assign-btn:hover {
+    background: var(--ptt-accent) !important;
+    color: #fff !important;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
 .ptt-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
 }
 
 .ptt-pagination-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #8b5cf6;
-    border: none;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: var(--ptt-accent) !important;
+    border: none !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.75rem !important;
 }
 
-.ptt-pagination-btn:hover {
-    background: #7c3aed;
+.ptt-pagination-btn:hover:not(:disabled) {
+    background: var(--ptt-accent-light) !important;
 }
 
 .ptt-pagination-btn:disabled {
-    background: #ddd;
-    color: #999;
+    background: var(--ptt-border-color) !important;
+    color: var(--ptt-text-muted) !important;
+    cursor: not-allowed !important;
 }
 
 .ptt-pagination-text {
-    color: #666;
-    font-size: 0.85rem;
+    color: var(--ptt-text-secondary) !important;
+    font-size: 0.8rem !important;
 }
 
-/* Chart Cards */
-.ptt-chart-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.ptt-chart-card .card-header {
-    background: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.ptt-chart-card .card-body {
-    padding: 16px;
-}
-
-/* Chart containers */
+/* ============================================
+   CHARTS - Dark Mode Support
+   ============================================ */
 .ptt-dashboard canvas {
-    max-width: 100%;
+    max-width: 100% !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .ptt-dashboard-header {
-        margin: 8px;
-        padding: 16px !important;
+/* ============================================
+   LOADING & ERROR STATES
+   ============================================ */
+.ptt-dashboard .spinner-border {
+    color: var(--ptt-accent) !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+}
+
+.ptt-dashboard .alert {
+    background: var(--ptt-bg-tertiary) !important;
+    border-color: var(--ptt-border-color) !important;
+    color: var(--ptt-text-primary) !important;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 992px) {
+    .ptt-filter-group {
+        max-width: none !important;
     }
     
-    .ptt-dashboard-header .row {
-        flex-direction: column;
-    }
-
-    .ptt-dashboard-header .col-md-4,
-    .ptt-dashboard-header .col-md-8 {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-
-    .ptt-kpi-card h2 {
-        font-size: 2rem;
+    .ptt-actions {
+        width: 100% !important;
+        justify-content: flex-end !important;
+        margin-top: 8px !important;
     }
 }
 
-/* Loading spinner */
-.ptt-dashboard .spinner-border {
-    width: 3rem;
-    height: 3rem;
-    color: #8b5cf6;
+@media (max-width: 768px) {
+    .ptt-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .ptt-kpi-value {
+        font-size: 1.5rem !important;
+    }
+    
+    .ptt-dashboard-header {
+        padding: 8px 12px !important;
+    }
+    
+    .ptt-dashboard-body {
+        padding: 12px !important;
+    }
 }
 
-/* Print Styles */
+@media (max-width: 480px) {
+    .ptt-kpi-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
 @media print {
     .ptt-dashboard {
         background: #fff !important;
     }
     
     .ptt-dashboard-header {
-        background: #f0f0f0 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        position: relative !important;
     }
     
-    .ptt-print-btn,
-    .ptt-pagination-btn,
-    .ptt-view-btn {
+    .ptt-actions,
+    .ptt-pagination-btn {
         display: none !important;
     }
     
     .ptt-kpi-card,
     .card {
-        break-inside: avoid;
+        break-inside: avoid !important;
         box-shadow: none !important;
         border: 1px solid #ddd !important;
     }
