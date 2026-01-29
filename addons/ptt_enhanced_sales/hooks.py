@@ -32,15 +32,8 @@ def post_init_hook(cr, registry):
                 """,
                 (default_event_type.id,),
             )
-            # Enforce NOT NULL if data is now clean
-            env.cr.execute(
-                """
-                ALTER TABLE crm_lead
-                ALTER COLUMN ptt_event_type_id SET NOT NULL
-                """
-            )
     except Exception:
-        # If any issue occurs, skip constraint hardening; data is still updated
+        # Best-effort backfill; do not block install/upgrade
         pass
 
     # Clean up orphaned XMLID created in earlier versions (no longer shipped)

@@ -22,7 +22,6 @@ class CrmLeadEnhanced(models.Model):
     ptt_event_type_id = fields.Many2one(
         'sale.order.type',
         string="Event Type Template",
-        required=True,
         help="Predefined event type template (Corporate/Social/Wedding) - used to set defaults on quotation"
     )
     
