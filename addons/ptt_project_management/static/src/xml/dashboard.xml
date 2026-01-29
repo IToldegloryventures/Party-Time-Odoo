@@ -84,12 +84,27 @@
                 <!-- SCROLLABLE BODY -->
                 <div class="ptt-dashboard-body">
                     
-                    <!-- 1. KPI GRID - 5 compact cards -->
-                    <div class="ptt-kpi-grid">
-                        <div class="ptt-kpi-card ptt-kpi-success" t-on-click="openConfirmedSOs">
-                            <div class="ptt-kpi-value ptt-kpi-currency">$<t t-esc="state.totalRevenue"/></div>
-                            <div class="ptt-kpi-label">Total Sales</div>
+                    <!-- 1. SALES SECTION: Chart + 2 stacked KPIs -->
+                    <div class="ptt-sales-section mb-3">
+                        <div class="ptt-sales-chart-tall">
+                            <div class="ptt-chart-title">Sales by Rep</div>
+                            <canvas t-ref="salesByRepChart"/>
                         </div>
+                        <div class="ptt-sales-kpis-stack">
+                            <div class="ptt-sales-kpi ptt-kpi-success" t-on-click="openConfirmedSOs">
+                                <div class="ptt-sales-value">$<t t-esc="state.totalRevenue"/></div>
+                                <div class="ptt-sales-label">Total Confirmed Sales</div>
+                            </div>
+                            <div class="ptt-sales-kpi ptt-kpi-gold">
+                                <div class="ptt-sales-icon"><i class="fa fa-trophy"/></div>
+                                <div class="ptt-sales-value"><t t-esc="state.topSalesRep || '-'"/></div>
+                                <div class="ptt-sales-label">Sales Leader ($<t t-esc="state.topSalesAmount || '0'"/>)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. KPI GRID - 4 compact cards -->
+                    <div class="ptt-kpi-grid">
                         <div class="ptt-kpi-card ptt-kpi-primary" t-on-click="openMyTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
                             <div class="ptt-kpi-label">My Tasks</div>
@@ -166,12 +181,8 @@
                         </div>
                     </div>
 
-                    <!-- 3. THREE COMPACT CHARTS -->
+                    <!-- 4. TASKS BY STAGE CHART -->
                     <div class="ptt-chart-row mb-3">
-                        <div class="ptt-chart-box ptt-chart-wide">
-                            <div class="ptt-chart-title">Sales by Rep</div>
-                            <canvas t-ref="salesByRepChart"/>
-                        </div>
                         <div class="ptt-chart-box">
                             <div class="ptt-chart-title">Tasks by Stage</div>
                             <canvas t-ref="taskStagesChart"/>

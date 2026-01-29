@@ -224,6 +224,88 @@ html.o_dark, body.o_dark, .o_dark {
 }
 
 /* ============================================
+   SALES SECTION
+   ============================================ */
+.ptt-sales-section {
+    display: flex !important;
+    gap: 12px !important;
+    min-height: 180px !important;
+}
+
+.ptt-sales-chart-tall {
+    flex: 2 !important;
+    background: var(--ptt-bg-secondary) !important;
+    border: 1px solid var(--ptt-border-color) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+}
+
+.ptt-sales-chart-tall canvas {
+    height: 150px !important;
+}
+
+.ptt-sales-kpis-stack {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+.ptt-sales-kpi {
+    flex: 1 !important;
+    background: var(--ptt-bg-secondary) !important;
+    border: 1px solid var(--ptt-border-color) !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+.ptt-sales-kpi:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+.ptt-sales-icon {
+    font-size: 20px !important;
+    margin-bottom: 4px !important;
+}
+
+.ptt-sales-value {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: var(--ptt-text-primary) !important;
+    line-height: 1.2 !important;
+}
+
+.ptt-sales-label {
+    font-size: 11px !important;
+    color: var(--ptt-text-muted) !important;
+    text-transform: uppercase !important;
+    margin-top: 4px !important;
+}
+
+.ptt-kpi-gold {
+    border-top: 3px solid #f59e0b !important;
+}
+
+.ptt-kpi-gold .ptt-sales-icon,
+.ptt-kpi-gold .ptt-sales-value {
+    color: #f59e0b !important;
+}
+
+.ptt-kpi-success.ptt-sales-kpi {
+    border-top: 3px solid #22c55e !important;
+}
+
+.ptt-kpi-success .ptt-sales-value {
+    color: #22c55e !important;
+}
+
+/* ============================================
    CARDS
    ============================================ */
 .ptt-dashboard .card {

@@ -34,6 +34,8 @@ export class PTTProjectDashboard extends Component {
             // KPIs
             totalRevenue: '0',
             confirmedSOIds: [],
+            topSalesRep: '',
+            topSalesAmount: '0',
             myTasks: 0,
             myTasksIds: [],
             myProjects: 0,
@@ -120,6 +122,8 @@ export class PTTProjectDashboard extends Component {
             // Sales KPIs
             this.state.totalRevenue = salesKpis.total_revenue || '0';
             this.state.confirmedSOIds = salesKpis.confirmed_so_ids || [];
+            this.state.topSalesRep = salesKpis.top_sales_rep || '';
+            this.state.topSalesAmount = salesKpis.top_sales_amount || '0';
 
             // KPIs
             this.state.myTasks = kpis.my_tasks || 0;

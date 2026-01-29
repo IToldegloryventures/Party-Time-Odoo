@@ -145,7 +145,7 @@ class PTTDashboardController(http.Controller):
 
     @http.route('/ptt/dashboard/sales-kpis', auth='user', type='jsonrpc')
     def get_sales_kpis(self, filters=None):
-        """Get sales KPIs: Total confirmed SO revenue."""
+        """Get sales KPIs: Total confirmed SO revenue and top sales rep."""
         SaleOrder = request.env['sale.order']
         
         # Build domain for confirmed orders
@@ -169,9 +169,30 @@ class PTTDashboardController(http.Controller):
         else:
             formatted = f"{total:,.2f}"
         
+        # Find top sales rep
+        sales_by_user = {}
+        for order in orders:
+            user = order.user_id
+            if user:
+                if user.id not in sales_by_user:
+                    sales_by_user[user.id] = {'name': user.name, 'total': 0}
+                sales_by_user[user.id]['total'] += order.amount_total
+        
+        top_rep = ''
+        top_amount = '0'
+        if sales_by_user:
+            top = max(sales_by_user.values(), key=lambda x: x['total'])
+            top_rep = top['name']
+            if top['total'] >= 1000:
+                top_amount = f"{top['total']:,.0f}"
+            else:
+                top_amount = f"{top['total']:,.2f}"
+        
         return {
             'total_revenue': formatted,
             'confirmed_so_ids': orders.ids,
+            'top_sales_rep': top_rep,
+            'top_sales_amount': top_amount,
         }
 
     @http.route('/ptt/dashboard/sales-by-rep', auth='user', type='jsonrpc')
