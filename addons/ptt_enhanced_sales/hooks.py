@@ -16,6 +16,16 @@ def post_init_hook(cr, registry):
     Task = env['project.task']
     Project = env['project.project']
 
+    # Clean up orphaned XMLID created in earlier versions (no longer shipped)
+    try:
+        env['ir.model.data'].search([
+            ('module', '=', 'ptt_business_core'),
+            ('name', '=', 'product_event_kickoff_social_product_variant'),
+        ]).unlink()
+    except Exception:
+        # Best-effort cleanup; shouldn't block install/upgrade
+        pass
+
     # Identify the main kickoff product
     kickoff = Product.search([
         ('type', '=', 'service'),
@@ -50,16 +60,6 @@ def post_init_hook(cr, registry):
     # Ensure kickoff stays project_only (don’t touch its template)
     if kickoff:
         kickoff.write({'service_tracking': 'project_only'})
-
-    # Link the unified quotation template line to the kickoff product variant
-    try:
-        tmpl = env.ref("ptt_enhanced_sales.so_template_event_standard", raise_if_not_found=False)
-        tmpl_line = env.ref("ptt_enhanced_sales.so_template_event_standard_line_kickoff", raise_if_not_found=False)
-        if tmpl and tmpl_line and kickoff:
-            tmpl_line.product_id = kickoff.product_variant_id.id
-    except Exception:
-        # best-effort; do not block install/upgrade
-        pass
 
     # ------------------------------------------------------------------
     # Build service task templates project and one task per service

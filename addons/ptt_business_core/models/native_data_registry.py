@@ -171,15 +171,13 @@ class NativeProducts:
     # ------------------------------------------------------------------
     @staticmethod
     def get_kickoff_product_id(env):
-        """Return current kickoff product id, preferring XMLID, then default_code."""
-        prod = env.ref(
-            "ptt_business_core.product_event_kickoff_social_product_variant",
-            raise_if_not_found=False,
-        )
+        """Return current kickoff product id, preferring default_code fallback."""
+        prod = env['product.product'].search([('default_code', 'in', ['EVENT-KICKOFF-STD', 'EVENT-KICKOFF'])], limit=1)
         if prod:
             return prod.id
-        prod = env['product.product'].search([('default_code', 'in', ['EVENT-KICKOFF-STD', 'EVENT-KICKOFF'])], limit=1)
-        return prod.id if prod else False
+        # Legacy ID kept for backward compatibility
+        legacy = env['product.template'].browse(NativeProducts.EVENT_KICKOFF)
+        return legacy.product_variant_id.id if legacy.exists() else False
 
     @staticmethod
     def get_all_sellable_services(env):

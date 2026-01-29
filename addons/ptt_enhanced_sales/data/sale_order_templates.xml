@@ -7,12 +7,5 @@
             <field name="note">Default template: creates the event project via Event Kickoff; reps add any additional services.</field>
         </record>
 
-        <!-- Preload Event Kickoff line -->
-        <record id="so_template_event_standard_line_kickoff" model="sale.order.template.line">
-            <field name="sale_order_template_id" ref="so_template_event_standard"/>
-            <field name="product_id" ref="ptt_business_core.product_event_kickoff_social_product_variant"/>
-            <field name="name">Event Kickoff</field>
-            <field name="product_uom_qty">1</field>
-        </record>
     </data>
 </odoo>
