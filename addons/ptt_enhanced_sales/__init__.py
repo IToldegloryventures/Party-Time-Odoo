@@ -2,5 +2,6 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
 from . import models
+from . import hooks
 from . import data
 from . import controllers

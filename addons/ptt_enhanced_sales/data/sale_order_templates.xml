@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="0">
-        <!-- Minimal quotation templates mapped to event types -->
-
-        <record id="so_template_event_corporate" model="sale.order.template">
-            <field name="name">Corporate Event Quotation</field>
-            <field name="note">Standard corporate event quotation template.</field>
+        <!-- Single unified quotation template that preloads the Event Kickoff line -->
+        <record id="so_template_event_standard" model="sale.order.template">
+            <field name="name">Event Quotation Template</field>
+            <field name="note">Default template: creates the event project via Event Kickoff; reps add any additional services.</field>
         </record>
 
-        <record id="so_template_event_social" model="sale.order.template">
-            <field name="name">Social Event Quotation</field>
-            <field name="note">Standard social event quotation template.</field>
-        </record>
-
-        <record id="so_template_event_wedding" model="sale.order.template">
-            <field name="name">Wedding Event Quotation</field>
-            <field name="note">Standard wedding event quotation template.</field>
+        <!-- Preload Event Kickoff line -->
+        <record id="so_template_event_standard_line_kickoff" model="sale.order.template.line">
+            <field name="sale_order_template_id" ref="so_template_event_standard"/>
+            <field name="product_id" ref="ptt_business_core.product_event_kickoff_social_product_variant"/>
+            <field name="name">Event Kickoff</field>
+            <field name="product_uom_qty">1</field>
         </record>
     </data>
 </odoo>

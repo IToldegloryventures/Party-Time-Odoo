@@ -38,6 +38,7 @@ Designed specifically for Party Time Texas event management workflow.
         "report/sale_order_report_templates.xml",
         "views/portal_sale_order_client_initials.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": True,
     "auto_install": False,

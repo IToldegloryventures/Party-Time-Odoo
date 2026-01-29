@@ -28,14 +28,6 @@ class SaleOrder(models.Model):
         string="Quotation Template",
         help="Auto-selected from the event type's default quotation template.",
     )
-    project_template_id = fields.Many2one(
-        "project.project",
-        related="event_type_id.project_template_id",
-        store=True,
-        readonly=True,
-        help="Project template configured on the event type; use this when creating the event project.",
-    )
-    
     # NOTE: Category field removed - event type name (Corporate/Social/Wedding) is the category
     
     # Event Details
@@ -214,20 +206,92 @@ class SaleOrder(models.Model):
         return result
     
     def action_confirm(self):
-        """Ensure one event project from template, then confirm and update CRM.
-
-        Flow:
-        1) Create/assign a single event project using the event type's project template.
-        2) Bind all service lines to that project so tasks land together.
-        3) Call super() for native confirmation.
-        4) Update CRM stage to Won/Booked.
-        """
-        for order in self:
-            order._ensure_event_project()
-
+        """Confirm order and update CRM stage (native project creation only)."""
         result = super().action_confirm()
+        # After native project/task creation, align all service lines to one project
+        self._ensure_single_event_project()
+        # Copy service task templates (or create simple tasks) into the event project
+        self._create_service_tasks_from_templates()
         self._update_crm_stage_on_order_confirmed()
         return result
+
+    # ---------------------------------------------------------------------
+    # Project alignment: keep all service lines under the same event project
+    # ---------------------------------------------------------------------
+    def _ensure_single_event_project(self):
+        """Create/assign one project for the order and link all service lines.
+
+        - Use the first service line tracked as 'project_only' (Event Kickoff)
+          as the project master; Odoo's native confirm already creates the
+          project + template tasks for that line.
+        - Any other service lines without a project_id are pointed to this
+          project so their tasks fall under the same parent project.
+        """
+        for order in self:
+            # Identify the kickoff line that should create the project
+            kickoff_line = order.order_line.filtered(
+                lambda l: l.product_id
+                and l.product_id.type == 'service'
+                and l.product_id.service_tracking == 'project_only'
+            )[:1]
+
+            project = kickoff_line.project_id if kickoff_line else False
+            if not project:
+                project = order.order_line.mapped('project_id')[:1]
+
+            # Push the project to every service line that lacks one
+            if project:
+                service_lines = order.order_line.filtered(
+                    lambda l: l.product_id
+                    and l.product_id.type == 'service'
+                    and not l.project_id
+                )
+                if service_lines:
+                    service_lines.write({'project_id': project.id})
+
+    def _create_service_tasks_from_templates(self):
+        """For each service line, copy its task template into the event project.
+
+        - Templates live in a dedicated project (created in post_init_hook)
+          and are tagged with ptt_service_product_id = product variant.
+        - If no template exists for a service, create a simple task named after
+          the sale line/product.
+        """
+        template_project = self.env.ref(
+            "ptt_enhanced_sales.service_task_template_project", raise_if_not_found=False
+        )
+        if not template_project:
+            return
+
+        for order in self:
+            # use the project created by Event Kickoff (or first project on lines)
+            project = order.order_line.mapped("project_id")[:1]
+            if not project:
+                continue
+
+            for line in order.order_line.filtered(
+                lambda l: l.product_id and l.product_id.type == "service" and l.product_id != False
+            ):
+                # Skip kickoff/project-only lines; they already created template tasks
+                if line.product_id.service_tracking == "project_only":
+                    continue
+
+                templates = self.env["project.task"].search([
+                    ("project_id", "=", template_project.id),
+                    ("ptt_service_product_id", "=", line.product_id.id),
+                ])
+
+                if templates:
+                    for tmpl in templates:
+                        tmpl.copy({
+                            "project_id": project.id,
+                            "name": line.name or line.product_id.display_name,
+                        })
+                else:
+                    self.env["project.task"].create({
+                        "name": line.name or line.product_id.display_name,
+                        "project_id": project.id,
+                    })
 
     @api.onchange('event_type_id')
     def _onchange_event_type_id_templates(self):
@@ -463,42 +527,13 @@ class SaleOrder(models.Model):
     
     @api.onchange('event_type_id')
     def _onchange_event_type_id(self):
-        """Auto-populate event fields when event type changes."""
-        if not self.event_type_id:
-            return
-        
-        # Set default duration from event type
-        if self.event_type_id.default_duration_hours:
-            self.event_duration = self.event_type_id.default_duration_hours
+        """Event type no longer sets duration/setup/breakdown."""
+        return
     
     @api.onchange('event_date', 'event_type_id')
     def _onchange_event_timing(self):
-        """Auto-calculate setup and breakdown times.
-        
-        Uses event type defaults to calculate:
-        - setup_time: Event date minus setup hours
-        - breakdown_time: Event end plus breakdown hours
-        """
-        if self.event_date and self.event_type_id:
-            # Calculate setup time
-            if self.event_type_id.default_setup_hours:
-                setup_hours = self.event_type_id.default_setup_hours
-                self.setup_time = fields.Datetime.subtract(
-                    self.event_date, 
-                    hours=setup_hours
-                )
-            
-            # Calculate breakdown time
-            if self.event_type_id.default_breakdown_hours and self.event_duration:
-                breakdown_hours = self.event_type_id.default_breakdown_hours
-                event_end = fields.Datetime.add(
-                    self.event_date,
-                    hours=self.event_duration
-                )
-                self.breakdown_time = fields.Datetime.add(
-                    event_end,
-                    hours=breakdown_hours
-                )
+        """No automatic timing from event type; user sets times explicitly."""
+        return
     
     def action_create_revision(self):
         """Create a new revision of this quote.
@@ -586,36 +621,6 @@ class SaleOrder(models.Model):
         project.write(project_vals)
         
         # Note: Task/project creation now relies on native Odoo flows.
-
-    # -------------------------------------------------------------------------
-    # PROJECT/TASK SETUP HELPERS
-    # -------------------------------------------------------------------------
-    def _ensure_event_project(self):
-        """Create/assign one event project from the event type's template and bind all service lines to it."""
-        Project = self.env["project.project"]
-
-        for order in self:
-            # Reuse an existing project if already set on a line
-            existing_project = order.order_line.mapped("project_id")[:1]
-
-            if existing_project:
-                project = existing_project
-            else:
-                template = order.project_template_id
-                project_name = f"{order.name} - Event Project"
-                vals = {
-                    "name": project_name,
-                    "partner_id": order.partner_id.id,
-                }
-                if template:
-                    project = template.copy(vals)
-                else:
-                    project = Project.create(vals)
-
-            # Bind all service lines to this project so tasks are grouped
-            service_lines = order.order_line.filtered(lambda l: l.product_id and l.product_id.type == "service")
-            service_lines.write({"project_id": project.id})
-
 
 class SaleOrderRevision(models.Model):
     """Track revisions of sale orders for event quotes"""
