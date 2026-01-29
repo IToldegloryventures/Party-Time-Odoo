@@ -241,26 +241,25 @@ html.o_dark, body.o_dark, .o_dark {
 .ptt-sales-section {
     display: flex !important;
     gap: 12px !important;
-    min-height: 180px !important;
 }
 
 .ptt-sales-chart-tall {
-    flex: 2 !important;
+    flex: 1 !important;
     background: var(--ptt-bg-secondary) !important;
     border: 1px solid var(--ptt-border-color) !important;
     border-radius: 10px !important;
-    padding: 12px !important;
+    padding: 16px !important;
 }
 
 .ptt-sales-chart-tall canvas {
-    height: 150px !important;
+    height: 120px !important;
 }
 
 .ptt-sales-kpis-stack {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 12px !important;
 }
 
 .ptt-sales-kpi {
@@ -268,12 +267,13 @@ html.o_dark, body.o_dark, .o_dark {
     background: var(--ptt-bg-secondary) !important;
     border: 1px solid var(--ptt-border-color) !important;
     border-radius: 10px !important;
-    padding: 16px !important;
+    padding: 20px !important;
     text-align: center !important;
     cursor: pointer !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
+    align-items: center !important;
 }
 
 .ptt-sales-kpi:hover {
@@ -282,12 +282,12 @@ html.o_dark, body.o_dark, .o_dark {
 }
 
 .ptt-sales-icon {
-    font-size: 20px !important;
-    margin-bottom: 4px !important;
+    font-size: 24px !important;
+    margin-bottom: 6px !important;
 }
 
 .ptt-sales-value {
-    font-size: 1.4rem !important;
+    font-size: 1.75rem !important;
     font-weight: 700 !important;
     color: var(--ptt-text-primary) !important;
     line-height: 1.2 !important;
@@ -297,7 +297,7 @@ html.o_dark, body.o_dark, .o_dark {
     font-size: 11px !important;
     color: var(--ptt-text-muted) !important;
     text-transform: uppercase !important;
-    margin-top: 4px !important;
+    margin-top: 6px !important;
 }
 
 .ptt-kpi-gold {
