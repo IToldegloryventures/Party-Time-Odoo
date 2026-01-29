@@ -157,9 +157,12 @@ html.o_dark, body.o_dark, .o_dark {
    BODY (Scrollable)
    ============================================ */
 .ptt-dashboard-body {
-    flex: 1 !important;
+    flex: 1 1 auto !important;
     overflow-y: auto !important;
-    padding: 20px !important;
+    overflow-x: hidden !important;
+    padding: 12px !important;
+    min-height: 0 !important;
+    padding-bottom: 40px !important;
 }
 
 /* ============================================
@@ -423,8 +426,8 @@ html.o_dark .ptt-row-overdue td {
 
 .ptt-cal-day {
     background: var(--ptt-bg-primary) !important;
-    min-height: 70px !important;
-    padding: 4px !important;
+    min-height: 60px !important;
+    padding: 3px !important;
     position: relative !important;
 }
 
@@ -522,37 +525,81 @@ html.o_dark .ptt-row-overdue td {
 }
 
 /* ============================================
-   PAGINATION
+   COMPACT CHART ROW
    ============================================ */
-.ptt-pagination {
+.ptt-chart-row {
     display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
     gap: 12px !important;
 }
 
-.ptt-pagination-btn {
-    width: 32px !important;
-    height: 32px !important;
+.ptt-chart-box {
+    flex: 1 !important;
+    background: var(--ptt-bg-secondary) !important;
+    border: 1px solid var(--ptt-border-color) !important;
     border-radius: 8px !important;
-    background: var(--ptt-accent) !important;
-    border: none !important;
-    color: #fff !important;
+    padding: 12px !important;
+    text-align: center !important;
+}
+
+.ptt-chart-title {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: var(--ptt-text-muted) !important;
+    margin-bottom: 8px !important;
+    text-transform: uppercase !important;
+}
+
+.ptt-chart-box canvas {
+    max-height: 150px !important;
+}
+
+/* ============================================
+   COMPACT TABLE
+   ============================================ */
+.ptt-compact-table thead th {
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+}
+
+.ptt-compact-table tbody td {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+}
+
+/* ============================================
+   INLINE PAGINATION (in card header)
+   ============================================ */
+.ptt-pagination-inline {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 12px !important;
+    color: var(--ptt-text-muted) !important;
+}
+
+.ptt-page-btn {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 4px !important;
+    background: var(--ptt-bg-secondary) !important;
+    border: 1px solid var(--ptt-border-color) !important;
+    color: var(--ptt-text-primary) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    font-size: 10px !important;
 }
 
-.ptt-pagination-btn:disabled {
-    background: var(--ptt-border-color) !important;
-    color: var(--ptt-text-muted) !important;
+.ptt-page-btn:hover:not(:disabled) {
+    background: var(--ptt-accent) !important;
+    color: #fff !important;
+    border-color: var(--ptt-accent) !important;
+}
+
+.ptt-page-btn:disabled {
+    opacity: 0.4 !important;
     cursor: not-allowed !important;
-}
-
-.ptt-pagination-text {
-    color: var(--ptt-text-muted) !important;
-    font-size: 13px !important;
 }
 
 /* ============================================
