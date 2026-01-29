@@ -72,7 +72,7 @@ class PTTDashboardController(http.Controller):
         """Build domain from filter parameters.
         
         Args:
-            filters: dict with manager, customer, project, start_date, end_date
+            filters: dict with user, customer, project, start_date, end_date
             model: 'task' or 'project' to determine field names
             include_dates: whether to include date filters (default True)
             env: Odoo environment to use for timezone-aware datetime bounds
@@ -90,7 +90,7 @@ class PTTDashboardController(http.Controller):
 
         env = env or request.env
             
-        manager_id = filters.get('manager')
+        user_id = filters.get('user')
         customer_id = filters.get('customer')
         project_id = filters.get('project')
         start_date = filters.get('start_date')
@@ -102,11 +102,15 @@ class PTTDashboardController(http.Controller):
             else:
                 domain.append(('id', '=', int(project_id)))
                 
-        if manager_id and manager_id != 'null':
+        if user_id and user_id != 'null':
+            user_id = int(user_id)
             if model == 'task':
-                domain.append(('project_id.user_id', '=', int(manager_id)))
+                # Match tasks the user is assigned to OR manages via project
+                domain.append('|')
+                domain.append(('user_ids', 'in', [user_id]))
+                domain.append(('project_id.user_id', '=', user_id))
             else:
-                domain.append(('user_id', '=', int(manager_id)))
+                domain.append(('user_id', '=', user_id))
                 
         if customer_id and customer_id != 'null':
             if model == 'task':
@@ -518,18 +522,14 @@ class PTTDashboardController(http.Controller):
 
     @http.route('/ptt/dashboard/filter', auth='user', type='jsonrpc')
     def get_filter_options(self):
-        """Get filter dropdown options (managers, customers, projects)."""
+        """Get filter dropdown options (users, customers, projects)."""
         User = request.env['res.users']
         Partner = request.env['res.partner']
         Project = request.env['project.project']
 
-        # Get project managers
-        manager_group = request.env.ref('project.group_project_manager', raise_if_not_found=False)
-        if manager_group:
-            managers = User.search([('groups_id', 'in', [manager_group.id])])
-        else:
-            managers = User.search([])
-        manager_list = [{'id': m.id, 'name': m.name} for m in managers]
+        # Get internal active users (exclude portal/share)
+        users = User.search([('share', '=', False), ('active', '=', True)])
+        user_list = [{'id': u.id, 'name': u.name} for u in users]
 
         # Get customers (partners with projects)
         projects = Project.search([])
@@ -541,7 +541,7 @@ class PTTDashboardController(http.Controller):
         project_list = [{'id': p.id, 'name': p.name} for p in projects]
 
         return {
-            'managers': manager_list,
+            'users': user_list,
             'customers': customer_list,
             'projects': project_list,
         }
@@ -560,7 +560,7 @@ class PTTDashboardController(http.Controller):
         Project = request.env['project.project']
 
         # Build domains using shared helper method (DRY)
-        # Projects: filter by manager, customer, project - no date filter on projects here
+        # Projects: filter by user, customer, project - no date filter on projects here
         project_domain = self._get_filter_domain(data, model='project', include_dates=False, env=request.env)
         filtered_projects = Project.search(project_domain) if project_domain else Project.search([])
 
@@ -717,7 +717,7 @@ class PTTDashboardController(http.Controller):
         
         # Get filter parameters
         filters = {
-            'manager': kw.get('manager') or None,
+            'user': kw.get('user') or None,
             'customer': kw.get('customer') or None,
             'project': kw.get('project') or None,
             'start_date': kw.get('start_date') or None,

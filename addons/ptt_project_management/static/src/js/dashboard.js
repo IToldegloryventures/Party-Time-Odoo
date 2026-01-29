@@ -48,7 +48,7 @@ export class PTTProjectDashboard extends Component {
         this.priorityChart = useRef("priorityChart");
 
         // Refs for filter inputs
-        this.managerRef = useRef("managerSelect");
+        this.userRef = useRef("userSelect");
         this.customerRef = useRef("customerSelect");
         this.projectRef = useRef("projectSelect");
         this.datePresetRef = useRef("datePreset");
@@ -90,7 +90,7 @@ export class PTTProjectDashboard extends Component {
             activityPages: 1,
 
             // Filter options
-            managers: [],
+            users: [],
             customers: [],
             projects: [],
             
@@ -111,7 +111,7 @@ export class PTTProjectDashboard extends Component {
 
         // Current filter state (used by all data fetches)
         this.currentFilters = {
-            manager: null,
+            user: null,
             customer: null,
             project: null,
             start_date: null,
@@ -197,13 +197,13 @@ export class PTTProjectDashboard extends Component {
             this.state.activityPages = activities.pages;
 
             // Update filter options
-            this.state.managers = filters.managers;
+            this.state.users = filters.users || [];
             this.state.customers = filters.customers;
             this.state.projects = filters.projects;
             
             // Update saved presets and available users for assignment
             this.state.presets = presets.presets || [];
-            this.state.availableUsers = filters.managers || []; // Use managers as assignable users
+            this.state.availableUsers = filters.users || []; // Use user list as assignable users
 
             this.state.loading = false;
         } catch (error) {
@@ -217,7 +217,7 @@ export class PTTProjectDashboard extends Component {
      */
     getFilterParams() {
         return {
-            manager: this.currentFilters.manager || 'null',
+            user: this.currentFilters.user || 'null',
             customer: this.currentFilters.customer || 'null',
             project: this.currentFilters.project || 'null',
             start_date: this.currentFilters.start_date || 'null',
@@ -446,7 +446,7 @@ export class PTTProjectDashboard extends Component {
             
             // Navigate to export URL which returns the file
             window.location.href = '/ptt/dashboard/export?' + new URLSearchParams({
-                manager: this.currentFilters.manager || '',
+                user: this.currentFilters.user || '',
                 customer: this.currentFilters.customer || '',
                 project: this.currentFilters.project || '',
                 start_date: this.currentFilters.start_date || '',
@@ -784,7 +784,7 @@ export class PTTProjectDashboard extends Component {
     }
 
     async applyFilters() {
-        const managerId = this.managerRef.el ? this.managerRef.el.value : null;
+        const userId = this.userRef.el ? this.userRef.el.value : null;
         const customerId = this.customerRef.el ? this.customerRef.el.value : null;
         const projectId = this.projectRef.el ? this.projectRef.el.value : null;
         const datePreset = this.datePresetRef.el ? this.datePresetRef.el.value : null;
@@ -808,7 +808,7 @@ export class PTTProjectDashboard extends Component {
 
         // Store current filters for use by other methods
         this.currentFilters = {
-            manager: managerId || null,
+            user: userId || null,
             customer: customerId || null,
             project: projectId || null,
             start_date: startDate || null,
@@ -854,7 +854,7 @@ export class PTTProjectDashboard extends Component {
 
     async resetFilters() {
         // Reset filter inputs
-        if (this.managerRef.el) this.managerRef.el.value = '';
+        if (this.userRef.el) this.userRef.el.value = '';
         if (this.customerRef.el) this.customerRef.el.value = '';
         if (this.projectRef.el) this.projectRef.el.value = '';
         if (this.datePresetRef.el) this.datePresetRef.el.value = '';
@@ -864,7 +864,7 @@ export class PTTProjectDashboard extends Component {
 
         // Clear stored filter state
         this.currentFilters = {
-            manager: null,
+            user: null,
             customer: null,
             project: null,
             start_date: null,
@@ -938,7 +938,7 @@ export class PTTProjectDashboard extends Component {
                 const filters = result.filters;
                 
                 // Apply filters to UI
-                if (this.managerRef.el) this.managerRef.el.value = filters.manager || '';
+                if (this.userRef.el) this.userRef.el.value = filters.user || '';
                 if (this.customerRef.el) this.customerRef.el.value = filters.customer || '';
                 if (this.projectRef.el) this.projectRef.el.value = filters.project || '';
                 if (this.startDateRef.el) this.startDateRef.el.value = filters.start_date || '';
@@ -947,7 +947,7 @@ export class PTTProjectDashboard extends Component {
                 
                 // Update stored filters and apply
                 this.currentFilters = {
-                    manager: filters.manager || null,
+                    user: filters.user || null,
                     customer: filters.customer || null,
                     project: filters.project || null,
                     start_date: filters.start_date || null,

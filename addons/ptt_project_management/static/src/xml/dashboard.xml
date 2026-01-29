@@ -31,35 +31,19 @@
             </div>
 
             <div t-else="">
-                <!-- Header Section - Pink/Lavender gradient -->
-                <div class="ptt-dashboard-header">
-                    <div class="row align-items-center">
-                        <!-- User greeting with avatar -->
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center gap-3">
-                                <!-- User Avatar -->
-                                <div class="ptt-user-avatar rounded-circle d-flex align-items-center justify-content-center overflow-hidden">
-                                    <img t-if="state.userAvatar" t-att-src="state.userAvatar" alt="User"/>
-                                    <i t-else="" class="fa fa-user fa-2x" style="color: #8b5cf6;"/>
-                                </div>
-                                <div>
-                                    <h4 class="mb-1">
-                                        <t t-esc="getGreeting()"/>, <t t-esc="state.userName"/>.
-                                    </h4>
-                                    <p class="mb-0">Welcome to your Project Dashboard.</p>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Header Section - compact, sticky -->
+                <div class="ptt-dashboard-header sticky-top shadow-sm">
+                    <div class="row align-items-end g-3">
                         
                         <!-- Filters Row 1 - Main Filters -->
-                        <div class="col-md-6">
+                        <div class="col-lg-9 col-md-12">
                             <div class="row g-2 align-items-end mb-2">
                                 <div class="col">
-                                    <label class="form-label small mb-1">Managers</label>
-                                    <select class="form-select form-select-sm" t-ref="managerSelect" t-on-change="applyFilters">
-                                        <option value="">All Managers</option>
-                                        <t t-foreach="state.managers" t-as="manager" t-key="manager.id">
-                                            <option t-att-value="manager.id"><t t-esc="manager.name"/></option>
+                                    <label class="form-label small mb-1">Users</label>
+                                    <select class="form-select form-select-sm" t-ref="userSelect" t-on-change="applyFilters">
+                                        <option value="">All Users</option>
+                                        <t t-foreach="state.availableUsers" t-as="user" t-key="user.id">
+                                            <option t-att-value="user.id"><t t-esc="user.name"/></option>
                                         </t>
                                     </select>
                                 </div>
@@ -147,29 +131,23 @@
                         </div>
                         
                         <!-- Action Buttons -->
-                        <div class="col-md-2 text-end">
-                            <div class="d-flex flex-column gap-2 align-items-end">
-                                <div class="btn-group">
-                                    <button class="ptt-refresh-btn" t-on-click="() => this.refreshDashboard(false)" 
-                                            t-att-disabled="state.refreshing">
-                                        <i t-att-class="state.refreshing ? 'fa fa-spinner fa-spin me-2' : 'fa fa-refresh me-2'"/>
-                                        <t t-if="state.refreshing">Refreshing...</t>
-                                        <t t-else="">Refresh</t>
-                                    </button>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="ptt-export-btn" t-on-click="exportToExcel">
-                                        <i class="fa fa-file-excel-o me-2"/>Export
-                                    </button>
-                                    <button class="ptt-print-btn" t-on-click="printDashboard">
-                                        <i class="fa fa-print me-2"/>Print
-                                    </button>
-                                </div>
+                        <div class="col-lg-3 col-md-12 text-end">
+                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                <button class="ptt-refresh-btn" t-on-click="() => this.refreshDashboard(false)" 
+                                        t-att-disabled="state.refreshing">
+                                    <i t-att-class="state.refreshing ? 'fa fa-spinner fa-spin me-2' : 'fa fa-refresh me-2'"/>
+                                    <t t-if="state.refreshing">Refreshing...</t>
+                                    <t t-else="">Refresh</t>
+                                </button>
+                                <button class="ptt-export-btn" t-on-click="exportToExcel">
+                                    <i class="fa fa-file-excel-o me-2"/>Export
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="ptt-dashboard-body">
                 <!-- KPI Tiles Row 1 -->
                 <div class="row g-3 mb-3 px-3">
                     <div class="col-md-4">
@@ -392,6 +370,7 @@
                         </div>
                     </div>
                 </div>
+                </div> <!-- end body -->
             </div>
         </div>
     </t>
