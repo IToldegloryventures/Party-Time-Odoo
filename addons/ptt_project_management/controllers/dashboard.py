@@ -586,6 +586,57 @@ class PTTDashboardController(http.Controller):
             'colors': colors[:len(labels)],
         }
 
+    @http.route('/ptt/dashboard/projects-chart', auth='user', type='jsonrpc')
+    def get_projects_chart(self, filters=None):
+        """Get data for Projects by Status doughnut chart."""
+        uid = request.env.uid
+        Project = request.env['project.project']
+
+        is_manager = request.env.user.has_group('project.group_project_manager')
+
+        if is_manager:
+            base_domain = [('active', '=', True)]
+        else:
+            base_domain = [('active', '=', True), '|', ('user_id', '=', uid), ('message_partner_ids', 'in', [request.env.user.partner_id.id])]
+
+        # Define status categories based on task counts and stage
+        labels = []
+        data = []
+
+        projects = Project.search(base_domain)
+
+        # Group by simple status categories
+        active_count = 0
+        completed_count = 0
+        on_hold_count = 0
+
+        for project in projects:
+            # Check task completion
+            total_tasks = len(project.task_ids)
+            if total_tasks == 0:
+                on_hold_count += 1
+            else:
+                done_tasks = len(project.task_ids.filtered(lambda t: t.stage_id.fold))
+                if done_tasks == total_tasks:
+                    completed_count += 1
+                else:
+                    active_count += 1
+
+        if active_count > 0:
+            labels.append('Active')
+            data.append(active_count)
+        if completed_count > 0:
+            labels.append('Completed')
+            data.append(completed_count)
+        if on_hold_count > 0:
+            labels.append('No Tasks')
+            data.append(on_hold_count)
+
+        return {
+            'labels': labels,
+            'data': data,
+        }
+
     @http.route('/ptt/dashboard/task-project-chart', auth='user', type='jsonrpc')
     def get_task_project_chart(self, filters=None):
         """Get data for Task By Project bar chart.

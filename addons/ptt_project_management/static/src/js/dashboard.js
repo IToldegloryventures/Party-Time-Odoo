@@ -1,12 +1,12 @@
 /** @odoo-module */
 /**
- * PTT Project Dashboard - Owl Component v2.4.0
+ * PTT Project Dashboard - Owl Component v2.5.0
  *
  * Layout:
- * - 4 KPI cards
- * - My Tasks list (primary)
- * - Event Calendar (CRM + Projects by event date)
- * - My Projects list + Stage chart
+ * 1. Event Calendar (top)
+ * 2. 4 KPI cards
+ * 3. My Tasks list
+ * 4. Two donut charts (Projects + Tasks by Stage)
  */
 
 import { registry } from '@web/core/registry';
@@ -21,8 +21,9 @@ export class PTTProjectDashboard extends Component {
         this.action = useService("action");
         this.notification = useService("notification");
 
-        // Chart ref
+        // Chart refs
         this.taskStagesChart = useRef("taskStagesChart");
+        this.projectsChart = useRef("projectsChart");
 
         // Filter refs
         this.customerRef = useRef("customerSelect");
@@ -86,7 +87,7 @@ export class PTTProjectDashboard extends Component {
         });
 
         onMounted(() => {
-            this.renderChart();
+            this.renderCharts();
             this.pollInterval = setInterval(() => this.refreshDashboard(true), this.POLL_INTERVAL_MS);
         });
         
@@ -152,7 +153,7 @@ export class PTTProjectDashboard extends Component {
     }
 
     // =========================================================================
-    // CHART
+    // CHARTS
     // =========================================================================
 
     isDarkMode() {
@@ -160,14 +161,21 @@ export class PTTProjectDashboard extends Component {
                document.body.classList.contains('o_dark');
     }
 
-    async renderChart() {
+    async renderCharts() {
+        // Destroy existing charts
         if (this.charts.stages) this.charts.stages.destroy();
+        if (this.charts.projects) this.charts.projects.destroy();
 
         const isDark = this.isDarkMode();
         const textColor = isDark ? '#e5e7eb' : '#374151';
 
-        const stagesData = await rpc('/ptt/dashboard/task-stages-chart', { filters: this.getFilterParams() });
+        // Fetch data for both charts
+        const [stagesData, projectsData] = await Promise.all([
+            rpc('/ptt/dashboard/task-stages-chart', { filters: this.getFilterParams() }),
+            rpc('/ptt/dashboard/projects-chart', { filters: this.getFilterParams() }),
+        ]);
 
+        // Tasks by Stage donut
         if (this.taskStagesChart.el && stagesData.data?.length > 0) {
             this.charts.stages = new Chart(this.taskStagesChart.el, {
                 type: 'doughnut',
@@ -181,11 +189,36 @@ export class PTTProjectDashboard extends Component {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '60%',
+                    cutout: '55%',
                     plugins: {
                         legend: { 
                             position: 'bottom',
-                            labels: { color: textColor, padding: 15, font: { size: 12 } }
+                            labels: { color: textColor, padding: 10, font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Projects by Status donut
+        if (this.projectsChart.el && projectsData.data?.length > 0) {
+            this.charts.projects = new Chart(this.projectsChart.el, {
+                type: 'doughnut',
+                data: {
+                    labels: projectsData.labels || [],
+                    datasets: [{
+                        data: projectsData.data || [],
+                        backgroundColor: ['#6366f1', '#22c55e', '#f97316', '#ef4444', '#64748b'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '55%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { color: textColor, padding: 10, font: { size: 11 } }
                         }
                     }
                 }
@@ -201,7 +234,7 @@ export class PTTProjectDashboard extends Component {
         if (!silent) this.state.refreshing = true;
         try {
             await this.loadInitialData();
-            await this.renderChart();
+            await this.renderCharts();
             if (!silent) this.notification.add(_t("Refreshed"), { type: "success" });
         } catch (e) {
             if (!silent) this.notification.add(_t("Refresh failed"), { type: "danger" });
@@ -280,7 +313,7 @@ export class PTTProjectDashboard extends Component {
         this.state.taskPage = 1;
         this.state.taskPages = myTasks.pages || 1;
 
-        await this.renderChart();
+        await this.renderCharts();
     }
 
     // =========================================================================

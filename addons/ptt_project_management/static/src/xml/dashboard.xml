@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <!--
-        PTT Project Dashboard Template v2.4.0
+        PTT Project Dashboard Template v2.5.0
         
         Layout (top to bottom):
-        - 4 KPI cards
-        - My Tasks list (primary focus)
-        - Event Calendar (from CRM + Projects)
-        - My Projects list
-        - Tasks by Stage chart
+        1. Compact filter bar
+        2. Event Calendar
+        3. KPI cards (4 across)
+        4. My Tasks list
+        5. Two donut charts side by side (Projects + Tasks by Stage)
     -->
     <t t-name="ptt_project_management.Dashboard">
         <div class="ptt-dashboard">
@@ -33,7 +33,7 @@
                 <div class="ptt-dashboard-header">
                     <div class="ptt-filter-row">
                         <!-- Date Period Pills -->
-                        <div class="ptt-filter-group ptt-filter-wide">
+                        <div class="ptt-filter-group">
                             <label>Period</label>
                             <div class="ptt-date-pills">
                                 <span class="ptt-date-pill" t-att-class="{'active': state.activePeriod === 'today'}" 
@@ -82,7 +82,42 @@
 
                 <!-- SCROLLABLE BODY -->
                 <div class="ptt-dashboard-body">
-                    <!-- KPI GRID - 4 focused metrics -->
+                    
+                    <!-- 1. EVENT CALENDAR (AT TOP) -->
+                    <div class="card ptt-calendar-card mb-3">
+                        <div class="card-header">
+                            <h5><i class="fa fa-calendar me-2"/>Upcoming Events</h5>
+                            <div class="ptt-legend">
+                                <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-lead"></span> Lead</span>
+                                <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-quote"></span> Quote Sent</span>
+                                <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-booked"></span> Booked</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="ptt-event-list">
+                                <t t-foreach="state.upcomingEvents" t-as="event" t-key="event.id">
+                                    <div class="ptt-event-item" t-att-class="'ptt-event-' + event.status" t-on-click="() => this.viewEvent(event)">
+                                        <div class="ptt-event-date">
+                                            <div class="ptt-event-month"><t t-esc="event.month"/></div>
+                                            <div class="ptt-event-day"><t t-esc="event.day"/></div>
+                                        </div>
+                                        <div class="ptt-event-details">
+                                            <div class="ptt-event-title"><t t-esc="event.name"/></div>
+                                            <div class="ptt-event-customer"><t t-esc="event.customer or 'No customer'"/></div>
+                                        </div>
+                                        <div class="ptt-event-status">
+                                            <span t-att-class="'badge ptt-badge-' + event.status"><t t-esc="event.status_label"/></span>
+                                        </div>
+                                    </div>
+                                </t>
+                                <div t-if="!state.upcomingEvents || state.upcomingEvents.length === 0" class="text-center text-muted py-4">
+                                    No upcoming events
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. KPI GRID - 4 compact cards in a row -->
                     <div class="ptt-kpi-grid">
                         <div class="ptt-kpi-card ptt-kpi-primary" t-on-click="openMyTasks">
                             <div class="ptt-kpi-value"><t t-esc="state.myTasks"/></div>
@@ -102,7 +137,7 @@
                         </div>
                     </div>
 
-                    <!-- MY TASKS LIST (PRIMARY - at top) -->
+                    <!-- 3. MY TASKS LIST -->
                     <div class="card ptt-list-card mb-3">
                         <div class="card-header">
                             <h5><i class="fa fa-tasks me-2"/>My Tasks</h5>
@@ -160,96 +195,25 @@
                         </div>
                     </div>
 
-                    <!-- EVENT CALENDAR -->
-                    <div class="card ptt-calendar-card mb-3">
-                        <div class="card-header">
-                            <h5><i class="fa fa-calendar me-2"/>Upcoming Events</h5>
-                            <div class="ptt-legend">
-                                <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-lead"></span> Lead</span>
-                                <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-quote"></span> Quote Sent</span>
-                                <span class="ptt-legend-item"><span class="ptt-legend-dot ptt-booked"></span> Booked</span>
-                            </div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="ptt-event-list">
-                                <t t-foreach="state.upcomingEvents" t-as="event" t-key="event.id">
-                                    <div class="ptt-event-item" t-att-class="'ptt-event-' + event.status" t-on-click="() => this.viewEvent(event)">
-                                        <div class="ptt-event-date">
-                                            <div class="ptt-event-month"><t t-esc="event.month"/></div>
-                                            <div class="ptt-event-day"><t t-esc="event.day"/></div>
-                                        </div>
-                                        <div class="ptt-event-details">
-                                            <div class="ptt-event-title"><t t-esc="event.name"/></div>
-                                            <div class="ptt-event-customer"><t t-esc="event.customer or 'No customer'"/></div>
-                                        </div>
-                                        <div class="ptt-event-status">
-                                            <span t-att-class="'badge ptt-badge-' + event.status"><t t-esc="event.status_label"/></span>
-                                        </div>
-                                    </div>
-                                </t>
-                                <div t-if="!state.upcomingEvents || state.upcomingEvents.length === 0" class="text-center text-muted py-4">
-                                    No upcoming events
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MY PROJECTS + STAGE CHART -->
+                    <!-- 4. TWO DONUT CHARTS SIDE BY SIDE -->
                     <div class="row g-3 mb-3">
-                        <div class="col-lg-7">
-                            <div class="card ptt-list-card h-100">
-                                <div class="card-header">
-                                    <h5><i class="fa fa-folder-open me-2"/>My Projects</h5>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Project</th>
-                                                    <th>Customer</th>
-                                                    <th>Tasks</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="state.myProjectsList" t-as="project" t-key="project.id">
-                                                    <tr>
-                                                        <td class="fw-medium"><t t-esc="project.name"/></td>
-                                                        <td class="text-muted"><t t-esc="project.partner_name or '-'"/></td>
-                                                        <td>
-                                                            <span class="badge bg-secondary"><t t-esc="project.task_count"/> tasks</span>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.viewProject(project.id)">Open</button>
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                                <tr t-if="!state.myProjectsList || state.myProjectsList.length === 0">
-                                                    <td colspan="4" class="text-center text-muted py-4">No projects</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="card-footer ptt-pagination">
-                                    <button class="ptt-pagination-btn" t-on-click="prevProjectPage" t-att-disabled="state.projectPage &lt;= 1">
-                                        <i class="fa fa-chevron-left"/>
-                                    </button>
-                                    <span class="ptt-pagination-text">Page <t t-esc="state.projectPage"/> of <t t-esc="state.projectPages"/></span>
-                                    <button class="ptt-pagination-btn" t-on-click="nextProjectPage" t-att-disabled="state.projectPage >= state.projectPages">
-                                        <i class="fa fa-chevron-right"/>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
+                        <div class="col-lg-6">
                             <div class="card ptt-chart-card h-100">
                                 <div class="card-header">
-                                    <h5>Tasks by Stage</h5>
+                                    <h5><i class="fa fa-folder-open me-2"/>Projects by Status</h5>
                                 </div>
                                 <div class="card-body d-flex align-items-center justify-content-center">
-                                    <canvas t-ref="taskStagesChart" style="max-height: 250px;"/>
+                                    <canvas t-ref="projectsChart" style="max-height: 220px;"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card ptt-chart-card h-100">
+                                <div class="card-header">
+                                    <h5><i class="fa fa-tasks me-2"/>Tasks by Stage</h5>
+                                </div>
+                                <div class="card-body d-flex align-items-center justify-content-center">
+                                    <canvas t-ref="taskStagesChart" style="max-height: 220px;"/>
                                 </div>
                             </div>
                         </div>
